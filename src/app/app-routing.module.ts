@@ -3,7 +3,9 @@ import { Routes, RouterModule } from '@angular/router';
 import { ChildComponent } from './child/child.component';
 import { MenuComponent } from './menu/menu.component';
 import { SubChildComponent } from './sub-child/sub-child.component';
-
+import { MenuTMSComponent } from './TMS/menu-tms/menu-tms.component'
+import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component'
+import { VehiculeComponent } from './TMS/parc/vehicule/vehicule.component'
  
 const routes: Routes =
   [
@@ -18,7 +20,10 @@ const routes: Routes =
             { path: 'Sub_child', component: SubChildComponent},
    
           ]
-        } 
+        },
+        { path: 'Parc', component: MenuParcComponent },
+        { path: 'Vehicules', component: VehiculeComponent }
+
     ]}]
 
 @NgModule({

@@ -1,0 +1,41 @@
+<h1 mat-dialog-title>Mise à Jour Kilométrage Véhicule {{vehicule?.matricule}} </h1>
+<div mat-dialog-content>
+    <form class="" [formGroup]="form" *ngIf="vehicule">
+        <div class="position-relative form-group">
+            <mat-form-field class="example-full-width">
+                <mat-label>Kilométrage Actuel</mat-label>
+                <input matInput formControlName="kmactuel" name="km-actuel" id="km-actuel" value="{{vehicule.kmactuel}}"
+                    type="text">
+                <mat-error *ngIf="form.controls['kmactuel'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+                <mat-error *ngIf="form.controls['kmactuel'].hasError('pattern')">
+                    Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+                <mat-error
+                    *ngIf="form.controls['kmactuel'].hasError('kmvalide') && !(form.controls['kmactuel'].hasError('pattern') || form.controls['kmactuel'].hasError('required'))">
+                    Kilométrage Actuel <strong>Invalide</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="position-relative form-group">
+            <mat-form-field class="example-full-width">
+                <mat-label>Montant Carburant Consommé En TND</mat-label>
+                <input matInput formControlName="consommation" name="consommation" id="consommation"
+                    value="{{vehicule.consommation}}" type="text">
+                <mat-error *ngIf="form.controls['consommation'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+                <mat-error *ngIf="form.controls['consommation'].hasError('pattern')">
+                    Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+    </form>
+</div>
+<div mat-dialog-actions class="float-right">
+    <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerMiseAJourConsommation()">Annuler</button>
+    <button mat-button color="primary" class="mb-2 mr-2" (click)="miseAJourConsommation()"
+        [disabled]="form.invalid">Enregistrer</button>
+</div>
