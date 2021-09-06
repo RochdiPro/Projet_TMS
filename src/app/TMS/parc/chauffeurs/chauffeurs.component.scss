@@ -1,0 +1,19 @@
+table {
+    width: 100%;
+  }
+  th.mat-sort-header-sorted {
+    color: black;
+  }
+  .filterer {
+    ::ng-deep .mat-form-field-underline {
+      display: none;
+    }
+  }
+  .custom-width {
+    width: 20%;
+    margin: 0 0.3%;
+  }
+  .custom-width2 {
+    width: 25%;
+  }
+  

@@ -1,0 +1,155 @@
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-car text-success">
+                </i>
+            </div>
+            Chauffeurs
+        </div>
+    </div>
+</div>
+<div class="tab-content">
+    <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body">
+                <div class="position-relative custom-control">
+                    <!-- section pour le filtrage des chauffeurs par nom et par categorie de permis -->
+                    <section>
+                        <mat-form-field class="custom-width" [formGroup]="form">
+                            <mat-label>Nom</mat-label>
+                            <input matInput placeholder="Nom" formControlName="nom" (keyup)="filtrer()" id="nom">
+                            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+                        </mat-form-field>
+                        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;">
+                            <mat-label>Catégorie De Permis</mat-label>
+                            <input matInput placeholder="Catégorie" formControlName="categorie" (keyup)="filtrer()">
+                            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+                        </mat-form-field>
+                    </section>
+                    <!-- fin section de filtrage -->
+                </div>
+                <div class="mat-elevation-z8">
+                    <!-- Tableau des chauffeurs -->
+                    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+                        <!-- Colonne d'ID -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef> ID </th>
+                            <td mat-cell *matCellDef="let element"> {{element.id_Employe}} </td>
+                        </ng-container>
+
+                        <!-- Colonne Nom -->
+                        <ng-container matColumnDef="nom">
+                            <th mat-header-cell *matHeaderCellDef>
+                                <div class="row">
+                                    <div class="col-lg-3 ml-5" mat-sort-header>Nom</div>
+                                    <div class="col-md-auto ">
+                                    </div>
+                                    <div class="col-lg-3" style="margin-left: em;">
+                                    </div>
+                                </div>
+                            </th>
+                            <td mat-cell *matCellDef="let element">
+                                <!-- Panel qui contient les iformations des chauffeurs -->
+                                <mat-expansion-panel class="mat-elevation-z0" (opened)="panelOpenState = true"
+                                    (closed)="panelOpenState = false">
+                                    <mat-expansion-panel-header class="row">
+                                        <mat-panel-title class="col-3">
+                                            <div class="col">
+                                                {{ element.nom}}
+                                            </div>
+                                        </mat-panel-title>
+                                        <mat-panel-description class="col row">
+                                            <div class="col-6">
+                                                Catégorie De Permis:
+                                                <span>{{element.categorie_Permis}}</span>
+                                            </div>
+                                            <div class="col-6">
+                                                N° Téléphone: +
+                                                <span>{{element.tel}}</span>
+                                            </div>
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                                    <div class="row">
+                                        <div class="col-4">
+                                            {{getUrl(element.image)}}
+                                            <img [src]="url" alt="Photo du chauffeur" width="100%" height="100%">
+                                        </div>
+                                        <div class="col">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">Nom : <span
+                                                            style="font-weight: bold;">
+                                                            {{element.nom}} </span></h4>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">Date De Naissance : <span
+                                                            style="font-weight: bold;"> {{element.date_de_naissance |
+                                                            date:' d MMMM y' :
+                                                            '' : 'fr'}} </span></h4>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">N° de Téléphone : <span
+                                                            style="font-weight: bold;"> +{{element.tel}} </span></h4>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">Email : <span
+                                                            style="font-weight: bold;">
+                                                            {{element.email}} </span></h4>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">Type Pièce d'Identité :
+                                                        <span style="font-weight: bold;">
+                                                            {{element.type_Piece_Identite}} </span></h4>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">N° Pièce d'Identité : <span
+                                                            style="font-weight: bold;"> {{element.n_Piece_Identite}}
+                                                        </span></h4>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">Catégorie de permis Accordée
+                                                        : <span style="font-weight: bold;"> {{element.categorie_Permis}}
+                                                        </span></h4>
+                                                </div>
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">N° de Permis : <span
+                                                            style="font-weight: bold;"> {{element.permis}} </span></h4>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col">
+                                                    <h4 style="text-transform: capitalize;">Date d'acquisition du permis
+                                                        : <span style="font-weight: bold;"> {{element.date_de_Permis |
+                                                            date:' d MMMM y' : ''
+                                                            : 'fr'}} </span></h4>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </mat-expansion-panel>
+                                <!-- fin du panel qui contient les iformations des chauffeurs -->
+                            </td>
+                        </ng-container>
+
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+
+                    <!-- Paginator -->
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

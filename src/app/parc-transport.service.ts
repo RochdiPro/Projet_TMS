@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 const erp = "/ERP/";
-const infonet = "/INFONET/";
 @Injectable({
   providedIn: 'root'
 })
@@ -66,10 +65,10 @@ export class ParcTransportService {
     )
   }
   public employes() {
-    return this.http.get(infonet + 'Employes');
+    return this.http.get(erp + 'Employes');
   }
   public employe(id: any) {
-    return this.http.get(infonet + 'Employe' + "?Id=" + id);
+    return this.http.get(erp + 'Employe' + "?Id=" + id);
   }
   public createAffectation(formData: any) {
     this.http.post(erp + 'createAffectation', formData).subscribe(
@@ -105,11 +104,11 @@ export class ParcTransportService {
     )
   }
   public imageEmploye(id: any) {
-    return this.http.get(infonet + 'Image_Employe' + '?Id=' + id);
+    return this.http.get(erp + 'Image_Employe' + '?Id=' + id);
 
   }
   public filtrerChauffeur(champ: any, valeur: any) {
-    return this.http.get(infonet + 'Filtre_Employe' + '?Champ=' + champ + '&Valeur=' + valeur);
+    return this.http.get(erp + 'Filtre_Employe' + '?Champ=' + champ + '&Valeur=' + valeur);
   }
   public commandes() {
     return this.http.get(erp + 'commandes');

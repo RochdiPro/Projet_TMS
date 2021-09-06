@@ -6,6 +6,7 @@ import { SubChildComponent } from './sub-child/sub-child.component';
 import { MenuTMSComponent } from './TMS/menu-tms/menu-tms.component'
 import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component'
 import { VehiculeComponent } from './TMS/parc/vehicule/vehicule.component'
+import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component'
 
  
 const routes: Routes =
@@ -22,8 +23,16 @@ const routes: Routes =
    
           ]
         },
-        { path: 'Parc', component: MenuParcComponent },
-        { path: 'Vehicules', component: VehiculeComponent }
+        {
+          path: 'TMS', component: MenuTMSComponent, children: [
+          
+            { path: 'Parc', component: MenuParcComponent },
+            { path: 'Vehicules', component: VehiculeComponent },
+            { path: 'Chauffeurs', component: ChauffeursComponent },
+   
+          ]
+        },
+        
 
 
     ]}]

@@ -36,6 +36,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
+import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -55,6 +56,7 @@ registerLocaleData(localeFr, 'fr');
     NotificationComponent,
     MiseAJourConsommationComponent,
     MenuParcComponent,
+    ChauffeursComponent,
 
    
   ],
