@@ -5,7 +5,8 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { ParcTransportService } from 'src/app/parc-transport.service';
 import { DatePipe } from '@angular/common';
 import { kmactuelValidator } from './kmactuel.validator';
-
+import { Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 // -------------------------------Page vehicule-----------------------------------------
 @Component({
@@ -26,7 +27,7 @@ export class VehiculeComponent implements OnInit {
   prixCarb: any;
 
 
-  constructor(private dialog: MatDialog, private http: HttpClient, public service: ParcTransportService) {
+  constructor(private dialog: MatDialog, private http: HttpClient, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.form.get('carb').setValidators([Validators.required]);
     this.form.get('prix').setValidators([Validators.required, Validators.pattern("(^[0-9]{1,9})+(\.[0-9]{1,4})?$")]);
     this.form.controls.prix.disable();
@@ -112,23 +113,26 @@ export class VehiculeComponent implements OnInit {
 
   supprimerVehicule(id: any): void { //supprimer vehicule
     this.service.supprimerVehicule(id);
-    location.reload();
-
+    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+      this._router.navigate([decodeURI(this._location.path())]);
+    });
   }
 
   ngOnInit(): void {
   }
-  afficherBadgeDeNotification(entretien: any, reclamation: any, dateVisiteStr: any, dateAssuranceStr: any, dateTaxeStr: any) { //affiche le badge rouge de existance du notification
-    let dateVisite = new Date(dateVisiteStr);
-    let dateAssurance = new Date(dateAssuranceStr);
-    let dateTaxe = new Date(dateTaxeStr);
+  afficherBadgeDeNotification(vehicule: any) { //affiche le badge rouge de existance du notification
+    let entretien = vehicule.kmprochainentretien - vehicule.kmactuel;
+    let dateVisite = new Date(vehicule.datevisite);
+    let dateAssurance = new Date(vehicule.dateassurance);
+    let dateTaxe = new Date(vehicule.datetaxe);
     var DifferenceVisite = dateVisite.getTime() - this.datePresent.getTime();
     var DifferenceVisiteJ = DifferenceVisite / (1000 * 3600 * 24);    //calculer nombre de jours restants pour la prochaine visite technique
     var DifferenceAssurance = dateAssurance.getTime() - this.datePresent.getTime();
     var DifferenceAssuranceJ = DifferenceAssurance / (1000 * 3600 * 24);  //calculer nombre de jours restants pour l'expiration de l'assurance
     var DifferenceTaxe = dateTaxe.getTime() - this.datePresent.getTime();
     var DifferenceTaxeJ = DifferenceTaxe / (1000 * 3600 * 24);  //calculer nombre de jours restants pour l'expiration des taxes
-    if (entretien < 1000 || reclamation !== "" || DifferenceVisiteJ < 30 || DifferenceAssuranceJ < 30 || DifferenceTaxeJ < 30) {   //tester la condition pour afficher le badge de notification
+    let consommationActuelle = (((vehicule.consommation / vehicule.prixcarburant) / vehicule.distanceparcourie) * 100).toFixed(2);
+    if (entretien < 1000 || vehicule.sujet !== "" || DifferenceVisiteJ < 30 || DifferenceAssuranceJ < 30 || DifferenceTaxeJ < 30 || vehicule.consommationNormale + 1 < consommationActuelle) {   //tester la condition pour afficher le badge de notification
       this.notification = false;
     } else {
       this.notification = true;
@@ -185,7 +189,7 @@ export class AjoutComponent implements OnInit {
   carburant: String;
   prixCarburant: any;
   minDate = new Date();
-  constructor(public dialogRef: MatDialogRef<AjoutComponent>, private http: ParcTransportService, public fb: FormBuilder, public service: ParcTransportService) {
+  constructor(public dialogRef: MatDialogRef<AjoutComponent>, private http: ParcTransportService, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.form = this.fb.group({
       typematricule: ['', [Validators.required]],
       matriculetun1: [''],
@@ -249,7 +253,9 @@ export class AjoutComponent implements OnInit {
     formData.append("etatVehicule", "Disponible");
     this.service.createvehicule(formData);
     this.dialogRef.close();
-    location.reload();
+    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+      this._router.navigate([decodeURI(this._location.path())]);
+    });
   }
   testType(): void { //tester le type de matricule si elle est TUN ou RS
     if (this.typeMatriculeSelectionne === 'TUN') { //si le type de matricule est TUN on definie les validateurs de ses inputFields et on supprime les validateurs du type RS
@@ -456,7 +462,7 @@ export class MiseAJourComponent implements OnInit {
   form: FormGroup;
   vehicule: any;
   id: any;
-  constructor(public dialogRef: MatDialogRef<MiseAJourComponent>, private http: ParcTransportService, public fb: FormBuilder, public service: ParcTransportService) {
+  constructor(public dialogRef: MatDialogRef<MiseAJourComponent>, private http: ParcTransportService, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.id = localStorage.getItem('idV');
     this.service.vehicule(this.id).subscribe((data) => {
       this.vehicule = data;
@@ -491,7 +497,9 @@ export class MiseAJourComponent implements OnInit {
     formData.append("datetaxe", new Date(this.form.get('datetaxe').value));
     this.service.miseajourvehicule(this.id, formData);
     this.dialogRef.close();
-    // location.reload();
+    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+      this._router.navigate([decodeURI(this._location.path())]);
+    });
   }
 
   ngOnInit(): void {
@@ -509,7 +517,7 @@ export class MiseAJourConsommationComponent implements OnInit {
   vehicule: any;
   id: any;
   validationKm = false;
-  constructor(public dialogRef: MatDialogRef<MiseAJourConsommationComponent>, public fb: FormBuilder, public service: ParcTransportService) {
+  constructor(public dialogRef: MatDialogRef<MiseAJourConsommationComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.id = localStorage.getItem('idV');
     this.service.vehicule(this.id).subscribe((data) => {
       this.vehicule = data;
@@ -530,7 +538,9 @@ export class MiseAJourConsommationComponent implements OnInit {
 
     this.service.miseajourkm(this.id, formData);
     this.dialogRef.close();
-    location.reload();
+    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+      this._router.navigate([decodeURI(this._location.path())]);
+    });
   }
 
   ngOnInit(): void {
@@ -567,7 +577,7 @@ export class NotificationComponent implements OnInit {
   consommation = false;
   notification = false;
   datePresent = new Date();
-  constructor(public dialogRef: MatDialogRef<NotificationComponent>, public service: ParcTransportService) {
+  constructor(public dialogRef: MatDialogRef<NotificationComponent>, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.kmentretien = 0;
     this.id = localStorage.getItem('idV');
     this.sujet = localStorage.getItem('sujetR');
@@ -586,7 +596,9 @@ export class NotificationComponent implements OnInit {
   }
   fermerNotification(): void {//fermer la boite du dialogue
     this.dialogRef.close();
-    location.reload();
+    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+      this._router.navigate([decodeURI(this._location.path())]);
+    });
   }
   supprimerReclamation(): void { // supprimer la reclamation
     var formData: any = new FormData();
@@ -653,7 +665,8 @@ export class NotificationComponent implements OnInit {
     this.testVisite();
     this.testAssurance();
     this.testTaxe();
-    if (this.taxe || this.assurance || this.visite || this.entretien || this.reclamation) {
+    this.testConsommation();
+    if (this.taxe || this.assurance || this.visite || this.entretien || this.reclamation || this.consommation) {
       this.notification = false;
     } else {
       this.notification = true;
@@ -671,7 +684,7 @@ export class ReclamationComponent implements OnInit {
   form: FormGroup;
   id: any;
   vehicule: any;
-  constructor(public dialogRef: MatDialogRef<ReclamationComponent>, public fb: FormBuilder, public service: ParcTransportService) {
+  constructor(public dialogRef: MatDialogRef<ReclamationComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.form = this.fb.group({
       sujet: ['', Validators.required],
       description: ['', Validators.required]
@@ -691,7 +704,9 @@ export class ReclamationComponent implements OnInit {
     formData.append("description", this.form.get('description').value);
     this.service.reclamationvehicule(this.id, formData);
     this.dialogRef.close();
-    location.reload();
+    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+      this._router.navigate([decodeURI(this._location.path())]);
+    });
   }
   ngOnInit(): void {
   }

@@ -37,7 +37,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
 
-
+registerLocaleData(localeFr, 'fr');
 
 @NgModule({
   declarations: [
@@ -88,7 +88,7 @@ import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
     MatTooltipModule,
     FormsModule,    
   ],
-  providers: [],
+  providers: [MatDatepickerModule,DatePipe,{ provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
