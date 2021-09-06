@@ -39,6 +39,7 @@ import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
 
 registerLocaleData(localeFr, 'fr');
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -54,6 +55,7 @@ registerLocaleData(localeFr, 'fr');
     NotificationComponent,
     MiseAJourConsommationComponent,
     MenuParcComponent,
+
    
   ],
   imports: [
@@ -89,6 +91,7 @@ registerLocaleData(localeFr, 'fr');
     FormsModule,    
   ],
   providers: [MatDatepickerModule,DatePipe,{ provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
+
   bootstrap: [AppComponent]
 })
 export class AppModule { }
