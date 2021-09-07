@@ -22,14 +22,11 @@
                <mat-form-field class="ml-3 custom-width">
                   <mat-label>Carburant</mat-label>
                   <mat-select formControlName="carb" name="carburant" id="carburant" [(value)]="carburant" (selectionChange)="selectionnerCarburant()" required>
-                     <mat-option value="Essence">
-                        Essence
+                     <mat-option *ngFor="let carb of carburants" [value]="carb">
+                        {{carb.nom}}
                      </mat-option>
-                     <mat-option value="Diesel">
-                        Diesel
-                     </mat-option>
-                     <mat-option value="GPL">
-                        GPL
+                     <mat-option>
+                        <a (click)="ouvrirAjouterCarburant()" style="width: auto; display: block;">+ Ajouter</a>
                      </mat-option>
                   </mat-select>
                </mat-form-field>

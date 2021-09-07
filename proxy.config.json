@@ -1,11 +1,20 @@
 {
     "/ERP/*":{
-        "target":"http://41.228.33.200:3333",
+        "target":"http://127.0.0.1:8080",
         "secure":false,
         "logLevel":"debug",
         "pathRewrite":
         {
             "^/ERP":""
+        }
+    },
+    "/INFONET/*":{
+        "target":"http://41.228.33.200:3333",
+        "secure":false,
+        "logLevel":"debug",
+        "pathRewrite":
+        {
+            "^/INFONET":""
         }
     } 
 }

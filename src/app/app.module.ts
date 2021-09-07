@@ -9,7 +9,7 @@ import { SubChildComponent } from './sub-child/sub-child.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MenuTMSComponent } from './TMS/menu-tms/menu-tms.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { VehiculeComponent, DetailVehiculeComponent, MiseAJourComponent, ReclamationComponent, AjoutComponent, NotificationComponent, MiseAJourConsommationComponent } from './TMS/parc/vehicule/vehicule.component';
+import { VehiculeComponent, AjouterCarburantComponent, DetailVehiculeComponent, MiseAJourComponent, ReclamationComponent, AjoutComponent, NotificationComponent, MiseAJourConsommationComponent } from './TMS/parc/vehicule/vehicule.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { registerLocaleData } from '@angular/common';
@@ -49,6 +49,7 @@ registerLocaleData(localeFr, 'fr');
     SubChildComponent,
     MenuTMSComponent,
     VehiculeComponent,
+    AjouterCarburantComponent,
     DetailVehiculeComponent,
     MiseAJourComponent,
     ReclamationComponent,

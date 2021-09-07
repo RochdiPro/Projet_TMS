@@ -152,17 +152,10 @@
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Carburant</mat-label>
-                <mat-select formControlName="carburant" name="carburant" id="carburant" [(value)]="carburant"
-                    (selectionChange)="chargerPrixCarburant()" required>
-                    <mat-option value="Essence">
-                        Essence
-                    </mat-option>
-                    <mat-option value="Diesel">
-                        Diesel
-                    </mat-option>
-                    <mat-option value="GPL">
-                        GPL
-                    </mat-option>
+                <mat-select formControlName="carburant" name="carburant" id="carburant" [(value)]="carburant" required>
+                    <mat-option *ngFor="let carb of carburants" [value]="carb">
+                        {{carb.nom}}
+                     </mat-option>
                 </mat-select>
                 <mat-error *ngIf="form.controls['carburant'].hasError('required')"> Veuillez choisir le carburant
                 </mat-error>

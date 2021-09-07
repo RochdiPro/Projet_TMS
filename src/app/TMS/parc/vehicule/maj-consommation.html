@@ -21,12 +21,12 @@
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Montant Carburant Consommé En TND</mat-label>
-                <input matInput formControlName="consommation" name="consommation" id="consommation"
-                    value="{{vehicule.consommation}}" type="text">
-                <mat-error *ngIf="form.controls['consommation'].hasError('required')">
+                <input matInput formControlName="montantConsomme" name="montantConsomme" id="montantConsomme"
+                    value="{{vehicule.montantConsomme}}" type="text">
+                <mat-error *ngIf="form.controls['montantConsomme'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
-                <mat-error *ngIf="form.controls['consommation'].hasError('pattern')">
+                <mat-error *ngIf="form.controls['montantConsomme'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
                 </mat-error>
             </mat-form-field>
@@ -38,4 +38,4 @@
     <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerMiseAJourConsommation()">Annuler</button>
     <button mat-button color="primary" class="mb-2 mr-2" (click)="miseAJourConsommation()"
         [disabled]="form.invalid">Enregistrer</button>
-</div>
+</div> 
