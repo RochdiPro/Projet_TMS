@@ -1,6 +1,6 @@
 <h1 mat-dialog-title *ngIf="vehicule">Véhicule {{vehicule.matricule}} </h1>
 <div mat-dialog-content class="scrollbar scrollbar-primary">
-  <ul class="list-group" *ngIf="vehicule">
+  <ul class="list-group" *ngIf="vehicule && carburant">
     <div class="position-relative form-group"><label for="marque" class="">Marque</label>
       <li class="list-group-item">{{vehicule.marque}}</li>
     </div>
@@ -29,8 +29,10 @@
     <div class="position-relative form-group"><label for="consommationnormale" class="">Consommation Normale</label>
       <li class="list-group-item">{{vehicule.consommationNormale}}</li>
     </div>
-    <div class="position-relative form-group" *ngIf="vehicule.distanceparcourie!=null"><label for="consommationactuelle" class="">Consommation Actulle</label>
-      <li class="list-group-item">{{(((vehicule.consommation/vehicule.prixcarburant)/vehicule.distanceparcourie)*100).toFixed(2)}}</li>
+    <div class="position-relative form-group" *ngIf="vehicule.distanceparcourie!=null"><label for="consommationactuelle"
+        class="">Consommation Actulle</label>
+      <li class="list-group-item">
+        {{(((vehicule.montantConsomme/carburant.prixCarburant)/vehicule.distanceparcourie)*100).toFixed(2)}}</li>
     </div>
     <div class="position-relative form-group"><label for="charge_utile" class="">Charge Utile</label>
       <li class="list-group-item">{{vehicule.charge_utile}}</li>
@@ -57,6 +59,13 @@
   </ul>
 </div>
 <div mat-dialog-actions class="float-right">
+  <!-- Bouton Fermer -->
   <button mat-button class="mb-2 mr-2" (click)="fermerDetailVehicule()">Fermer</button>
-    <button mat-button color="primary" class="mb-2 mr-2" (click)="printPage()"><mat-icon>print</mat-icon> Imprimer</button>
+  <!-- fin Bouton Fermer -->
+
+  <!-- Bouton Imprimer -->
+  <button mat-button color="primary" class="mb-2 mr-2" (click)="printPage()">
+    <mat-icon>print</mat-icon> Imprimer
+  </button>
+  <!-- fin Bouton Imprimer -->
 </div>

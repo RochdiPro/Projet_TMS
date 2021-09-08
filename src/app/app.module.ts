@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MenuComponent } from './menu/menu.component';
@@ -37,6 +36,11 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
 import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
+import { MissionsComponent, DetailComponent,MapsComponent, AjouterMissionComponent, QrCodeComponent } from './TMS/parc/missions/missions.component';
+import { AgmCoreModule } from '@agm/core';
+import { DirectionsMapDirective } from './directions-map.directive';
+import { SafePipeModule } from 'safe-pipe';
+import { QRCodeModule } from 'angular2-qrcode';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -58,10 +62,17 @@ registerLocaleData(localeFr, 'fr');
     MiseAJourConsommationComponent,
     MenuParcComponent,
     ChauffeursComponent,
+    MissionsComponent,
+    DetailComponent,
+    AjouterMissionComponent,
+    DirectionsMapDirective,
+    MapsComponent,
+    QrCodeComponent,
 
    
   ],
   imports: [
+    SafePipeModule,
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,
@@ -91,7 +102,12 @@ registerLocaleData(localeFr, 'fr');
     MatTabsModule,
     DragDropModule,
     MatTooltipModule,
-    FormsModule,    
+    FormsModule,  
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8'
+    }),
+    
+    QRCodeModule,
   ],
   providers: [MatDatepickerModule,DatePipe,{ provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 

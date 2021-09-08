@@ -1,0 +1,71 @@
+<h1 mat-dialog-title>Affectation Des Missions </h1>
+<div mat-dialog-content class="scrollbar scrollbar-primary">
+    <form [formGroup]="form" novalidate>
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>N° Bon d'Expidation/Réception</mat-label>
+                <mat-select name="Commande" id="Commande" [(value)]="commandeSelectionne"
+                    (selectionChange)="selectionnerCommande(); compatibiliteVehicule()" formControlName="refCommande">
+                    <mat-option *ngFor="let commande of commandes" [value]="commande">
+                        {{commande.reference}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.controls['refCommande'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Vehicule</mat-label>
+                <mat-select name="matricule" id="matricule" [(value)]="vehiculeSelectionnee"
+                    (selectionChange)="this.vehiculeSelectionne=false; compatibiliteChauffeur();"
+                    formControlName="vehicule">
+                    <mat-option *ngFor="let v of vehicule" [value]="v">
+                        {{v.matricule}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.controls['vehicule'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Liste des Chauffeurs</mat-label>
+                <mat-select name="chauffeurs" id="chauffeurs" [(value)]="chauffeurSelectionne"
+                    formControlName="chauffeur" (selectionChange)="selectionnerChauffeur()">
+                    <mat-option *ngFor="let ch of chauffeurDispo" value="{{ch.id_Employe}}">
+                        {{ch.nom}}
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.controls['chauffeur'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Adresse Destination:</mat-label>
+                <input matInput formControlName="adresse">
+                <mat-error *ngIf="form.controls['adresse'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div class="position-relative form-group">
+            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
+                (mapDblClick)="positionerMarquer($event)">
+                <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
+                    (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
+                    <agm-info-window>{{adresse_destinataire}}</agm-info-window>
+                </agm-marker>
+            </agm-map>
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions class="float-right form-group">
+    <button mat-button color="warn" class="mb-2" (click)="this.dialogRef.close();">Annuler</button>
+    <button mat-button color="primary" class="mb-2 mr-4" (click)="ouvrirAjouterMission()" [disabled]="(form.invalid || (lat === 0 && lng === 0))">Enregistrer</button>
+</div>

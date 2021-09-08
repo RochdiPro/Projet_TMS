@@ -14,46 +14,40 @@ import { Location } from '@angular/common';
   templateUrl: './vehicule.component.html',
   styleUrls: ['./vehicule.component.scss']
 })
-export class VehiculeComponent implements OnInit {
+export class VehiculeComponent {
+  //Declaration des variables
   vehicules: any;
   carburants: any;
   notification = true;
   datePresent = new Date();
   carburant: any;
-  vehiculeCarb: any;
   vehicule: any;
-  chargementEnCours = false;
-
   form = new FormGroup({ carb: new FormControl(), prix: new FormControl() });
-  prixCarb: any;
 
-
+  //constructeur
   constructor(private dialog: MatDialog, private http: HttpClient, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.form.get('carb').setValidators([Validators.required]);
     this.form.get('prix').setValidators([Validators.required, Validators.pattern("(^[0-9]{1,9})+(\.[0-9]{1,4})?$")]);
     this.form.controls.prix.disable();
     this.service.vehicules().subscribe((data) => {       //permet d'avoir le carburant et son prix enregistré
       this.vehicules = data;
-
     });
     this.service.carburants().subscribe((data) => {
       this.carburants = data;
     })
   }
 
-
+  //bouton de detail vehicule
   ouvrirDetailVehicule(id: any): void { //ouvrir la boite de dialogue de détails vehicule
     localStorage.setItem('idV', id);
     const dialogRef = this.dialog.open(DetailVehiculeComponent, {
       width: '450px',
       panelClass: "custom-dialog",
       autoFocus: false,
-
-
     });
-
-
   }
+
+  // bouton de mise a jour de vehicule
   ouvrirMiseAJourVehicule(id: any, categories: any): void { //ouvrir la boite de dialogue de mise a jour vehicule
     localStorage.setItem('idV', id);
     localStorage.setItem('categorie', categories);
@@ -62,8 +56,9 @@ export class VehiculeComponent implements OnInit {
       panelClass: "custom-dialog",
       autoFocus: false,
     });
-
   }
+
+  //bouton de mise a jour du consommation du vehicule
   ouvrirMiseAJourConsommation(id: any, kmactuel: any): void { //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
     localStorage.setItem('idV', id);
     localStorage.setItem('kmactuelV', kmactuel);
@@ -71,24 +66,27 @@ export class VehiculeComponent implements OnInit {
       width: '600px',
       autoFocus: false,
     });
-
   }
+
+  // bouton de reclamation
   ouvrirReclamation(id: any): void { //ouvrir la boite de dialogue de reclamation
     localStorage.setItem('idV', id);
     const dialogRef = this.dialog.open(ReclamationComponent, {
       width: '500px',
       autoFocus: false,
     });
-
   }
+
+  // Bouton pour ajouter nouvelle vehicule
   ouvrirAjouterVehicule(): void { //ouvrir la boite de dialogue Ajouter nouvelle vehicule
     const dialogRef = this.dialog.open(AjoutComponent, {
       width: '450px',
       panelClass: "custom-dialog",
       autoFocus: false,
     });
-
   }
+
+  // bouton de notification
   ouvrirNotifications(id: any, sujet: any, description: any): void { //ouvrir la boite de dialogue de notification
     localStorage.setItem('idV', id);
     localStorage.setItem('sujetR', sujet);
@@ -103,10 +101,9 @@ export class VehiculeComponent implements OnInit {
         autoFocus: false,
       });
     }, 500);
-
-
   }
 
+  //Bouton supprimer vehicule
   supprimerVehicule(id: any): void { //supprimer vehicule
     this.service.supprimerVehicule(id);
     this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
@@ -114,8 +111,7 @@ export class VehiculeComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-  }
+  //Badge rouge de notification
   afficherBadgeDeNotification(vehicule: any) { //affiche le badge rouge de existance du notification
     let entretien = vehicule.kmprochainentretien - vehicule.kmactuel;
     let dateVisite = new Date(vehicule.datevisite);
@@ -127,16 +123,18 @@ export class VehiculeComponent implements OnInit {
     var DifferenceAssuranceJ = DifferenceAssurance / (1000 * 3600 * 24);  //calculer nombre de jours restants pour l'expiration de l'assurance
     var DifferenceTaxe = dateTaxe.getTime() - this.datePresent.getTime();
     var DifferenceTaxeJ = DifferenceTaxe / (1000 * 3600 * 24);  //calculer nombre de jours restants pour l'expiration des taxes
-    let consommationActuelle = (((vehicule.montantConsomme / vehicule.prixcarburant) / vehicule.distanceparcourie) * 100).toFixed(2);
+    let carburant = this.carburants.filter((x: any) => x.nom == vehicule.carburant);
+    let prixCarburant = carburant[0].prixCarburant;
+    let consommationActuelle = (((vehicule.montantConsomme / prixCarburant) / vehicule.distanceparcourie) * 100).toFixed(2);
     if (entretien < 1000 || vehicule.sujet !== "" || DifferenceVisiteJ < 30 || DifferenceAssuranceJ < 30 || DifferenceTaxeJ < 30 || vehicule.consommationNormale + 1 < consommationActuelle) {   //tester la condition pour afficher le badge de notification
       this.notification = false;
     } else {
       this.notification = true;
-
     }
-
     return this.notification;
   }
+
+  //partie de modification carburant
   selectionnerCarburant() { //selectionner le type de carburant et afficher son prix
     this.form.controls.prix.enable();
     this.form.controls['prix'].setValue(this.carburant.prixCarburant);
@@ -154,29 +152,33 @@ export class VehiculeComponent implements OnInit {
     formData.append("nom", this.carburant.nom);
     formData.append("prixCarburant", this.form.get('prix').value);
     this.service.modifierCarburant(formData);
-
   }
+  // fin partie de modification carburant
 }
-//*****************************************Boite de dialoqque Ajouter carburant****************************************
+
+//*****************************************Boite de dialogue Ajouter carburant****************************************
 @Component({
   selector: 'app-ajouter-carburant',
   templateUrl: './ajouter-carburant.html',
   styleUrls: ['./ajouter-carburant.scss']
 })
-export class AjouterCarburantComponent implements OnInit{
+export class AjouterCarburantComponent {
+  //declaration des variables
   form: FormGroup;
-  ngOnInit(): void {
-  }
-  constructor(public dialogRef: MatDialogRef<AjouterCarburantComponent>, public service: ParcTransportService,public fb: FormBuilder, public _router: Router, public _location: Location){
+
+  //constructeur
+  constructor(public dialogRef: MatDialogRef<AjouterCarburantComponent>, public service: ParcTransportService, public fb: FormBuilder, public _router: Router, public _location: Location) {
     this.form = this.fb.group({
-      nom: ['',[Validators.required]],
-      prixCarburant: ['',[Validators.required, Validators.pattern("[+-]?([0-9]*[.])?[0-9]+")]]
+      nom: ['', [Validators.required]],
+      prixCarburant: ['', [Validators.required, Validators.pattern("[+-]?([0-9]*[.])?[0-9]+")]]
     })
   }
-  enregistrerCarburant(){
+
+  //Bouton enregistrer carburant
+  enregistrerCarburant() { //fontion d'enregistrement du carburant
     var formData: any = new FormData;
-    formData.append("nom",this.form.get('nom').value);
-    formData.append("prixCarburant",this.form.get('prixCarburant').value);
+    formData.append("nom", this.form.get('nom').value);
+    formData.append("prixCarburant", this.form.get('prixCarburant').value);
     this.service.creerCarburant(formData);
     this.dialogRef.close();
     setTimeout(() => {
@@ -184,12 +186,14 @@ export class AjouterCarburantComponent implements OnInit{
         this._router.navigate([decodeURI(this._location.path())]);
       });
     }, 500);
-
   }
+
+  //bouton Annuler
   fermerAjouterCarburant(): void { //fermer la boite de dialogue
     this.dialogRef.close();
   }
 }
+
 //*****************************************Boite de dialogue ajouter vehicule ******************************************
 
 @Component({
@@ -197,7 +201,8 @@ export class AjouterCarburantComponent implements OnInit{
   templateUrl: './ajouter-vehicule.html',
   styleUrls: ['./ajouter-vehicule.scss']
 })
-export class AjoutComponent implements OnInit {
+export class AjoutComponent {
+  //Declaration des variables
   typematricules = [           //les types de matricules tunisiennes
     { name: 'TUN', value: 'TUN' },
     { name: 'RS', value: 'RS' },
@@ -208,17 +213,18 @@ export class AjoutComponent implements OnInit {
     { name: 'POIDS LOURDS', value: 'C/C+E' },
     { name: 'POIDS LOURDS ARTICULÉS', value: 'C+E' },
   ];
-
   form: FormGroup;
   tun = false;   //pour afficher le inputField des matricules TUN ou RS
   rs = false;
   matricule = "";
-  typeMatriculeSelectionne: String;
-  categorie: String;
+  typeMatriculeSelectionne: String; //pour enregistrer le type de matricule choisi
+  categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
   carburant: any;
   prixCarburant: any;
-  minDate = new Date();
+  minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
   carburants: any;
+
+  // constructeur
   constructor(public dialogRef: MatDialogRef<AjoutComponent>, private http: ParcTransportService, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.form = this.fb.group({
       typematricule: ['', [Validators.required]],
@@ -246,10 +252,13 @@ export class AjoutComponent implements OnInit {
     })
   }
 
+  //bouton Annuler
   fermerAjouterVehicule(): void { //fermer la boite de dialogue
     this.dialogRef.close();
 
   }
+  
+  // Bouton Enregistrer
   enregistrerVehicule() { //enregistrer les données
     var formData: any = new FormData();
     if (this.typeMatriculeSelectionne === 'TUN') {  //tester le type de matricule selectionné pour l'enregistrer
@@ -292,6 +301,7 @@ export class AjoutComponent implements OnInit {
     }, 500);
 
   }
+
   testType(): void { //tester le type de matricule si elle est TUN ou RS
     if (this.typeMatriculeSelectionne === 'TUN') { //si le type de matricule est TUN on definie les validateurs de ses inputFields et on supprime les validateurs du type RS
       this.tun = true;
@@ -327,8 +337,6 @@ export class AjoutComponent implements OnInit {
       this.form.patchValue({ matriculetun1: '', matriculetun2: '', matriculers: '' })
     }
   }
-  ngOnInit(): void {
-  }
 }
 
 //********************************************boite de dialogue detail vehicule **************************************
@@ -340,26 +348,36 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;   //pour pouvoir créer un fichier PDF pour 
   templateUrl: './detail-vehicule.html',
   styleUrls: ['./detail-vehicule.scss']
 })
-export class DetailVehiculeComponent implements OnInit {
+export class DetailVehiculeComponent {
+  //declaration des variables
   vehicule: any;
   id: any;
   date = new Date();
   missions: any;
+  carburant: any;
 
-  constructor(public dialogRef: MatDialogRef<DetailVehiculeComponent>, private dialog: MatDialog, private http: HttpClient, public service: ParcTransportService, public datepipe: DatePipe) {
+  //constructeur
+  constructor(public dialogRef: MatDialogRef<DetailVehiculeComponent>, public service: ParcTransportService, public datepipe: DatePipe) {
     this.id = localStorage.getItem('idV'); // ID du vehicule selectionné
     this.service.vehicule(this.id).subscribe((data) => { //charger les données du vehicule selectionné
       this.vehicule = data;
+      this.service.carburants().subscribe((data: any) => { //charger les informations de carburant de vehicule pour calculer la consommation
+        this.carburant = data.filter((x: any) => x.nom = this.vehicule.carburant);
+        this.carburant = this.carburant[0];
+      })
       // this.service.filtrerMission("matricule", this.vehicule.matricule).subscribe(res => { //pour charger les missions terminées par le véhicule
       //   this.missions = res;
       //   this.missions = this.missions.filter((x: any) => x.etatMission == "Terminée");
       // });
     });
-
   }
+
+  //Bouton Fermer
   fermerDetailVehicule(): void { //fermer la boite de dialogue
     this.dialogRef.close();
   }
+
+  // Bouton Imprimer
   creerRapport() { //pour la creation du doccument a imprimer
     return {
       background: { //definition du fond arriére
@@ -367,7 +385,6 @@ export class DetailVehiculeComponent implements OnInit {
         width: 595.28,
         height: 841.89,
       },
-
       content: [ //contenue du fichier PDF
         {
           text: this.vehicule.matricule,
@@ -406,7 +423,7 @@ export class DetailVehiculeComponent implements OnInit {
           fontSize: 10
         },
         {
-          text: this.vehicule.montantConsomme,
+          text: (((this.vehicule.montantConsomme / this.carburant.prixCarburant) / this.vehicule.distanceparcourie) * 100).toFixed(2),
           margin: [170, 3, 0, 0],
           fontSize: 10
         },
@@ -436,16 +453,13 @@ export class DetailVehiculeComponent implements OnInit {
         // this.table(this.missions, ['dateLivraison', 'id', 'nom'])
       ],
     };
-
-
   }
 
   printPage() { // ouvrir le fichier pdf
     const fichierPDF = this.creerRapport(); //création du fichier
     pdfMake.createPdf(fichierPDF).open(); //lancement du fichier
   }
-  ngOnInit(): void {
-  }
+
   // buildTableBody(data: any, columns: any) {  //création du tableau historique des missions du vehicule
   //   var body = [];
 
@@ -483,13 +497,16 @@ export class DetailVehiculeComponent implements OnInit {
   templateUrl: './maj-vehicule.html',
   styleUrls: ['./maj-vehicule.scss']
 })
-export class MiseAJourComponent implements OnInit {
+export class MiseAJourComponent {
+  //declaration des variables
   form: FormGroup;
   vehicule: any;
   id: any;
-  constructor(public dialogRef: MatDialogRef<MiseAJourComponent>, private http: ParcTransportService, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
-    this.id = localStorage.getItem('idV');
-    this.service.vehicule(this.id).subscribe((data) => {
+
+  //constructeur
+  constructor(public dialogRef: MatDialogRef<MiseAJourComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
+    this.id = localStorage.getItem('idV'); //charger l'id du vehicule à mettre a jour
+    this.service.vehicule(this.id).subscribe((data) => { //charger les donnée du vehicule désiré par son id
       this.vehicule = data;
       this.form = this.fb.group({
         kmactuel: [this.vehicule.kmactuel, [Validators.required, Validators.pattern("^[0-9]*$")]],
@@ -502,13 +519,14 @@ export class MiseAJourComponent implements OnInit {
         datetaxe: [new Date(this.vehicule.datetaxe), [Validators.required]]
       });
     });
-
-
   }
 
+  // Bouton Annuler
   fermerMiseAJourVehicule(): void { // fermer boite de dialogue
     this.dialogRef.close();
   }
+
+  // Bouton Enregistrer
   miseAJourVehicule() { //Effectuer le mise a jour
     var formData: any = new FormData();
     formData.append("kmactuel", this.form.get('kmactuel').value);
@@ -526,61 +544,53 @@ export class MiseAJourComponent implements OnInit {
       this._router.navigate([decodeURI(this._location.path())]);
     });
   }
-
-  ngOnInit(): void {
-  }
-
 }
+
 //****************************************** */ Boite de dialogue mise a jour consommation **********************************
 @Component({
   selector: 'app-maj-consommation',
   templateUrl: './maj-consommation.html',
   styleUrls: ['./maj-consommation.scss']
 })
-export class MiseAJourConsommationComponent implements OnInit {
+export class MiseAJourConsommationComponent {
+  //declaration des variables
   form: FormGroup;
   vehicule: any;
   id: any;
-  validationKm = false;
+
+  //constructeur
   constructor(public dialogRef: MatDialogRef<MiseAJourConsommationComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
-    this.id = localStorage.getItem('idV');
-    this.service.vehicule(this.id).subscribe((data) => {
+    this.id = localStorage.getItem('idV'); //pour charger l'id du vehicule a modifier sa consommation
+    this.form = this.fb.group({
+      kmactuel: ['', [Validators.required, Validators.pattern("^[0-9]*$"), kmactuelValidator]],
+      montantConsomme: ['', [Validators.required, Validators.pattern("(^[0-9]{1,9})+(\.[0-9]{1,4})?$")]],
+    });
+    this.service.vehicule(this.id).subscribe((data) => { //charger les données du vehicule
       this.vehicule = data;
-      this.form = this.fb.group({
-        kmactuel: [this.vehicule.kmactuel, [Validators.required, Validators.pattern("^[0-9]*$"), kmactuelValidator]],
-        montantConsomme: [this.vehicule.montantConsomme, [Validators.required, Validators.pattern("^[0-9]*$")]],
-      });
+      this.form.controls['kmactuel'].setValue(this.vehicule.kmactuel);
+      this.form.controls['montantConsomme'].setValue(this.vehicule.montantConsomme);
     });
   }
+
+  //Bouton Annuler
   fermerMiseAJourConsommation(): void { // fermer la boite de dialogue
     this.dialogRef.close();
   }
+
+  // Bouton Enregistrer
   miseAJourConsommation() { //Effectuer le mise ajour de consommation
     var formData: any = new FormData();
     formData.append("kmactuel", this.form.get('kmactuel').value);
     formData.append("montantConsomme", this.form.get('montantConsomme').value);
     formData.append("distanceparcourie", Number(this.form.get('kmactuel').value) - Number(this.vehicule.kmactuel));
-
     this.service.miseajourkm(this.id, formData);
     this.dialogRef.close();
     this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
       this._router.navigate([decodeURI(this._location.path())]);
     });
   }
-
-  ngOnInit(): void {
-  }
-  MessageErreurKmActuel() { //tester la validité du kilométrage entrée
-    if (Number(this.vehicule.kmactuel) > Number(this.form.get('kmactuel').value)) {
-      this.validationKm = true;
-      return "Kilométrage Invalide";
-    } else {
-      this.validationKm = false;
-      return "";
-    }
-  }
-
 }
+
 //********************************************* */ Boite de dialogue notification ****************************************
 
 @Component({
@@ -588,11 +598,10 @@ export class MiseAJourConsommationComponent implements OnInit {
   templateUrl: './notification.html',
   styleUrls: ['./notification.scss']
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent {
+  //declaration des variables
   id: any;
-  sujet: any
   vehicule: any;
-  description: any;
   kmentretien: any;
   reclamation = false;
   entretien = false;
@@ -601,30 +610,35 @@ export class NotificationComponent implements OnInit {
   taxe = false;
   consommation = false;
   notification = false;
+  carburants: any;
   datePresent = new Date();
+
+  //consructeur
   constructor(public dialogRef: MatDialogRef<NotificationComponent>, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.kmentretien = 0;
-    this.id = localStorage.getItem('idV');
-    this.sujet = localStorage.getItem('sujetR');
-    this.description = localStorage.getItem('descriptionR');
-    this.vehicule = JSON.parse(localStorage.getItem('vehicule'));
-    if (this.sujet.toString() === "") {
-      this.reclamation = false;
-    } else {
-      this.reclamation = true
-    }
-
-
+    this.id = localStorage.getItem('idV'); //charger id vehicule
+    this.service.vehicule(this.id).subscribe((data) => {
+      this.vehicule = data;
+      if (this.vehicule.sujet.toString() === "") {
+        this.reclamation = false;
+      } else {
+        this.reclamation = true
+      }
+    });
+    this.service.carburants().subscribe((data) => {
+      this.carburants = data;
+    });
   }
 
-  ngOnInit(): void {
-  }
+  //Bouton Fermer
   fermerNotification(): void {//fermer la boite du dialogue
     this.dialogRef.close();
     this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
       this._router.navigate([decodeURI(this._location.path())]);
     });
   }
+
+  //bouton supprimer reclamation
   supprimerReclamation(): void { // supprimer la reclamation
     var formData: any = new FormData();
     formData.append("sujet", "");
@@ -632,6 +646,7 @@ export class NotificationComponent implements OnInit {
     this.service.reclamationvehicule(this.id, formData);
     this.reclamation = false;
   }
+
   testEntretien() { //teste s'il y a un entretien dans les 1000 prochains km
     this.kmentretien = this.vehicule.kmprochainentretien - this.vehicule.kmactuel;
     if (this.kmentretien < 1000) {
@@ -641,6 +656,7 @@ export class NotificationComponent implements OnInit {
     }
     return this.entretien;
   }
+
   testVisite() { //tester s'il y a une visite technique dans les 30 prochains jours
     let dateVisite = new Date(this.vehicule.datevisite);
     var DifferenceVisite = dateVisite.getTime() - this.datePresent.getTime();
@@ -652,6 +668,7 @@ export class NotificationComponent implements OnInit {
     }
     return this.visite;
   }
+
   testAssurance() { //tester si l'assurance s'expire dans les 30 prochains jours
     let dateAssurance = new Date(this.vehicule.dateassurance);
     var DifferenceAssurance = dateAssurance.getTime() - this.datePresent.getTime();
@@ -663,6 +680,7 @@ export class NotificationComponent implements OnInit {
     }
     return this.assurance;
   }
+
   testTaxe() { //tester si les taxes s'expirent dans les 30 prochains jours
     let dateTaxe = new Date(this.vehicule.datetaxe);
     var DifferenceTaxe = dateTaxe.getTime() - this.datePresent.getTime();
@@ -674,9 +692,11 @@ export class NotificationComponent implements OnInit {
     }
     return this.taxe;
   }
+
   testConsommation() { //tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale
     if (this.vehicule.distanceparcourie != null) {
-      let consommationActuelle = (((this.vehicule.montantConsomme / this.vehicule.prixcarburant) / this.vehicule.distanceparcourie) * 100).toFixed(2)
+      let carburant = this.carburants.filter((x: any) => x.nom = this.vehicule.carburant)
+      let consommationActuelle = (((this.vehicule.montantConsomme / carburant[0].prixcarburant) / this.vehicule.distanceparcourie) * 100).toFixed(2)
       if (this.vehicule.consommationNormale + 1 < consommationActuelle) {
         this.consommation = true;
       } else {
@@ -685,7 +705,8 @@ export class NotificationComponent implements OnInit {
     }
     return this.consommation;
   }
-  noNotification() { //réaliser les teste précedent pour prendre la decision d'affichage des notifications ou non
+
+  testePresenceNotification() { //réaliser les testes précedent pour prendre la decision d'affichage des notifications ou non
     this.testEntretien();
     this.testVisite();
     this.testAssurance();
@@ -699,16 +720,20 @@ export class NotificationComponent implements OnInit {
     return this.notification;
   }
 }
+
 //*****************************************************Boite de dialogue reclamation *********************************************
 @Component({
   selector: 'app-reclamation',
   templateUrl: './reclamation.html',
   styleUrls: ['./reclamation.scss']
 })
-export class ReclamationComponent implements OnInit {
+export class ReclamationComponent {
+  //declaration des variables
   form: FormGroup;
   id: any;
   vehicule: any;
+
+  //constructeur
   constructor(public dialogRef: MatDialogRef<ReclamationComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.form = this.fb.group({
       sujet: ['', Validators.required],
@@ -719,10 +744,13 @@ export class ReclamationComponent implements OnInit {
       this.vehicule = data;
     });
   }
+
+  // Bouton Annuler
   fermerReclamation(): void { //fermer la boite de dialogue
     this.dialogRef.close();
   }
 
+  // Bouton Enregistrer
   enregistrerReclamation() { //enregistre la reclamation
     var formData: any = new FormData();
     formData.append("sujet", this.form.get('sujet').value);
@@ -733,7 +761,4 @@ export class ReclamationComponent implements OnInit {
       this._router.navigate([decodeURI(this._location.path())]);
     });
   }
-  ngOnInit(): void {
-  }
-
 }

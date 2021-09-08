@@ -155,12 +155,12 @@
                 <mat-select formControlName="carburant" name="carburant" id="carburant" [(value)]="carburant" required>
                     <mat-option *ngFor="let carb of carburants" [value]="carb">
                         {{carb.nom}}
-                     </mat-option>
+                    </mat-option>
                 </mat-select>
                 <mat-error *ngIf="form.controls['carburant'].hasError('required')"> Veuillez choisir le carburant
                 </mat-error>
             </mat-form-field>
-            
+
         </div>
 
         <div class="position-relative form-group">
@@ -213,7 +213,7 @@
             </mat-form-field>
         </div>
         <div class="position-relative form-group">
-           
+
             <mat-form-field class="example-full-width">
                 <mat-label>Date Prochaine Visite</mat-label>
                 <input matInput [matDatepicker]="dateVisite" formControlName="datevisite" [min]="minDate">
@@ -226,7 +226,7 @@
 
         </div>
         <div class="position-relative form-group">
-            
+
             <mat-form-field class="example-full-width">
                 <mat-label>Date D'Expiration D'Assurance</mat-label>
                 <input matInput [matDatepicker]="dateAssurance" formControlName="dateassurance" [min]="minDate">
@@ -238,7 +238,7 @@
             </mat-form-field>
         </div>
         <div class="position-relative form-group">
-           
+
 
             <mat-form-field class="example-full-width">
                 <mat-label>Date D'Expiration Des Taxes</mat-label>
@@ -253,7 +253,12 @@
     </form>
 </div>
 <div mat-dialog-actions class="float-right form-group">
+    <!-- bouton Annuler -->
     <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterVehicule()">Annuler</button>
+    <!-- fin bouton Annuler -->
+
+    <!-- Bouton Enregistrer -->
     <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerVehicule()"
         [disabled]="form.invalid">Enregistrer</button>
+    <!-- fin Bouton Enregistrer -->
 </div>

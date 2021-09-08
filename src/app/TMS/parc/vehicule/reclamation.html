@@ -21,9 +21,14 @@
             </mat-form-field>
         </div>
         <div mat-dialog-actions class="float-right">
+            <!-- Bouton Annuler -->
             <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerReclamation()">Annuler</button>
+            <!-- fin Bouton Annuler -->
+
+            <!-- Bouton Enregistrer -->
             <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerReclamation()"
                 [disabled]="form.invalid">Enregistrer</button>
+            <!-- fin Bouton Enregistrer -->
         </div>
 
     </form>

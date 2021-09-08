@@ -4,9 +4,10 @@ import { ChildComponent } from './child/child.component';
 import { MenuComponent } from './menu/menu.component';
 import { SubChildComponent } from './sub-child/sub-child.component';
 import { MenuTMSComponent } from './TMS/menu-tms/menu-tms.component'
-import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component'
-import { VehiculeComponent } from './TMS/parc/vehicule/vehicule.component'
-import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component'
+import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
+import { VehiculeComponent } from './TMS/parc/vehicule/vehicule.component';
+import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
+import { MissionsComponent } from './TMS/parc/missions/missions.component';
 
  
 const routes: Routes =
@@ -29,6 +30,7 @@ const routes: Routes =
             { path: 'Parc', component: MenuParcComponent },
             { path: 'Vehicules', component: VehiculeComponent },
             { path: 'Chauffeurs', component: ChauffeursComponent },
+            { path: 'Missions', component: MissionsComponent },
    
           ]
         },

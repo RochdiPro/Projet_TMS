@@ -9,49 +9,58 @@ const infonet = "/INFONET/";
 export class ParcTransportService {
 
   constructor(private http: HttpClient) { }
+
+  //creation du vehicule
   public createvehicule(formData: any) {
     this.http.post(erp + 'createvehicule', formData).subscribe(
       (response) => console.log(response),
       (error) => console.log(error)
     )
   }
+
+  //lister toutes les vehicules
   public vehicules() {
     return this.http.get(erp + 'vehicules');
   }
 
+  //charger un vehicule specifique
   public vehicule(id: any) {
     return this.http.get(erp + 'vehicule/' + id);
   }
+
+  //mettre a jour un vehicule
   public miseajourvehicule(id: any, formData: any) {
     this.http.put(erp + 'updatevehicule/' + id, formData).subscribe(
       (response) => console.log(response),
       (error) => console.log(error)
     )
   }
+
+  //ajouter une reclamation pour un vehicule
   public reclamationvehicule(id: any, formData: any) {
     this.http.put(erp + 'reclamationvehicule/' + id, formData).subscribe(
       (response) => console.log(response),
       (error) => console.log(error)
     )
   }
+
+  //mettre a jour le kilométrage d'un vehicule
   public miseajourkm(id: any, formData: any) {
     this.http.put(erp + 'miseajourkm/' + id, formData).subscribe(
       (response) => console.log(response),
       (error) => console.log(error)
     )
   }
+
+  //supprimer un vehicule
   public supprimerVehicule(id: any) {
     this.http.delete(erp + 'deletevehicule/' + id).subscribe(
       (response) => console.log(response),
       (error) => console.log(error)
     )
   }
-  public majPrixCarburant(formData: any) {
-    this.http.put(erp + 'updatePrixCarburant', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
-  }
+
+  //mettre à jour l'etat de vehicule
   public majEtatVehicule(formData: any) {
     this.http.put(erp + 'miseajourEtatVehicule', formData).subscribe(
       (response) => console.log(response),
@@ -59,6 +68,7 @@ export class ParcTransportService {
     )
   }
 
+  //mettre à jour la charge et la surface
   public majChargeEtSurface(formData: any) {
     this.http.put(erp + 'miseajourChargeEtSurface', formData).subscribe(
       (response) => console.log(response),
@@ -66,17 +76,20 @@ export class ParcTransportService {
     )
   }
 
+  //lister les carburants
   public carburants() {
     return this.http.get(erp + 'carburants');
   }
 
+  //creer nouveau carburant
   public creerCarburant(formData: any) {
     this;this.http.post(erp + 'creerCarburant', formData).subscribe(
       (response) => console.log(response),
       (error) => console.log(error)
     )
   }
-
+  
+  //modifier carburant
   public modifierCarburant(formData: any) {
     this.http.put(erp + 'majCarburant', formData).subscribe(
       (response) => console.log(response),
@@ -84,24 +97,34 @@ export class ParcTransportService {
     )
   }
 
+  //lister les employes
   public employes() {
     return this.http.get(infonet + 'Employes');
   }
+
+  //charger un employe par ID
   public employe(id: any) {
     return this.http.get(infonet + 'Employe' + "?Id=" + id);
   }
-  public createAffectation(formData: any) {
-    this.http.post(erp + 'createAffectation', formData).subscribe(
+
+  //creer mission
+  public creerMission(formData: any) {
+    this.http.post(erp + 'creerMission', formData).subscribe(
       (response) => console.log(response),
       (error) => console.log(error)
     )
   }
-  public affectations() {
-    return this.http.get(erp + 'affectations');
+
+  //lister les missions
+  public missions() {
+    return this.http.get(erp + 'missions');
   }
-  public affectation(id: any) {
-    return this.http.get(erp + 'affectation/' + id)
+
+  //charger une mission par id
+  public mission(id: any) {
+    return this.http.get(erp + 'mission')
   }
+  
   public filtrerMission(champ: any, valeur: any) {
     return this.http.get(erp + 'filtrerMission' + '?champ=' + champ + '&valeur=' + valeur);
   }

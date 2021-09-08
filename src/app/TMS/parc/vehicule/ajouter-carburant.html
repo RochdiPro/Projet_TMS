@@ -24,8 +24,14 @@
             </mat-form-field>
         </div>
         <div mat-dialog-actions class="float-right">
+            <!-- bouton Annuler -->
             <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterCarburant()">Annuler</button>
-            <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid" (click)="enregistrerCarburant()">Enregistrer</button>
+            <!-- fin bouton Annuler -->
+
+            <!-- Bouton enregistrer carburant -->
+            <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid"
+                (click)="enregistrerCarburant()">Enregistrer</button>
+            <!-- fin Bouton enregistrer carburant -->
         </div>
 
     </form>
