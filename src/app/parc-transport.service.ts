@@ -125,15 +125,19 @@ export class ParcTransportService {
     return this.http.get(erp + 'mission')
   }
   
-  public filtrerMission(champ: any, valeur: any) {
-    return this.http.get(erp + 'filtrerMission' + '?champ=' + champ + '&valeur=' + valeur);
+  //filtrer les missions
+  public filtrerMissions(champ1: any, valeur1: any, champ2: any, valeur2: any, champ3: any, valeur3: any, champ4: any, valeur4: any) {
+    return this.http.get(erp + 'filtrerMission' + '?champ1=' + champ1 + '&valeur1=' + valeur1 + '&champ2=' + champ2 + '&valeur2=' + valeur2 + '&champ3=' + champ3 + '&valeur3=' + valeur3 + '&champ4=' + champ4 + '&valeur4=' + valeur4);
   }
-  public filtrerMissionDeuxFacteurs(champ1: any, valeur1: any, champ2: any, valeur2: any) {
-    return this.http.get(erp + 'filtrerMission2' + '?champ1=' + champ1 + '&valeur1=' + valeur1 + '&champ2=' + champ2 + '&valeur2=' + valeur2);
-  }
-  public filtrerMissionTroisFacteurs(champ1: any, valeur1: any, champ2: any, valeur2: any, champ3: any, valeur3: any) {
-    return this.http.get(erp + 'filtrerMission3' + '?champ1=' + champ1 + '&valeur1=' + valeur1 + '&champ2=' + champ2 + '&valeur2=' + valeur2 + '&champ3=' + champ3 + '&valeur3=' + valeur3);
-  }
+  // public filtrerMission(champ: any, valeur: any) {
+  //   return this.http.get(erp + 'filtrerMission' + '?champ=' + champ + '&valeur=' + valeur);
+  // }
+  // public filtrerMissionDeuxFacteurs(champ1: any, valeur1: any, champ2: any, valeur2: any) {
+  //   return this.http.get(erp + 'filtrerMission2' + '?champ1=' + champ1 + '&valeur1=' + valeur1 + '&champ2=' + champ2 + '&valeur2=' + valeur2);
+  // }
+  // public filtrerMissionTroisFacteurs(champ1: any, valeur1: any, champ2: any, valeur2: any, champ3: any, valeur3: any) {
+  //   return this.http.get(erp + 'filtrerMission3' + '?champ1=' + champ1 + '&valeur1=' + valeur1 + '&champ2=' + champ2 + '&valeur2=' + valeur2 + '&champ3=' + champ3 + '&valeur3=' + valeur3);
+  // }
   public majTrajet(formData: any) {
     this.http.put(erp + 'majTrajetMission', formData).subscribe(
       (response) => console.log(response),

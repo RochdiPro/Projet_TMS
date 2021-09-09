@@ -32,7 +32,7 @@ export class MissionsComponent implements OnInit, AfterViewInit {
   etatMissionFiltre = false;  //utilisée pour l'activation ou désactivation du filtrage par etatMission
   displayedColumns: string[] = ['id', 'nom', 'matricule', 'dateLivraison', 'trajet', 'etatMission', 'actions', 'Detail']; //les colonne du tableau mission
   dataSource = new MatTableDataSource<tableMissions>();
-  valeurRecherche: any;
+  dateRecherche: any;
   check = true;
   mission: any;
   trajet: any;
@@ -65,104 +65,12 @@ export class MissionsComponent implements OnInit, AfterViewInit {
   filtrerMission() { //pour faire le filtrage des missions
     if (this.filtreEtatMission === undefined) this.filtreEtatMission = "";
     this.date = new Date(this.form.get('dateL').value);
-    this.valeurRecherche = this.datepipe.transform(this.date, 'yyyy-MM-dd');
-    if (!this.check && !this.nomFiltre && !this.matriculeFiltre && !this.etatMissionFiltre) {
-      this.service.missions().subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-      });
-    } else if (this.check && !this.nomFiltre && !this.matriculeFiltre && !this.etatMissionFiltre) {
-      this.service.filtrerMission("date_livraison", this.valeurRecherche).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (!this.check && this.nomFiltre && !this.matriculeFiltre && !this.etatMissionFiltre) {
-      this.service.filtrerMission("nom", this.form.get('nom').value).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (!this.check && !this.nomFiltre && this.matriculeFiltre && !this.etatMissionFiltre) {
-      this.service.filtrerMission("matricule", this.form.get('matricule').value).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (!this.check && !this.nomFiltre && !this.matriculeFiltre && this.etatMissionFiltre) {
-      this.service.filtrerMission("etat_mission", this.filtreEtatMission).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (this.check && this.nomFiltre && !this.matriculeFiltre && !this.etatMissionFiltre) {
-      this.service.filtrerMissionDeuxFacteurs("date_livraison", this.valeurRecherche, "nom", this.form.get('nom').value).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (this.check && !this.nomFiltre && this.matriculeFiltre && !this.etatMissionFiltre) {
-      this.service.filtrerMissionDeuxFacteurs("date_livraison", this.valeurRecherche, "matricule", this.form.get('matricule').value).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (this.check && !this.nomFiltre && !this.matriculeFiltre && this.etatMissionFiltre) {
-      this.service.filtrerMissionDeuxFacteurs("date_livraison", this.valeurRecherche, "etat_mission", this.filtreEtatMission).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (!this.check && this.nomFiltre && this.matriculeFiltre && !this.etatMissionFiltre) {
-      this.service.filtrerMissionDeuxFacteurs("nom", this.form.get('nom').value, "matricule", this.form.get('matricule').value).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (!this.check && this.nomFiltre && !this.matriculeFiltre && this.etatMissionFiltre) {
-      this.service.filtrerMissionDeuxFacteurs("nom", this.form.get('nom').value, "etat_mission", this.filtreEtatMission).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (!this.check && !this.nomFiltre && this.matriculeFiltre && this.etatMissionFiltre) {
-      this.service.filtrerMissionDeuxFacteurs("matricule", this.form.get('matricule').value, "etat_mission", this.filtreEtatMission).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (this.check && this.nomFiltre && this.matriculeFiltre && !this.etatMissionFiltre) {
-      this.service.filtrerMissionTroisFacteurs("date_livraison", this.valeurRecherche, "nom", this.form.get('nom').value, "matricule", this.form.get('matricule').value).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (this.check && this.nomFiltre && !this.matriculeFiltre && this.etatMissionFiltre) {
-      this.service.filtrerMissionTroisFacteurs("date_livraison", this.valeurRecherche, "nom", this.form.get('nom').value, "etat_mission", this.filtreEtatMission).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (this.check && !this.nomFiltre && this.matriculeFiltre && this.etatMissionFiltre) {
-      this.service.filtrerMissionTroisFacteurs("date_livraison", this.valeurRecherche, "matricule", this.form.get('matricule').value, "etat_mission", this.filtreEtatMission).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (!this.check && this.nomFiltre && this.matriculeFiltre && this.etatMissionFiltre) {
-      this.service.filtrerMissionTroisFacteurs("nom", this.form.get('nom').value, "matricule", this.form.get('matricule').value, "etat_mission", this.filtreEtatMission).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else {
-      this.service.filtrerMissionTroisFacteurs("date_livraison", this.valeurRecherche, "nom", this.form.get('nom').value, "matricule", this.form.get('matricule').value).subscribe(res => {
-        this.dataSource.data = res as tableMissions[];
-        if (this.filtreEtatMission !== "") this.dataSource.data = this.dataSource.data.filter((x: any) => x.etatMission == this.filtreEtatMission) as tableMissions[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    }
-
+    this.dateRecherche = this.datepipe.transform(this.date, 'yyyy-MM-dd');
+    this.service.filtrerMissions("date_creation", this.dateRecherche, "nom_chauffeur", this.form.get('nom').value, "matricule", this.form.get('matricule').value, "etat_mission", this.filtreEtatMission).subscribe(res => {
+      this.dataSource.data = res as tableMissions[];
+      this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
+    });
   }
   disableEnableDate() { //pour activer et desactiver le filtrage par date
     if (this.check) {
@@ -353,7 +261,7 @@ export class AjouterMissionComponent implements OnInit {
   currentLat: any;
   currentLong: any;
   date: Date;
-  valeurRecherche: any;
+  dateRecherche: any;
   mission: any;
   nvmission: any;
   latMap: any = 34.74056;
@@ -483,11 +391,11 @@ export class AjouterMissionComponent implements OnInit {
     });
 
   }
-  ouvrirAjouterMission() { // ouvrir le boite de dialogue ajouter mission
+  ajouterMission() { //  enregistrer mission
     this.chercherMoi();
     this.date = new Date(localStorage.getItem('date'));
-    this.valeurRecherche = this.datepipe.transform(this.date, 'yyyy-MM-dd');
-    this.service.filtrerMissionTroisFacteurs("date_livraison", this.valeurRecherche, "nom", this.employe.nom, "matricule", this.vehiculeSelectionnee.matricule).subscribe(res => {
+    this.dateRecherche = this.datepipe.transform(this.date, 'yyyy-MM-dd');
+    this.service.filtrerMissions("date_creation", this.dateRecherche, "nom_chauffeur", this.form.get('chauffeur').value, "matricule", this.form.get('vehicule').value, "etat_mission", "").subscribe(res => {
       this.mission = res;
 
       if (this.mission[0] === undefined) { // tester si c'est une nouvelle mission 
@@ -650,6 +558,7 @@ export class AjouterMissionComponent implements OnInit {
   }
   positionerMarquer(event: any) { //pour positionner un marqueur sur le map
     if (!this.positionExiste) {
+      console.log(event)
       this.lat = event.coords.lat;
       this.lng = event.coords.lng;
       this.positionExiste = true;
@@ -709,7 +618,7 @@ export class DetailComponent implements OnInit {
   displayedColumns: string[] = ['referenceCommande', 'expediteur', 'mapExp', 'destinataire', 'mapDest', 'dateLivraison', 'etat', 'action'];
   dataSource = new MatTableDataSource<tableCommandes>();
   expandedElement: tableCommandes | null;
-  date_debut: any;
+  date_creation: any;
   constructor(public service: ParcTransportService, public _DomSanitizationService: DomSanitizer, private dialog: MatDialog, private router: Router) {
     this.refresh();
   }
@@ -731,9 +640,9 @@ export class DetailComponent implements OnInit {
     this.service.employe(this.id).subscribe((data) => {
       this.employe = data;
     });
-    this.service.filtrerMission("id", this.idMission).subscribe(res => {
+    this.service.mission(this.idMission).subscribe(res => {
       this.mission = res;
-      this.date_debut = this.mission[0].dateLivraison
+      this.date_creation = this.mission.date_creation;
 
     });
     this.service.filtrerCommande("id_mission", this.idMission).subscribe(res => { //recuperer la commande par l'id du mission
