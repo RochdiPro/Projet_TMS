@@ -1,28 +1,14 @@
-<h1 mat-dialog-title>Ajouter Commande </h1>
+<h1 mat-dialog-title>Créer Nouvelle Mission </h1>
 <div mat-dialog-content class="scrollbar scrollbar-primary">
     <form [formGroup]="form" novalidate>
         <div class="position-relative form-group">
             <mat-form-field class="full-width">
-                <mat-label>N° Bon d'Expidation/Réception</mat-label>
-                <mat-select name="Commande" id="Commande" [(value)]="commandeSelectionne"
-                    (selectionChange)="selectionnerCommande(); compatibiliteVehicule()" formControlName="refCommande">
-                    <mat-option *ngFor="let commande of commandes" [value]="commande">
-                        {{commande.reference}}
-                    </mat-option>
-                </mat-select>
-                <mat-error *ngIf="form.controls['refCommande'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
-                </mat-error>
-            </mat-form-field>
-        </div>
-        <div class="position-relative form-group">
-            <mat-form-field class="full-width">
                 <mat-label>Mission</mat-label>
                 <mat-select name="matricule" id="matricule" [(value)]="vehiculeSelectionnee"
-                    (selectionChange)="this.vehiculeSelectionne=false; compatibiliteChauffeur();"
+                    (selectionChange)="this.vehiculeSelectionne=false;"
                     formControlName="vehicule">
-                    <mat-option *ngFor="let v of vehicule" [value]="v">
-                        <!-- {{v.matricule}} -->
+                    <mat-option *ngFor="let v of vehicules" [value]="v">
+                        {{v.matricule}}
                     </mat-option>
                     <mat-option>
                         <a style="width: auto; display: block;">+ Ajouter</a>
@@ -33,24 +19,23 @@
                 </mat-error>
             </mat-form-field>
         </div>
-
         <div class="position-relative form-group">
             <mat-form-field class="full-width">
-                <mat-label>Adresse Destination:</mat-label>
-                <input matInput formControlName="adresse">
-                <mat-error *ngIf="form.controls['adresse'].hasError('required')">
+                <mat-label>Chauffeur</mat-label>
+                <mat-select name="chauffeur" id="chauffeur" [(value)]="chauffeurSelectionne"
+                    (selectionChange)="this.chauffeurSelectionne=false;"
+                    formControlName="chauffeur">
+                    <mat-option *ngFor="let c of employes" [value]="c">
+                        {{c.nom}}
+                    </mat-option>
+                    <mat-option>
+                        <a style="width: auto; display: block;">+ Ajouter</a>
+                     </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.controls['vehicule'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
             </mat-form-field>
-        </div>
-        <div class="position-relative form-group">
-            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
-                (mapClick)="positionerMarquer($event)">
-                <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
-                    (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
-                    <agm-info-window>{{adresse_destinataire}}</agm-info-window>
-                </agm-marker>
-            </agm-map>
         </div>
     </form>
 </div>

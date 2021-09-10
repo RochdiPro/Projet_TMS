@@ -16,12 +16,10 @@ import localeFr from '@angular/common/locales/fr';
 import { MatBadgeModule } from '@angular/material/badge';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import {MatSelectModule} from '@angular/material/select';
 import { DatePipe } from '@angular/common';
-import {MatButtonModule} from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
@@ -36,11 +34,15 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
 import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
-import { MissionsComponent, DetailComponent,MapsComponent, AjouterMissionComponent, QrCodeComponent } from './TMS/parc/missions/missions.component';
+import { MissionsComponent, DetailComponent,MapsComponent, AjouterMissionComponent, AffecterCommande, QrCodeComponent } from './TMS/parc/missions/missions.component';
 import { AgmCoreModule } from '@agm/core';
 import { DirectionsMapDirective } from './directions-map.directive';
 import { SafePipeModule } from 'safe-pipe';
 import { QRCodeModule } from 'angular2-qrcode';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { SelectAutocompleteModule } from 'mat-select-autocomplete';
+
 
 registerLocaleData(localeFr, 'fr');
 
@@ -67,6 +69,7 @@ registerLocaleData(localeFr, 'fr');
     AjouterMissionComponent,
     DirectionsMapDirective,
     MapsComponent,
+    AffecterCommande,
     QrCodeComponent,
 
    
@@ -108,7 +111,9 @@ registerLocaleData(localeFr, 'fr');
     }),
     
     QRCodeModule,
-  ],
+    SelectAutocompleteModule
+    
+    ],
   providers: [MatDatepickerModule,DatePipe,{ provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 
   bootstrap: [AppComponent]
