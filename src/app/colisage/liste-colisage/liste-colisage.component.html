@@ -1,0 +1,65 @@
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-note2 text-success">
+                </i>
+            </div>
+            Liste De Colisage
+        </div>
+    </div>
+</div>
+<div class="tab-content">
+    <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
+        <div class="main-card mb-3 card">
+            <div class="card-body">
+                <div class="position-relative custom-control">
+                    <section>
+                        <button mat-mini-fab color="primary" class="float-right ml-5 mt-2 mr-2" matTooltip="Ajouter"
+                            matTooltipPosition="before">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </section>
+                </div>
+                <div class="mat-elevation-z8">
+                    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+                        <!-- Colonne id -->
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+                            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+                        </ng-container>
+
+                        <!-- Colonne id produit -->
+                        <ng-container matColumnDef="id_produit">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                ID Produit
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.id_produit}} </td>
+                        </ng-container>
+
+                        <!-- Colonne type d'emballage -->
+                        <ng-container matColumnDef="type_emballage">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Type d'Emballage
+                            </th>
+                            <td mat-cell *matCellDef="let element"> {{element.type_emballage}} </td>
+                        </ng-container>
+
+                        <!-- Colonne qte -->
+                        <ng-container matColumnDef="qte">
+                            <th mat-header-cell *matHeaderCellDef mat-sort-header> Quantité </th>
+                            <td mat-cell *matCellDef="let element"> {{element.qte}} </td>
+                        </ng-container>
+                        
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                    </table>
+
+
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

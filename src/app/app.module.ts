@@ -42,7 +42,8 @@ import { QRCodeModule } from 'angular2-qrcode';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectAutocompleteModule } from 'mat-select-autocomplete';
-
+import { ListeColisageComponent } from './colisage/liste-colisage/liste-colisage.component';
+import { ColisageComponent } from './colisage/colisage.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -71,7 +72,8 @@ registerLocaleData(localeFr, 'fr');
     MapsComponent,
     AffecterCommande,
     QrCodeComponent,
-
+    ListeColisageComponent,
+    ColisageComponent,
    
   ],
   imports: [

@@ -3,7 +3,7 @@
     <form [formGroup]="form" novalidate>
         <div class="position-relative form-group">
             <mat-form-field class="full-width">
-                <mat-label>Mission</mat-label>
+                <mat-label>Vehicule</mat-label>
                 <mat-select name="matricule" id="matricule" [(value)]="vehiculeSelectionnee"
                     (selectionChange)="this.vehiculeSelectionne=false;"
                     formControlName="vehicule">
@@ -41,5 +41,5 @@
 </div>
 <div mat-dialog-actions class="float-right form-group">
     <button mat-button color="warn" class="mb-2" (click)="this.dialogRef.close();">Annuler</button>
-    <button mat-button color="primary" class="mb-2 mr-4" (click)="ajouterMission()" [disabled]="(form.invalid || (lat === 0 && lng === 0))">Enregistrer</button>
+    <button mat-button color="primary" class="mb-2 mr-4" [disabled]="(form.invalid || (lat === 0 && lng === 0))">Enregistrer</button>
 </div>
