@@ -5,12 +5,13 @@ section {
     padding-bottom: 4em;
 }
 .mat-column-id,
-.mat-column-id_produit,
-.mat-column-type_emballage,
+.mat-column-idProduit,
+.mat-column-typeEmballage,
 .mat-column-qte {
     width: 25%;
     text-align: center;
 }
 :host ::ng-deep .mat-sort-header-container {
     justify-content: center;
+    padding-left: 1.5em;
 }

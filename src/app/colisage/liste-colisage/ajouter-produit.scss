@@ -1,0 +1,33 @@
+table {
+    overflow: scroll;
+    width: 100%;
+    margin-top: 1em;
+    margin-bottom: 1.5em;
+    
+}
+
+.mat-column-id_Produit,
+.mat-column-nom_Produit,
+.mat-column-marque,
+.mat-column-valeur_Unite,
+.mat-column-unite {
+    width: 20%;
+    text-align: center;
+}
+:host ::ng-deep .mat-sort-header-container {
+    justify-content: center;
+    padding-left: 1.5em;
+}
+
+.table1 .mat-row .mat-cell {
+    cursor: pointer;
+}
+
+.table1 .mat-row:hover .mat-cell {
+    background-color: rgba($color: #000, $alpha: 0.04);
+}
+
+.demo-row-is-clicked {
+    font-weight: bold;
+    background-color: rgba($color: #000, $alpha: 0.04);
+}

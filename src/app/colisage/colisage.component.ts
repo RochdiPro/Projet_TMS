@@ -5,11 +5,9 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './colisage.component.html',
   styleUrls: ['./colisage.component.scss']
 })
-export class ColisageComponent implements OnInit {
-
-  constructor() { }
-
-  ngOnInit(): void {
+export class ColisageComponent {
+  constructor() { 
+    
   }
 
 }

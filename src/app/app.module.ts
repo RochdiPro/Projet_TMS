@@ -42,8 +42,10 @@ import { QRCodeModule } from 'angular2-qrcode';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectAutocompleteModule } from 'mat-select-autocomplete';
-import { ListeColisageComponent } from './colisage/liste-colisage/liste-colisage.component';
+import { ListeColisageComponent, AjouterProduitComponent } from './colisage/liste-colisage/liste-colisage.component';
 import { ColisageComponent } from './colisage/colisage.component';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatRadioModule} from '@angular/material/radio';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -74,6 +76,7 @@ registerLocaleData(localeFr, 'fr');
     QrCodeComponent,
     ListeColisageComponent,
     ColisageComponent,
+    AjouterProduitComponent
    
   ],
   imports: [
@@ -113,7 +116,9 @@ registerLocaleData(localeFr, 'fr');
     }),
     
     QRCodeModule,
-    SelectAutocompleteModule
+    SelectAutocompleteModule,
+    MatStepperModule,
+    MatRadioModule
     
     ],
   providers: [MatDatepickerModule,DatePipe,{ provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
