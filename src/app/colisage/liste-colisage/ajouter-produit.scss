@@ -10,8 +10,10 @@ table {
 .mat-column-nom_Produit,
 .mat-column-marque,
 .mat-column-valeur_Unite,
-.mat-column-unite {
-    width: 20%;
+.mat-column-unite,
+.mat-column-typeProduit,
+.mat-column-sousType {
+    width: 14.28%;
     text-align: center;
 }
 :host ::ng-deep .mat-sort-header-container {
@@ -30,4 +32,7 @@ table {
 .demo-row-is-clicked {
     font-weight: bold;
     background-color: rgba($color: #000, $alpha: 0.04);
+}
+.titre{
+    font-weight: bold;
 }

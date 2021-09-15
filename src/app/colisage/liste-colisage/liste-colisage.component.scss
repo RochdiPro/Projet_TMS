@@ -7,11 +7,17 @@ section {
 .mat-column-id,
 .mat-column-idProduit,
 .mat-column-typeEmballage,
-.mat-column-qte {
-    width: 25%;
+.mat-column-qte
+.mat-column-nomProduit,
+.mat-column-unite,
+.mat-column-categorie {
+    width: 14.28%;
     text-align: center;
 }
 :host ::ng-deep .mat-sort-header-container {
     justify-content: center;
     padding-left: 1.5em;
+}
+td {
+    text-align: center;
 }

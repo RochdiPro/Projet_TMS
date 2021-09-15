@@ -28,6 +28,7 @@ export class ColisageService {
   public listeProduits(){
     return this.http.get(infonet + 'Fiche_Produits');
   }
+ 
 
   //Filtre fiche produits
   public filtreProduits(champ: any, valeur: any){
