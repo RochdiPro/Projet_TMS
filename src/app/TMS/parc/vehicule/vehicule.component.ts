@@ -34,6 +34,7 @@ export class VehiculeComponent {
     });
     this.service.carburants().subscribe((data) => {
       this.carburants = data;
+      console.log(this.carburants);
     })
   }
 
@@ -106,9 +107,11 @@ export class VehiculeComponent {
   //Bouton supprimer vehicule
   supprimerVehicule(id: any): void { //supprimer vehicule
     this.service.supprimerVehicule(id);
-    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-      this._router.navigate([decodeURI(this._location.path())]);
-    });
+    setTimeout(() => {
+      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+        this._router.navigate([decodeURI(this._location.path())]);
+      });
+    }, 500);
   }
 
   //Badge rouge de notification
@@ -152,6 +155,15 @@ export class VehiculeComponent {
     formData.append("nom", this.carburant.nom);
     formData.append("prixCarburant", this.form.get('prix').value);
     this.service.modifierCarburant(formData);
+    this.refraichirCarburant();
+    this.form.controls.prix.setValue("");
+    this.form.controls.prix.disable();
+  }
+  refraichirCarburant(){
+    this.service.carburants().subscribe((data) => {
+      this.carburants = data;
+    })
+  
   }
   // fin partie de modification carburant
 }
@@ -292,6 +304,7 @@ export class AjoutComponent {
     formData.append("sujet", "");
     formData.append("description", "");
     formData.append("etatVehicule", "Disponible");
+    formData.append("positionVehicule", "Sfax");
     this.service.createvehicule(formData);
     this.dialogRef.close();
     setTimeout(() => {
@@ -540,9 +553,11 @@ export class MiseAJourComponent {
     formData.append("datetaxe", new Date(this.form.get('datetaxe').value));
     this.service.miseajourvehicule(this.id, formData);
     this.dialogRef.close();
-    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-      this._router.navigate([decodeURI(this._location.path())]);
-    });
+    setTimeout(() => {
+      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+        this._router.navigate([decodeURI(this._location.path())]);
+      });
+    }, 500);
   }
 }
 
@@ -585,9 +600,11 @@ export class MiseAJourConsommationComponent {
     formData.append("distanceparcourie", Number(this.form.get('kmactuel').value) - Number(this.vehicule.kmactuel));
     this.service.miseajourkm(this.id, formData);
     this.dialogRef.close();
-    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-      this._router.navigate([decodeURI(this._location.path())]);
-    });
+    setTimeout(() => {
+      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+        this._router.navigate([decodeURI(this._location.path())]);
+      });
+    }, 500);
   }
 }
 
@@ -612,7 +629,8 @@ export class NotificationComponent {
   notification = false;
   carburants: any;
   datePresent = new Date();
-
+  carburantConsomme: any;
+  consommationActuelle: any;
   //consructeur
   constructor(public dialogRef: MatDialogRef<NotificationComponent>, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.kmentretien = 0;
@@ -627,15 +645,18 @@ export class NotificationComponent {
     });
     this.service.carburants().subscribe((data) => {
       this.carburants = data;
+      console.log(this.carburants);
     });
   }
 
   //Bouton Fermer
   fermerNotification(): void {//fermer la boite du dialogue
     this.dialogRef.close();
-    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-      this._router.navigate([decodeURI(this._location.path())]);
-    });
+    setTimeout(() => {
+      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+        this._router.navigate([decodeURI(this._location.path())]);
+      });
+    }, 500);
   }
 
   //bouton supprimer reclamation
@@ -695,9 +716,10 @@ export class NotificationComponent {
 
   testConsommation() { //tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale
     if (this.vehicule.distanceparcourie != null) {
-      let carburant = this.carburants.filter((x: any) => x.nom = this.vehicule.carburant)
-      let consommationActuelle = (((this.vehicule.montantConsomme / carburant[0].prixcarburant) / this.vehicule.distanceparcourie) * 100).toFixed(2)
-      if (this.vehicule.consommationNormale + 1 < consommationActuelle) {
+      this.carburantConsomme = this.carburants.filter((x: any) => x.nom = this.vehicule.carburant);
+      this.consommationActuelle = (((this.vehicule.montantConsomme / this.carburantConsomme[0].prixCarburant) / this.vehicule.distanceparcourie) * 100).toFixed(2)
+      console.log(this.vehicule.distanceparcourie)
+      if (this.vehicule.consommationNormale + 1 < this.consommationActuelle) {
         this.consommation = true;
       } else {
         this.consommation = false;
@@ -757,8 +779,10 @@ export class ReclamationComponent {
     formData.append("description", this.form.get('description').value);
     this.service.reclamationvehicule(this.id, formData);
     this.dialogRef.close();
-    this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-      this._router.navigate([decodeURI(this._location.path())]);
-    });
+    setTimeout(() => {
+      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+        this._router.navigate([decodeURI(this._location.path())]);
+      });
+    }, 500);
   }
 }

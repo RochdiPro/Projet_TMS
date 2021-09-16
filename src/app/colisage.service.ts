@@ -8,7 +8,7 @@ const infonet = "/INFONET/";
   providedIn: 'root'
 })
 export class ColisageService {
-  handleError : any;
+  handleError: any;
   constructor(private http: HttpClient) { }
 
   //créer nouveau produit dans la liste de colisage
@@ -25,14 +25,27 @@ export class ColisageService {
   }
 
   //lister les produits dans la fiche produits
-  public listeProduits(){
+  public listeProduits() {
     return this.http.get(infonet + 'Fiche_Produits');
   }
- 
+
+  //filtrer liste colisage
+  public fltreListeproduit(champ1 : any, valeur1 : any, champ2 : any, valeur2 : any, champ3 : any, valeur3 : any){
+    return this.http.get(erp + 'filtreListeColisage', {
+      params: {
+        champ1: champ1,
+        valeur1: valeur1,
+        champ2: champ2,
+        valeur2: valeur2,
+        champ3: champ3,
+        valeur3: valeur3
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
 
   //Filtre fiche produits
-  public filtreProduits(champ: any, valeur: any){
-    return this.http.get(infonet + 'Filtre_Fiche_Produit',  {
+  public filtreProduits(champ: any, valeur: any) {
+    return this.http.get(infonet + 'Filtre_Fiche_Produit', {
       params: {
         Champ: champ,
         Valeur: valeur

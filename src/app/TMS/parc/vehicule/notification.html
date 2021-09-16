@@ -37,7 +37,7 @@
     </div>
     <div class="alert alert-warning fade show" role="alert" *ngIf="testConsommation()">
         <i class="fas fa-exclamation-triangle"></i> Consommation Actuelle Anormale:
-        {{(((vehicule.consommation/vehicule.prixcarburant)/vehicule.distanceparcourie)*100).toFixed(2)}}
+        {{consommationActuelle}}
     </div>
 </div>
 

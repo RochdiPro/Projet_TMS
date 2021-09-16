@@ -1,63 +1,60 @@
-<mat-horizontal-stepper [linear]="true" #stepper>
+<mat-horizontal-stepper [linear]="isLinear" #stepper>
     <mat-step [stepControl]="premierFormGroup">
         <form [formGroup]="premierFormGroup">
-            <section>
-                <mat-form-field class="custom-width" [formGroup]="form">
-                    <mat-label>Produit</mat-label>
-                    <input matInput placeholder="Nom" formControlName="nom_Produit" (keyup)="filtrerProduits()"
-                        id="nom">
-                    <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
-                </mat-form-field>
-            </section>
+            <div class="position-relative custom-control">
+                <section>
+                    <mat-form-field class="custom-width" [formGroup]="form">
+                        <mat-label>Produit</mat-label>
+                        <input matInput placeholder="Nom" formControlName="nom_Produit" (keyup)="filtrerProduits()"
+                            id="nom">
+                        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+                    </mat-form-field>
+                </section>
+            </div>
             <ng-template matStepLabel>Choisir le produit à emballer</ng-template>
-            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 demo-table table1">
-                <!-- Colonne Id Produit -->
-                <ng-container matColumnDef="id_Produit">
-                    <th mat-header-cell *matHeaderCellDef>ID</th>
-                    <td mat-cell *matCellDef="let element">{{element.id_Produit}}</td>
-                </ng-container>
-
-                <!-- Colonne Nom Produit -->
-                <ng-container matColumnDef="nom_Produit">
-                    <th mat-header-cell *matHeaderCellDef>Produit</th>
-                    <td mat-cell *matCellDef="let element">{{element.nom_Produit}}</td>
-                </ng-container>
-
-                <!-- Colonne marque -->
-                <ng-container matColumnDef="marque">
-                    <th mat-header-cell *matHeaderCellDef>Marque</th>
-                    <td mat-cell *matCellDef="let element">{{element.marque}}</td>
-                </ng-container>
-
-                <!-- Colonne Valeur Unite -->
-                <ng-container matColumnDef="valeur_Unite">
-                    <th mat-header-cell *matHeaderCellDef>Quantité</th>
-                    <td mat-cell *matCellDef="let element">{{element.valeur_Unite}}</td>
-                </ng-container>
-
-                <!-- Colonne Unite -->
-                <ng-container matColumnDef="unite">
-                    <th mat-header-cell *matHeaderCellDef>Unite</th>
-                    <td mat-cell *matCellDef="let element">{{element.unite}}</td>
-                </ng-container>
-
-                <!-- Colonne Type produit -->
-                <ng-container matColumnDef="typeProduit">
-                    <th mat-header-cell *matHeaderCellDef>Type Produit</th>
-                    <td mat-cell *matCellDef="let element">{{element.type1}}</td>
-                </ng-container>
-
-                <!-- Colonne sous type -->
-                <ng-container matColumnDef="sousType">
-                    <th mat-header-cell *matHeaderCellDef>Sous Type</th>
-                    <td mat-cell *matCellDef="let element">{{element.type2}}</td>
-                </ng-container>
-
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row (click)="choisirProduit(row)" [class.demo-row-is-clicked]="produitClicke.has(row)"
-                    *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
+            <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
+                <table mat-table [dataSource]="dataSource" class=" table1">
+                    <!-- Colonne Id Produit -->
+                    <ng-container matColumnDef="id_Produit">
+                        <th mat-header-cell *matHeaderCellDef>ID</th>
+                        <td mat-cell *matCellDef="let element">{{element.id_Produit}}</td>
+                    </ng-container>
+                    <!-- Colonne Nom Produit -->
+                    <ng-container matColumnDef="nom_Produit">
+                        <th mat-header-cell *matHeaderCellDef>Produit</th>
+                        <td mat-cell *matCellDef="let element">{{element.nom_Produit}}</td>
+                    </ng-container>
+                    <!-- Colonne marque -->
+                    <ng-container matColumnDef="marque">
+                        <th mat-header-cell *matHeaderCellDef>Marque</th>
+                        <td mat-cell *matCellDef="let element">{{element.marque}}</td>
+                    </ng-container>
+                    <!-- Colonne Valeur Unite -->
+                    <ng-container matColumnDef="valeur_Unite">
+                        <th mat-header-cell *matHeaderCellDef>Quantité</th>
+                        <td mat-cell *matCellDef="let element">{{element.valeur_Unite}}</td>
+                    </ng-container>
+                    <!-- Colonne Unite -->
+                    <ng-container matColumnDef="unite">
+                        <th mat-header-cell *matHeaderCellDef>Unite</th>
+                        <td mat-cell *matCellDef="let element">{{element.unite}}</td>
+                    </ng-container>
+                    <!-- Colonne Type produit -->
+                    <ng-container matColumnDef="typeProduit">
+                        <th mat-header-cell *matHeaderCellDef>Type Produit</th>
+                        <td mat-cell *matCellDef="let element">{{element.type1}}</td>
+                    </ng-container>
+                    <!-- Colonne sous type -->
+                    <ng-container matColumnDef="sousType">
+                        <th mat-header-cell *matHeaderCellDef>Sous Type</th>
+                        <td mat-cell *matCellDef="let element">{{element.type2}}</td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row (click)="choisirProduit(row)" [class.demo-row-is-clicked]="produitClicke.has(row)"
+                        *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+            </div>
             <div style="float: right;">
                 <button mat-button matStepperNext (click)="premierSuivant()" color="primary">Suivant</button>
             </div>
@@ -65,115 +62,114 @@
     </mat-step>
     <mat-step [stepControl]="deuxiemeFormGroup" label="Saisir les données d'emballage">
         <form [formGroup]="deuxiemeFormGroup">
-            <table mat-table [dataSource]="dataSourceUnitaire" class="mat-elevation-z8 demo-table">
-                <!-- Colonne Id Produit -->
-                <ng-container matColumnDef="id_Produit">
-                    <th mat-header-cell *matHeaderCellDef>ID</th>
-                    <td mat-cell *matCellDef="let element">{{element.id_Produit}}</td>
-                </ng-container>
-
-                <!-- Colonne Nom Produit -->
-                <ng-container matColumnDef="nom_Produit">
-                    <th mat-header-cell *matHeaderCellDef>Produit</th>
-                    <td mat-cell *matCellDef="let element">{{element.nom_Produit}}</td>
-                </ng-container>
-
-                <!-- Colonne marque -->
-                <ng-container matColumnDef="marque">
-                    <th mat-header-cell *matHeaderCellDef>Marque</th>
-                    <td mat-cell *matCellDef="let element">{{element.marque}}</td>
-                </ng-container>
-
-                <!-- Colonne Valeur Unite -->
-                <ng-container matColumnDef="valeur_Unite">
-                    <th mat-header-cell *matHeaderCellDef>Quantité</th>
-                    <td mat-cell *matCellDef="let element">{{element.valeur_Unite}}</td>
-                </ng-container>
-
-                <!-- Colonne Unite -->
-                <ng-container matColumnDef="unite">
-                    <th mat-header-cell *matHeaderCellDef>Unite</th>
-                    <td mat-cell *matCellDef="let element">{{element.unite}}</td>
-                </ng-container>
-
-                <!-- Colonne Type produit -->
-                <ng-container matColumnDef="typeProduit">
-                    <th mat-header-cell *matHeaderCellDef>Type Produit</th>
-                    <td mat-cell *matCellDef="let element">{{element.type1}}</td>
-                </ng-container>
-
-                <!-- Colonne sous type -->
-                <ng-container matColumnDef="sousType">
-                    <th mat-header-cell *matHeaderCellDef>Sous Type</th>
-                    <td mat-cell *matCellDef="let element">{{element.type2}}</td>
-                </ng-container>
-
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-            </table>
+            <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
+                <table mat-table [dataSource]="dataSourceUnitaire" >
+                    <!-- Colonne Id Produit -->
+                    <ng-container matColumnDef="id_Produit">
+                        <th mat-header-cell *matHeaderCellDef>ID</th>
+                        <td mat-cell *matCellDef="let element">{{element.id_Produit}}</td>
+                    </ng-container>
+                    <!-- Colonne Nom Produit -->
+                    <ng-container matColumnDef="nom_Produit">
+                        <th mat-header-cell *matHeaderCellDef>Produit</th>
+                        <td mat-cell *matCellDef="let element">{{element.nom_Produit}}</td>
+                    </ng-container>
+                    <!-- Colonne marque -->
+                    <ng-container matColumnDef="marque">
+                        <th mat-header-cell *matHeaderCellDef>Marque</th>
+                        <td mat-cell *matCellDef="let element">{{element.marque}}</td>
+                    </ng-container>
+                    <!-- Colonne Valeur Unite -->
+                    <ng-container matColumnDef="valeur_Unite">
+                        <th mat-header-cell *matHeaderCellDef>Quantité</th>
+                        <td mat-cell *matCellDef="let element">{{element.valeur_Unite}}</td>
+                    </ng-container>
+                    <!-- Colonne Unite -->
+                    <ng-container matColumnDef="unite">
+                        <th mat-header-cell *matHeaderCellDef>Unite</th>
+                        <td mat-cell *matCellDef="let element">{{element.unite}}</td>
+                    </ng-container>
+                    <!-- Colonne Type produit -->
+                    <ng-container matColumnDef="typeProduit">
+                        <th mat-header-cell *matHeaderCellDef>Type Produit</th>
+                        <td mat-cell *matCellDef="let element">{{element.type1}}</td>
+                    </ng-container>
+                    <!-- Colonne sous type -->
+                    <ng-container matColumnDef="sousType">
+                        <th mat-header-cell *matHeaderCellDef>Sous Type</th>
+                        <td mat-cell *matCellDef="let element">{{element.type2}}</td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+                <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+            </div>
             <div style="display: inline-block; width: 100%;">
                 <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
-                    <mat-label style="text-transform: capitalize;">Type d'emballage</mat-label>
-                    <input matInput formControlName="type" required>
+                    <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
+                    <input matInput formControlName="nom" required>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" style="width: 32%;  margin-right: 2%;">
+                    <mat-label>Type d'emballage</mat-label>
+                    <mat-select formControlName="type" required>
+                        <mat-option value="Carton">Carton</mat-option>
+                        <mat-option value="Palette">Palette</mat-option>
+                        <mat-option value="Vrac">Vrac</mat-option>
+                        <mat-option value="Sac">Sac</mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" style="width: 32%;">
+                    <mat-label style="text-transform: capitalize;">Poids unitaire</mat-label>
+                    <input matInput formControlName="poids" required>
                 </mat-form-field>
 
 
-                <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
+            </div>
+            <div style="display: inline-block; width: 100%;">
+                
+                <mat-form-field appearance="fill" style="width: 32%;  margin-right: 2%;">
                     <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
                     <input matInput formControlName="qte" required>
                 </mat-form-field>
 
-                <mat-form-field appearance="fill" style="width: 32%;">
+                <mat-form-field appearance="fill" style="width: 32%;  margin-right: 2%;">
                     <mat-label>Unite</mat-label>
                     <mat-select formControlName="unite">
-                      <mat-option value="Piece">Piece</mat-option>
-                      <mat-option value="Kg">Kg</mat-option>
-                      <mat-option value="m">m</mat-option>
-                      <mat-option value="l">l</mat-option>
+                        <mat-option value="Piece">Piece</mat-option>
+                        <mat-option value="Kg">Kg</mat-option>
+                        <mat-option value="m">m</mat-option>
+                        <mat-option value="l">l</mat-option>
                     </mat-select>
-                  </mat-form-field>
-
-
-            </div>
-            <div style="display: inline-block; width: 100%;">
-                <mat-form-field appearance="fill" style="width: 32%;  margin-right: 2%;">
-                    <mat-label style="text-transform: capitalize;">Poids unitaire</mat-label>
-                    <input matInput formControlName="poids" required>
                 </mat-form-field>
+
                 <mat-slide-toggle formControlName="fragilite" color="primary">Fragile</mat-slide-toggle>
 
             </div>
-            <div>
-                <mat-radio-group aria-label="Dimensions" formControlName="radio" (change)="choisirTypeDimensions()">
-                    <div>
-                        <mat-radio-button value="dimensions">Dimensions</mat-radio-button>
-                        <div style="display: inline-block; width: 100%;">
-                            <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
-                                <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
-                                <input matInput formControlName="longueur" required>
-                            </mat-form-field>
-                            <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
-                                <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
-                                <input matInput formControlName="largeur" required>
-                            </mat-form-field>
-                            <mat-form-field appearance="fill" style="width: 32%;">
-                                <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
-                                <input matInput formControlName="hauteur" required>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <div>
-                        <mat-radio-button value="volume">Volume</mat-radio-button>
-                        <div style="display: inline-block; width: 100%;">
-                            <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
-                                <mat-label style="text-transform: capitalize;">Volume (cm3)</mat-label>
-                                <input matInput formControlName="volume" required>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                </mat-radio-group>
+            Dimensions
+            <div style="display: inline-block; width: 100%;">
+                <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
+                    <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
+                    <input matInput formControlName="longueur" required (keyup)="calculVolume()">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
+                    <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
+                    <input matInput formControlName="largeur" required (keyup)="calculVolume()">
+                </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 32%;">
+                    <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
+                    <input matInput formControlName="hauteur" required (keyup)="calculVolume()">
+                </mat-form-field>
             </div>
+            Volume
+            <div style="display: inline-block; width: 100%;">
+                <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
+                    <mat-label style="text-transform: capitalize;">Volume (cm3)</mat-label>
+                    <input matInput formControlName="volume" required>
+                </mat-form-field>
+            </div>
+
             <div style="float: right;">
                 <button mat-button matStepperPrevious color="primary">Précédent</button>
                 <button mat-button matStepperNext (click)="deuxiemeSuivant()" color="primary">Suivant</button>
@@ -212,7 +208,7 @@
                 <div class="w-100 titre">Catégorie:</div>
             </mat-grid-tile>
             <mat-grid-tile>
-                <div class="w-100">{{this.produitSelectionne[0] ? this.produitSelectionne[0].type1 : ''}}</div>
+                <div class="w-100">{{this.produitSelectionne[0] ? this.produitSelectionne[0].type2 : ''}}</div>
             </mat-grid-tile>
             <mat-grid-tile>
                 <div class="w-100 titre">Fragilité:</div>
@@ -232,25 +228,25 @@
             <mat-grid-tile>
                 <div class="w-100">{{poidsToltal}} Kg</div>
             </mat-grid-tile>
-            <mat-grid-tile *ngIf="this.deuxiemeFormGroup.get('radio').value === 'dimensions'">
+            <mat-grid-tile>
                 <div class="w-100 titre">Dimensions LxlxH:</div>
             </mat-grid-tile>
-            <mat-grid-tile *ngIf="this.deuxiemeFormGroup.get('radio').value === 'dimensions'">
+            <mat-grid-tile>
                 <div class="w-100">
                     {{this.deuxiemeFormGroup.get('longueur').value}}x{{this.deuxiemeFormGroup.get('largeur').value}}x{{this.deuxiemeFormGroup.get('hauteur').value}}
                 </div>
             </mat-grid-tile>
-            <mat-grid-tile *ngIf="this.deuxiemeFormGroup.get('radio').value === 'volume'">
+            <mat-grid-tile>
                 <div class="w-100 titre">Volume:</div>
             </mat-grid-tile>
-            <mat-grid-tile *ngIf="this.deuxiemeFormGroup.get('radio').value === 'volume'">
+            <mat-grid-tile>
                 <div class="w-100">{{this.deuxiemeFormGroup.get('volume').value}} cm3</div>
             </mat-grid-tile>
         </mat-grid-list>
         <div style="float: right;">
-            <button mat-button (click)="stepper.reset(); reinitialiserStepper() " color="warn">Réinitialiser</button>
+            <button mat-button (click)="stepper.reset(); reinitialiserStepper(); " color="warn">Réinitialiser</button>
             <button mat-button matStepperPrevious color="primary">Précédent</button>
-            <button mat-raised-button color="primary" (click)="valider()">Valider</button>
+            <button mat-raised-button color="primary" (click)="valider();">Valider</button>
         </div>
     </mat-step>
 </mat-horizontal-stepper>

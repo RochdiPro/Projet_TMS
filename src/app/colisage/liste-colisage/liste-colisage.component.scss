@@ -1,9 +1,7 @@
 table {
     width: 100%;
 }
-section {
-    padding-bottom: 4em;
-}
+
 .mat-column-id,
 .mat-column-idProduit,
 .mat-column-typeEmballage,
@@ -21,3 +19,7 @@ section {
 td {
     text-align: center;
 }
+.custom-width {
+    width: 20%;
+    margin: 0 0.3%;
+  }

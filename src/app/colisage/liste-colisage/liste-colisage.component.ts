@@ -1,11 +1,11 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ColisageService } from '../../colisage.service';
 import Swal from 'sweetalert2'
+import { Router } from '@angular/router';
 
 
 //*************************************************************************************************************
@@ -20,27 +20,30 @@ export class ListeColisageComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
+  form = new FormGroup({ nom_Produit: new FormControl(""), nom_Emballage: new FormControl(""), type_Emballage: new FormControl("") });
+  listeColisage : any;
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-  displayedColumns: string[] = ['id', 'idProduit', 'nomProduit', 'typeEmballage', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
+  displayedColumns: string[] = ['id', 'idProduit', 'nomProduit', 'nomEmballage', 'typeEmballage', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
   dataSource = new MatTableDataSource<tableColisage>();
-  liste_colisage: any;
 
-  constructor(public service: ColisageService, private dialog: MatDialog) {
+  constructor(public service: ColisageService) {
     this.service.listeColisage().subscribe((data) => {
       this.dataSource.data = data as tableColisage[];
     });
   }
 
-  ouvrirAjouterProduit() { // ouvrir la boite de dialogue d'ajout de produit
-    const dialogRef = this.dialog.open(AjouterProduitComponent, {
-      width: 'auto;',
-      panelClass: "custom-dialog",
-      autoFocus: false,
+  filtrerListeColisage() {
+    this.service.fltreListeproduit("nom_produit", this.form.get('nom_Produit').value,"nom_emballage", this.form.get('nom_Emballage').value,"type_emballage", this.form.get('type_Emballage').value).subscribe((data) => {
+      this.dataSource.data = data as tableColisage[];
     });
-    dialogRef.afterClosed().subscribe(result => {
+  }
+
+  refraichirTableau() {
+    this.service.listeColisage().subscribe((data) => {
+      this.dataSource.data = data as tableColisage[];
     });
   }
 
@@ -49,6 +52,7 @@ export interface tableColisage {
   id: number;
   idProduit: number;
   nomProduit: String;
+  nomEmballage: String;
   typeEmballage: String;
   qte: number;
   unite: String;
@@ -56,7 +60,7 @@ export interface tableColisage {
 }
 
 //******************************************************************************************************************
-//*******************************************BOITE DE DIALOGUE AJOUTER PRODUIT**************************************
+//******************************************* AJOUTER PRODUIT ******************************************************
 //******************************************************************************************************************
 
 @Component({
@@ -84,7 +88,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.dataSourceUnitaire.paginator = this.paginator;
     this.dataSourceUnitaire.sort = this.sort;
   }
-  constructor(public service: ColisageService, private formBuilder: FormBuilder, public dialogRef: MatDialogRef<AjouterProduitComponent>) {
+  constructor(public service: ColisageService, private formBuilder: FormBuilder, public _router: Router) {
     this.service.listeProduits().subscribe((data) => {
       this.produits = data;
       this.dataSource.data = this.produits as tableProduits[];
@@ -97,21 +101,17 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       validateur: ['', Validators.required]
     });
     this.deuxiemeFormGroup = this.formBuilder.group({
+      nom: ['', Validators.required],
       type: ['', Validators.required],
       qte: ['', Validators.required],
       unite: ['', Validators.required],
       poids: ['', Validators.required],
       fragilite: [false],
-      radio: ['', Validators.required],
       longueur: ['', Validators.required],
       largeur: ['', Validators.required],
       hauteur: ['', Validators.required],
       volume: ['', Validators.required],
     });
-    this.deuxiemeFormGroup.controls['longueur'].disable();
-    this.deuxiemeFormGroup.controls['largeur'].disable();
-    this.deuxiemeFormGroup.controls['hauteur'].disable();
-    this.deuxiemeFormGroup.controls['volume'].disable();
 
   }
   choisirProduit(p: any) {
@@ -120,14 +120,12 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.produitSelectionne = [];
     this.produitSelectionne.push(p);
     this.premierFormGroup.get('validateur').setValue("aze");
-    console.log(this.produitSelectionne[0].nom_Produit)
   }
   filtrerProduits() {
     this.service.filtreProduits("nom_Produit", this.form.get('nom_Produit').value).subscribe((data) => {
       this.produits = data;
       this.dataSource.data = this.produits as tableProduits[];
     });
-
   }
   premierSuivant() {
     this.dataSourceUnitaire.data = this.produitSelectionne as tableProduits[];
@@ -135,20 +133,6 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
   deuxiemeSuivant() {
     this.poidsToltal = Number(this.deuxiemeFormGroup.get('poids').value) * Number(this.deuxiemeFormGroup.get('qte').value);
-    console.log(typeof this.poidsToltal)
-  }
-  choisirTypeDimensions() {
-    if (this.deuxiemeFormGroup.get('radio').value === "dimensions") {
-      this.deuxiemeFormGroup.controls['longueur'].enable();
-      this.deuxiemeFormGroup.controls['largeur'].enable();
-      this.deuxiemeFormGroup.controls['hauteur'].enable();
-      this.deuxiemeFormGroup.controls['volume'].disable();
-    } else if (this.deuxiemeFormGroup.get('radio').value === "volume") {
-      this.deuxiemeFormGroup.controls['longueur'].disable();
-      this.deuxiemeFormGroup.controls['largeur'].disable();
-      this.deuxiemeFormGroup.controls['hauteur'].disable();
-      this.deuxiemeFormGroup.controls['volume'].enable();
-    }
   }
   reinitialiserStepper() {
     this.produitClicke.clear();
@@ -157,38 +141,48 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     var formData: any = new FormData();
     formData.append("idProduit", Number(this.produitSelectionne[0].id_Produit));
     formData.append("nomProduit", this.produitSelectionne[0].nom_Produit);
+    formData.append("nomEmballage", this.deuxiemeFormGroup.get('nom').value);
     formData.append("typeEmballage", this.deuxiemeFormGroup.get('type').value);
     formData.append("qte", Number(this.deuxiemeFormGroup.get('qte').value));
     formData.append("unite", this.deuxiemeFormGroup.get('unite').value);
-    formData.append("categorie", this.produitSelectionne[0].type1);
+    formData.append("categorie", this.produitSelectionne[0].type2);
     if (this.deuxiemeFormGroup.get('fragilite').value) {
       formData.append("fragile", "Oui");
     } else {
       formData.append("fragile", "Non");
     }
 
-    if (this.deuxiemeFormGroup.get('radio').value === "dimensions") {
-      formData.append("hauteur", Number(this.deuxiemeFormGroup.get('hauteur').value));
-      formData.append("longueur", Number(this.deuxiemeFormGroup.get('longueur').value));
-      formData.append("largeur", Number(this.deuxiemeFormGroup.get('largeur').value));
-      formData.append("volume", 0);
-    } else if (this.deuxiemeFormGroup.get('radio').value === "volume") {
-      formData.append("hauteur", 0);
-      formData.append("longueur", 0);
-      formData.append("largeur", 0);
-      formData.append("volume", Number(this.deuxiemeFormGroup.get('volume').value));
-    }
-
+    formData.append("hauteur", Number(this.deuxiemeFormGroup.get('hauteur').value));
+    formData.append("longueur", Number(this.deuxiemeFormGroup.get('longueur').value));
+    formData.append("largeur", Number(this.deuxiemeFormGroup.get('largeur').value));
+    formData.append("volume", Number(this.deuxiemeFormGroup.get('volume').value));
     formData.append("poids", Number(this.deuxiemeFormGroup.get('poids').value));
     formData.append("poidsTotal", this.poidsToltal);
     this.service.creerProduitEmballe(formData);
-    this.dialogRef.close();
+
+    setTimeout(() => {
+      this._router.navigate(['/Menu/Colisage/Liste_Colisage'])
+    }, 500);
     Swal.fire({
       icon: 'success',
       title: 'Produit bien ajouté',
       showConfirmButton: false,
       timer: 1500
     })
+  }
+  calculVolume() {
+    if (this.deuxiemeFormGroup.get('hauteur').value !== "" && this.deuxiemeFormGroup.get('longueur').value !== "" && this.deuxiemeFormGroup.get('largeur').value !== "") {
+      let volume = Number(this.deuxiemeFormGroup.get('hauteur').value) * Number(this.deuxiemeFormGroup.get('longueur').value) * Number(this.deuxiemeFormGroup.get('largeur').value);
+      this.deuxiemeFormGroup.get('volume').setValue(volume);
+    }
+  }
+
+  refraichirTableau() {
+    this.service.listeProduits().subscribe((data) => {
+      this.produits = data;
+      this.dataSource.data = this.produits as tableProduits[];
+      this.dataSourceUnitaire.data = this.produits as tableProduits[];
+    });
   }
 }
 export interface tableProduits {

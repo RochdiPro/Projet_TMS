@@ -9,7 +9,7 @@ import { VehiculeComponent } from './TMS/parc/vehicule/vehicule.component';
 import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
 import { MissionsComponent } from './TMS/parc/missions/missions.component';
 import { ColisageComponent } from './colisage/colisage.component';
-import { ListeColisageComponent } from './colisage/liste-colisage/liste-colisage.component';
+import { ListeColisageComponent, AjouterProduitComponent } from './colisage/liste-colisage/liste-colisage.component';
 
  
 const routes: Routes =
@@ -30,6 +30,7 @@ const routes: Routes =
           path: 'Colisage', component: ColisageComponent, children: [
           
             { path: 'Liste_Colisage', component: ListeColisageComponent},
+            { path: 'Ajouter_Colisage', component: AjouterProduitComponent},
    
           ]
         },
