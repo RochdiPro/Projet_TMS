@@ -1,9 +1,16 @@
 table {
     width: 100%;
+    overflow-x: scroll !important; 
+
 }
 
 .mat-column-id,
-.mat-column-idProduit,
+.mat-column-idProduit{
+    width: 3%;
+    text-align: center;
+}
+
+
 .mat-column-typeEmballage,
 .mat-column-qte
 .mat-column-nomProduit,
