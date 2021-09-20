@@ -32,17 +32,17 @@
         <!-- Colonne id produit -->
         <ng-container matColumnDef="idProduit">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                ID Produit
+                ID Produits
             </th>
-            <td mat-cell *matCellDef="let element"> {{element.idProduit}} </td>
+            <td mat-cell *matCellDef="let element"><p *ngFor ="let id of getIdProduit(element)">{{id}}</p></td>
         </ng-container>
 
         <!-- Colonne produit -->
         <ng-container matColumnDef="nomProduit">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                Produit
+                Produits
             </th>
-            <td mat-cell *matCellDef="let element"> {{element.nomProduit}} </td>
+            <td mat-cell *matCellDef="let element"> <p *ngFor="let nom of getNomProduit(element)">{{nom}}</p></td>
         </ng-container>
 
         <!-- Colonne produit -->
@@ -64,7 +64,7 @@
         <!-- Colonne qte -->
         <ng-container matColumnDef="qte">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Quantité </th>
-            <td mat-cell *matCellDef="let element"> {{element.qte}} </td>
+            <td mat-cell *matCellDef="let element"> <p *ngFor="let qte of getQuantiteProduit(element)">{{qte}}</p> </td>
         </ng-container>
 
         <!-- Colonne unite -->

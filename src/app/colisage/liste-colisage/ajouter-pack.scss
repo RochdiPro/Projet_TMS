@@ -1,0 +1,36 @@
+table {
+    overflow: scroll;
+    width: 100%;   
+}
+
+.mat-column-id,
+.mat-column-idProduit,
+.mat-column-nomProduit,
+.mat-column-nomEmballage,
+.mat-column-typeEmballage,
+.mat-column-qte,
+.mat-column-unite,
+.mat-column-categorie {
+    width: 14.28%;
+    text-align: center;
+}
+:host ::ng-deep .mat-sort-header-container {
+    justify-content: center;
+    padding-left: 1.5em;
+}
+
+.table1 .mat-row .mat-cell {
+    cursor: pointer;
+}
+
+.table1 .mat-row:hover .mat-cell {
+    background-color: rgba($color: #000, $alpha: 0.04);
+}
+
+.demo-row-is-clicked {
+    font-weight: bold;
+    background-color: rgba($color: #000, $alpha: 0.04);
+}
+.titre{
+    font-weight: bold;
+}

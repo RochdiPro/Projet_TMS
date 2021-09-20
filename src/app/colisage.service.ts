@@ -24,10 +24,10 @@ export class ColisageService {
     return this.http.get(erp + 'listeColisage');
   }
 
-  //lister les produits dans la fiche produits
-  public listeProduits() {
-    return this.http.get(infonet + 'Fiche_Produits');
+  public getEmballage(id: any){
+    return this.http.get(erp + 'produitEmballe', id)
   }
+
 
   //filtrer liste colisage
   public fltreListeproduit(champ1 : any, valeur1 : any, champ2 : any, valeur2 : any, champ3 : any, valeur3 : any){
@@ -42,6 +42,21 @@ export class ColisageService {
       }, observe: 'body'
     }).pipe(catchError(this.handleError));
   }
+
+  //lister les produits dans la fiche produits
+  public listeProduits() {
+    return this.http.get(infonet + 'Fiche_Produits');
+  }
+
+  //lister les produits dans la fiche produits
+  public produit(id :any) {
+    return this.http.get(infonet + 'Fiche_Produit' , {
+      params: {
+        id : id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
 
   //Filtre fiche produits
   public filtreProduits(champ: any, valeur: any) {
