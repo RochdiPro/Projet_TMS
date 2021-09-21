@@ -224,7 +224,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     let nom_Produit = ""
     this.produitSelectionne.forEach((element : any) => {
       nom_Produit += element.nom_Produit + "/"
-      id_Produit += element.id_Produit + "/"
+      id_Produit += element.id_Produit + " (fiche produits)/"
     });
     id_Produit = id_Produit.slice(0,-1);
     nom_Produit = nom_Produit.slice(0,-1);
@@ -316,6 +316,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   deuxiemeFormGroup: FormGroup;
   troisiemeFormGroup: FormGroup;
   displayedColumns: string[] = ['id', 'nomEmballage', 'typeEmballage', 'idProduit', 'nomProduit', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
+  displayedColumns2: string[] = ['id', 'nomEmballage', 'typeEmballage', 'poidsUnitaire', 'qte', 'unite', 'poidsTot', 'categorie']; //les colonne du tableau liste de colisage
   dataSourcePack = new MatTableDataSource<tableColisage>();
   dataSource = new MatTableDataSource<tableColisage>();
   form = new FormGroup({ nom_Emballage: new FormControl("") });
@@ -324,6 +325,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   produits: any;
   poidsToltal: any;
   qte: any;
+  poidsTotProduit: any;
+  poidsU: any;
 
   constructor(public service: ColisageService, private formBuilder: FormBuilder, public _router: Router){
     
@@ -413,16 +416,16 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     return this.troisiemeFormGroup.get("pack") as FormArray
   }
 
-  nouveauPack(unite: any): FormGroup {
+  nouveauPack(poids: any,unite: any): FormGroup {
     return this.formBuilder.group({
       qte: ['', Validators.required],
       unite: [unite, Validators.required],
-      poids: ['', Validators.required],
+      poids: [poids, Validators.required],
     })
   }
 
-  ajouterPack(unite: any) {
-    this.pack().push(this.nouveauPack(unite));
+  ajouterPack(poids: any,unite: any) {
+    this.pack().push(this.nouveauPack(poids,unite));
   }
 
   supprimerPack() {
@@ -431,7 +434,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   deuxiemeSuivant() {
     this.packSelectionne.forEach((element: any) => {
-      this.ajouterPack(element.unite);
+      this.ajouterPack(element.poidsTotal,element.unite);
     });
     this.dataSourcePack.data = this.packSelectionne as tableColisage[];
 
@@ -444,28 +447,37 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   calculerPoidsTotal(){
     this.poidsToltal = 0;
     this.qte = "";
+    this.poidsU = "";
     for (let i = 0; i < this.packSelectionne.length; i++) {
       this.poidsToltal += Number(this.troisiemeFormGroup.get('pack').value[i].poids) * Number(this.troisiemeFormGroup.get('pack').value[i].qte);
       this.qte += this.troisiemeFormGroup.get('pack').value[i].qte +"/"
+      this.poidsU += this.troisiemeFormGroup.get('pack').value[i].poids +"/"
     }
     this.qte = this.qte.slice(0, -1);
+    this.poidsU = this.poidsU.slice(0, -1);
     return this.poidsToltal;
   }
+
+  calculerPoidsPack(poids:any,qte:any){
+    this.poidsTotProduit = Number(poids)*Number(qte);
+    return (this.poidsTotProduit);
+  }
+
   reinitialiserStepper() {
     this.packClicke.clear();
   }
   valider() {
-    let id_Produit = ""
-    let nom_Produit = ""
+    let id_Pack = ""
+    let nom_Pack = ""
     this.packSelectionne.forEach((element : any) => {
-      nom_Produit += element.nomProduit + "/"
-      id_Produit += element.idProduit + "/"
+      nom_Pack += element.nomEmballage + "/"
+      id_Pack += element.id + " (liste colisage)/"
     });
-    id_Produit = id_Produit.slice(0,-1);
-    nom_Produit = nom_Produit.slice(0,-1);
+    id_Pack = id_Pack.slice(0,-1);
+    nom_Pack = nom_Pack.slice(0,-1);
     var formData: any = new FormData();
-    formData.append("idProduit", id_Produit);
-    formData.append("nomProduit", nom_Produit);
+    formData.append("idProduit", id_Pack);
+    formData.append("nomProduit", nom_Pack);
     formData.append("nomEmballage", this.premierFormGroup.get('nom').value);
     formData.append("typeEmballage", this.premierFormGroup.get('type').value);
     formData.append("qte", this.qte);
@@ -480,7 +492,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     formData.append("longueur", Number(this.premierFormGroup.get('longueur').value));
     formData.append("largeur", Number(this.premierFormGroup.get('largeur').value));
     formData.append("volume", Number(this.premierFormGroup.get('volume').value));
-    formData.append("poids", 0);
+    formData.append("poids", this.poidsU);
     formData.append("poidsTotal", this.poidsToltal);
     this.service.creerProduitEmballe(formData);
 

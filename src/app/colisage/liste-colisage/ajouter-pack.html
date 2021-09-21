@@ -164,48 +164,50 @@
                     <td mat-cell *matCellDef="let element">{{element.id}}</td>
                 </ng-container>
                 <!-- Colonne Nom Produit -->
-                <ng-container matColumnDef="idProduit">
-                    <th mat-header-cell *matHeaderCellDef>Poids Unitaire</th>
-                    <td mat-cell *matCellDef="let element">
-                        <p *ngFor="let idProduit of getIdProduit(element)">{{idProduit}}</p>
-                    </td>
-                </ng-container>
-                <!-- Colonne marque -->
-                <ng-container matColumnDef="nomProduit">
-                    <th mat-header-cell *matHeaderCellDef>Poids</th>
-                    <td mat-cell *matCellDef="let element">
-                        <p *ngFor="let nomProduit of getNomProduit(element)">{{nomProduit}}</p>
-                    </td>
-                </ng-container>
-                <!-- Colonne Valeur Unite -->
                 <ng-container matColumnDef="nomEmballage">
                     <th mat-header-cell *matHeaderCellDef>Nom Emballage</th>
                     <td mat-cell *matCellDef="let element">{{element.nomEmballage}}</td>
                 </ng-container>
-                <!-- Colonne Unite -->
+                <!-- Colonne marque -->
                 <ng-container matColumnDef="typeEmballage">
                     <th mat-header-cell *matHeaderCellDef>Type D'emballage</th>
                     <td mat-cell *matCellDef="let element">{{element.typeEmballage}}</td>
                 </ng-container>
-                <!-- Colonne Type produit -->
+                <!-- Colonne Valeur Unite -->
+                <ng-container matColumnDef="poidsUnitaire">
+                    <th mat-header-cell *matHeaderCellDef>Poids U</th>
+                    <td mat-cell *matCellDef="let element">
+                        {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ?
+                        this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].poids : '' }}
+                    </td>
+                </ng-container>
+                <!-- Colonne Unite -->
                 <ng-container matColumnDef="qte">
                     <th mat-header-cell *matHeaderCellDef>Quantité</th>
                     <td mat-cell *matCellDef="let element">
-                        {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ? this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].qte : '' }}
+                        {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ?
+                        this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].qte : '' }}
                     </td>
                 </ng-container>
-                <!-- Colonne sous type -->
+                <!-- Colonne Type produit -->
                 <ng-container matColumnDef="unite">
                     <th mat-header-cell *matHeaderCellDef>Unite</th>
                     <td mat-cell *matCellDef="let element">{{element.unite}}</td>
+                </ng-container>
+                <!-- Colonne sous type -->
+                <ng-container matColumnDef="poidsTot">
+                    <th mat-header-cell *matHeaderCellDef>Poids Total</th>
+                    <td mat-cell *matCellDef="let element">
+                        {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ? calculerPoidsPack(this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].poids,this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].qte) : ''}}
+                    </td>
                 </ng-container>
                 <!-- Colonne categorie -->
                 <ng-container matColumnDef="categorie">
                     <th mat-header-cell *matHeaderCellDef>Catégorie</th>
                     <td mat-cell *matCellDef="let element">{{element.categorie}}</td>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
             </table>
             <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
         </div>
@@ -226,7 +228,7 @@
                 <div class="w-100 titre">Catégorie:</div>
             </mat-grid-tile>
             <mat-grid-tile>
-                <div class="w-100">{{this.packSelectionne[0] ? this.packSelectionne[0].type2 : ''}}</div>
+                <div class="w-100">{{this.packSelectionne[0] ? this.packSelectionne[0].categorie: ''}}</div>
             </mat-grid-tile>
             <mat-grid-tile>
                 <div class="w-100 titre">Fragilité:</div>

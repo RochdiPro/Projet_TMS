@@ -34,7 +34,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
 import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
-import { MissionsComponent, DetailComponent,MapsComponent, AjouterMissionComponent, AffecterCommande, QrCodeComponent } from './TMS/parc/missions/missions.component';
+import { MissionsComponent, ListerMissionsComponent, DetailComponent,MapsComponent, AjouterMissionComponent, AffecterCommande, QrCodeComponent } from './TMS/parc/missions/missions.component';
 import { AgmCoreModule } from '@agm/core';
 import { DirectionsMapDirective } from './directions-map.directive';
 import { SafePipeModule } from 'safe-pipe';
@@ -69,6 +69,7 @@ registerLocaleData(localeFr, 'fr');
     MenuParcComponent,
     ChauffeursComponent,
     MissionsComponent,
+    ListerMissionsComponent,
     DetailComponent,
     AjouterMissionComponent,
     DirectionsMapDirective,

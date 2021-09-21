@@ -1,45 +1,92 @@
-<h1 mat-dialog-title>Créer Nouvelle Mission </h1>
-<div mat-dialog-content class="scrollbar scrollbar-primary">
-    <form [formGroup]="form" novalidate>
-        <div class="position-relative form-group">
-            <mat-form-field class="full-width">
-                <mat-label>Vehicule</mat-label>
-                <mat-select name="matricule" id="matricule" [(value)]="vehiculeSelectionnee"
-                    (selectionChange)="this.vehiculeSelectionne=false;"
-                    formControlName="vehicule">
-                    <mat-option *ngFor="let v of vehicules" [value]="v">
-                        {{v.matricule}}
-                    </mat-option>
-                    <mat-option>
-                        <a style="width: auto; display: block;">+ Ajouter</a>
-                     </mat-option>
-                </mat-select>
-                <mat-error *ngIf="form.controls['vehicule'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
-                </mat-error>
-            </mat-form-field>
+<mat-horizontal-stepper [linear]="false" #stepper>
+    <mat-step [stepControl]="form">
+        <form [formGroup]="form">
+            <ng-template matStepLabel>Selectionner Un Chauffeur et Un vehicule</ng-template>
+            <div>
+                <mat-form-field appearance="fill">
+                    <mat-label>Chauffeur</mat-label>
+                    <mat-select name="chauffeur" id="chauffeur" [(value)]="chauffeurSelectionne"
+                        formControlName="chauffeur">
+                        <mat-option *ngFor="let c of employes" [value]="c">
+                            {{c.nom}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <mat-grid-list cols="4" rowHeight="6:1" style="margin-left: 2.5%;">
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Nom Du Chauffeur:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100"></div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Catégorie De Permis:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100"></div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Disponibilité:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100"></div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Validité De Permis:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100"></div>
+                    </mat-grid-tile>
+                </mat-grid-list>
+            </div>
+            <div>
+                <mat-form-field class="full-width" appearance="fill">
+                    <mat-label>Vehicule</mat-label>
+                    <mat-select name="matricule" id="matricule" [(value)]="vehiculeSelectionnee" formControlName="vehicule">
+                        <mat-option *ngFor="let v of vehicules" [value]="v">
+                            {{v.matricule}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error *ngIf="form.controls['vehicule'].hasError('required')">
+                        Champ <strong>Obligatoire</strong>
+                    </mat-error>
+                </mat-form-field>
+                <mat-grid-list cols="4" rowHeight="6:1" style="margin-left: 2.5%;">
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Type Carosserie:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100"></div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Position Actuelle:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100"></div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Charge Utile:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100"></div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Volume:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100"></div>
+                    </mat-grid-tile>
+                </mat-grid-list>
+            </div>
+        </form>
+        <div>
+            <button mat-button matStepperNext>Next</button>
         </div>
-        <div class="position-relative form-group">
-            <mat-form-field class="full-width">
-                <mat-label>Chauffeur</mat-label>
-                <mat-select name="chauffeur" id="chauffeur" [(value)]="chauffeurSelectionne"
-                    (selectionChange)="this.chauffeurSelectionne=false;"
-                    formControlName="chauffeur">
-                    <mat-option *ngFor="let c of employes" [value]="c">
-                        {{c.nom}}
-                    </mat-option>
-                    <mat-option>
-                        <a style="width: auto; display: block;">+ Ajouter</a>
-                     </mat-option>
-                </mat-select>
-                <mat-error *ngIf="form.controls['vehicule'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
-                </mat-error>
-            </mat-form-field>
-        </div>
-    </form>
-</div>
+
+    </mat-step>
+</mat-horizontal-stepper>
 <div mat-dialog-actions class="float-right form-group">
-    <button mat-button color="warn" class="mb-2" (click)="this.dialogRef.close();">Annuler</button>
-    <button mat-button color="primary" class="mb-2 mr-4" [disabled]="(form.invalid || (lat === 0 && lng === 0))">Enregistrer</button>
+    <button mat-button color="warn" class="mb-2">Annuler</button>
+    <button mat-button color="primary" class="mb-2 mr-4"
+        [disabled]="(form.invalid || (lat === 0 && lng === 0))">Enregistrer</button>
 </div>

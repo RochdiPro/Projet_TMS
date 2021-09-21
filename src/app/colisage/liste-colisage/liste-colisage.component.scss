@@ -1,22 +1,19 @@
 table {
     width: 100%;
-    overflow-x: scroll !important; 
-
+    overflow-x: scroll !important;
 }
 
-.mat-column-id,
-.mat-column-idProduit{
+.mat-column-id {
     width: 3%;
     text-align: center;
 }
 
-
+.mat-column-idProduit,
 .mat-column-typeEmballage,
-.mat-column-qte
-.mat-column-nomProduit,
+.mat-column-qte .mat-column-nomProduit,
 .mat-column-unite,
 .mat-column-categorie {
-    width: 14.28%;
+    width: auto;
     text-align: center;
 }
 :host ::ng-deep .mat-sort-header-container {
@@ -29,4 +26,4 @@ td {
 .custom-width {
     width: 20%;
     margin: 0 0.3%;
-  }
+}
