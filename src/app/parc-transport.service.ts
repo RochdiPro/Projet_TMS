@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 const erp = "/ERP/";
 const infonet = "/INFONET/";
 @Injectable({
   providedIn: 'root'
 })
 export class ParcTransportService {
+  handleError: any;
 
   constructor(private http: HttpClient) { }
 
@@ -134,6 +136,32 @@ export class ParcTransportService {
   public filtrerMissionsVehiculeChauffeur(vehicule : any, chauffeur : any) {
     return this.http.get(erp + 'filtrerMissionsVehiculeChauffeur' + '?vehicule=' + vehicule + '&chauffeur=' + chauffeur);
   }
+
+  //charger les factures
+  public factures() {
+    return this.http.get(infonet + 'Factures')
+  }
+
+  //charger les BLs
+  public bon_Livraison(){
+    return this.http.get(infonet + 'Bon_Livraisons')
+  }
+
+  //charger les données d'un client a partir son Id
+  // public client(id: any) {
+  //   return this.http.get(infonet + 'Client' , {
+  //     params: {
+  //       id : id
+  //     }, observe: 'body'
+  //   }).pipe(catchError(this.handleError));
+  // }
+
+  //charger liste des clients
+  public clients(){
+    return this.http.get(infonet + 'Clients')
+  }
+
+
   public majTrajet(formData: any) {
     this.http.put(erp + 'majTrajetMission', formData).subscribe(
       (response) => console.log(response),

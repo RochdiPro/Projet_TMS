@@ -1,3 +1,35 @@
-.titre{
+.titre {
     font-weight: bold;
+}
+hr.solid {
+    border-top: 2px solid #bbb;
+}
+
+table {
+    width: 100%;
+}
+
+h2 {
+    padding: 0;
+    margin: 0;
+    padding-top: 20px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
+.mat-column-reference,
+.mat-column-origine,
+.mat-column-id_Clt,
+.mat-column-nom_Clt,
+.mat-column-adresse,
+.mat-column-poids,
+.mat-column-volume,
+.mat-column-produits {
+    width: 12.5%;
+    text-align: center;
+}
+
+.custom-width{
+    width: 20em;
+    margin-left: 1%;
 }

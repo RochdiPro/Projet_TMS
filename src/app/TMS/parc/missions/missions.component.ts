@@ -434,6 +434,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
 
   }
 
+ 
+
 }
 
 
@@ -445,114 +447,130 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   templateUrl: './ajouterMission.html',
   styleUrls: ['./ajouterMission.scss'],
 })
-export class AjouterMissionComponent {
+export class AjouterMissionComponent implements OnInit {
   chauffeurSelectionne: any;
-  vehiculeSelectionnee: any;
-  commandeSelectionne: any;
+  vehiculeSelectionne: any;
   employes: any;
   employe: any;
   chauffeurs: any;
   vehicules: any;
   vehicule: any;
-  chauffeurSelect = true;
-  vehiculeSelectionne = true;
-  bonSelect = false;
-  currentLat: any;
-  currentLong: any;
-  date: Date;
-  dateLivraison: any;
-  mission: any;
-  nvmission: any;
-  latMap: any = 34.74056;
-  lngMap: any = 10.76028;
-  lat: any = 0;
-  lng: any = 0;
-  zoom: number = 5;
-  affectations: any;
-  chauffeurDispo: any[];
-  positionExiste = false;
-  destinations: any = [];
-  destinationsOptimise: any = [];
-  trajet: any;
-  adresse_destinataire = "";
   form: FormGroup;
-  positionClient: any = {
-    latitude: 34.74056, longitude: 10.76028
-  };
+  dataSourceFactures = new MatTableDataSource<tableFactures>();
+  dataSourceBL = new MatTableDataSource<tableBL>();
+  minDate = new Date();
+  displayedColumns: string[] = ['reference', 'origine', 'id_Clt', 'nom_Clt', 'adresse', 'poids', 'volume', 'produits'];
+  selectionChauffeur = false;
+  selectionVehicule = false;
+  infoChauffeur = false;
+  infoVehicule = false;
+  aujourdhui = new Date();
+  date = new Date(this.aujourdhui.getFullYear(), this.aujourdhui.getMonth(), this.aujourdhui.getDate(), 0, 0, 0);
+  factures: any;
+  bonLivraisons: any;
+  listeClients:any;
+  client: any;
 
-  commandes: Commandes[] = [
-    {
-      reference: 1, id_expediteur: 1, expediteur: 'Hydrogen', adresse_expediteur: "Sfax", contact_expediteur: 'Salah', telephone_expediteur: 22222222,
-      id_destinataire: 1, destinataire: "Foulen1", adresse_destinataire: "Tunis", contact_destinataire: "Foulen1", telephone_destinataire: 44444444,
-      date_commande: "12/03/2021", type: "Box", nbr_obj: 1, description: "", articles: "10xarticle1/dimensions:8x9x10/poids:6.8,10xarticle2/dimensions:7x8x10/poids:6.8"
-    },
-    {
-      reference: 2, id_expediteur: 2, expediteur: 'Helium', adresse_expediteur: "Sfax", contact_expediteur: 'Ali', telephone_expediteur: 22222222,
-      id_destinataire: 2, destinataire: "Foulen2", adresse_destinataire: "Sfax", contact_destinataire: "Foulen2", telephone_destinataire: 44444444,
-      date_commande: "12/03/2021", type: "Box", nbr_obj: 1, description: "", articles: "10xarticle1/dimensions:12x7x10/poids:8.8,10xarticle2/dimensions:8x7x10/poids:6.8"
-    },
-    {
-      reference: 3, id_expediteur: 3, expediteur: 'Lithium', adresse_expediteur: "Sfax", contact_expediteur: 'Med', telephone_expediteur: 22222222,
-      id_destinataire: 3, destinataire: "Foulen3", adresse_destinataire: "Sousse", contact_destinataire: "Foulen3", telephone_destinataire: 44444444,
-      date_commande: "12/03/2021", type: "Box", nbr_obj: 1, description: "", articles: "10xarticle1/dimensions:6x9x10/poids:5.8,10xarticle2/dimensions:9x6x10/poids:6.8"
-    },
-  ];
-  surfaceCommande: any;
-  poidsCommande: any;
 
-  constructor(public fb: FormBuilder, public service: ParcTransportService, public datepipe: DatePipe) {
+
+  constructor(public fb: FormBuilder, public service: ParcTransportService, public datepipe: DatePipe) {}
+
+  ngOnInit(): void { //creation du form groupe et chargement des listes de vehicules et employes
+    this.form = this.fb.group({
+      dateLivraison: ['',[Validators.required]],
+      vehicule: ['', [Validators.required]],
+      chauffeur: ['', [Validators.required]],
+    });
+    this.chargerEmployes();
+    this.chargerVehicules();
+  }
+
+  chargerEmployes(){ //appel au service qui permet de lister les employes
     this.service.employes().subscribe((data) => {
       this.employes = data;
       this.chauffeurs = this.employes.filter((x: any) => x.role == "chauffeur");
     });
+  }
+
+  chargerVehicules(){ //appel au service qui permet de lister les Vehicules
     this.service.vehicules().subscribe((data) => {
       this.vehicules = data;
     });
-    this.service.missions().subscribe((data) => {
-      this.affectations = data;
+  }
+
+  afficherSelectChauffeur(){ //afficher le mat select du chauffeur
+    this.selectionChauffeur = true;
+    console.log(this.date)
+  }
+
+  afficherInfoChauffeur(){ //afficher les informations du chauffeur
+    this.infoChauffeur = true;
+  }
+
+  afficherSelectVehicule(){ //afficher le mat-select du vehicule
+    this.selectionVehicule = true
+  }
+
+  afficherInfoVehicule(){ //afficher les informations du vehicule
+    this.infoVehicule = true;
+  }
+
+  calculerVolumeVehicule(){ //calculer le volume dans une vehicule
+    return (Number(this.vehiculeSelectionne.longueur)*Number(this.vehiculeSelectionne.largeur)*Number(this.vehiculeSelectionne.hauteur)*0.001)
+  }
+
+  testerValiditePermis(){
+    let validite: String;
+    let datePermis = new Date(this.chauffeurSelectionne.date_de_Permis);
+    var differenceDate = this.date.getTime() - datePermis.getTime();
+    var differenceDateEnJour = differenceDate / (1000 * 3600 * 24);
+    console.log(differenceDateEnJour);
+    if (differenceDateEnJour > 3650){
+      validite = "Non Valide"
+    } else {
+      validite = "Valide"
+    }
+    return validite;
+  }
+  
+  chargerListeFactures(){
+    this.service.factures().subscribe((data) => {
+      this.factures = data;
+      this.factures = this.factures.filter((x: any) => x.frais_Livraison === 0);
+      this.dataSourceFactures.data = this.factures as tableFactures[];
+    })
+  }
+
+  chargerListeBLs(){
+    this.service.bon_Livraison().subscribe((data) => {
+      this.bonLivraisons = data;
+      this.bonLivraisons = this.bonLivraisons.filter((x: any) => x.frais_Livraison === 0);
+      this.dataSourceBL.data = this.bonLivraisons as tableBL[];
+    })
+  }
+
+  chargerListeClients(){
+    this.service.clients().subscribe((data) => {
+      this.listeClients = data;
     });
-    this.form = this.fb.group({
-      refCommande: ['', [Validators.required]],
-      vehicule: ['', [Validators.required]],
-      chauffeur: ['', [Validators.required]],
-      adresse: ['', [Validators.required]]
-    });
+  }
+
+  getClientParId(id: any){
+    this.client = this.listeClients.filter((x: any) => x.Id_Clt === id);
+    return this.client[0];
 
   }
 
-  disponibiliteVehicule(){
-  }
+ 
+}
+export interface tableFactures {
+  id_Facture: number;
+  id_Clt: number;
+}
 
-
-  compatibiliteChauffeur() { // verifie la compatibilite du chauffeur avec le vehicule
-    this.chauffeurSelect = false;
-    this.chauffeurDispo = [];
-    var x = this.vehiculeSelectionnee.categories.split("/");
-
-    x.forEach((value: any) => {
-      this.chauffeurs.forEach((chauffeur: any) => {
-        if (value == chauffeur.categorie_Permis) {
-          this.chauffeurDispo.push(chauffeur);
-        }
-      });
-    });
-  }
-
-  selectionnerChauffeur() { // impoter les données du chauffeur selectinnée
-    this.service.employe(this.chauffeurSelectionne).subscribe((data) => {
-      this.employe = data;
-    });
-  }
-  ajouterMission() { //  enregistrer mission
-    this.date = new Date(localStorage.getItem('dateLivraison'));
-    this.dateLivraison = this.datepipe.transform(this.date, 'yyyy-MM-dd');
-    let formData = new FormData();
-    formData.append("id", this.vehiculeSelectionnee.id);
-    formData.append("etatVehicule", "Reservée");
-    this.service.majEtatVehicule(formData);
-
-    // location.reload();
-  }
+export interface tableBL {
+  id_Bl: number;
+  id_Clt: number;
 }
 
 //--------------------------------------------------------------------------------------------------------------------

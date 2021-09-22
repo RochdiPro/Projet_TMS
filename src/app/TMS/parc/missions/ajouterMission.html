@@ -2,28 +2,40 @@
     <mat-step [stepControl]="form">
         <form [formGroup]="form">
             <ng-template matStepLabel>Selectionner Un Chauffeur et Un vehicule</ng-template>
-            <div>
-                <mat-form-field appearance="fill">
+            <div style="margin-top: 1%;">
+                <mat-form-field appearance="fill" class="custom-width">
+                    <mat-label>Date De Livraison</mat-label>
+                    <input matInput [matDatepicker]="dateLivraison" formControlName="dateLivraison" [min]="minDate" (dateChange)="afficherSelectChauffeur()">
+                    <mat-datepicker-toggle matSuffix [for]="dateLivraison"></mat-datepicker-toggle>
+                    <mat-datepicker #dateLivraison></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <hr class="solid" *ngIf="selectionChauffeur">
+            <div *ngIf="selectionChauffeur">
+                <mat-form-field appearance="fill" class="custom-width">
                     <mat-label>Chauffeur</mat-label>
                     <mat-select name="chauffeur" id="chauffeur" [(value)]="chauffeurSelectionne"
-                        formControlName="chauffeur">
-                        <mat-option *ngFor="let c of employes" [value]="c">
+                        formControlName="chauffeur" required (selectionChange)="afficherInfoChauffeur(); afficherSelectVehicule()">
+                        <mat-option *ngFor="let c of chauffeurs" [value]="c">
                             {{c.nom}}
                         </mat-option>
                     </mat-select>
+                    <mat-error *ngIf="form.controls['chauffeur'].hasError('required')">
+                        Champ <strong>Obligatoire</strong>
+                    </mat-error>
                 </mat-form-field>
-                <mat-grid-list cols="4" rowHeight="6:1" style="margin-left: 2.5%;">
+                <mat-grid-list cols="4" rowHeight="6:1" style="margin-left: 3.5%;" *ngIf="infoChauffeur">
                     <mat-grid-tile>
                         <div class="w-100 titre">Nom Du Chauffeur:</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
-                        <div class="w-100"></div>
+                        <div class="w-100">{{chauffeurSelectionne.nom}}</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
                         <div class="w-100 titre">Catégorie De Permis:</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
-                        <div class="w-100"></div>
+                        <div class="w-100">{{chauffeurSelectionne.categorie_Permis}}</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
                         <div class="w-100 titre">Disponibilité:</div>
@@ -35,14 +47,16 @@
                         <div class="w-100 titre">Validité De Permis:</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
-                        <div class="w-100"></div>
+                        <div class="w-100">{{testerValiditePermis()}}</div>
                     </mat-grid-tile>
                 </mat-grid-list>
             </div>
-            <div>
-                <mat-form-field class="full-width" appearance="fill">
+            <hr class="solid" *ngIf="selectionVehicule">
+            <div *ngIf="selectionVehicule">
+                <mat-form-field class="full-width" appearance="fill" class="custom-width">
                     <mat-label>Vehicule</mat-label>
-                    <mat-select name="matricule" id="matricule" [(value)]="vehiculeSelectionnee" formControlName="vehicule">
+                    <mat-select name="matricule" id="matricule" [(value)]="vehiculeSelectionne"
+                        formControlName="vehicule" required (selectionChange)="afficherInfoVehicule()">
                         <mat-option *ngFor="let v of vehicules" [value]="v">
                             {{v.matricule}}
                         </mat-option>
@@ -51,7 +65,7 @@
                         Champ <strong>Obligatoire</strong>
                     </mat-error>
                 </mat-form-field>
-                <mat-grid-list cols="4" rowHeight="6:1" style="margin-left: 2.5%;">
+                <mat-grid-list cols="4" rowHeight="6:1" style="margin-left: 3.5%;" *ngIf="infoVehicule">
                     <mat-grid-tile>
                         <div class="w-100 titre">Type Carosserie:</div>
                     </mat-grid-tile>
@@ -62,31 +76,266 @@
                         <div class="w-100 titre">Position Actuelle:</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
-                        <div class="w-100"></div>
+                        <div class="w-100">{{vehiculeSelectionne.positionVehicule}}</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
                         <div class="w-100 titre">Charge Utile:</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
-                        <div class="w-100"></div>
+                        <div class="w-100">{{vehiculeSelectionne.charge_utile}} Kg</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
                         <div class="w-100 titre">Volume:</div>
                     </mat-grid-tile>
                     <mat-grid-tile>
-                        <div class="w-100"></div>
+                        <div class="w-100">{{calculerVolumeVehicule()}} L</div>
                     </mat-grid-tile>
                 </mat-grid-list>
             </div>
         </form>
-        <div>
-            <button mat-button matStepperNext>Next</button>
+        <div style="float: right;">
+            <button mat-button matStepperNext color="primary" (click)="chargerListeFactures(); chargerListeBLs(); chargerListeClients();">Suivant</button>
         </div>
 
     </mat-step>
+    <mat-step [stepControl]="form" label="Selectionner Factures">
+        <form [formGroup]="form">
+            <mat-grid-list cols="6" rowHeight="6:1" style="margin-left: 2.5%;">
+                <mat-grid-tile>
+                    <div class="w-100 titre">Origine:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100"></div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Poids Restant:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100"></div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Volume Restant:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100"></div>
+                </mat-grid-tile>
+            </mat-grid-list>
+            <div class="facture" *ngIf="listeClients">
+                <h2>Factures :</h2>
+                <table mat-table [dataSource]="dataSourceFactures" class="mat-elevation-z8">
+
+                    <!-- colonne reference -->
+                    <ng-container matColumnDef="reference">
+                        <th mat-header-cell *matHeaderCellDef> Référence </th>
+                        <td mat-cell *matCellDef="let element">{{element.id_Facture}}</td>
+                    </ng-container>
+
+                    <!-- colonne origine -->
+                    <ng-container matColumnDef="origine">
+                        <th mat-header-cell *matHeaderCellDef> Origine </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- colonne id clt -->
+                    <ng-container matColumnDef="id_Clt">
+                        <th mat-header-cell *matHeaderCellDef> ID Client </th>
+                        <td mat-cell *matCellDef="let element">{{element.id_Clt}}</td>
+                    </ng-container>
+
+                    <!-- Colonne Nom clt -->
+                    <ng-container matColumnDef="nom_Clt">
+                        <th mat-header-cell *matHeaderCellDef> Client </th>
+                        <td mat-cell *matCellDef="let element">{{getClientParId(element.id_Clt).nom_Client}}</td>
+                    </ng-container>
+
+                    <!-- Colonne adresse -->
+                    <ng-container matColumnDef="adresse">
+                        <th mat-header-cell *matHeaderCellDef> Adresse </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- Colonne Poids -->
+                    <ng-container matColumnDef="poids">
+                        <th mat-header-cell *matHeaderCellDef> Poids </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- Colonne Volume -->
+                    <ng-container matColumnDef="volume">
+                        <th mat-header-cell *matHeaderCellDef> Volume </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- Colonne Produits -->
+                    <ng-container matColumnDef="produits">
+                        <th mat-header-cell *matHeaderCellDef> Produits </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
+            <div class="bl">
+                <h2>Bon Livraison :</h2>
+                <table mat-table [dataSource]="dataSourceBL" class="mat-elevation-z8">
+
+                    <!-- colonne reference -->
+                    <ng-container matColumnDef="reference">
+                        <th mat-header-cell *matHeaderCellDef> Référence </th>
+                        <td mat-cell *matCellDef="let element">{{element.id_Bl}}</td>
+                    </ng-container>
+
+                    <!-- colonne origine -->
+                    <ng-container matColumnDef="origine">
+                        <th mat-header-cell *matHeaderCellDef> Origine </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- colonne id clt -->
+                    <ng-container matColumnDef="id_Clt">
+                        <th mat-header-cell *matHeaderCellDef> ID Client </th>
+                        <td mat-cell *matCellDef="let element">{{element.id_Clt}}</td>
+                    </ng-container>
+
+                    <!-- Colonne Nom clt -->
+                    <ng-container matColumnDef="nom_Clt">
+                        <th mat-header-cell *matHeaderCellDef> Client </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- Colonne adresse -->
+                    <ng-container matColumnDef="adresse">
+                        <th mat-header-cell *matHeaderCellDef> Adresse </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- Colonne Poids -->
+                    <ng-container matColumnDef="poids">
+                        <th mat-header-cell *matHeaderCellDef> Poids </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- Colonne Volume -->
+                    <ng-container matColumnDef="volume">
+                        <th mat-header-cell *matHeaderCellDef> Volume </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <!-- Colonne Produits -->
+                    <ng-container matColumnDef="produits">
+                        <th mat-header-cell *matHeaderCellDef> Produits </th>
+                        <td mat-cell *matCellDef="let element"> </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+            </div>
+            <div style="float: right; padding-top: 30px;">
+                <button mat-button matStepperPrevious color="primary">Précédent</button>
+                <button mat-button matStepperNext color="primary">Suivant</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step>
+        <ng-template matStepLabel>Valider</ng-template>
+        <mat-grid-list cols="6" rowHeight="6:1" style="margin-left: 2.5%;">
+            <mat-grid-tile>
+                <div class="w-100 titre">Chauffeur:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100"></div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100 titre">Vehicule:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100"></div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100 titre">Date De Livraison:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100"></div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100 titre">Poids Total:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100"></div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100 titre">Volume Total:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100"></div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100 titre">Origine:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100"></div>
+            </mat-grid-tile>
+        </mat-grid-list>
+        <div style="margin-top: 30px;">
+            <table mat-table [dataSource]="dataSourceFactures" class="mat-elevation-z8">
+
+                <!-- colonne reference -->
+                <ng-container matColumnDef="reference">
+                    <th mat-header-cell *matHeaderCellDef> Référence </th>
+                    <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+
+                <!-- colonne origine -->
+                <ng-container matColumnDef="origine">
+                    <th mat-header-cell *matHeaderCellDef> Origine </th>
+                    <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+
+                <!-- colonne id clt -->
+                <ng-container matColumnDef="id_Clt">
+                    <th mat-header-cell *matHeaderCellDef> ID Client </th>
+                    <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+
+                <!-- Colonne Nom clt -->
+                <ng-container matColumnDef="nom_Clt">
+                    <th mat-header-cell *matHeaderCellDef> Client </th>
+                    <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+
+                <!-- Colonne adresse -->
+                <ng-container matColumnDef="adresse">
+                    <th mat-header-cell *matHeaderCellDef> Origine </th>
+                    <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+
+                <!-- Colonne Poids -->
+                <ng-container matColumnDef="poids">
+                    <th mat-header-cell *matHeaderCellDef> Poids </th>
+                    <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+
+                <!-- Colonne Volume -->
+                <ng-container matColumnDef="volume">
+                    <th mat-header-cell *matHeaderCellDef> Volume </th>
+                    <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+
+                <!-- Colonne Produits -->
+                <ng-container matColumnDef="produits">
+                    <th mat-header-cell *matHeaderCellDef> Produits </th>
+                    <td mat-cell *matCellDef="let element"> </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+        </div>
+        <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="stepper.reset()">Reset</button>
+        </div>
+    </mat-step>
 </mat-horizontal-stepper>
-<div mat-dialog-actions class="float-right form-group">
-    <button mat-button color="warn" class="mb-2">Annuler</button>
-    <button mat-button color="primary" class="mb-2 mr-4"
-        [disabled]="(form.invalid || (lat === 0 && lng === 0))">Enregistrer</button>
-</div>
