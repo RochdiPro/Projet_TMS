@@ -1,8 +1,10 @@
-<h1 mat-dialog-title>Ajouter une Véhicule </h1>
+<!-- Titre du biote dialogue -->
+<h1 mat-dialog-title>Ajouter Un Véhicule Loué </h1>
 <div mat-dialog-content class="scrollbar scrollbar-primary">
     <form [formGroup]="form" novalidate>
+
+        <!-- Champ d'ajot matricule -->
         <div class="position-relative form-group">
-            <label for="matricule" class="">Matricule Du Vehicule</label>
             <!-- choix type matricule -->
             <div class="position-relative form-group">
                 <mat-form-field class="example-full-width">
@@ -38,6 +40,7 @@
                 </div>
             </div>
         </div>
+        <!-- input filed marque -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Marque</mat-label>
@@ -48,6 +51,7 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field modele -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Modele</mat-label>
@@ -58,6 +62,7 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field couleur -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Couleur</mat-label>
@@ -68,76 +73,50 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- Select de type carosserie -->
         <div class="position-relative form-group" id="categories">
-            <!-- <label for="categories">Carrosserie</label> -->
             <mat-form-field class="example-full-width">
                 <mat-label>Categorie du Vehicule</mat-label>
-                <mat-select formControlName="car" name="carosserie" id="carosserie" [(value)]="categorie" required>
+                <mat-select formControlName="carosserie" name="carosserie" id="carosserie" [(value)]="categorie" required>
                     <mat-option *ngFor="let carosseries of carosserie" [value]="carosseries.value">
                         {{ carosseries.name }}
                     </mat-option>
                 </mat-select>
-                <mat-error *ngIf="form.controls['car'].hasError('required')"> Veuillez choisir une catégorie
+                <mat-error *ngIf="form.controls['carosserie'].hasError('required')"> Veuillez choisir une catégorie
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field proprietaire -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
-                <mat-label>Kilométrage Actuel</mat-label> <input matInput placeholder="Ex. 100000"
-                    formControlName="kmactuel" name="km-actuel" id="km-actuel" type="text" required>
-                <mat-error *ngIf="form.controls['kmactuel'].hasError('required')">
+                <mat-label>Proprietaire</mat-label>
+                <input matInput placeholder="Ex. 100000" formControlName="proprietaire"
+                    name="proprietaire" id="proprietaire" type="text" required>
+                <mat-error *ngIf="form.controls['proprietaire'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
-                <mat-error *ngIf="form.controls['kmactuel'].hasError('pattern')">
-                    Seuls les <strong>chiffres</strong> sont autorisés
-                </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field num tel proprietaire -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
-                <mat-label>Kilométrage Prochain Entretien</mat-label>
-                <input matInput placeholder="Ex. 100000" formControlName="kmprochainentretien"
-                    name="km-prochain-entretien" id="km-prochain-entretien" type="text" required>
-                <mat-error *ngIf="form.controls['kmprochainentretien'].hasError('required')">
+                <mat-label>Tél. Proprietaire</mat-label>
+                <input matInput formControlName="telephone" name="telephone"
+                    id="telephone" type="tel" pattern="[0-9]{8}" maxlength="8" required >
+                <mat-error *ngIf="form.controls['telephone'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
-                <mat-error *ngIf="form.controls['kmprochainentretien'].hasError('pattern')">
-                    Seuls les <strong>chiffres</strong> sont autorisés
+                <mat-error *ngIf="form.controls['telephone'].hasError('pattern')">
+                    Verifier que le numéro se compose de <strong>8 chiffres</strong>
                 </mat-error>
             </mat-form-field>
         </div>
-        <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
-                <mat-label>Consommation Normale En L/100Km</mat-label>
-                <input matInput placeholder="Ex. 6" formControlName="consommationnormale" name="consommationnormale"
-                    id="consommationnormale" type="text" required>
-                <mat-error *ngIf="form.controls['consommationnormale'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
-                </mat-error>
-                <mat-error *ngIf="form.controls['consommationnormale'].hasError('pattern')">
-                    Seuls les <strong>chiffres</strong> sont autorisés
-                </mat-error>
-            </mat-form-field>
-        </div>
-        <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
-                <mat-label>Carburant</mat-label>
-                <mat-select formControlName="carburant" name="carburant" id="carburant" [(value)]="carburant" required>
-                    <mat-option *ngFor="let carb of carburants" [value]="carb">
-                        {{carb.nom}}
-                    </mat-option>
-                </mat-select>
-                <mat-error *ngIf="form.controls['carburant'].hasError('required')"> Veuillez choisir le carburant
-                </mat-error>
-            </mat-form-field>
-
-        </div>
-
+        <!-- input Field charge utile -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Charge Utile Maximale En Kg</mat-label>
                 <input matInput placeholder="Ex. 600" formControlName="chargeUtile" name="chargeUtile" id="chargeUtile"
-                    type="text" required>
+                    type="number" required>
                 <mat-error *ngIf="form.controls['chargeUtile'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
@@ -146,10 +125,11 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field Longueur -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Longueur en cm</mat-label>
-                <input matInput formControlName="longueur" name="longueur" id="longueur" type="text" required>
+                <input matInput formControlName="longueur" name="longueur" id="longueur" type="number" required>
                 <mat-error *ngIf="form.controls['longueur'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
@@ -158,10 +138,11 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field largeur -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Largeur en cm</mat-label>
-                <input matInput formControlName="largeur" name="largeur" id="largeur" type="text" required>
+                <input matInput formControlName="largeur" name="largeur" id="largeur" type="number" required>
                 <mat-error *ngIf="form.controls['largeur'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
@@ -170,53 +151,16 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field hauteur -->
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Hauteur en cm</mat-label>
-                <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="text" required>
+                <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="number" required>
                 <mat-error *ngIf="form.controls['hauteur'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
                 <mat-error *ngIf="form.controls['hauteur'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
-                </mat-error>
-            </mat-form-field>
-        </div>
-        <div class="position-relative form-group">
-
-            <mat-form-field class="example-full-width">
-                <mat-label>Date Prochaine Visite</mat-label>
-                <input matInput [matDatepicker]="dateVisite" formControlName="datevisite" [min]="minDate">
-                <mat-datepicker-toggle matSuffix [for]="dateVisite"></mat-datepicker-toggle>
-                <mat-datepicker #dateVisite></mat-datepicker>
-                <mat-error *ngIf="form.controls['datevisite'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
-                </mat-error>
-            </mat-form-field>
-
-        </div>
-        <div class="position-relative form-group">
-
-            <mat-form-field class="example-full-width">
-                <mat-label>Date D'Expiration D'Assurance</mat-label>
-                <input matInput [matDatepicker]="dateAssurance" formControlName="dateassurance" [min]="minDate">
-                <mat-datepicker-toggle matSuffix [for]="dateAssurance"></mat-datepicker-toggle>
-                <mat-datepicker #dateAssurance></mat-datepicker>
-                <mat-error *ngIf="form.controls['dateassurance'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
-                </mat-error>
-            </mat-form-field>
-        </div>
-        <div class="position-relative form-group">
-
-
-            <mat-form-field class="example-full-width">
-                <mat-label>Date D'Expiration Des Taxes</mat-label>
-                <input matInput [matDatepicker]="dateTaxe" formControlName="datetaxe" [min]="minDate">
-                <mat-datepicker-toggle matSuffix [for]="dateTaxe"></mat-datepicker-toggle>
-                <mat-datepicker #dateTaxe></mat-datepicker>
-                <mat-error *ngIf="form.controls['datetaxe'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
                 </mat-error>
             </mat-form-field>
         </div>
@@ -228,7 +172,6 @@
     <!-- fin bouton Annuler -->
 
     <!-- Bouton Enregistrer -->
-    <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerVehicule()"
-        [disabled]="form.invalid">Enregistrer</button>
+    <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid" (click)="enregistrerVehicule()">Enregistrer</button>
     <!-- fin Bouton Enregistrer -->
 </div>

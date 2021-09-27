@@ -1,0 +1,74 @@
+<!-- Afficher matricule -->
+<div *ngIf="tun" class="position-relative form-group container matricule">
+    <div class="row matriculetun">
+        <ul class="list-group" *ngIf="vehicule">
+            <div class="form-group">
+                <li class="list-group-item" id="numSerie">{{serie}}</li>
+            </div>
+            <div class="form-group">
+                <li class="list-group-item" id="numCar">{{numCar}}</li>
+            </div>
+        </ul>
+    </div>
+</div>
+<!-- Affichage input RS si type matricule est rs -->
+<div *ngIf="rs" class="position-relative form-group container matricule">
+    <div class="row matriculers">
+        <ul class="list-group" *ngIf="vehicule">
+            <div class="form-group">
+                <li class="list-group-item" id="numRS">{{matRS}}</li>
+            </div>
+        </ul>
+    </div>
+</div>
+<div mat-dialog-content class="scrollbar scrollbar-primary">
+  <ul class="list-group" *ngIf="vehicule">
+      <!-- Afficher marque -->
+    <div class="position-relative form-group"><label for="marque" class="">Marque</label>
+      <li class="list-group-item">{{vehicule.marque}}</li>
+    </div>
+    <!-- Afficher modele -->
+    <div class="position-relative form-group"><label for="modele" class="">Modele</label>
+      <li class="list-group-item">{{vehicule.modele}}</li>
+    </div>
+    <!-- Afficher couleur -->
+    <div class="position-relative form-group"><label for="couleur" class="">Couleur</label>
+      <li class="list-group-item">{{vehicule.couleur}}</li>
+    </div>
+    <!-- Afficher categorie -->
+    <div class="position-relative form-group"><label for="categories" class="">Categories Permis Accordées</label>
+      <li class="list-group-item">{{vehicule.categories}}</li>
+    </div>
+    <!-- Afficher proprietaire -->
+    <div class="position-relative form-group"><label for="proprietaire" class="">Proprietaire</label>
+      <li class="list-group-item">{{vehicule.proprietaire}}</li>
+    </div>
+    <!-- Afficher num proprietaire -->
+    <div class="position-relative form-group"><label for="kmprochainentretien" class="">Téléphone Proprietaire</label>
+      <li class="list-group-item">{{vehicule.num_proprietaire}}</li>
+    </div>
+    <!-- Afficher charge utile -->
+    <div class="position-relative form-group"><label for="charge_utile" class="">Charge Utile</label>
+      <li class="list-group-item">{{vehicule.charge_utile}}</li>
+    </div>
+    <!-- Afficher longueur -->
+    <div class="position-relative form-group"><label for="longueuer" class="">Longueur</label>
+      <li class="list-group-item">{{vehicule.longueur}}</li>
+    </div>
+    <!-- Afficher largeur -->
+    <div class="position-relative form-group"><label for="largeur" class="">Largeur</label>
+      <li class="list-group-item">{{vehicule.largeur}}</li>
+    </div>
+    <!-- Afficher hauteur -->
+    <div class="position-relative form-group"><label for="hauteur" class="">Hauteur</label>
+      <li class="list-group-item">{{vehicule.hauteur}}</li>
+    </div>
+
+  </ul>
+</div>
+<div mat-dialog-actions class="float-right">
+  <!-- Bouton Fermer -->
+  <button mat-button class="mb-2 mr-2" (click)="fermerDetailVehiculeLoue()">Fermer</button>
+  <!-- fin Bouton Fermer -->
+
+</div>

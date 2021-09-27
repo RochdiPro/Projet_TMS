@@ -470,6 +470,13 @@ export class AjouterMissionComponent implements OnInit {
   bonLivraisons: any;
   listeClients:any;
   client: any;
+  poidsRestant: Number;
+  volumeRestant: Number;
+  facture: any;
+  BL: any; 
+  xmldata: any;
+  new_obj: any;
+  obj_articles: any = [];
 
 
 
@@ -483,6 +490,8 @@ export class AjouterMissionComponent implements OnInit {
     });
     this.chargerEmployes();
     this.chargerVehicules();
+    this.chargerListeClients();
+    this.getDetail(13);
   }
 
   chargerEmployes(){ //appel au service qui permet de lister les employes
@@ -500,7 +509,6 @@ export class AjouterMissionComponent implements OnInit {
 
   afficherSelectChauffeur(){ //afficher le mat select du chauffeur
     this.selectionChauffeur = true;
-    console.log(this.date)
   }
 
   afficherInfoChauffeur(){ //afficher les informations du chauffeur
@@ -516,7 +524,12 @@ export class AjouterMissionComponent implements OnInit {
   }
 
   calculerVolumeVehicule(){ //calculer le volume dans une vehicule
-    return (Number(this.vehiculeSelectionne.longueur)*Number(this.vehiculeSelectionne.largeur)*Number(this.vehiculeSelectionne.hauteur)*0.001)
+    return (Number(this.vehiculeSelectionne.longueur)*Number(this.vehiculeSelectionne.largeur)*Number(this.vehiculeSelectionne.hauteur)*0.000001)
+  }
+
+  reinitialiserVolumePoidsRestant(){
+    this.volumeRestant = this.calculerVolumeVehicule();
+    this.poidsRestant = this.vehiculeSelectionne.charge_utile;
   }
 
   testerValiditePermis(){
@@ -524,7 +537,6 @@ export class AjouterMissionComponent implements OnInit {
     let datePermis = new Date(this.chauffeurSelectionne.date_de_Permis);
     var differenceDate = this.date.getTime() - datePermis.getTime();
     var differenceDateEnJour = differenceDate / (1000 * 3600 * 24);
-    console.log(differenceDateEnJour);
     if (differenceDateEnJour > 3650){
       validite = "Non Valide"
     } else {
@@ -556,9 +568,56 @@ export class AjouterMissionComponent implements OnInit {
   }
 
   getClientParId(id: any){
-    this.client = this.listeClients.filter((x: any) => x.Id_Clt === id);
+    this.client = this.listeClients.filter((x: any) => x.id_Clt === Number(id));
     return this.client[0];
 
+  }
+
+  getDetail(id: any) {
+    this.service.Detail_Facture(id).subscribe((detail: any) => {
+      const reader = new FileReader();
+    
+      reader.onloadend = () => {
+        this.facture = reader.result;
+        var parseString = require('xml2js').parseString;
+        let data1;
+        parseString(atob(this.facture.substr(28)), function (err: any, result: any) {
+          data1 = result.Facture;
+
+        })
+        this.xmldata= data1
+        console.log( this.xmldata)
+        
+        for (let i = 0; i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
+
+          this.new_obj = {}
+          this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
+          this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
+          
+          this.obj_articles.push(this.new_obj)
+        }
+
+        for (let i = 0; i < this.xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
+
+          this.new_obj = {}
+          this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
+          this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
+          
+          this.obj_articles.push(this.new_obj)
+        }
+
+        for (let i = 0; i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
+
+          this.new_obj = {}
+          this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
+          this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
+          
+          this.obj_articles.push(this.new_obj)
+        }
+        console.log(this.obj_articles);
+      }
+      reader.readAsDataURL(detail);
+    });
   }
 
  

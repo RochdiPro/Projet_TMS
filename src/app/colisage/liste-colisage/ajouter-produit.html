@@ -40,7 +40,7 @@
             Volume
             <div style="display: inline-block; width: 100%;">
                 <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
-                    <mat-label style="text-transform: capitalize;">Volume (cm3)</mat-label>
+                    <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
                     <input matInput formControlName="volume" required type="number">
                 </mat-form-field>
             </div>
@@ -230,7 +230,7 @@
                 <div class="w-100 titre">Volume:</div>
             </mat-grid-tile>
             <mat-grid-tile>
-                <div class="w-100">{{this.premierFormGroup.get('volume').value}} cm3</div>
+                <div class="w-100">{{this.premierFormGroup.get('volume').value}} m3</div>
             </mat-grid-tile>
         </mat-grid-list>
         <div style="float: right;">

@@ -1,0 +1,51 @@
+<!-- Bouton pour ajouter nouvelle vehicule -->
+<button mat-mini-fab color="primary" class="mt-1 mr-2 float-right" style="margin-bottom: 13px;" (click)="ouvrirAjouterVehicule()">
+    <mat-icon>add</mat-icon>
+</button>
+<!-- fin Bouton pour ajouter nouvelle vehicule -->
+<table class="mb-0 table">
+    <thead>
+        <tr>
+            <th style="text-align:center">Vehicule</th>
+            <th style="text-align:center">Type Carosserie</th>
+            <th style="text-align:center">Propriétaire</th>
+            <th style="text-align:center">Tél. Propriétaire</th>
+            <th style="text-align:center">Disponibilité</th>
+            <th style="text-align:center"></th>
+
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let vehicule of vehiculesLoues">
+            <th scope="row" style="text-align:center">{{vehicule.matricule}}</th>
+            <td style="text-align:center">
+                <p class="mt-2" *ngIf="vehicule.categories === 'A/A1/B/B+E/C/C+E/D/D1/D+E/H';">DEUX ROUES</p>
+                <p class="mt-2" *ngIf="vehicule.categories === 'B/B+E/C/C+E/D/D1/D+E/H';">VOITURES PARTICULIÈRES
+                </p>
+                <p class="mt-2" *ngIf="vehicule.categories === 'C/C+E';">POIDS LOURDS</p>
+                <p class="mt-2" *ngIf="vehicule.categories === 'C+E';">POIDS LOURDS ARTICULÉS</p>
+            </td>
+            <td style="text-align:center">{{vehicule.proprietaire}}</td>
+            <td style="text-align:center">{{vehicule.num_proprietaire}}</td>
+            <td style="text-align:center"
+             [ngClass]="{'disponible': vehicule.etat_vehicule === 'Disponible', 'enMission': vehicule.etat_vehicule === 'En Mission'}">
+             {{vehicule.etat_vehicule}}</td>
+            <td style="text-align:center; width: 200px;">
+                <!-- bouton de detail vehicule -->
+                <button class="mb-2  btn " (click)="ouvrirDetailVehiculeLoue(vehicule.id_Vehicule_Loue)"><i class="fas fa-eye"></i></button>
+                <!-- fin bouton de detail vehicule -->
+
+                <!-- Bouton supprimer vehicule -->
+                <button class="mb-2  btn "><i class="fas fa-trash-alt" style="color: #ff0000;" (click)="supprimerVehiculeLoue(vehicule.id_Vehicule_Loue)"></i>
+                </button>
+                <!-- fin Bouton supprimer vehicule -->
+                <!-- Slide toggle de disponibilité -->
+                <mat-slide-toggle class="example-margin" color="primary"></mat-slide-toggle>
+                <!-- fin slide toggle de disponibilité -->
+            </td>
+
+
+        </tr>
+
+    </tbody>
+</table>

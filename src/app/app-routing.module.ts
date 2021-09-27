@@ -5,7 +5,7 @@ import { MenuComponent } from './menu/menu.component';
 import { SubChildComponent } from './sub-child/sub-child.component';
 import { MenuTMSComponent } from './TMS/menu-tms/menu-tms.component'
 import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
-import { VehiculeComponent } from './TMS/parc/vehicule/vehicule.component';
+import { VehiculeComponent, MesVehiculesComponent, VehiculesLoueComponent } from './TMS/parc/vehicule/vehicule.component';
 import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
 import { AjouterMissionComponent, ListerMissionsComponent, MissionsComponent } from './TMS/parc/missions/missions.component';
 import { ColisageComponent } from './colisage/colisage.component';
@@ -41,7 +41,10 @@ const routes: Routes =
           path: 'TMS', component: MenuTMSComponent, children: [
 
             { path: 'Parc', component: MenuParcComponent },
-            { path: 'Vehicules', component: VehiculeComponent },
+            { path: 'Vehicules', component: VehiculeComponent, children: [
+              { path: 'Mes-Vehicules', component: MesVehiculesComponent },
+              { path: 'Vehicules-Loues', component: VehiculesLoueComponent },
+            ] },
             { path: 'Chauffeurs', component: ChauffeursComponent },
             {
               path: 'Missions', component: MissionsComponent, children: [

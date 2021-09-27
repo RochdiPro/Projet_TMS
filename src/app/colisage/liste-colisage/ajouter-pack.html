@@ -40,7 +40,7 @@
             Volume
             <div style="display: inline-block; width: 100%;">
                 <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
-                    <mat-label style="text-transform: capitalize;">Volume (cm3)</mat-label>
+                    <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
                     <input matInput formControlName="volume" required type="number">
                 </mat-form-field>
             </div>
@@ -138,10 +138,10 @@
                         <mat-form-field appearance="fill" style="width: 32%;">
                             <mat-label>Unite</mat-label>
                             <mat-select formControlName="unite">
-                                <mat-option value="Piece">Piece</mat-option>
-                                <mat-option value="Kg">Kg</mat-option>
-                                <mat-option value="m">m</mat-option>
-                                <mat-option value="l">l</mat-option>
+                                <mat-option value="Carton">Carton</mat-option>
+                                <mat-option value="Palette">Palette</mat-option>
+                                <mat-option value="Vrac">Vrac</mat-option>
+                                <mat-option value="Sac">Sac</mat-option>
                             </mat-select>
                         </mat-form-field>
                     </div>
@@ -198,7 +198,9 @@
                 <ng-container matColumnDef="poidsTot">
                     <th mat-header-cell *matHeaderCellDef>Poids Total</th>
                     <td mat-cell *matCellDef="let element">
-                        {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ? calculerPoidsPack(this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].poids,this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].qte) : ''}}
+                        {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ?
+                        calculerPoidsPack(this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].poids,this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].qte)
+                        : ''}}
                     </td>
                 </ng-container>
                 <!-- Colonne categorie -->
@@ -255,7 +257,7 @@
                 <div class="w-100 titre">Volume:</div>
             </mat-grid-tile>
             <mat-grid-tile>
-                <div class="w-100">{{this.premierFormGroup.get('volume').value}} cm3</div>
+                <div class="w-100">{{this.premierFormGroup.get('volume').value}} m3</div>
             </mat-grid-tile>
         </mat-grid-list>
         <div style="float: right;">

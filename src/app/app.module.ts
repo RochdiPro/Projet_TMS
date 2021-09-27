@@ -8,7 +8,7 @@ import { SubChildComponent } from './sub-child/sub-child.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MenuTMSComponent } from './TMS/menu-tms/menu-tms.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { VehiculeComponent, AjouterCarburantComponent, DetailVehiculeComponent, MiseAJourComponent, ReclamationComponent, AjoutComponent, NotificationComponent, MiseAJourConsommationComponent } from './TMS/parc/vehicule/vehicule.component';
+import { VehiculeComponent, MesVehiculesComponent, AjouterCarburantComponent, DetailVehiculeComponent, MiseAJourComponent, ReclamationComponent, AjoutComponent, NotificationComponent, MiseAJourConsommationComponent, VehiculesLoueComponent, AjouterVehiculeLoueComponent, DetailVehiculeLoueComponent } from './TMS/parc/vehicule/vehicule.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { registerLocaleData } from '@angular/common';
@@ -59,10 +59,12 @@ registerLocaleData(localeFr, 'fr');
     SubChildComponent,
     MenuTMSComponent,
     VehiculeComponent,
+    MesVehiculesComponent,
     AjouterCarburantComponent,
     DetailVehiculeComponent,
     MiseAJourComponent,
     ReclamationComponent,
+    VehiculesLoueComponent,
     AjoutComponent,
     NotificationComponent,
     MiseAJourConsommationComponent,
@@ -80,7 +82,9 @@ registerLocaleData(localeFr, 'fr');
     ColisageComponent,
     AjouterProduitComponent,
     MenuAjouterComponent,
-    AjouterPackComponent
+    AjouterPackComponent,
+    AjouterVehiculeLoueComponent,
+    DetailVehiculeLoueComponent
    
   ],
   imports: [

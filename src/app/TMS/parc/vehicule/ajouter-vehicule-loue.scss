@@ -1,0 +1,86 @@
+.example-form {
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+}
+
+.example-full-width {
+    width: 100%;
+}
+
+.dim {
+    width: 31%;
+}
+.mat-dialog-content,
+.mat-dialog-title {
+    margin: 0 !important;
+    padding: 12px 24px !important;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.matriculetun {
+    background-image: url(../../../../assets/images/matricule.png);
+    height: 57px;
+    width: 272px;
+    position: relative;
+    background-repeat: no-repeat;
+}
+.matriculers{
+    height: 57px;
+    width: 272px;
+    background-image: url(../../../../assets/images/rs-mat.png);
+    position: relative;
+    background-repeat: no-repeat;
+}
+#numSerie {
+    display: inline;
+    width: 80px;
+    top: 10px;
+    position: absolute;
+    left: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 24px;
+}
+#numCar {
+    display: inline;
+    width: 100px;
+    top: 10px;
+    position: absolute;
+    right: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 24px;
+}
+.form-control {
+    background: #ebebeb;
+    color: #666;
+    border: none;
+    padding: 0.5rem 1rem;
+}
+
+.matricule {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#numRS{
+    display: inline;
+    width: 130px;
+    top: 10px;
+    position: absolute;
+    left: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0,0,0,0);
+    color: white;
+    font-size: 24px;
+}

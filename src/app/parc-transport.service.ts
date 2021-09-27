@@ -99,6 +99,37 @@ export class ParcTransportService {
     )
   }
 
+  //Ajouter un nouveau vehicule loué
+  public creerVehiculeLoue(formData: any) {
+    this.http.post(erp + 'Creer_Vehicule_Loue', formData).subscribe(
+      (response) => console.log(response),
+      (error) => console.log(error)
+    )
+  }
+
+  //lister les vehicules loués
+  public vehiculesLoues() {
+    return this.http.get(erp + 'Vehicules_Loues')
+  }
+
+  //importer les données d'un vehicule loué par ID
+  public vehiculeLoue(id : any){
+    return this.http.get(erp + 'Vehicule_Loue', {
+      params: {
+        id_vehicule_loue : id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
+  //supprimer un vehicule loué
+  public supprimerVehiculeLoue(id: any) {
+    return this.http.delete(erp + 'Supprimer_Vehicule_Loue', {
+      params: {
+        id_vehicule_loue : id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   //lister les employes
   public employes() {
     return this.http.get(infonet + 'Employes');
@@ -145,6 +176,17 @@ export class ParcTransportService {
   //charger les BLs
   public bon_Livraison(){
     return this.http.get(infonet + 'Bon_Livraisons')
+  }
+
+  //charger Les details du facture
+  public  Detail_Facture(Id: any): Observable<any> {
+
+    return this.http.get(infonet + "Detail_Facture"
+      , {
+        params: {
+          Id_Facture: Id
+        }, responseType: 'blob'
+      }).pipe(catchError(this.handleError))
   }
 
   //charger les données d'un client a partir son Id

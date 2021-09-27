@@ -14,7 +14,37 @@ import { Location } from '@angular/common';
   templateUrl: './vehicule.component.html',
   styleUrls: ['./vehicule.component.scss']
 })
-export class VehiculeComponent {
+export class VehiculeComponent implements OnInit {
+  //Declaration des variables
+  mesVehicules = false; //pour l'activation du tab mes vehicules
+  vehiculesLoues = false; //pour l'activation du tab vehicules loues
+
+  constructor(public router: Router) { }
+  ngOnInit(): void {
+    if (this.router.url === '/Menu/TMS/Vehicules/Mes-Vehicules') this.activerMesVehicules();
+    if (this.router.url === '/Menu/TMS/Vehicules/Vehicules-Loues') this.activerVehiculesLoues();
+
+  }
+
+  activerMesVehicules() {
+    this.mesVehicules = true;
+    this.vehiculesLoues = false;
+  }
+
+  activerVehiculesLoues() {
+    this.mesVehicules = false;
+    this.vehiculesLoues = true;
+  }
+
+}
+
+//*************************************************Tab Mes Vehicules *************************************************
+@Component({
+  selector: 'mes-vehicules',
+  templateUrl: './mes-vehicules.html',
+  styleUrls: ['./mes-vehicules.scss']
+})
+export class MesVehiculesComponent implements OnInit {
   //Declaration des variables
   vehicules: any;
   carburants: any;
@@ -25,7 +55,10 @@ export class VehiculeComponent {
   form = new FormGroup({ carb: new FormControl(), prix: new FormControl() });
 
   //constructeur
-  constructor(private dialog: MatDialog, private http: HttpClient, public service: ParcTransportService, public _router: Router, public _location: Location) {
+  constructor(private dialog: MatDialog, public service: ParcTransportService, public _router: Router, public _location: Location) {
+
+  }
+  ngOnInit(): void {
     this.form.get('carb').setValidators([Validators.required]);
     this.form.get('prix').setValidators([Validators.required, Validators.pattern("(^[0-9]{1,9})+(\.[0-9]{1,4})?$")]);
     this.form.controls.prix.disable();
@@ -159,11 +192,11 @@ export class VehiculeComponent {
     this.form.controls.prix.setValue("");
     this.form.controls.prix.disable();
   }
-  refraichirCarburant(){
+  refraichirCarburant() {
     this.service.carburants().subscribe((data) => {
       this.carburants = data;
     })
-  
+
   }
   // fin partie de modification carburant
 }
@@ -213,7 +246,7 @@ export class AjouterCarburantComponent {
   templateUrl: './ajouter-vehicule.html',
   styleUrls: ['./ajouter-vehicule.scss']
 })
-export class AjoutComponent {
+export class AjoutComponent implements OnInit {
   //Declaration des variables
   typematricules = [           //les types de matricules tunisiennes
     { name: 'TUN', value: 'TUN' },
@@ -229,7 +262,7 @@ export class AjoutComponent {
   tun = false;   //pour afficher le inputField des matricules TUN ou RS
   rs = false;
   matricule = "";
-  typeMatriculeSelectionne: String; //pour enregistrer le type de matricule choisi
+  typeMatriculeSelectionne = 'TUN'; //pour enregistrer le type de matricule choisi
   categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
   carburant: any;
   prixCarburant: any;
@@ -237,9 +270,9 @@ export class AjoutComponent {
   carburants: any;
 
   // constructeur
-  constructor(public dialogRef: MatDialogRef<AjoutComponent>, private http: ParcTransportService, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
+  constructor(public dialogRef: MatDialogRef<AjoutComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.form = this.fb.group({
-      typematricule: ['', [Validators.required]],
+      typematricule: ['TUN', [Validators.required]],
       matriculetun1: [''],
       matriculetun2: [''],
       matriculers: [''],
@@ -263,19 +296,22 @@ export class AjoutComponent {
       this.carburants = data;
     })
   }
+  ngOnInit(): void {
+    this.testType();
+  }
 
   //bouton Annuler
   fermerAjouterVehicule(): void { //fermer la boite de dialogue
     this.dialogRef.close();
 
   }
-  
+
   // Bouton Enregistrer
   enregistrerVehicule() { //enregistrer les données
     var formData: any = new FormData();
     if (this.typeMatriculeSelectionne === 'TUN') {  //tester le type de matricule selectionné pour l'enregistrer
       this.matricule = "";
-      this.matricule = this.form.get('matriculetun1').value.concat("TUN");
+      this.matricule = this.form.get('matriculetun1').value.toString().concat("TUN");
       this.matricule = this.matricule.concat(this.form.get('matriculetun2').value.toString());
     } else if (this.typeMatriculeSelectionne === 'RS') {
       this.matricule = "";
@@ -320,9 +356,9 @@ export class AjoutComponent {
       this.tun = true;
       this.rs = false;
 
-      this.form.get('matriculetun1').setValidators([Validators.required, Validators.pattern("^[0-9]*$"), Validators.minLength(3), Validators.maxLength(3)])
+      this.form.get('matriculetun1').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
       this.form.get('matriculetun1').updateValueAndValidity();
-      this.form.get('matriculetun2').setValidators([Validators.required, Validators.pattern("^[0-9]*$"), , Validators.minLength(4), Validators.maxLength(4)])
+      this.form.get('matriculetun2').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
       this.form.get('matriculetun2').updateValueAndValidity();
       this.form.get('matriculers').setValidators([])
       this.form.get('matriculers').updateValueAndValidity();
@@ -784,5 +820,226 @@ export class ReclamationComponent {
         this._router.navigate([decodeURI(this._location.path())]);
       });
     }, 500);
+  }
+}
+
+//****************************************************** Tab Vehicules Loués ****************************
+@Component({
+  selector: 'app-vehicules-loue',
+  templateUrl: './vehicules-loue.html',
+  styleUrls: ['./vehicules-loue.scss']
+})
+export class VehiculesLoueComponent implements OnInit {
+  vehiculesLoues: any;
+  constructor(public service: ParcTransportService, private dialog: MatDialog, public _router: Router, public _location: Location) { }
+
+  ngOnInit(): void {
+    this.service.vehiculesLoues().subscribe((data) => {
+      this.vehiculesLoues = data;
+    })
+  }
+
+  // appelée dans le Bouton ajouter nouvelle vehicule Loué
+  ouvrirAjouterVehicule(): void { //ouvrir la boite de dialogue Ajouter nouvelle vehicule Loué
+    const dialogRef = this.dialog.open(AjouterVehiculeLoueComponent, {
+      width: '450px',
+      panelClass: "custom-dialog",
+      autoFocus: false,
+    });
+  }
+
+
+  //bouton de detail vehicule loué
+  ouvrirDetailVehiculeLoue(id: any): void { //ouvrir la boite de dialogue de détails vehicule loué
+    localStorage.setItem('idV', id);
+    const dialogRef = this.dialog.open(DetailVehiculeLoueComponent, {
+      width: '450px',
+      panelClass: "custom-dialog",
+      autoFocus: false,
+    });
+  }
+
+  //Bouton supprimer vehicule Loue
+  supprimerVehiculeLoue(id: any): void { //supprimer vehicule
+    this.service.supprimerVehiculeLoue(id).subscribe();
+    setTimeout(() => {
+      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+        this._router.navigate([decodeURI(this._location.path())]);
+      });
+    }, 500);
+  }
+}
+
+// *************************************Boite de dialogue ajouter vehicule loue***************************
+@Component({
+  selector: 'app-ajouter-vehicule-loue',
+  templateUrl: './ajouter-vehicule-loue.html',
+  styleUrls: ['./ajouter-vehicule-loue.scss']
+})
+export class AjouterVehiculeLoueComponent implements OnInit {
+  typematricules = [           //les types de matricules tunisiennes
+    { name: 'TUN', value: 'TUN' },
+    { name: 'RS', value: 'RS' },
+  ];
+  carosserie = [        //types de carosserie des véhicules et leur catégories de permis accordées
+    { name: 'DEUX ROUES', value: 'A/A1/B/B+E/C/C+E/D/D1/D+E/H' },
+    { name: 'VOITURES PARTICULIÈRES', value: 'B/B+E/C/C+E/D/D1/D+E/H' },
+    { name: 'POIDS LOURDS', value: 'C/C+E' },
+    { name: 'POIDS LOURDS ARTICULÉS', value: 'C+E' },
+  ];
+  form: FormGroup;
+  tun = false;   //pour afficher le inputField des matricules TUN ou RS
+  rs = false;
+  matricule = "";
+  typeMatriculeSelectionne = 'TUN' //pour enregistrer le type de matricule choisi
+  categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
+
+  constructor(public dialogRef: MatDialogRef<AjouterVehiculeLoueComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
+  }
+
+  ngOnInit(): void {
+    this.form = this.fb.group({
+      typematricule: ['TUN', [Validators.required]],
+      matriculetun1: [''],
+      matriculetun2: [''],
+      matriculers: [''],
+      marque: ['', [Validators.required]],
+      modele: ['', [Validators.required]],
+      couleur: ['', [Validators.required]],
+      carosserie: ['', [Validators.required]],
+      proprietaire: ['', [Validators.required]],
+      telephone: ['', [Validators.required]],
+      chargeUtile: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      longueur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      largeur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      hauteur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+    });
+    this.testType();
+  }
+
+  testType(): void { //tester le type de matricule si elle est TUN ou RS
+    if (this.typeMatriculeSelectionne === 'TUN') { //si le type de matricule est TUN on definie les validateurs de ses inputFields et on supprime les validateurs du type RS
+      this.tun = true;
+      this.rs = false;
+
+      this.form.get('matriculetun1').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
+      this.form.get('matriculetun1').updateValueAndValidity();
+      this.form.get('matriculetun2').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
+      this.form.get('matriculetun2').updateValueAndValidity();
+      this.form.get('matriculers').setValidators([])
+      this.form.get('matriculers').updateValueAndValidity();
+      this.form.patchValue({ matriculers: '' })
+    }
+    else if (this.typeMatriculeSelectionne === 'RS') { //si le type de matricule est RS on definie les validateurs de son inputField et on supprime les validateurs du type TUN
+      this.tun = false;
+      this.rs = true;
+      this.form.get('matriculers').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
+      this.form.get('matriculers').updateValueAndValidity();
+      this.form.get('matriculetun1').setValidators([])
+      this.form.get('matriculetun1').updateValueAndValidity();
+      this.form.get('matriculetun2').setValidators([])
+      this.form.get('matriculetun2').updateValueAndValidity();
+      this.form.patchValue({ matriculetun1: '', matriculetun2: '' })
+    } else { //si aucun type selectionné on supprime les validateurs du type
+      this.tun = false;
+      this.rs = false;
+      this.form.get('matriculetun1').setValidators([])
+      this.form.get('matriculetun1').updateValueAndValidity();
+      this.form.get('matriculetun2').setValidators([])
+      this.form.get('matriculetun2').updateValueAndValidity();
+      this.form.get('matriculers').setValidators([])
+      this.form.get('matriculers').updateValueAndValidity();
+      this.form.patchValue({ matriculetun1: '', matriculetun2: '', matriculers: '' })
+    }
+  }
+
+  //bouton Annuler
+  fermerAjouterVehicule(): void { //fermer la boite de dialogue
+    this.dialogRef.close();
+
+  }
+
+  enregistrerVehicule() { //enregistrer les données
+    var formData: any = new FormData();
+    if (this.typeMatriculeSelectionne === 'TUN') {  //tester le type de matricule selectionné pour l'enregistrer
+      this.matricule = "";
+      this.matricule = this.form.get('matriculetun1').value.toString().concat("TUN");
+      this.matricule = this.matricule.concat(this.form.get('matriculetun2').value.toString());
+    } else if (this.typeMatriculeSelectionne === 'RS') {
+      this.matricule = "";
+      var rsstr = "RS";
+      this.matricule = rsstr.concat(this.form.get('matriculers').value);
+    }
+    formData.append("matricule", this.matricule);
+    formData.append("marque", this.form.get('marque').value);
+    formData.append("modele", this.form.get('modele').value);
+    formData.append("couleur", this.form.get('couleur').value);
+    formData.append("proprietaire", this.form.get('proprietaire').value);
+    formData.append("num_proprietaire", this.form.get('telephone').value);
+    formData.append("categories", this.categorie);
+    formData.append("charge_utile", this.form.get('chargeUtile').value);
+    formData.append("longueur", this.form.get('longueur').value);
+    formData.append("largeur", this.form.get('largeur').value);
+    formData.append("hauteur", this.form.get('hauteur').value);
+    formData.append("etat_vehicule", "Disponible");
+    formData.append("position_vehicule", "Sfax");
+    this.service.creerVehiculeLoue(formData);
+    this.dialogRef.close();
+    setTimeout(() => {
+      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
+        this._router.navigate([decodeURI(this._location.path())]);
+      });
+    }, 500);
+
+  }
+}
+
+// ********************************************Detail Vehicule***********************************************
+
+@Component({
+  selector: 'app-detail-vehicule-loue',
+  templateUrl: './detail-vehicule-loue.html',
+  styleUrls: ['./detail-vehicule-loue.scss']
+})
+export class DetailVehiculeLoueComponent implements OnInit {
+  //declaration des variables
+  vehicule: any;
+  id: number;
+  tun = false;
+  rs = false;
+  serie: String;
+  numCar: String;
+  matRS : String;
+  matricule : String;
+  constructor(public dialogRef: MatDialogRef<DetailVehiculeLoueComponent>, public service: ParcTransportService) { }
+
+  ngOnInit(): void {
+    console.log(localStorage.getItem('idV'))
+    this.id = Number(localStorage.getItem('idV')); // ID du vehicule selectionné
+    this.service.vehiculeLoue(this.id).subscribe((data) => { //charger les données du vehicule selectionné
+      this.vehicule = data;
+      this.matricule = this.vehicule.matricule;
+      if (this.vehicule.matricule.includes('TUN')) {
+        this.tun = true;
+        this.rs = false;
+        this.serie = this.matricule.split('TUN')[0];
+        this.numCar = this.matricule.split('TUN')[1];
+      }
+      if (this.vehicule.matricule.includes('RS')) {
+        this.tun = false;
+        this.rs = true;
+        this.matRS = this.matricule.replace('RS','');
+      }
+
+
+      // this.service.filtrerMission("matricule", this.vehicule.matricule).subscribe(res => { //pour charger les missions terminées par le véhicule
+      //   this.missions = res;
+      //   this.missions = this.missions.filter((x: any) => x.etatMission == "Terminée");
+      // });
+    });
+  }
+  //Bouton Fermer
+  fermerDetailVehiculeLoue(): void { //fermer la boite de dialogue
+    this.dialogRef.close();
   }
 }

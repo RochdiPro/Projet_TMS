@@ -39,8 +39,11 @@
     "pdfmake": "^0.2.2",
     "rxjs": "~6.6.0",
     "safe-pipe": "^1.0.3",
+    "stream": "0.0.2",
     "sweetalert2": "^11.1.5",
+    "timers": "^0.1.1",
     "tslib": "^2.0.0",
+    "xml2js": "^0.4.23",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
