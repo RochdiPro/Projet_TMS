@@ -404,12 +404,30 @@ export class DetailVehiculeComponent {
   date = new Date();
   missions: any;
   carburant: any;
+  tun = false;
+  rs = false;
+  serie: String;
+  numCar: String;
+  matRS: String;
+  matricule: String;
 
   //constructeur
   constructor(public dialogRef: MatDialogRef<DetailVehiculeComponent>, public service: ParcTransportService, public datepipe: DatePipe) {
     this.id = localStorage.getItem('idV'); // ID du vehicule selectionné
     this.service.vehicule(this.id).subscribe((data) => { //charger les données du vehicule selectionné
       this.vehicule = data;
+      this.matricule = this.vehicule.matricule;
+      if (this.vehicule.matricule.includes('TUN')) {
+        this.tun = true;
+        this.rs = false;
+        this.serie = this.matricule.split('TUN')[0];
+        this.numCar = this.matricule.split('TUN')[1];
+      }
+      if (this.vehicule.matricule.includes('RS')) {
+        this.tun = false;
+        this.rs = true;
+        this.matRS = this.matricule.replace('RS', '');
+      }
       this.service.carburants().subscribe((data: any) => { //charger les informations de carburant de vehicule pour calculer la consommation
         this.carburant = data.filter((x: any) => x.nom = this.vehicule.carburant);
         this.carburant = this.carburant[0];
@@ -831,14 +849,56 @@ export class ReclamationComponent {
 })
 export class VehiculesLoueComponent implements OnInit {
   vehiculesLoues: any;
-  constructor(public service: ParcTransportService, private dialog: MatDialog, public _router: Router, public _location: Location) { }
+  disponibility: any;
+  minDate = new Date();
+  form: FormGroup;
+  constructor(public service: ParcTransportService, private dialog: MatDialog, public _router: Router, public _location: Location, public fb: FormBuilder) { }
 
   ngOnInit(): void {
-    this.service.vehiculesLoues().subscribe((data) => {
-      this.vehiculesLoues = data;
+    this.form = this.fb.group({
+      date: this.fb.array([])
+    });
+    this.chargerVehicules();
+  }
+
+  date(): FormArray {
+    return this.form.get("date") as FormArray
+  }
+
+  nouveauDate(dateDebut: any, dateFin: any): FormGroup {
+    return this.fb.group({
+      dateDebut: [dateDebut, Validators.required],
+      dateFin: [dateFin, Validators.required],
     })
   }
 
+  ajouterDatePicker(dateDebut: any, dateFin: any) {
+    this.date().push(this.nouveauDate(dateDebut, dateFin));
+  }
+
+  supprimerDate() {
+    this.date().clear();
+  }
+
+  majControlleur() {
+    this.supprimerDate();
+      this.vehiculesLoues.forEach((vehicule: any) => {
+        this.ajouterDatePicker(new Date(vehicule.date_debut_location), new Date(vehicule.date_fin_location))
+    });
+
+  }
+  //charger liste vehicules
+  async chargerVehicules() {
+    this.vehiculesLoues = await this.service.vehiculesLoues().toPromise();
+    this.majControlleur();
+  }
+
+  //charger vehicule par ID
+  chargerVehicule(id: any): any {
+    this.service.vehiculeLoue(id).subscribe((data) => {
+      return data;
+    });
+  }
   // appelée dans le Bouton ajouter nouvelle vehicule Loué
   ouvrirAjouterVehicule(): void { //ouvrir la boite de dialogue Ajouter nouvelle vehicule Loué
     const dialogRef = this.dialog.open(AjouterVehiculeLoueComponent, {
@@ -868,6 +928,16 @@ export class VehiculesLoueComponent implements OnInit {
       });
     }, 500);
   }
+
+  async changerDate(id: any, index: any) {
+    var formData: any = new FormData();
+    formData.append("id", id);
+    formData.append("date_debut_location", this.form.get('date').value[index].dateDebut);
+    formData.append("date_fin_location", this.form.get('date').value[index].dateFin);
+    await this.service.majDateLocation(formData).toPromise();
+    this.chargerVehicules();
+
+  }
 }
 
 // *************************************Boite de dialogue ajouter vehicule loue***************************
@@ -893,6 +963,7 @@ export class AjouterVehiculeLoueComponent implements OnInit {
   matricule = "";
   typeMatriculeSelectionne = 'TUN' //pour enregistrer le type de matricule choisi
   categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
+  minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
 
   constructor(public dialogRef: MatDialogRef<AjouterVehiculeLoueComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
   }
@@ -913,6 +984,8 @@ export class AjouterVehiculeLoueComponent implements OnInit {
       longueur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
       largeur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
       hauteur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      dateDebut: [''],
+      dateFin: [''],
     });
     this.testType();
   }
@@ -983,6 +1056,8 @@ export class AjouterVehiculeLoueComponent implements OnInit {
     formData.append("hauteur", this.form.get('hauteur').value);
     formData.append("etat_vehicule", "Disponible");
     formData.append("position_vehicule", "Sfax");
+    formData.append("date_debut_location", new Date(this.form.get('dateDebut').value));
+    formData.append("date_fin_location", new Date(this.form.get('dateFin').value));
     this.service.creerVehiculeLoue(formData);
     this.dialogRef.close();
     setTimeout(() => {
@@ -1009,8 +1084,8 @@ export class DetailVehiculeLoueComponent implements OnInit {
   rs = false;
   serie: String;
   numCar: String;
-  matRS : String;
-  matricule : String;
+  matRS: String;
+  matricule: String;
   constructor(public dialogRef: MatDialogRef<DetailVehiculeLoueComponent>, public service: ParcTransportService) { }
 
   ngOnInit(): void {
@@ -1028,7 +1103,7 @@ export class DetailVehiculeLoueComponent implements OnInit {
       if (this.vehicule.matricule.includes('RS')) {
         this.tun = false;
         this.rs = true;
-        this.matRS = this.matricule.replace('RS','');
+        this.matRS = this.matricule.replace('RS', '');
       }
 
 

@@ -164,6 +164,18 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- Date Location -->
+        <div class="position-relative form-group">
+            <mat-form-field class="example-full-width">
+                <mat-label>Date De Location</mat-label>
+                <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+                  <input matStartDate formControlName="dateDebut" placeholder="Date de debut" required>
+                  <input matEndDate formControlName="dateFin" placeholder="Date de fin" required>
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              </mat-form-field>
+        </div>
     </form>
 </div>
 <div mat-dialog-actions class="float-right form-group">

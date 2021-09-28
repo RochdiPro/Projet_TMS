@@ -1,9 +1,10 @@
 <!-- Bouton pour ajouter nouvelle vehicule -->
-<button mat-mini-fab color="primary" class="mt-1 mr-2 float-right" style="margin-bottom: 13px;" (click)="ouvrirAjouterVehicule()">
+<button mat-mini-fab color="primary" class="mt-1 mr-2 float-right" style="margin-bottom: 13px;"
+    (click)="ouvrirAjouterVehicule()">
     <mat-icon>add</mat-icon>
 </button>
 <!-- fin Bouton pour ajouter nouvelle vehicule -->
-<table class="mb-0 table">
+<table class="mb-0 table" [formGroup]="form">
     <thead>
         <tr>
             <th style="text-align:center">Vehicule</th>
@@ -15,8 +16,10 @@
 
         </tr>
     </thead>
-    <tbody>
-        <tr *ngFor="let vehicule of vehiculesLoues">
+    <tbody formArrayName="date">
+
+        <tr *ngFor="let vehicule of vehiculesLoues; let i=index" [formGroupName]="i"
+            [ngClass]="{'indisponible': vehicule.etat_vehicule === 'Indisponible'}">
             <th scope="row" style="text-align:center">{{vehicule.matricule}}</th>
             <td style="text-align:center">
                 <p class="mt-2" *ngIf="vehicule.categories === 'A/A1/B/B+E/C/C+E/D/D1/D+E/H';">DEUX ROUES</p>
@@ -28,24 +31,40 @@
             <td style="text-align:center">{{vehicule.proprietaire}}</td>
             <td style="text-align:center">{{vehicule.num_proprietaire}}</td>
             <td style="text-align:center"
-             [ngClass]="{'disponible': vehicule.etat_vehicule === 'Disponible', 'enMission': vehicule.etat_vehicule === 'En Mission'}">
-             {{vehicule.etat_vehicule}}</td>
+                [ngClass]="{'disponible': vehicule.etat_vehicule === 'Disponible', 'enMission': vehicule.etat_vehicule === 'En Mission'}">
+                {{vehicule.etat_vehicule}}</td>
             <td style="text-align:center; width: 200px;">
                 <!-- bouton de detail vehicule -->
-                <button class="mb-2  btn " (click)="ouvrirDetailVehiculeLoue(vehicule.id_Vehicule_Loue)"><i class="fas fa-eye"></i></button>
+                <button class="mb-2  btn " (click)="ouvrirDetailVehiculeLoue(vehicule.id_Vehicule_Loue)"><i
+                        class="fas fa-eye"></i></button>
                 <!-- fin bouton de detail vehicule -->
 
                 <!-- Bouton supprimer vehicule -->
-                <button class="mb-2  btn "><i class="fas fa-trash-alt" style="color: #ff0000;" (click)="supprimerVehiculeLoue(vehicule.id_Vehicule_Loue)"></i>
+                <button class="mb-2  btn "><i class="fas fa-trash-alt" style="color: #ff0000;"
+                        (click)="supprimerVehiculeLoue(vehicule.id_Vehicule_Loue)"></i>
                 </button>
                 <!-- fin Bouton supprimer vehicule -->
                 <!-- Slide toggle de disponibilité -->
-                <mat-slide-toggle class="example-margin" color="primary"></mat-slide-toggle>
+                <mat-form-field class="example-full-width" appearance="fill" style="width:1px;visibility:hidden;">
+                    <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+                        <input matStartDate placeholder="Start date" formControlName="dateDebut">
+                        <input matEndDate placeholder="End date" formControlName="dateFin">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker>
+                        <mat-date-range-picker-actions>
+                            <button mat-button matDateRangePickerCancel>Annuler</button>
+                            <button mat-raised-button color="primary" matDateRangePickerApply (click)="changerDate(vehicule.id_Vehicule_Loue, i)">OK</button>
+                        </mat-date-range-picker-actions>
+                    </mat-date-range-picker>
+                </mat-form-field>
+                <button class="mb-2  btn "><i class="far fa-calendar-alt" (click)="picker.open()"></i></button>
                 <!-- fin slide toggle de disponibilité -->
             </td>
 
 
         </tr>
+
 
     </tbody>
 </table>

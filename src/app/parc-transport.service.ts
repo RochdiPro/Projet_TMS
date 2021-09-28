@@ -130,6 +130,13 @@ export class ParcTransportService {
     }).pipe(catchError(this.handleError));
   }
 
+  //mise a jour etat vehicule loué
+  public majDateLocation(formData: any) {
+    return this.http.put(erp + 'Maj_Date_Location', formData).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   //lister les employes
   public employes() {
     return this.http.get(infonet + 'Employes');

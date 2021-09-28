@@ -1,4 +1,26 @@
-<h1 mat-dialog-title *ngIf="vehicule">Véhicule {{vehicule.matricule}} </h1>
+<!-- Afficher matricule TUN -->
+<div *ngIf="tun" class="position-relative form-group container matricule">
+  <div class="row matriculetun">
+      <ul class="list-group" *ngIf="vehicule">
+          <div class="form-group">
+              <li class="list-group-item" id="numSerie">{{serie}}</li>
+          </div>
+          <div class="form-group">
+              <li class="list-group-item" id="numCar">{{numCar}}</li>
+          </div>
+      </ul>
+  </div>
+</div>
+<!-- Afficher matricule rs -->
+<div *ngIf="rs" class="position-relative form-group container matricule">
+  <div class="row matriculers">
+      <ul class="list-group" *ngIf="vehicule">
+          <div class="form-group">
+              <li class="list-group-item" id="numRS">{{matRS}}</li>
+          </div>
+      </ul>
+  </div>
+</div>
 <div mat-dialog-content class="scrollbar scrollbar-primary">
   <ul class="list-group" *ngIf="vehicule && carburant">
     <div class="position-relative form-group"><label for="marque" class="">Marque</label>
