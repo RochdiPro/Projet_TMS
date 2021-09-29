@@ -62,7 +62,7 @@
           <td style="text-align:center"
              [ngClass]="{'disponible': vehicule.etatVehicule === 'Disponible', 'enMission': vehicule.etatVehicule === 'En Mission'}">
              {{vehicule.etatVehicule}}</td>
-          <td>
+          <td style="text-align:center;">
              <!-- bouton de notification -->
              <button class="mb-2  btn "
                 (click)="ouvrirNotifications(vehicule.id, vehicule.sujet, vehicule.description)">

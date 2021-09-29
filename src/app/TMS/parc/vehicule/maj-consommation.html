@@ -1,19 +1,19 @@
 <h1 mat-dialog-title>Mise à Jour Kilométrage Véhicule {{vehicule?.matricule}} </h1>
-<div mat-dialog-content>
-    <form class="" [formGroup]="form" *ngIf="vehicule">
+<div mat-dialog-content *ngIf="vehicule">
+    <form class="" [formGroup]="form" >
         <div class="position-relative form-group">
             <mat-form-field class="example-full-width">
                 <mat-label>Kilométrage Actuel</mat-label>
-                <input matInput formControlName="kmactuel" name="km-actuel" id="km-actuel" value="{{vehicule.kmactuel}}"
+                <input matInput formControlName="kmActuel" name="km-actuel" id="km-actuel" value="{{vehicule.kmactuel}}"
                     type="text">
-                <mat-error *ngIf="form.controls['kmactuel'].hasError('required')">
+                <mat-error *ngIf="form.controls['kmActuel'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
-                <mat-error *ngIf="form.controls['kmactuel'].hasError('pattern')">
+                <mat-error *ngIf="form.controls['kmActuel'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
                 </mat-error>
                 <mat-error
-                    *ngIf="form.controls['kmactuel'].hasError('kmvalide') && !(form.controls['kmactuel'].hasError('pattern') || form.controls['kmactuel'].hasError('required'))">
+                    *ngIf="form.controls['kmActuel'].hasError('kmvalide') && !(form.controls['kmActuel'].hasError('pattern') || form.controls['kmActuel'].hasError('required'))">
                     Kilométrage Actuel <strong>Invalide</strong>
                 </mat-error>
             </mat-form-field>
@@ -34,7 +34,7 @@
 
     </form>
 </div>
-<div mat-dialog-actions class="float-right">
+<div mat-dialog-actions class="float-right" *ngIf="vehicule">
     <!-- Bouton Annuler -->
     <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerMiseAJourConsommation()">Annuler</button>
     <!-- fin Bouton Annuler -->

@@ -62,13 +62,22 @@ export class MesVehiculesComponent implements OnInit {
     this.form.get('carb').setValidators([Validators.required]);
     this.form.get('prix').setValidators([Validators.required, Validators.pattern("(^[0-9]{1,9})+(\.[0-9]{1,4})?$")]);
     this.form.controls.prix.disable();
-    this.service.vehicules().subscribe((data) => {       //permet d'avoir le carburant et son prix enregistré
-      this.vehicules = data;
-    });
-    this.service.carburants().subscribe((data) => {
-      this.carburants = data;
-      console.log(this.carburants);
-    })
+    this.chargerVehicules();
+    this.chargerCarburants();
+
+  }
+
+  //charger la liste des vehicules
+  async chargerVehicules() {
+    this.vehicules = await this.service.vehicules().toPromise();
+  }
+
+  async chargerCarburants() {
+    this.carburants = await this.service.carburants().toPromise()
+  }
+
+  async chargerVehicule(id: any) {
+    this.vehicule = await this.service.vehicule(id).toPromise();
   }
 
   //bouton de detail vehicule
@@ -90,6 +99,9 @@ export class MesVehiculesComponent implements OnInit {
       panelClass: "custom-dialog",
       autoFocus: false,
     });
+    dialogRef.afterClosed().subscribe(result => {
+      this.chargerVehicules();
+    });
   }
 
   //bouton de mise a jour du consommation du vehicule
@@ -100,6 +112,9 @@ export class MesVehiculesComponent implements OnInit {
       width: '600px',
       autoFocus: false,
     });
+    dialogRef.afterClosed().subscribe(res => {
+      this.chargerVehicules();
+    })
   }
 
   // bouton de reclamation
@@ -109,6 +124,9 @@ export class MesVehiculesComponent implements OnInit {
       width: '500px',
       autoFocus: false,
     });
+    dialogRef.afterClosed().subscribe(res => {
+      this.chargerVehicules();
+    })
   }
 
   // Bouton pour ajouter nouvelle vehicule
@@ -118,6 +136,9 @@ export class MesVehiculesComponent implements OnInit {
       panelClass: "custom-dialog",
       autoFocus: false,
     });
+    dialogRef.afterClosed().subscribe(result => {
+      this.chargerVehicules();
+    });
   }
 
   // bouton de notification
@@ -125,26 +146,21 @@ export class MesVehiculesComponent implements OnInit {
     localStorage.setItem('idV', id);
     localStorage.setItem('sujetR', sujet);
     localStorage.setItem('descriptionR', description);
-    this.service.vehicule(id).subscribe((data) => {
-      this.vehicule = data;
-      localStorage.setItem("vehicule", JSON.stringify(this.vehicule));
+    this.chargerVehicule(id);
+    localStorage.setItem("vehicule", JSON.stringify(this.vehicule));
+    const dialogRef = this.dialog.open(NotificationComponent, {
+      width: '600px',
+      autoFocus: false,
     });
-    setTimeout(() => {
-      const dialogRef = this.dialog.open(NotificationComponent, {
-        width: '600px',
-        autoFocus: false,
-      });
-    }, 500);
+    dialogRef.afterClosed().subscribe(res => {
+      this.chargerVehicules();
+    })
   }
 
   //Bouton supprimer vehicule
-  supprimerVehicule(id: any): void { //supprimer vehicule
-    this.service.supprimerVehicule(id);
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
+  async supprimerVehicule(id: any) { //supprimer vehicule
+    await this.service.supprimerVehicule(id).toPromise();
+    this.chargerVehicules();
   }
 
   //Badge rouge de notification
@@ -181,23 +197,21 @@ export class MesVehiculesComponent implements OnInit {
       panelClass: "custom-dialog",
       autoFocus: false,
     });
+    dialogRef.afterClosed().subscribe(result => {
+      this.chargerCarburants();
+    });
   }
-  miseAJourCarburant() { //modifier prix carburant
+  async miseAJourCarburant() { //modifier prix carburant
     var formData: any = new FormData();
     formData.append("id", this.carburant.id);
     formData.append("nom", this.carburant.nom);
     formData.append("prixCarburant", this.form.get('prix').value);
-    this.service.modifierCarburant(formData);
-    this.refraichirCarburant();
+    await this.service.modifierCarburant(formData).toPromise();
+    this.chargerCarburants();
     this.form.controls.prix.setValue("");
     this.form.controls.prix.disable();
   }
-  refraichirCarburant() {
-    this.service.carburants().subscribe((data) => {
-      this.carburants = data;
-    })
 
-  }
   // fin partie de modification carburant
 }
 
@@ -220,17 +234,12 @@ export class AjouterCarburantComponent {
   }
 
   //Bouton enregistrer carburant
-  enregistrerCarburant() { //fontion d'enregistrement du carburant
+  async enregistrerCarburant() { //fontion d'enregistrement du carburant
     var formData: any = new FormData;
     formData.append("nom", this.form.get('nom').value);
     formData.append("prixCarburant", this.form.get('prixCarburant').value);
-    this.service.creerCarburant(formData);
-    this.dialogRef.close();
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
+    await this.service.creerCarburant(formData).toPromise();
+    this.fermerAjouterCarburant();
   }
 
   //bouton Annuler
@@ -259,8 +268,8 @@ export class AjoutComponent implements OnInit {
     { name: 'POIDS LOURDS ARTICULÉS', value: 'C+E' },
   ];
   form: FormGroup;
-  tun = false;   //pour afficher le inputField des matricules TUN ou RS
-  rs = false;
+  inputMatriculeTunEstAffiche = false;   //pour afficher le inputField des matricules TUN ou RS
+  inputMatriculeRsEstAffiche = false;
   matricule = "";
   typeMatriculeSelectionne = 'TUN'; //pour enregistrer le type de matricule choisi
   categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
@@ -273,9 +282,9 @@ export class AjoutComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<AjoutComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
     this.form = this.fb.group({
       typematricule: ['TUN', [Validators.required]],
-      matriculetun1: [''],
-      matriculetun2: [''],
-      matriculers: [''],
+      serieVoiture: [''],
+      numeroVoiture: [''],
+      matriculeRS: [''],
       marque: ['', [Validators.required]],
       modele: ['', [Validators.required]],
       couleur: ['', [Validators.required]],
@@ -292,12 +301,14 @@ export class AjoutComponent implements OnInit {
       dateassurance: ['', [Validators.required]],
       datetaxe: ['', [Validators.required]]
     });
-    this.service.carburants().subscribe((data) => {
-      this.carburants = data;
-    })
+    this.chargerCarburants();
   }
   ngOnInit(): void {
-    this.testType();
+    this.testTypeMatricule();
+  }
+
+  async chargerCarburants() {
+    this.carburants = await this.service.carburants().toPromise();
   }
 
   //bouton Annuler
@@ -307,16 +318,17 @@ export class AjoutComponent implements OnInit {
   }
 
   // Bouton Enregistrer
-  enregistrerVehicule() { //enregistrer les données
+  async enregistrerVehicule() { //enregistrer les données
     var formData: any = new FormData();
-    if (this.typeMatriculeSelectionne === 'TUN') {  //tester le type de matricule selectionné pour l'enregistrer
+    let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
+    let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
+    if (typeMatriculeEstTUN) {  //tester le type de matricule selectionné pour l'enregistrer
       this.matricule = "";
-      this.matricule = this.form.get('matriculetun1').value.toString().concat("TUN");
-      this.matricule = this.matricule.concat(this.form.get('matriculetun2').value.toString());
-    } else if (this.typeMatriculeSelectionne === 'RS') {
+      this.matricule = this.form.get('serieVoiture').value.toString().concat("TUN");
+      this.matricule = this.matricule.concat(this.form.get('numeroVoiture').value.toString());
+    } else if (typeMatriculeEstRS) {
       this.matricule = "";
-      var rsstr = "RS";
-      this.matricule = rsstr.concat(this.form.get('matriculers').value);
+      this.matricule = "RS".concat(this.form.get('matriculeRS').value);
     }
     formData.append("matricule", this.matricule);
     formData.append("marque", this.form.get('marque').value);
@@ -341,49 +353,46 @@ export class AjoutComponent implements OnInit {
     formData.append("description", "");
     formData.append("etatVehicule", "Disponible");
     formData.append("positionVehicule", "Sfax");
-    this.service.createvehicule(formData);
+    await this.service.createvehicule(formData).toPromise();
     this.dialogRef.close();
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
 
   }
 
-  testType(): void { //tester le type de matricule si elle est TUN ou RS
-    if (this.typeMatriculeSelectionne === 'TUN') { //si le type de matricule est TUN on definie les validateurs de ses inputFields et on supprime les validateurs du type RS
-      this.tun = true;
-      this.rs = false;
+  testTypeMatricule(): void { //tester le type de matricule si elle est TUN ou RS
+    let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
+    let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
+    if (typeMatriculeEstTUN) { //si le type de matricule est TUN on definie les validateurs de ses inputFields et on supprime les validateurs du type RS
+      this.inputMatriculeTunEstAffiche = true;
+      this.inputMatriculeRsEstAffiche = false;
 
-      this.form.get('matriculetun1').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
-      this.form.get('matriculetun1').updateValueAndValidity();
-      this.form.get('matriculetun2').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
-      this.form.get('matriculetun2').updateValueAndValidity();
-      this.form.get('matriculers').setValidators([])
-      this.form.get('matriculers').updateValueAndValidity();
-      this.form.patchValue({ matriculers: '' })
+      this.form.get('serieVoiture').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
+      this.form.get('serieVoiture').updateValueAndValidity();
+      this.form.get('numeroVoiture').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
+      this.form.get('numeroVoiture').updateValueAndValidity();
+      this.form.get('matriculeRS').setValidators([])
+      this.form.get('matriculeRS').updateValueAndValidity();
+      this.form.patchValue({ matriculeRS: '' })
     }
-    else if (this.typeMatriculeSelectionne === 'RS') { //si le type de matricule est RS on definie les validateurs de son inputField et on supprime les validateurs du type TUN
-      this.tun = false;
-      this.rs = true;
-      this.form.get('matriculers').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
-      this.form.get('matriculers').updateValueAndValidity();
-      this.form.get('matriculetun1').setValidators([])
-      this.form.get('matriculetun1').updateValueAndValidity();
-      this.form.get('matriculetun2').setValidators([])
-      this.form.get('matriculetun2').updateValueAndValidity();
-      this.form.patchValue({ matriculetun1: '', matriculetun2: '' })
+    else if (typeMatriculeEstRS) { //si le type de matricule est RS on definie les validateurs de son inputField et on supprime les validateurs du type TUN
+      this.inputMatriculeTunEstAffiche = false;
+      this.inputMatriculeRsEstAffiche = true;
+      this.form.get('matriculeRS').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
+      this.form.get('matriculeRS').updateValueAndValidity();
+      this.form.get('serieVoiture').setValidators([])
+      this.form.get('serieVoiture').updateValueAndValidity();
+      this.form.get('numeroVoiture').setValidators([])
+      this.form.get('numeroVoiture').updateValueAndValidity();
+      this.form.patchValue({ serieVoiture: '', matriculetun2: '' })
     } else { //si aucun type selectionné on supprime les validateurs du type
-      this.tun = false;
-      this.rs = false;
-      this.form.get('matriculetun1').setValidators([])
-      this.form.get('matriculetun1').updateValueAndValidity();
-      this.form.get('matriculetun2').setValidators([])
-      this.form.get('matriculetun2').updateValueAndValidity();
-      this.form.get('matriculers').setValidators([])
-      this.form.get('matriculers').updateValueAndValidity();
-      this.form.patchValue({ matriculetun1: '', matriculetun2: '', matriculers: '' })
+      this.inputMatriculeTunEstAffiche = false;
+      this.inputMatriculeRsEstAffiche = false;
+      this.form.get('serieVoiture').setValidators([])
+      this.form.get('serieVoiture').updateValueAndValidity();
+      this.form.get('numeroVoiture').setValidators([])
+      this.form.get('numeroVoiture').updateValueAndValidity();
+      this.form.get('matriculeRS').setValidators([])
+      this.form.get('matriculeRS').updateValueAndValidity();
+      this.form.patchValue({ serieVoiture: '', numeroVoiture: '', matriculeRS: '' })
     }
   }
 }
@@ -397,10 +406,11 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;   //pour pouvoir créer un fichier PDF pour 
   templateUrl: './detail-vehicule.html',
   styleUrls: ['./detail-vehicule.scss']
 })
-export class DetailVehiculeComponent {
+export class DetailVehiculeComponent implements OnInit {
   //declaration des variables
   vehicule: any;
-  id: any;
+  idVehicule: any;
+  carburants: any;
   date = new Date();
   missions: any;
   carburant: any;
@@ -413,30 +423,43 @@ export class DetailVehiculeComponent {
 
   //constructeur
   constructor(public dialogRef: MatDialogRef<DetailVehiculeComponent>, public service: ParcTransportService, public datepipe: DatePipe) {
-    this.id = localStorage.getItem('idV'); // ID du vehicule selectionné
-    this.service.vehicule(this.id).subscribe((data) => { //charger les données du vehicule selectionné
-      this.vehicule = data;
-      this.matricule = this.vehicule.matricule;
-      if (this.vehicule.matricule.includes('TUN')) {
-        this.tun = true;
-        this.rs = false;
-        this.serie = this.matricule.split('TUN')[0];
-        this.numCar = this.matricule.split('TUN')[1];
-      }
-      if (this.vehicule.matricule.includes('RS')) {
-        this.tun = false;
-        this.rs = true;
-        this.matRS = this.matricule.replace('RS', '');
-      }
-      this.service.carburants().subscribe((data: any) => { //charger les informations de carburant de vehicule pour calculer la consommation
-        this.carburant = data.filter((x: any) => x.nom = this.vehicule.carburant);
-        this.carburant = this.carburant[0];
-      })
-      // this.service.filtrerMission("matricule", this.vehicule.matricule).subscribe(res => { //pour charger les missions terminées par le véhicule
-      //   this.missions = res;
-      //   this.missions = this.missions.filter((x: any) => x.etatMission == "Terminée");
-      // });
-    });
+  }
+
+  async ngOnInit() {
+    this.idVehicule = localStorage.getItem('idV'); // ID du vehicule selectionné
+    await this.chargerVehicule(this.idVehicule);
+    this.testerTypeMatricule();
+    this.chargerCarburant();
+    // this.chargerMissionsTermineesDuVehicule
+  }
+
+  async chargerVehicule(id: any) { //charger le vehicule par id
+    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
+  }
+
+  async chargerCarburant() {
+    this.carburants = await this.service.carburants().toPromise();
+    this.carburant = this.carburants.filter((x: any) => x.nom = this.vehicule.carburant)[0];
+  }
+
+  async chargerMissionsTermineesDuVehicule() {
+    this.missions = await this.service.filtrerMissionsVehiculeChauffeur(this.vehicule.matricule, "").toPromise();
+    this.missions = this.missions.filter((x: any) => x.etatMission == "Terminée");
+  }
+
+  testerTypeMatricule() {
+    this.matricule = this.vehicule.matricule;
+    if (this.vehicule.matricule.includes('TUN')) {
+      this.tun = true;
+      this.rs = false;
+      this.serie = this.matricule.split('TUN')[0];
+      this.numCar = this.matricule.split('TUN')[1];
+    }
+    if (this.vehicule.matricule.includes('RS')) {
+      this.tun = false;
+      this.rs = true;
+      this.matRS = this.matricule.replace('RS', '');
+    }
   }
 
   //Bouton Fermer
@@ -564,28 +587,33 @@ export class DetailVehiculeComponent {
   templateUrl: './maj-vehicule.html',
   styleUrls: ['./maj-vehicule.scss']
 })
-export class MiseAJourComponent {
+export class MiseAJourComponent implements OnInit {
   //declaration des variables
   form: FormGroup;
   vehicule: any;
-  id: any;
+  idVehicule: any;
 
   //constructeur
   constructor(public dialogRef: MatDialogRef<MiseAJourComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
-    this.id = localStorage.getItem('idV'); //charger l'id du vehicule à mettre a jour
-    this.service.vehicule(this.id).subscribe((data) => { //charger les donnée du vehicule désiré par son id
-      this.vehicule = data;
-      this.form = this.fb.group({
-        kmactuel: [this.vehicule.kmactuel, [Validators.required, Validators.pattern("^[0-9]*$")]],
-        kmprochainentretien: [this.vehicule.kmprochainentretien, [Validators.required, Validators.pattern("^[0-9]*$")]],
-        consommationnormale: [this.vehicule.consommationNormale, [Validators.required, Validators.pattern("^[0-9]*$")]],
-        montantConsomme: [this.vehicule.montantConsomme, [Validators.required, Validators.pattern("^[0-9]*$")]],
-        carburant: [this.vehicule.carburant, [Validators.required]],
-        datevisite: [new Date(this.vehicule.datevisite), [Validators.required]],
-        dateassurance: [new Date(this.vehicule.dateassurance), [Validators.required]],
-        datetaxe: [new Date(this.vehicule.datetaxe), [Validators.required]]
-      });
+  }
+
+  async ngOnInit() {
+    this.idVehicule = localStorage.getItem('idV'); //charger l'id du vehicule à mettre a jour
+    await this.chargerVehicule(this.idVehicule);
+    this.form = this.fb.group({
+      kmactuel: [this.vehicule.kmactuel, [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmprochainentretien: [this.vehicule.kmprochainentretien, [Validators.required, Validators.pattern("^[0-9]*$")]],
+      consommationnormale: [this.vehicule.consommationNormale, [Validators.required, Validators.pattern("^[0-9]*$")]],
+      montantConsomme: [this.vehicule.montantConsomme, [Validators.required, Validators.pattern("^[0-9]*$")]],
+      carburant: [this.vehicule.carburant, [Validators.required]],
+      datevisite: [new Date(this.vehicule.datevisite), [Validators.required]],
+      dateassurance: [new Date(this.vehicule.dateassurance), [Validators.required]],
+      datetaxe: [new Date(this.vehicule.datetaxe), [Validators.required]]
     });
+  }
+
+  async chargerVehicule(id: any) {
+    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
   }
 
   // Bouton Annuler
@@ -594,7 +622,7 @@ export class MiseAJourComponent {
   }
 
   // Bouton Enregistrer
-  miseAJourVehicule() { //Effectuer le mise a jour
+  async miseAJourVehicule() { //Effectuer le mise a jour
     var formData: any = new FormData();
     formData.append("kmactuel", this.form.get('kmactuel').value);
     formData.append("kmprochainentretien", this.form.get('kmprochainentretien').value);
@@ -605,13 +633,8 @@ export class MiseAJourComponent {
     formData.append("datevisite", new Date(this.form.get('datevisite').value));
     formData.append("dateassurance", new Date(this.form.get('dateassurance').value));
     formData.append("datetaxe", new Date(this.form.get('datetaxe').value));
-    this.service.miseajourvehicule(this.id, formData);
-    this.dialogRef.close();
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
+    await this.service.miseajourvehicule(this.idVehicule, formData).toPromise();
+    this.fermerMiseAJourVehicule();
   }
 }
 
@@ -621,24 +644,27 @@ export class MiseAJourComponent {
   templateUrl: './maj-consommation.html',
   styleUrls: ['./maj-consommation.scss']
 })
-export class MiseAJourConsommationComponent {
+export class MiseAJourConsommationComponent implements OnInit {
   //declaration des variables
   form: FormGroup;
   vehicule: any;
-  id: any;
+  idVehicule: any;
 
   //constructeur
   constructor(public dialogRef: MatDialogRef<MiseAJourConsommationComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
-    this.id = localStorage.getItem('idV'); //pour charger l'id du vehicule a modifier sa consommation
+  }
+  async ngOnInit() {
+    this.idVehicule = localStorage.getItem('idV'); //pour charger l'id du vehicule a modifier sa consommation
+    await this.chargerVehicule(this.idVehicule);
     this.form = this.fb.group({
-      kmactuel: ['', [Validators.required, Validators.pattern("^[0-9]*$"), kmactuelValidator]],
-      montantConsomme: ['', [Validators.required, Validators.pattern("(^[0-9]{1,9})+(\.[0-9]{1,4})?$")]],
+      kmActuel: [this.vehicule.kmactuel, [Validators.required, Validators.pattern("^[0-9]*$"), kmactuelValidator]],
+      montantConsomme: [this.vehicule.montantConsomme, [Validators.required, Validators.pattern("(^[0-9]{1,9})+(\.[0-9]{1,4})?$")]],
     });
-    this.service.vehicule(this.id).subscribe((data) => { //charger les données du vehicule
-      this.vehicule = data;
-      this.form.controls['kmactuel'].setValue(this.vehicule.kmactuel);
-      this.form.controls['montantConsomme'].setValue(this.vehicule.montantConsomme);
-    });
+
+  }
+
+  async chargerVehicule(id: any) { //charger le vehicule par son identifiant
+    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
   }
 
   //Bouton Annuler
@@ -647,18 +673,13 @@ export class MiseAJourConsommationComponent {
   }
 
   // Bouton Enregistrer
-  miseAJourConsommation() { //Effectuer le mise ajour de consommation
+  async miseAJourConsommation() { //Effectuer le mise ajour de consommation
     var formData: any = new FormData();
-    formData.append("kmactuel", this.form.get('kmactuel').value);
+    formData.append("kmactuel", this.form.get('kmActuel').value);
     formData.append("montantConsomme", this.form.get('montantConsomme').value);
-    formData.append("distanceparcourie", Number(this.form.get('kmactuel').value) - Number(this.vehicule.kmactuel));
-    this.service.miseajourkm(this.id, formData);
-    this.dialogRef.close();
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
+    formData.append("distanceparcourie", Number(this.form.get('kmActuel').value) - Number(this.vehicule.kmactuel));
+    await this.service.miseajourkm(this.idVehicule, formData).toPromise();
+    this.fermerMiseAJourConsommation();
   }
 }
 
@@ -669,131 +690,135 @@ export class MiseAJourConsommationComponent {
   templateUrl: './notification.html',
   styleUrls: ['./notification.scss']
 })
-export class NotificationComponent {
+export class NotificationComponent implements OnInit {
   //declaration des variables
-  id: any;
+  idVehicule: any;
   vehicule: any;
-  kmentretien: any;
-  reclamation = false;
-  entretien = false;
-  visite = false;
-  assurance = false;
-  taxe = false;
-  consommation = false;
-  notification = false;
+  kmRestantPourProchainEntretien = 0;
+  reclamationExiste = false;
+  entretienExiste = false;
+  visiteExiste = false;
+  assuranceExiste = false;
+  taxeExiste = false;
+  consommationAnormale = false;
+  notificationExiste = false;
   carburants: any;
   datePresent = new Date();
   carburantConsomme: any;
   consommationActuelle: any;
   //consructeur
   constructor(public dialogRef: MatDialogRef<NotificationComponent>, public service: ParcTransportService, public _router: Router, public _location: Location) {
-    this.kmentretien = 0;
-    this.id = localStorage.getItem('idV'); //charger id vehicule
-    this.service.vehicule(this.id).subscribe((data) => {
-      this.vehicule = data;
-      if (this.vehicule.sujet.toString() === "") {
-        this.reclamation = false;
-      } else {
-        this.reclamation = true
-      }
-    });
-    this.service.carburants().subscribe((data) => {
-      this.carburants = data;
-      console.log(this.carburants);
-    });
+  }
+  async ngOnInit() {
+    this.idVehicule = localStorage.getItem('idV'); //charger id vehicule
+    await this.chargerVehicule();
+    this.testerExistanceReclamation();
+    this.chargerCarburants();
+  }
+
+  async chargerVehicule() { //cahrger vehicule par identifiant
+    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
+  }
+
+  async chargerCarburants() {
+    this.carburants = await this.service.carburants().toPromise();
+  }
+
+  testerExistanceReclamation() {
+    let sujetExiste = this.vehicule.sujet.toString() === "";
+    if (sujetExiste) {
+      this.reclamationExiste = false;
+    } else {
+      this.reclamationExiste = true
+    }
   }
 
   //Bouton Fermer
   fermerNotification(): void {//fermer la boite du dialogue
     this.dialogRef.close();
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
   }
 
   //bouton supprimer reclamation
-  supprimerReclamation(): void { // supprimer la reclamation
+  async supprimerReclamation() { // supprimer la reclamation
     var formData: any = new FormData();
     formData.append("sujet", "");
     formData.append("description", "");
-    this.service.reclamationvehicule(this.id, formData);
-    this.reclamation = false;
+    this.service.reclamationvehicule(this.idVehicule, formData).toPromise();
+    this.reclamationExiste = false;
   }
 
-  testEntretien() { //teste s'il y a un entretien dans les 1000 prochains km
-    this.kmentretien = this.vehicule.kmprochainentretien - this.vehicule.kmactuel;
-    if (this.kmentretien < 1000) {
-      this.entretien = true;
+  testExistanceEntretien() { //teste s'il y a un entretien dans les 1000 prochains km
+    this.kmRestantPourProchainEntretien = this.vehicule.kmprochainentretien - this.vehicule.kmactuel;
+    if (this.kmRestantPourProchainEntretien < 1000) {
+      this.entretienExiste = true;
     } else {
-      this.entretien = false;
+      this.entretienExiste = false;
     }
-    return this.entretien;
+    return this.entretienExiste;
   }
 
-  testVisite() { //tester s'il y a une visite technique dans les 30 prochains jours
+  testExpirationVisite() { //tester s'il y a une visite technique dans les 30 prochains jours
     let dateVisite = new Date(this.vehicule.datevisite);
     var DifferenceVisite = dateVisite.getTime() - this.datePresent.getTime();
     var DifferenceVisiteJ = DifferenceVisite / (1000 * 3600 * 24);
     if (DifferenceVisiteJ < 30) {
-      this.visite = true;
+      this.visiteExiste = true;
     } else {
-      this.visite = false;
+      this.visiteExiste = false;
     }
-    return this.visite;
+    return this.visiteExiste;
   }
 
-  testAssurance() { //tester si l'assurance s'expire dans les 30 prochains jours
+  testExpirationAssurance() { //tester si l'assurance s'expire dans les 30 prochains jours
     let dateAssurance = new Date(this.vehicule.dateassurance);
     var DifferenceAssurance = dateAssurance.getTime() - this.datePresent.getTime();
     var DifferenceAssuranceJ = DifferenceAssurance / (1000 * 3600 * 24);
     if (DifferenceAssuranceJ < 30) {
-      this.assurance = true;
+      this.assuranceExiste = true;
     } else {
-      this.assurance = false;
+      this.assuranceExiste = false;
     }
-    return this.assurance;
+    return this.assuranceExiste;
   }
 
-  testTaxe() { //tester si les taxes s'expirent dans les 30 prochains jours
+  testExpirationTaxe() { //tester si les taxes s'expirent dans les 30 prochains jours
     let dateTaxe = new Date(this.vehicule.datetaxe);
     var DifferenceTaxe = dateTaxe.getTime() - this.datePresent.getTime();
     var DifferenceTaxeJ = DifferenceTaxe / (1000 * 3600 * 24);
     if (DifferenceTaxeJ < 30) {
-      this.taxe = true;
+      this.taxeExiste = true;
     } else {
-      this.taxe = false;
+      this.taxeExiste = false;
     }
-    return this.taxe;
+    return this.taxeExiste;
   }
 
   testConsommation() { //tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale
     if (this.vehicule.distanceparcourie != null) {
       this.carburantConsomme = this.carburants.filter((x: any) => x.nom = this.vehicule.carburant);
       this.consommationActuelle = (((this.vehicule.montantConsomme / this.carburantConsomme[0].prixCarburant) / this.vehicule.distanceparcourie) * 100).toFixed(2)
-      console.log(this.vehicule.distanceparcourie)
       if (this.vehicule.consommationNormale + 1 < this.consommationActuelle) {
-        this.consommation = true;
+        this.consommationAnormale = true;
       } else {
-        this.consommation = false;
+        this.consommationAnormale = false;
       }
     }
-    return this.consommation;
+    return this.consommationAnormale;
   }
 
   testePresenceNotification() { //réaliser les testes précedent pour prendre la decision d'affichage des notifications ou non
-    this.testEntretien();
-    this.testVisite();
-    this.testAssurance();
-    this.testTaxe();
+    this.testExistanceEntretien();
+    this.testExpirationVisite();
+    this.testExpirationAssurance();
+    this.testExpirationTaxe();
     this.testConsommation();
-    if (this.taxe || this.assurance || this.visite || this.entretien || this.reclamation || this.consommation) {
-      this.notification = false;
+    let notificationEstExistante = this.taxeExiste || this.assuranceExiste || this.visiteExiste || this.entretienExiste || this.reclamationExiste || this.consommationAnormale;
+    if (notificationEstExistante) {
+      this.notificationExiste = false;
     } else {
-      this.notification = true;
+      this.notificationExiste = true;
     }
-    return this.notification;
+    return this.notificationExiste;
   }
 }
 
@@ -803,22 +828,27 @@ export class NotificationComponent {
   templateUrl: './reclamation.html',
   styleUrls: ['./reclamation.scss']
 })
-export class ReclamationComponent {
+export class ReclamationComponent implements OnInit {
   //declaration des variables
   form: FormGroup;
-  id: any;
+  idVehicule: any;
   vehicule: any;
 
   //constructeur
   constructor(public dialogRef: MatDialogRef<ReclamationComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router, public _location: Location) {
+  }
+
+  ngOnInit(): void {
     this.form = this.fb.group({
       sujet: ['', Validators.required],
       description: ['', Validators.required]
     });
-    this.id = localStorage.getItem('idV');
-    this.service.vehicule(this.id).subscribe((data) => {
-      this.vehicule = data;
-    });
+    this.idVehicule = localStorage.getItem('idV');
+    this.chargerVehicule();
+  }
+
+  async chargerVehicule() {
+    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
   }
 
   // Bouton Annuler
@@ -827,17 +857,12 @@ export class ReclamationComponent {
   }
 
   // Bouton Enregistrer
-  enregistrerReclamation() { //enregistre la reclamation
+  async enregistrerReclamation() { //enregistre la reclamation
     var formData: any = new FormData();
     formData.append("sujet", this.form.get('sujet').value);
     formData.append("description", this.form.get('description').value);
-    this.service.reclamationvehicule(this.id, formData);
+    await this.service.reclamationvehicule(this.idVehicule, formData).toPromise();
     this.dialogRef.close();
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
   }
 }
 
@@ -850,7 +875,7 @@ export class ReclamationComponent {
 export class VehiculesLoueComponent implements OnInit {
   vehiculesLoues: any;
   disponibility: any;
-  minDate = new Date();
+  minDate = new Date(); //desactiver les dates passées
   form: FormGroup;
   constructor(public service: ParcTransportService, private dialog: MatDialog, public _router: Router, public _location: Location, public fb: FormBuilder) { }
 
@@ -861,18 +886,19 @@ export class VehiculesLoueComponent implements OnInit {
     this.chargerVehicules();
   }
 
-  date(): FormArray {
+  //creation du formControl date d'une facon dynamique selon la longue du liste de vehicule
+  date(): FormArray { //get le formControl date
     return this.form.get("date") as FormArray
   }
 
-  nouveauDate(dateDebut: any, dateFin: any): FormGroup {
+  nouveauDate(dateDebut: any, dateFin: any): FormGroup { //creation nouveaux formControls dateDebut et dateFin   
     return this.fb.group({
       dateDebut: [dateDebut, Validators.required],
       dateFin: [dateFin, Validators.required],
     })
   }
 
-  ajouterDatePicker(dateDebut: any, dateFin: any) {
+  ajouterDatePicker(dateDebut: any, dateFin: any) { // ajout du nouveaux dateDebut et dateFin au formControl array date
     this.date().push(this.nouveauDate(dateDebut, dateFin));
   }
 
@@ -880,13 +906,15 @@ export class VehiculesLoueComponent implements OnInit {
     this.date().clear();
   }
 
-  majControlleur() {
+  majControlleur() { //creation des formControls date d'une facon dynamique
     this.supprimerDate();
-      this.vehiculesLoues.forEach((vehicule: any) => {
-        this.ajouterDatePicker(new Date(vehicule.date_debut_location), new Date(vehicule.date_fin_location))
+    this.vehiculesLoues.forEach((vehicule: any) => {
+      this.ajouterDatePicker(new Date(vehicule.date_debut_location), new Date(vehicule.date_fin_location))
     });
 
   }
+  //Fin creation du formControl date
+
   //charger liste vehicules
   async chargerVehicules() {
     this.vehiculesLoues = await this.service.vehiculesLoues().toPromise();
@@ -906,6 +934,9 @@ export class VehiculesLoueComponent implements OnInit {
       panelClass: "custom-dialog",
       autoFocus: false,
     });
+    dialogRef.afterClosed().subscribe(res => {
+      this.chargerVehicules();
+    })
   }
 
 
@@ -928,8 +959,9 @@ export class VehiculesLoueComponent implements OnInit {
       });
     }, 500);
   }
-
-  async changerDate(id: any, index: any) {
+  
+  //Utilisé dans le date picker de modification
+  async changerDate(id: any, index: any) { //changengemetn date debut et fin de location
     var formData: any = new FormData();
     formData.append("id", id);
     formData.append("date_debut_location", this.form.get('date').value[index].dateDebut);
@@ -958,8 +990,8 @@ export class AjouterVehiculeLoueComponent implements OnInit {
     { name: 'POIDS LOURDS ARTICULÉS', value: 'C+E' },
   ];
   form: FormGroup;
-  tun = false;   //pour afficher le inputField des matricules TUN ou RS
-  rs = false;
+  inputMatriculeTunEstAffiche = false;   //pour afficher le inputField des matricules TUN ou RS
+  inputMatriculeRsEstAffiche = false;
   matricule = "";
   typeMatriculeSelectionne = 'TUN' //pour enregistrer le type de matricule choisi
   categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
@@ -987,13 +1019,15 @@ export class AjouterVehiculeLoueComponent implements OnInit {
       dateDebut: [''],
       dateFin: [''],
     });
-    this.testType();
+    this.testTypeMatricule();
   }
 
-  testType(): void { //tester le type de matricule si elle est TUN ou RS
-    if (this.typeMatriculeSelectionne === 'TUN') { //si le type de matricule est TUN on definie les validateurs de ses inputFields et on supprime les validateurs du type RS
-      this.tun = true;
-      this.rs = false;
+  testTypeMatricule(): void { //tester le type de matricule si elle est TUN ou RS
+    let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
+    let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
+    if (typeMatriculeEstTUN) { //si le type de matricule est TUN on definie les validateurs de ses inputFields et on supprime les validateurs du type RS
+      this.inputMatriculeTunEstAffiche = true;
+      this.inputMatriculeRsEstAffiche = false;
 
       this.form.get('matriculetun1').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
       this.form.get('matriculetun1').updateValueAndValidity();
@@ -1003,9 +1037,9 @@ export class AjouterVehiculeLoueComponent implements OnInit {
       this.form.get('matriculers').updateValueAndValidity();
       this.form.patchValue({ matriculers: '' })
     }
-    else if (this.typeMatriculeSelectionne === 'RS') { //si le type de matricule est RS on definie les validateurs de son inputField et on supprime les validateurs du type TUN
-      this.tun = false;
-      this.rs = true;
+    else if (typeMatriculeEstRS) { //si le type de matricule est RS on definie les validateurs de son inputField et on supprime les validateurs du type TUN
+      this.inputMatriculeTunEstAffiche = false;
+      this.inputMatriculeRsEstAffiche = true;
       this.form.get('matriculers').setValidators([Validators.required, Validators.pattern("^[0-9]*$")])
       this.form.get('matriculers').updateValueAndValidity();
       this.form.get('matriculetun1').setValidators([])
@@ -1014,8 +1048,8 @@ export class AjouterVehiculeLoueComponent implements OnInit {
       this.form.get('matriculetun2').updateValueAndValidity();
       this.form.patchValue({ matriculetun1: '', matriculetun2: '' })
     } else { //si aucun type selectionné on supprime les validateurs du type
-      this.tun = false;
-      this.rs = false;
+      this.inputMatriculeTunEstAffiche = false;
+      this.inputMatriculeRsEstAffiche = false;
       this.form.get('matriculetun1').setValidators([])
       this.form.get('matriculetun1').updateValueAndValidity();
       this.form.get('matriculetun2').setValidators([])
@@ -1032,13 +1066,15 @@ export class AjouterVehiculeLoueComponent implements OnInit {
 
   }
 
-  enregistrerVehicule() { //enregistrer les données
+  async enregistrerVehicule() { //enregistrer les données
     var formData: any = new FormData();
-    if (this.typeMatriculeSelectionne === 'TUN') {  //tester le type de matricule selectionné pour l'enregistrer
+    let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
+    let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
+    if (typeMatriculeEstTUN) {  //tester le type de matricule selectionné pour l'enregistrer
       this.matricule = "";
       this.matricule = this.form.get('matriculetun1').value.toString().concat("TUN");
       this.matricule = this.matricule.concat(this.form.get('matriculetun2').value.toString());
-    } else if (this.typeMatriculeSelectionne === 'RS') {
+    } else if (typeMatriculeEstRS) {
       this.matricule = "";
       var rsstr = "RS";
       this.matricule = rsstr.concat(this.form.get('matriculers').value);
@@ -1058,13 +1094,8 @@ export class AjouterVehiculeLoueComponent implements OnInit {
     formData.append("position_vehicule", "Sfax");
     formData.append("date_debut_location", new Date(this.form.get('dateDebut').value));
     formData.append("date_fin_location", new Date(this.form.get('dateFin').value));
-    this.service.creerVehiculeLoue(formData);
+    await this.service.creerVehiculeLoue(formData).toPromise();
     this.dialogRef.close();
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
 
   }
 }
@@ -1079,7 +1110,7 @@ export class AjouterVehiculeLoueComponent implements OnInit {
 export class DetailVehiculeLoueComponent implements OnInit {
   //declaration des variables
   vehicule: any;
-  id: number;
+  idVehicule: number;
   tun = false;
   rs = false;
   serie: String;
@@ -1088,12 +1119,19 @@ export class DetailVehiculeLoueComponent implements OnInit {
   matricule: String;
   constructor(public dialogRef: MatDialogRef<DetailVehiculeLoueComponent>, public service: ParcTransportService) { }
 
-  ngOnInit(): void {
-    console.log(localStorage.getItem('idV'))
-    this.id = Number(localStorage.getItem('idV')); // ID du vehicule selectionné
-    this.service.vehiculeLoue(this.id).subscribe((data) => { //charger les données du vehicule selectionné
-      this.vehicule = data;
-      this.matricule = this.vehicule.matricule;
+  async ngOnInit() {
+    this.idVehicule = Number(localStorage.getItem('idV')); // ID du vehicule selectionné
+    await this.chargerVehiculeLoue();
+    this.testerTypeMatricule();
+    
+  }
+
+  async chargerVehiculeLoue(){ //charger les données du vehicule selectionné
+    this.vehicule = await this.service.vehiculeLoue(this.idVehicule).toPromise();
+  }
+
+  testerTypeMatricule(){ //teste le type de matricule
+    this.matricule = this.vehicule.matricule;
       if (this.vehicule.matricule.includes('TUN')) {
         this.tun = true;
         this.rs = false;
@@ -1105,14 +1143,8 @@ export class DetailVehiculeLoueComponent implements OnInit {
         this.rs = true;
         this.matRS = this.matricule.replace('RS', '');
       }
-
-
-      // this.service.filtrerMission("matricule", this.vehicule.matricule).subscribe(res => { //pour charger les missions terminées par le véhicule
-      //   this.missions = res;
-      //   this.missions = this.missions.filter((x: any) => x.etatMission == "Terminée");
-      // });
-    });
   }
+  
   //Bouton Fermer
   fermerDetailVehiculeLoue(): void { //fermer la boite de dialogue
     this.dialogRef.close();

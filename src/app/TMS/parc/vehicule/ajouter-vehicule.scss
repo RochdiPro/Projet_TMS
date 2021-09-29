@@ -1,19 +1,20 @@
 .example-form {
-    min-width: 150px;
-    max-width: 500px;
-    width: 100%;
-  }
-  
-  .example-full-width {
-    width: 100%;
-  }
+  min-width: 150px;
+  max-width: 500px;
+  width: 100%;
+}
 
-  .dim{
-    width: 31%;
-  }
-.mat-dialog-content, .mat-dialog-title {
-    margin: 0 !important;
-    padding: 12px 24px !important;
+.example-full-width {
+  width: 100%;
+}
+
+.dim {
+  width: 31%;
+}
+.mat-dialog-content,
+.mat-dialog-title {
+  margin: 0 !important;
+  padding: 12px 24px !important;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -28,7 +29,7 @@ input::-webkit-inner-spin-button {
   position: relative;
   background-repeat: no-repeat;
 }
-.matriculers{
+.matriculers {
   height: 57px;
   width: 272px;
   background-image: url(../../../../assets/images/rs-mat.png);
@@ -71,7 +72,7 @@ input::-webkit-inner-spin-button {
   align-items: center;
   justify-content: center;
 }
-#numRS{
+#numRS {
   display: inline;
   width: 130px;
   top: 10px;
@@ -79,7 +80,67 @@ input::-webkit-inner-spin-button {
   left: 13px;
   border-radius: 5px;
   font-weight: bold;
-  background-color: rgba(0,0,0,0);
+  background-color: rgba(0, 0, 0, 0);
   color: white;
   font-size: 24px;
+}
+
+@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+  .matriculetun {
+    background-image: url(../../../../assets/images/matricule.png);
+    height: 57px;
+    width: 272px;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+  }
+  .matriculers {
+    height: 57px;
+    width: 272px;
+    background-image: url(../../../../assets/images/rs-mat.png);
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+
+  }
+  #numSerie {
+    display: inline;
+    width: 25%;
+    top: 15%;
+    position: absolute;
+    left: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 110%;
+    text-align: center;
+  }
+  #numCar {
+    display: inline;
+    width: 35%;
+    top: 15%;
+    position: absolute;
+    right: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 110%;
+    text-align: center;
+  }
+  #numRS {
+    display: inline;
+    width: 60%;
+    top: 12%;
+    position: absolute;
+    left: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 140%;
+    text-align: center;
+
+  }
 }

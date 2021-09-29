@@ -14,10 +14,9 @@ export class ParcTransportService {
 
   //creation du vehicule
   public createvehicule(formData: any) {
-    this.http.post(erp + 'createvehicule', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.http.post(erp + 'createvehicule', formData).pipe(
+      catchError(this.handleError)
+    );
   }
 
   //lister toutes les vehicules
@@ -32,34 +31,30 @@ export class ParcTransportService {
 
   //mettre a jour un vehicule
   public miseajourvehicule(id: any, formData: any) {
-    this.http.put(erp + 'updatevehicule/' + id, formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.http.put(erp + 'updatevehicule/' + id, formData).pipe(
+      catchError(this.handleError)
+    );
   }
 
   //ajouter une reclamation pour un vehicule
   public reclamationvehicule(id: any, formData: any) {
-    this.http.put(erp + 'reclamationvehicule/' + id, formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.http.put(erp + 'reclamationvehicule/' + id, formData).pipe(
+      catchError(this.handleError)
+    );
   }
 
   //mettre a jour le kilométrage d'un vehicule
   public miseajourkm(id: any, formData: any) {
-    this.http.put(erp + 'miseajourkm/' + id, formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.http.put(erp + 'miseajourkm/' + id, formData).pipe(
+      catchError(this.handleError)
+    );
   }
 
   //supprimer un vehicule
   public supprimerVehicule(id: any) {
-    this.http.delete(erp + 'deletevehicule/' + id).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.http.delete(erp + 'deletevehicule/' + id).pipe(
+      catchError(this.handleError)
+    );
   }
 
   //mettre à jour l'etat de vehicule
@@ -85,26 +80,23 @@ export class ParcTransportService {
 
   //creer nouveau carburant
   public creerCarburant(formData: any) {
-    this;this.http.post(erp + 'creerCarburant', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.http.post(erp + 'creerCarburant', formData).pipe(
+      catchError(this.handleError)
+    );
   }
   
   //modifier carburant
   public modifierCarburant(formData: any) {
-    this.http.put(erp + 'majCarburant', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.http.put(erp + 'majCarburant', formData).pipe(
+      catchError(this.handleError)
+    );
   }
 
   //Ajouter un nouveau vehicule loué
   public creerVehiculeLoue(formData: any) {
-    this.http.post(erp + 'Creer_Vehicule_Loue', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.http.post(erp + 'Creer_Vehicule_Loue', formData).pipe(
+      catchError(this.handleError)
+    );
   }
 
   //lister les vehicules loués

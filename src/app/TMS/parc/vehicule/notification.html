@@ -4,42 +4,43 @@
 <!-- fin Bouton Fermer -->
 
 <h1 mat-dialog-title>Notifications</h1>
-<div class="card-body" *ngIf="vehicule && carburants">
-    <div class="alert alert-light fade show" role="alert" *ngIf="testePresenceNotification()">Pas De Notifications</div>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="reclamation">
-        <!-- bouton supprimer reclamation -->
-        <button type="button" class="close" aria-label="Close" (click)="supprimerReclamation()"><span
-                aria-hidden="true">×</span></button>
-        <!-- fin bouton supprimer reclamation -->
-        <div>
-            <h3 style="display: inline;" class="font-weight-bold">Sujet: &nbsp;</h3>
-            <h4 style="display: inline;">{{this.vehicule.sujet}}</h4>
+<div mat-dialog-content>
+    <div class="card-body" *ngIf="vehicule && carburants">
+        <div class="alert alert-light fade show" role="alert" *ngIf="testePresenceNotification()">Pas De Notifications</div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="reclamationExiste">
+            <!-- bouton supprimer reclamation -->
+            <button type="button" class="close" aria-label="Close" (click)="supprimerReclamation()"><span
+                    aria-hidden="true">×</span></button>
+            <!-- fin bouton supprimer reclamation -->
+            <div>
+                <h3 style="display: inline;" class="font-weight-bold">Sujet: &nbsp;</h3>
+                <h4 style="display: inline;">{{this.vehicule.sujet}}</h4>
+            </div>
+            <div>
+                <h3 style="display: inline;" class="font-weight-bold">Déscription: &nbsp;</h3>
+                <h4 style="display: inline;">{{this.vehicule.description}}</h4>
+            </div>
         </div>
-        <div>
-            <h3 style="display: inline;" class="font-weight-bold">Déscription: &nbsp;</h3>
-            <h4 style="display: inline;">{{this.vehicule.description}}</h4>
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExistanceEntretien()">
+            <i class="fas fa-exclamation-triangle"></i> Entretien Du Vehicule Dans:
+            {{vehicule.kmprochainentretien-vehicule.kmactuel}} km
         </div>
-    </div>
-    <div class="alert alert-warning fade show" role="alert" *ngIf="testEntretien()">
-        <i class="fas fa-exclamation-triangle"></i> Entretien Du Vehicule Dans:
-        {{vehicule.kmprochainentretien-vehicule.kmactuel}} km
-    </div>
-    <div class="alert alert-warning fade show" role="alert" *ngIf="testVisite()">
-        <i class="fas fa-exclamation-triangle"></i> Visite Technique Le: {{vehicule.datevisite | date:'dd-MM-y'}}
-    </div>
-    <div class="alert alert-warning fade show" role="alert" *ngIf="testAssurance()">
-        <i class="fas fa-exclamation-triangle"></i> Expiration De L'Assurance Du Vehicule Le: {{vehicule.dateassurance |
-        date:'dd-MM-y'}}
-    </div>
-    <div class="alert alert-warning fade show" role="alert" *ngIf="testTaxe()">
-        <i class="fas fa-exclamation-triangle"></i> Expiration Des Taxes Du Vehicule Le: {{vehicule.datetaxe |
-        date:'dd-MM-y'}}
-    </div>
-    <div class="alert alert-warning fade show" role="alert" *ngIf="testConsommation()">
-        <i class="fas fa-exclamation-triangle"></i> Consommation Actuelle Anormale:
-        {{consommationActuelle}}
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExpirationVisite()">
+            <i class="fas fa-exclamation-triangle"></i> Visite Technique Le: {{vehicule.datevisite | date:'dd-MM-y'}}
+        </div>
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExpirationAssurance()">
+            <i class="fas fa-exclamation-triangle"></i> Expiration De L'Assurance Du Vehicule Le: {{vehicule.dateassurance |
+            date:'dd-MM-y'}}
+        </div>
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExpirationTaxe()">
+            <i class="fas fa-exclamation-triangle"></i> Expiration Des Taxes Du Vehicule Le: {{vehicule.datetaxe |
+            date:'dd-MM-y'}}
+        </div>
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testConsommation()">
+            <i class="fas fa-exclamation-triangle"></i> Consommation Actuelle Anormale:
+            {{consommationActuelle}}
+        </div>
     </div>
 </div>
 
 
-<div class="position-relative form-group container"></div>

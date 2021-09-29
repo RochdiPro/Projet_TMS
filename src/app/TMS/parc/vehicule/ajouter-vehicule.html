@@ -1,5 +1,5 @@
 <h1 mat-dialog-title>Ajouter une Véhicule </h1>
-<div mat-dialog-content class="scrollbar scrollbar-primary">
+<div mat-dialog-content >
     <form [formGroup]="form" novalidate>
         <div class="position-relative form-group">
             <label for="matricule" class="">Matricule Du Vehicule</label>
@@ -8,7 +8,7 @@
                 <mat-form-field class="example-full-width">
                     <mat-label>Choisir un type de matricule</mat-label>
                     <mat-select formControlName="typematricule" name="typematricule" id="typematricule"
-                        (selectionChange)="testType()" [(value)]="typeMatriculeSelectionne" required>
+                        (selectionChange)="testTypeMatricule()" [(value)]="typeMatriculeSelectionne" required>
                         <mat-option *ngFor="let typematricule of typematricules" [value]="typematricule.value">
                             {{ typematricule.value }}
                         </mat-option>
@@ -19,22 +19,22 @@
                 </mat-form-field>
             </div>
             <!-- Affichage input matricule TUN si le type est tun -->
-            <div *ngIf="tun" class="position-relative form-group container matricule">
+            <div *ngIf="inputMatriculeTunEstAffiche" class="position-relative form-group container matricule">
                 <div class="row matriculetun">
                     <input placeholder="* * *" class="form-control no-spin" id="numSerie"
                         oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                        type="number" maxlength="3" formControlName="matriculetun1">
+                        type="number" maxlength="3" formControlName="serieVoiture">
                     <input placeholder="* * * *" class="form-control no-spin" id="numCar"
                         oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                        type="number" maxlength="4" formControlName="matriculetun2">
+                        type="number" maxlength="4" formControlName="numeroVoiture">
                 </div>
             </div>
             <!-- Affichage input RS si type matricule est rs -->
-            <div *ngIf="rs" class="position-relative form-group container matricule">
+            <div *ngIf="inputMatriculeRsEstAffiche" class="position-relative form-group container matricule">
                 <div class="row matriculers">
                     <input maxlength="6" placeholder="* * * * * *" class="form-control" id="numRS"
                         oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                        type="number" maxlength="6" formControlName="matriculers">
+                        type="number" maxlength="6" formControlName="matriculeRS">
                 </div>
             </div>
         </div>
