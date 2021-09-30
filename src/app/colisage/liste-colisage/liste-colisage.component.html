@@ -29,14 +29,6 @@
             <td mat-cell *matCellDef="let element"> {{element.id}} </td>
         </ng-container>
 
-        <!-- Colonne id produit -->
-        <ng-container matColumnDef="idProduit">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                ID Produits
-            </th>
-            <td mat-cell *matCellDef="let element"><p *ngFor ="let id of getIdProduit(element)">{{id}}</p></td>
-        </ng-container>
-
         <!-- Colonne produit -->
         <ng-container matColumnDef="nomProduit">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>

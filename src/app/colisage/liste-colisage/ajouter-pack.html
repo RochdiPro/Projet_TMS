@@ -9,7 +9,12 @@
                     <input matInput formControlName="nom" required>
                 </mat-form-field>
 
-                <mat-form-field appearance="fill" style="width: 32%;  margin-right: 2%;">
+                <mat-form-field appearance="fill" style="width: 32%; margin-right: 2%;">
+                    <mat-label style="text-transform: capitalize;">Poids D'Emballage (Kg)</mat-label>
+                    <input matInput formControlName="nom" required type="number">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" style="width: 32%;">
                     <mat-label>Type d'emballage</mat-label>
                     <mat-select formControlName="type" required>
                         <mat-option value="Carton">Carton</mat-option>
@@ -19,6 +24,8 @@
                     </mat-select>
                 </mat-form-field>
 
+            </div>
+            <div style="display: inline-block; width: 100%; margin-bottom: 2%;">
                 <mat-slide-toggle formControlName="fragilite" color="primary">Fragile</mat-slide-toggle>
             </div>
 
@@ -63,17 +70,10 @@
             </div>
             <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
                 <table mat-table [dataSource]="dataSource" class=" table1">
-                    <!-- Colonne Id Produit -->
+                    <!-- Colonne Id  -->
                     <ng-container matColumnDef="id">
                         <th mat-header-cell *matHeaderCellDef>ID</th>
                         <td mat-cell *matCellDef="let element">{{element.id}}</td>
-                    </ng-container>
-                    <!-- Colonne Nom Produit -->
-                    <ng-container matColumnDef="idProduit">
-                        <th mat-header-cell *matHeaderCellDef>ID Produit</th>
-                        <td mat-cell *matCellDef="let element">
-                            <p *ngFor="let idProduit of getIdProduit(element)">{{idProduit}}</p>
-                        </td>
                     </ng-container>
                     <!-- Colonne marque -->
                     <ng-container matColumnDef="nomProduit">
@@ -110,7 +110,7 @@
                         <td mat-cell *matCellDef="let element">{{element.categorie}}</td>
                     </ng-container>
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                    <tr mat-row (click)="choisirPack(row)" [class.demo-row-is-clicked]="packClicke.has(row)"
+                    <tr mat-row (click)="choisirPack(row)" [class.demo-row-is-clicked]="packClique.has(row)"
                         *matRowDef="let row; columns: displayedColumns;"></tr>
                 </table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
@@ -127,10 +127,6 @@
                 <div *ngFor="let pack of pack().controls; let i=index" [formGroupName]="i">
                     Pack: {{packSelectionne[i].nomEmballage}}
                     <div style="display: inline-block; width: 100%;">
-                        <mat-form-field appearance="fill" style="width: 32%;  margin-right: 2%;">
-                            <mat-label style="text-transform: capitalize;">Poids unitaire</mat-label>
-                            <input matInput formControlName="poids" required type="number">
-                        </mat-form-field>
                         <mat-form-field appearance="fill" style="width: 32%;  margin-right: 2%;">
                             <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
                             <input matInput formControlName="qte" required type="number">
@@ -174,11 +170,10 @@
                     <td mat-cell *matCellDef="let element">{{element.typeEmballage}}</td>
                 </ng-container>
                 <!-- Colonne Valeur Unite -->
-                <ng-container matColumnDef="poidsUnitaire">
-                    <th mat-header-cell *matHeaderCellDef>Poids U</th>
+                <ng-container matColumnDef="poidsUnitaireNet">
+                    <th mat-header-cell *matHeaderCellDef>Poids U.N</th>
                     <td mat-cell *matCellDef="let element">
-                        {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ?
-                        this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].poids : '' }}
+                        {{element.poids_total_net}}
                     </td>
                 </ng-container>
                 <!-- Colonne Unite -->
@@ -195,11 +190,19 @@
                     <td mat-cell *matCellDef="let element">{{element.unite}}</td>
                 </ng-container>
                 <!-- Colonne sous type -->
-                <ng-container matColumnDef="poidsTot">
-                    <th mat-header-cell *matHeaderCellDef>Poids Total</th>
+                <ng-container matColumnDef="poidsTotNet">
+                    <th mat-header-cell *matHeaderCellDef>Poids T.N</th>
                     <td mat-cell *matCellDef="let element">
                         {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ?
-                        calculerPoidsPack(this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].poids,this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].qte)
+                        calculerPoidsPackNet(element.poids_total_net,this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].qte)
+                        : ''}}
+                    </td>
+                </ng-container>
+                <ng-container matColumnDef="poidsTot">
+                    <th mat-header-cell *matHeaderCellDef>Poids T.G</th>
+                    <td mat-cell *matCellDef="let element">
+                        {{this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)] ?
+                        calculerPoidsPack(element.poids_emballage_total,this.troisiemeFormGroup.get('pack').value[packSelectionne.indexOf(element)].qte)
                         : ''}}
                     </td>
                 </ng-container>
@@ -237,6 +240,13 @@
             </mat-grid-tile>
             <mat-grid-tile>
                 <div class="w-100">{{this.premierFormGroup.get('fragilite').value ? 'Oui' : 'Non'}}</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100 titre">Poids Total Net:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100">{{this.troisiemeFormGroup.get('pack').value[0] ? calculerPoidsTotalNet() : ''}} Kg
+                </div>
             </mat-grid-tile>
             <mat-grid-tile>
                 <div class="w-100 titre">Poids Total:</div>
