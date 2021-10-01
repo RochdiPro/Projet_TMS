@@ -7,62 +7,7 @@ import { ColisageService } from '../../colisage.service';
 import Swal from 'sweetalert2'
 import { Router } from '@angular/router';
 
-
-//*************************************************************************************************************
-//***********************************************INTERFACE LISTE DE COLISAGE **********************************
-//*************************************************************************************************************
-@Component({
-  selector: 'app-liste-colisage',
-  templateUrl: './liste-colisage.component.html',
-  styleUrls: ['./liste-colisage.component.scss']
-})
-export class ListeColisageComponent implements AfterViewInit {
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-
-  form = new FormGroup({ nom_Produit: new FormControl(""), nom_Emballage: new FormControl(""), type_Emballage: new FormControl("") });
-  listeColisage: any;
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-  displayedColumns: string[] = ['id', 'nomEmballage', 'typeEmballage', 'nomProduit', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
-  dataSource = new MatTableDataSource<tableColisage>();
-
-  constructor(public service: ColisageService) {
-    this.refraichirListeColisage();
-  }
-
-  filtrerListeColisage() {
-    this.service.fltreListeproduit("nom_produit", this.form.get('nom_Produit').value, "nom_emballage", this.form.get('nom_Emballage').value, "type_emballage", this.form.get('type_Emballage').value).subscribe((data) => {
-      this.dataSource.data = data as tableColisage[];
-    });
-  }
-
-  refraichirListeColisage() {
-    this.service.listeColisage().subscribe((data) => {
-      this.dataSource.data = data as tableColisage[];
-    });
-  }
-
-  getIdProduit(produits: any) {
-    let ids = produits.idProduit.split("/");
-    return ids
-  }
-
-  getQuantiteProduit(produits: any) {
-    let qte = produits.qte.split("/");
-    return qte
-  }
-
-  getNomProduit(produits: any) {
-    let nomProduit = produits.nomProduit.split("/");
-
-    return nomProduit;
-  }
-
-}
-export interface tableColisage {
+export interface tableColisage { //interface pour recuperer les données du liste colisage entant qu data source pour l'afficher dans le tableau
   id: number;
   idProduit: number;
   nomProduit: String;
@@ -73,6 +18,73 @@ export interface tableColisage {
   categorie: String;
   poids_emballage_total: number;
 }
+
+export interface tableProduits { //interface pour recuperer les données du Fiche produit entant que data source pour l'afficher dans le tableau
+  id_Produit: number;
+  nom_Produit: String;
+  marque: String;
+  valeur_Unite: number;
+  unite: String;
+  type1: String;
+  type2: String;
+
+}
+
+//*************************************************************************************************************
+//***********************************************INTERFACE LISTE DE COLISAGE **********************************
+//*************************************************************************************************************
+@Component({
+  selector: 'app-liste-colisage',
+  templateUrl: './liste-colisage.component.html',
+  styleUrls: ['./liste-colisage.component.scss']
+})
+export class ListeColisageComponent implements AfterViewInit, OnInit {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
+  //Declaration des variables
+  form = new FormGroup({ nom_Produit: new FormControl(""), nom_Emballage: new FormControl(""), type_Emballage: new FormControl("") });
+  listeColisage: any;
+  displayedColumns: string[] = ['id', 'nomEmballage', 'typeEmballage', 'nomProduit', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
+  dataSource = new MatTableDataSource<tableColisage>();
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  constructor(public service: ColisageService) {
+  }
+  ngOnInit() {
+    this.chargerListeColisage();
+  }
+
+  filtrerListeColisage() { //pour filtrer la liste colisage selon nom du produit, nom d'emballage et type D'emballage
+    this.service.fltreListeproduit("nom_produit", this.form.get('nom_Produit').value, "nom_emballage", this.form.get('nom_Emballage').value, "type_emballage", this.form.get('type_Emballage').value).subscribe((data) => {
+      this.dataSource.data = data as tableColisage[];
+    });
+  }
+
+  chargerListeColisage() { //chargement du liste de colisage
+    this.service.listeColisage().subscribe((data) => {
+      this.dataSource.data = data as tableColisage[];
+    });
+  }
+
+
+  getQuantiteProduit(produits: any) { //recuperer la quantité de chaque produit
+    let qte = produits.qte.split("/");
+    return qte
+  }
+
+  getNomProduit(produits: any) { //recuperer le nom de chaque produit
+    let nomProduit = produits.nomProduit.split("/");
+
+    return nomProduit;
+  }
+
+}
+
 
 // *****************************************************************************************************************
 // ******************************************Menu Ajouter***********************************************************
@@ -103,23 +115,26 @@ export class MenuAjouterComponent implements OnInit {
 export class AjouterProduitComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  //declaration des variables
   isLinear = false;
   premierFormGroup: FormGroup;
   deuxiemeFormGroup: FormGroup;
   troisiemeFormGroup: FormGroup;
-  form = new FormGroup({ nom_Produit: new FormControl("") });
-  displayedColumns: string[] = ['id_Produit', 'nom_Produit', 'marque', 'valeur_Unite', 'unite', 'typeProduit', 'sousType']; //les colonne du tableau liste de produits
+  formFiltreProduit = new FormGroup({ nom_Produit: new FormControl("") });
+  colonneAfficheDuTableFicheProduit: string[] = ['id_Produit', 'nom_Produit', 'marque', 'valeur_Unite', 'unite', 'typeProduit', 'sousType']; //les colonne du tableau liste de produits
   dataSourceProduits = new MatTableDataSource<tableProduits>();
   dataSourceProduit = new MatTableDataSource<tableProduits>();
   produitClique = new Set<tableProduits>();
-  produits: any;
+  listeProduits: any;
   produitsAffiche: any = [];
   produitSelectionne: any = [];
   poidsToltal: number = 0;
-  poidsTotProduit: number;
+  poidsTotUnProduit: number;
   qte: any;
   troisiemeStepEstRemplit = false;
-  prodExiste = false;
+  produitExiste = false;
+
   ngAfterViewInit() {
     this.dataSourceProduits.paginator = this.paginator;
     this.dataSourceProduits.sort = this.sort;
@@ -127,6 +142,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.dataSourceProduit.sort = this.sort;
 
   }
+
   constructor(public service: ColisageService, private formBuilder: FormBuilder, public _router: Router) {
   }
 
@@ -139,21 +155,22 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
 
   async chargerFicheProduit() { //charger la liste de fiche produits
-    this.produits = await this.service.listeProduits().toPromise();
+    this.listeProduits = await this.service.listeProduits().toPromise();
     let listeColisage = await this.chargerListeColisage();
     this.produitsAffiche = [];
-    this.produits.forEach((element: any) => {
+    this.listeProduits.forEach((element: any) => { //verifier si un produit existe deja dans la liste colisage
       listeColisage.forEach((prodColis: any) => {
         let idP = prodColis.idProduit.split();
         let id = "FP-" + element.id_Produit;
-        if (id === idP[0] || idP.length !== 1) {
-          this.prodExiste = true;
+        let idProduitExiste = id === idP[0] || idP.length !== 1;
+        if (idProduitExiste) {
+          this.produitExiste = true;
         }
       });
-      if(!this.prodExiste){
+      if(!this.produitExiste){ //si le produit du fiche produit n'existe pas dans la liste colisage donc on l'ajoute à la liste a afficher dans le tableau
         this.produitsAffiche.push(element);
       }
-      this.prodExiste = false;
+      this.produitExiste = false;
       
     });
 
@@ -232,7 +249,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     formData.append("qte", this.troisiemeFormGroup.get('qte').value);
     formData.append("unite", this.troisiemeFormGroup.get('unite').value);
     formData.append("categorie", this.produitSelectionne[0].type2);
-    if (this.premierFormGroup.get('fragilite').value) {
+    if (this.premierFormGroup.get('fragilite').value) { //verifier la fragilité avant l'enrigistrement
       formData.append("fragile", "Oui");
     } else {
       formData.append("fragile", "Non");
@@ -241,8 +258,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     formData.append("longueur", Number(this.premierFormGroup.get('longueur').value));
     formData.append("largeur", Number(this.premierFormGroup.get('largeur').value));
     formData.append("volume", Number(this.premierFormGroup.get('volume').value));
-    formData.append("poids_unitaire", this.poidsTotProduit);
-    formData.append("poids_total_net", this.poidsTotProduit);
+    formData.append("poids_unitaire", this.poidsTotUnProduit);
+    formData.append("poids_total_net", this.poidsTotUnProduit);
     formData.append("poids_emballage_total", this.poidsToltal);
     this.service.creerProduitEmballe(formData);
     await this._router.navigate(['/Menu/Colisage/Liste_Colisage'])
@@ -253,6 +270,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       timer: 1500
     })
   }
+
   calculVolume() { //calculer le volume de l'emballage
     if (this.premierFormGroup.get('hauteur').value !== "" && this.premierFormGroup.get('longueur').value !== "" && this.premierFormGroup.get('largeur').value !== "") {
       let volume = Number(this.premierFormGroup.get('hauteur').value) * Number(this.premierFormGroup.get('longueur').value) * Number(this.premierFormGroup.get('largeur').value) * 0.000001;
@@ -261,9 +279,9 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
 
   calculerPoidsProduitNet(poids: any, qte: any) { //calculer poids produits total net
-    this.poidsTotProduit = Number(poids) * Number(qte);
-    this.calculerPoidsTotal(this.poidsTotProduit);
-    return (this.poidsTotProduit);
+    this.poidsTotUnProduit = Number(poids) * Number(qte);
+    this.calculerPoidsTotal(this.poidsTotUnProduit);
+    return (this.poidsTotUnProduit);
   }
 
   calculerPoidsTotal(poidsNet: any) { //calculer le poids total
@@ -271,16 +289,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
 
 }
-export interface tableProduits {
-  id_Produit: number;
-  nom_Produit: String;
-  marque: String;
-  valeur_Unite: number;
-  unite: String;
-  type1: String;
-  type2: String;
 
-}
 //*********************************************************************************************************
 // *************************************Ajouter Pack a la liste colisage **********************************
 // ********************************************************************************************************
@@ -293,23 +302,25 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+
+  //declaration des variables
   isLinear = false;
   premierFormGroup: FormGroup;
   deuxiemeFormGroup: FormGroup;
   troisiemeFormGroup: FormGroup;
-  displayedColumns: string[] = ['id', 'nomEmballage', 'typeEmballage', 'nomProduit', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
-  displayedColumns2: string[] = ['id', 'nomEmballage', 'typeEmballage', 'poidsUnitaireNet', 'qte', 'unite', 'poidsTotNet', 'poidsTot', 'categorie']; //les colonne du tableau liste de colisage
-  dataSourcePack = new MatTableDataSource<tableColisage>();
-  dataSource = new MatTableDataSource<tableColisage>();
-  form = new FormGroup({ nom_Emballage: new FormControl("") });
+  colonneAfficheTableauLC1: string[] = ['id', 'nomEmballage', 'typeEmballage', 'nomProduit', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
+  colonneAfficheTableauLC2: string[] = ['id', 'nomEmballage', 'typeEmballage', 'poidsUnitaireNet', 'qte', 'unite', 'poidsTotNet', 'poidsTot', 'categorie']; //les colonne du tableau liste de colisage
+  dataSourcePackSelectionne = new MatTableDataSource<tableColisage>();
+  dataSourceListeColisage = new MatTableDataSource<tableColisage>();
+  formFiltreNomEmballage = new FormGroup({ nom_Emballage: new FormControl("") });
   packClique = new Set<tableColisage>();
   packSelectionne: any = [];
-  produits: any;
+  listePacks: any;
   poidsToltalNet: any;
-  poidsToltal: any;
+  poidsToltalBrut: any;
   qte: any;
-  poidsTotProduit: any;
-  poidsUN: any;
+  poidsTotUnProduit: any;
+  poidsUnitaireNet: any;
   poidsTotNetProduit: any;
 
   constructor(public service: ColisageService, private formBuilder: FormBuilder, public _router: Router) {
@@ -317,8 +328,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSourceListeColisage.paginator = this.paginator;
+    this.dataSourceListeColisage.sort = this.sort;
   }
 
   ngOnInit() {
@@ -339,29 +350,30 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     this.troisiemeFormGroup = this.formBuilder.group({
       pack: this.formBuilder.array([])
     });
-    this.dataSource.filterPredicate = (data, filter: string) => {
+    this.dataSourceListeColisage.filterPredicate = (data, filter: string) => {
       return data.nomEmballage.toLowerCase().includes(filter)
     };
-    this.refraichirListeColisage();
+    this.chargerListeColisage();
   }
-  refraichirListeColisage() {
+  chargerListeColisage() { //charger la liste de colisage
     this.service.listeColisage().subscribe((data) => {
-      this.produits = data;
-      this.dataSource.data = this.produits as tableColisage[];
+      this.listePacks = data;
+      this.dataSourceListeColisage.data = this.listePacks as tableColisage[];
     });
   }
 
-  appliquerFiltre(valeurFiltre: any) {
+  appliquerFiltre(valeurFiltre: any) { //filtrer par nom Emballage
     valeurFiltre = (valeurFiltre.target as HTMLTextAreaElement).value;
     valeurFiltre = valeurFiltre.trim(); // Remove whitespace
     valeurFiltre = valeurFiltre.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-    this.dataSource.filter = valeurFiltre;
+    this.dataSourceListeColisage.filter = valeurFiltre;
   }
 
-  calculVolume() {
-    if (this.premierFormGroup.get('hauteur').value !== "" && this.premierFormGroup.get('longueur').value !== "" && this.premierFormGroup.get('largeur').value !== "") {
-      let volume = Number(this.premierFormGroup.get('hauteur').value) * Number(this.premierFormGroup.get('longueur').value) * Number(this.premierFormGroup.get('largeur').value);
-      this.premierFormGroup.get('volume').setValue(volume);
+  calculVolume() { //calculer le volume de l'emballage
+    let toutLesChampsDeDimensionsSontRemplit = this.premierFormGroup.get('hauteur').value !== "" && this.premierFormGroup.get('longueur').value !== "" && this.premierFormGroup.get('largeur').value !== "";
+    if (toutLesChampsDeDimensionsSontRemplit) {
+      let volume = Number(this.premierFormGroup.get('hauteur').value) * Number(this.premierFormGroup.get('longueur').value) * Number(this.premierFormGroup.get('largeur').value); //calcul
+      this.premierFormGroup.get('volume').setValue(volume); //changer la valeur de l'input par le volume calculé
     }
   }
 
@@ -370,105 +382,105 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     return ids
   }
 
-  getQuantiteProduit(produits: any) {
+  getQuantiteProduit(produits: any) { //pour avoir les quantitées de chaque produit dans la liste de colisage
     let qte = produits.qte.split("/");
     return qte
   }
 
-  getNomProduit(produits: any) {
+  getNomProduit(produits: any) { //pour avoir le nom de chaque produit dans la liste colisage
     let nomProduit = produits.nomProduit.split("/");
 
     return nomProduit;
   }
 
-  choisirPack(p: any) {
-    if (this.packClique.has(p)) {
+  choisirPack(p: any) { //selectionner les packs désirés
+    if (this.packClique.has(p)) { //si on clique sur un pack déja selectionné on le désélectionne
       this.packClique.delete(p);
       this.packSelectionne.splice(this.packSelectionne.indexOf(p), 1);
-      if (this.packSelectionne.length == 0) {
-        this.dataSource.data = this.produits;
-      }
-    } else {
+    } else {  //sinon on selectionne le pack
       this.packClique.add(p);
       this.packSelectionne.push(p);
-      this.dataSource.data = this.dataSource.data.filter((x: any) => x.unite == this.packSelectionne[0].unite);
     }
 
-    this.deuxiemeFormGroup.get('validateur').setValue("aze");
+    this.deuxiemeFormGroup.get('validateur').setValue("valide"); //pour valider le deuxieme matStep
   }
 
-  pack(): FormArray {
+  pack(): FormArray { //charger le FormArray 'pack' pour ajouter a lui les formControls d'une facon dynamique
     return this.troisiemeFormGroup.get("pack") as FormArray
   }
 
-  nouveauPack( unite: any): FormGroup {
+  nouveauPack( unite: any): FormGroup { //creation des formControls qte et unite pour chaque pack selectionné
     return this.formBuilder.group({
       qte: ['', Validators.required],
       unite: [unite, Validators.required],
     })
   }
 
-  ajouterPack( unite: any) {
+  ajouterPack( unite: any) { //lors de l'ajout du pack on ajoute les formControls crées a FormArray
     this.pack().push(this.nouveauPack( unite));
   }
 
-  supprimerPack() {
+  supprimerPack() { //vider le formArray
     this.pack().clear();
   }
 
-  deuxiemeSuivant() {
+  deuxiemeSuivant() { //pour chaque produit séléctionné on ajoute un formControl
     this.packSelectionne.forEach((element: any) => {
       this.ajouterPack( element.typeEmballage);
     });
-    this.dataSourcePack.data = this.packSelectionne as tableColisage[];
+    this.dataSourcePackSelectionne.data = this.packSelectionne as tableColisage[];
 
   }
 
-  deuxiemePrecedent() {
+  deuxiemePrecedent() { 
     this.supprimerPack();
   }
 
   calculerPoidsTotalNet() {
     this.poidsToltalNet = 0;
     this.qte = "";
-    this.poidsUN = "";
+    this.poidsUnitaireNet = "";
     for (let i = 0; i < this.packSelectionne.length; i++) {
       this.poidsToltalNet += Number(this.packSelectionne[i].poids_total_net) * Number(this.troisiemeFormGroup.get('pack').value[i].qte);
-      this.qte += this.troisiemeFormGroup.get('pack').value[i].qte + "/"
-      this.poidsUN += this.packSelectionne[i].poids_total_net + "/"
+      this.qte += this.troisiemeFormGroup.get('pack').value[i].qte + "/" //enregistrer la qte des produits dans une chaine de caractéres
+      this.poidsUnitaireNet += this.packSelectionne[i].poids_total_net + "/" //enregistrer le poids unitaire des produits dans une chaine de caractéres
     }
-    this.qte = this.qte.slice(0, -1);
-    this.poidsUN = this.poidsUN.slice(0, -1);
+    this.qte = this.qte.slice(0, -1); //enlever le dernier "/"
+    this.poidsUnitaireNet = this.poidsUnitaireNet.slice(0, -1); //enlever le dernier "/"
     return this.poidsToltalNet;
   }
 
-  calculerPoidsTotal() {
-    this.poidsToltal = 0;
+  calculerPoidsTotalBrut() { //poids des produit avec leur amballage et sans le nouveau emballage
+    this.poidsToltalBrut = 0;
     for (let i = 0; i < this.packSelectionne.length; i++) {
-      this.poidsToltal += Number(this.packSelectionne[i].poids_emballage_total) * Number(this.troisiemeFormGroup.get('pack').value[i].qte);
+      this.poidsToltalBrut += Number(this.packSelectionne[i].poids_emballage_total) * Number(this.troisiemeFormGroup.get('pack').value[i].qte);
     }
-    this.poidsToltal = this.poidsToltal + Number(this.premierFormGroup.get('poidsEmballage').value);
-    return this.poidsToltal;
+    this.poidsToltalBrut = this.poidsToltalBrut + Number(this.premierFormGroup.get('poidsEmballage').value);
+    console.log(this.poidsToltalBrut);
+    return this.poidsToltalBrut;
   }
 
-  calculerPoidsPackNet(poids: any, qte: any) {
+  calculerPoidsPackNet(poids: any, qte: any) { //poids total net de chaque pack selectionné
     this.poidsTotNetProduit = Number(poids) * Number(qte);
     return (this.poidsTotNetProduit);
   }
-  calculerPoidsPack(poids: any, qte: any) {
-    this.poidsTotProduit = Number(poids) * Number(qte);
-    return (this.poidsTotProduit);
+  calculerPoidsPackBrut(poids: any, qte: any) { //poids total brut de chaque pack selectionné
+    this.poidsTotUnProduit = Number(poids) * Number(qte);
+    console.log(this.premierFormGroup.get('nom').value);
+    return (this.poidsTotUnProduit);
+    
   }
 
   reinitialiserStepper() {
     this.packClique.clear();
   }
-  valider() {
-    let id_Pack = ""
+
+  async valider() { //Bouton valider 
+    let id_Pack = "LC-"
     let nom_Pack = ""
     this.packSelectionne.forEach((element: any) => {
       nom_Pack += element.nomEmballage + "/"
-      id_Pack += element.id + " (liste colisage)/"
+      id_Pack += element.id + "/"
     });
     id_Pack = id_Pack.slice(0, -1);
     nom_Pack = nom_Pack.slice(0, -1);
@@ -491,12 +503,9 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     formData.append("volume", Number(this.premierFormGroup.get('volume').value));
     formData.append("poids_unitaire", this.poidsToltalNet);
     formData.append("poids_total_net", this.poidsToltalNet);
-    formData.append("poids_emballage_total", this.poidsToltal);
+    formData.append("poids_emballage_total", this.poidsToltalBrut);
     this.service.creerProduitEmballe(formData);
-
-    setTimeout(() => {
-      this._router.navigate(['/Menu/Colisage/Liste_Colisage'])
-    }, 500);
+    await this._router.navigate(['/Menu/Colisage/Liste_Colisage'])
     Swal.fire({
       icon: 'success',
       title: 'Produit bien ajouté',
