@@ -1,16 +1,16 @@
 @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
-    .card-body{
+    .card-body{ //en enleve le padding des deuc cotés du card du notification
         padding-left: 0;
         padding-right: 0;
     }
-    h3, h4 {
+    h3, h4 { // on dimibue la taille du font de reclamation
         font-size: 90%;
     }
-    h1{
+    h1{ //diminuer taille titre
         font-size: 140%;
         margin: 0;
     }
-    .alerte{
+    .alerte{ //diminuer taille du font du notification
         font-size: 90%;
     }
 }

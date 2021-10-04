@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators, FormArray } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -60,6 +60,7 @@ export class ListeColisageComponent implements AfterViewInit, OnInit {
   }
 
   filtrerListeColisage() { //pour filtrer la liste colisage selon nom du produit, nom d'emballage et type D'emballage
+    if (this.form.get('type_Emballage').value === undefined) this.form.get('type_Emballage').setValue("");
     this.service.fltreListeproduit("nom_produit", this.form.get('nom_Produit').value, "nom_emballage", this.form.get('nom_Emballage').value, "type_emballage", this.form.get('type_Emballage').value).subscribe((data) => {
       this.dataSource.data = data as tableColisage[];
     });
@@ -134,6 +135,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   qte: any;
   troisiemeStepEstRemplit = false;
   produitExiste = false;
+  breakpoint: number;
 
   ngAfterViewInit() {
     this.dataSourceProduits.paginator = this.paginator;
@@ -152,6 +154,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.dataSourceProduits.filterPredicate = (data, filter: string) => { //forcer le filtre a chercher que dans la colonne nom_produit
       return data.nom_Produit.toLowerCase().includes(filter)
     };
+    this.breakpoint = (window.innerWidth <= 760) ? 2 : 6;
   }
 
   async chargerFicheProduit() { //charger la liste de fiche produits
@@ -287,6 +290,9 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   calculerPoidsTotal(poidsNet: any) { //calculer le poids total
     this.poidsToltal = poidsNet + Number(this.premierFormGroup.get('poidsEmballage').value);
   }
+  onResize(event: any) {
+    this.breakpoint = (event.target.innerWidth <= 400) ? 2 : 6;
+  }
 
 }
 
@@ -300,8 +306,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
 })
 export class AjouterPackComponent implements OnInit, AfterViewInit {
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChildren(MatPaginator) paginator = new QueryList<MatPaginator>();
+  @ViewChildren(MatSort) sort = new QueryList<MatSort>();
 
   //declaration des variables
   isLinear = false;
@@ -322,14 +328,17 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   poidsTotUnProduit: any;
   poidsUnitaireNet: any;
   poidsTotNetProduit: any;
+  breakpoint: number;
 
   constructor(public service: ColisageService, private formBuilder: FormBuilder, public _router: Router) {
 
   }
 
   ngAfterViewInit() {
-    this.dataSourceListeColisage.paginator = this.paginator;
-    this.dataSourceListeColisage.sort = this.sort;
+    this.dataSourceListeColisage.paginator = this.paginator.toArray()[0];;
+    this.dataSourceListeColisage.sort =this.sort.toArray()[0];
+    this.dataSourcePackSelectionne.paginator = this.paginator.toArray()[1];;
+    this.dataSourcePackSelectionne.sort =this.sort.toArray()[1];
   }
 
   ngOnInit() {
@@ -354,6 +363,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       return data.nomEmballage.toLowerCase().includes(filter)
     };
     this.chargerListeColisage();
+    this.breakpoint = (window.innerWidth <= 760) ? 2 : 6;
   }
   chargerListeColisage() { //charger la liste de colisage
     this.service.listeColisage().subscribe((data) => {
@@ -471,7 +481,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     
   }
 
-  reinitialiserStepper() {
+  reinitialiserStepper() { //reinitialiser le stepper
     this.packClique.clear();
   }
 
@@ -512,6 +522,9 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       showConfirmButton: false,
       timer: 1500
     })
+  }
+  onResize(event: any) { //lors du changement de l'ecran on modifie le breakpoint du mat-grid pour avoir un nouveau layout
+    this.breakpoint = (event.target.innerWidth <= 400) ? 2 : 6;
   }
 
 }

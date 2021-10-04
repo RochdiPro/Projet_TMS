@@ -1,6 +1,7 @@
 <h1 mat-dialog-title>Ajouter Carburant</h1>
 <div>
     <form [formGroup]="form">
+        <!-- input field Nom carburant -->
         <div class="position-relative form-group">
             <mat-form-field>
                 <mat-label>Nom</mat-label>
@@ -10,6 +11,8 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- fin input field Nom carburant -->
+        <!-- input field prix carburant -->
         <div>
             <mat-form-field>
                 <mat-label>Prix</mat-label>
@@ -23,6 +26,8 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- fin input field prix carburant -->
+        <!-- div contenant les boutons -->
         <div mat-dialog-actions class="float-right">
             <!-- bouton Annuler -->
             <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterCarburant()">Annuler</button>

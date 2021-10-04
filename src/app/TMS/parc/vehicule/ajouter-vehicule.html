@@ -5,7 +5,7 @@
             <label for="matricule" class="">Matricule Du Vehicule</label>
             <!-- choix type matricule -->
             <div class="position-relative form-group">
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="full-width">
                     <mat-label>Choisir un type de matricule</mat-label>
                     <mat-select formControlName="typematricule" name="typematricule" id="typematricule"
                         (selectionChange)="testTypeMatricule()" [(value)]="typeMatriculeSelectionne" required>
@@ -38,8 +38,9 @@
                 </div>
             </div>
         </div>
+        <!-- input field marque -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Marque</mat-label>
                 <input matInput formControlName="marque" name="marque" id="marque" type="text"
                     style="text-transform:capitalize;" required>
@@ -48,8 +49,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field modele -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Modele</mat-label>
                 <input matInput formControlName="modele" name="modele" id="modele" type="text"
                     style="text-transform:capitalize;" required>
@@ -58,8 +60,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input field couleur -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Couleur</mat-label>
                 <input matInput formControlName="couleur" name="couleur" id="couleur" type="text"
                     style="text-transform:capitalize;" required>
@@ -68,9 +71,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- Select du Categorie vehicule -->
         <div class="position-relative form-group" id="categories">
-            <!-- <label for="categories">Carrosserie</label> -->
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Categorie du Vehicule</mat-label>
                 <mat-select formControlName="car" name="carosserie" id="carosserie" [(value)]="categorie" required>
                     <mat-option *ngFor="let carosseries of carosserie" [value]="carosseries.value">
@@ -81,8 +84,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input Kilometrage actuel -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Kilométrage Actuel</mat-label> <input matInput placeholder="Ex. 100000"
                     formControlName="kmactuel" name="km-actuel" id="km-actuel" type="text" required>
                 <mat-error *ngIf="form.controls['kmactuel'].hasError('required')">
@@ -93,8 +97,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input kilometrage prochain entretien -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Kilométrage Prochain Entretien</mat-label>
                 <input matInput placeholder="Ex. 100000" formControlName="kmprochainentretien"
                     name="km-prochain-entretien" id="km-prochain-entretien" type="text" required>
@@ -106,8 +111,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input Consommation normale -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Consommation Normale En L/100Km</mat-label>
                 <input matInput placeholder="Ex. 6" formControlName="consommationnormale" name="consommationnormale"
                     id="consommationnormale" type="text" required>
@@ -119,8 +125,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- Select type carburant -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Carburant</mat-label>
                 <mat-select formControlName="carburant" name="carburant" id="carburant" [(value)]="carburant" required>
                     <mat-option *ngFor="let carb of carburants" [value]="carb">
@@ -132,9 +139,9 @@
             </mat-form-field>
 
         </div>
-
+        <!-- input charge utile maximale -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Charge Utile Maximale En Kg</mat-label>
                 <input matInput placeholder="Ex. 600" formControlName="chargeUtile" name="chargeUtile" id="chargeUtile"
                     type="text" required>
@@ -146,8 +153,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input longueur -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Longueur en cm</mat-label>
                 <input matInput formControlName="longueur" name="longueur" id="longueur" type="text" required>
                 <mat-error *ngIf="form.controls['longueur'].hasError('required')">
@@ -158,8 +166,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input largeur -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Largeur en cm</mat-label>
                 <input matInput formControlName="largeur" name="largeur" id="largeur" type="text" required>
                 <mat-error *ngIf="form.controls['largeur'].hasError('required')">
@@ -170,8 +179,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input hauteur -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Hauteur en cm</mat-label>
                 <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="text" required>
                 <mat-error *ngIf="form.controls['hauteur'].hasError('required')">
@@ -182,9 +192,10 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- date picker date prochain visite -->
         <div class="position-relative form-group">
 
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Date Prochaine Visite</mat-label>
                 <input matInput [matDatepicker]="dateVisite" formControlName="datevisite" [min]="minDate">
                 <mat-datepicker-toggle matSuffix [for]="dateVisite"></mat-datepicker-toggle>
@@ -195,9 +206,10 @@
             </mat-form-field>
 
         </div>
+        <!-- date picker date expiration assurance -->
         <div class="position-relative form-group">
 
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Date D'Expiration D'Assurance</mat-label>
                 <input matInput [matDatepicker]="dateAssurance" formControlName="dateassurance" [min]="minDate">
                 <mat-datepicker-toggle matSuffix [for]="dateAssurance"></mat-datepicker-toggle>
@@ -207,10 +219,11 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- date picker date expiration taxes -->
         <div class="position-relative form-group">
 
 
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Date D'Expiration Des Taxes</mat-label>
                 <input matInput [matDatepicker]="dateTaxe" formControlName="datetaxe" [min]="minDate">
                 <mat-datepicker-toggle matSuffix [for]="dateTaxe"></mat-datepicker-toggle>

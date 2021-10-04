@@ -1,6 +1,5 @@
-table {
-    overflow: scroll;
-    width: 100%;
+.mat-table {
+    margin-top: 10px;
 }
 
 .mat-column-id_Produit,
@@ -10,7 +9,7 @@ table {
 .mat-column-unite,
 .mat-column-typeProduit,
 .mat-column-sousType {
-    width: 14.28%;
+    width: auto;
     text-align: center;
 }
 :host ::ng-deep .mat-sort-header-container {
@@ -45,11 +44,14 @@ table {
     width: 32%;
     margin-right: 2%;
 }
-.troisieme-input{
+.troisieme-input {
     width: 32%;
 }
 //pour mobile
 @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+    *{
+        font-size: 12px;
+    }
     .premier-input {
         width: 95%;
         margin-right: 0%;
@@ -58,7 +60,98 @@ table {
         width: 95%;
         margin-right: 0%;
     }
-    .troisieme-input{
+    .troisieme-input {
         width: 95%;
+    }
+    .custom-width {
+        width: 92%;
+        margin: 0;
+    }
+    .mat-column-id {
+        width: auto;
+        text-align: center;
+    }
+    ul {
+        padding-top: 0%;
+    }
+    .mat-table {
+        border: 0;
+        vertical-align: middle;
+    }
+
+    .mat-table caption {
+        font-size: 1em;
+    }
+
+    .mat-table .mat-row {
+        border-bottom: 5px solid #ddd;
+        display: block;
+        min-height: auto;
+    }
+
+    .mat-table .mat-cell {
+        border-bottom: 1px solid #ddd;
+        display: block;
+        font-size: 1em;
+        text-align: right;
+        font-weight: bold;
+        height: auto;
+        margin-bottom: 4%;
+        padding-right: 5%;
+        padding-bottom: 4%;
+    }
+    .mat-table .mat-cell:before {
+        content: attr(data-label);
+        float: left;
+        text-transform: uppercase;
+        font-weight: normal;
+        margin-left: 5%;
+
+        font-size: 0.85em;
+    }
+    .mat-table .mat-cell:last-child {
+        border-bottom: 0;
+    }
+    .mat-table .mat-cell:first-child {
+        padding-top: 4%;
+    }
+    .mat-table .mat-cell:last-of-type {
+        padding-right: 5%;
+    }
+    .mat-table .mat-cell:first-of-type {
+        padding-left: 0;
+    }
+    .mat-table .mat-header-cell {
+        border: 10px solid;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+    }
+    .mat-header-row {
+        min-height: 0;
+    }
+    .table1 .mat-row:hover .mat-cell {
+        background-color: rgba($color: #000, $alpha: 0);
+    }
+    .table2 .mat-row {
+        border-bottom: 0px solid #ddd;
+    }
+    .mat-button, .mat-raised-button{
+        font-size: 12px;
+        min-width: 0;
+        padding: 0 5px;
+    }
+    .mat-raised-button{
+        line-height: 25px;
+    }
+    ::ng-deep .mat-icon-button {
+        width: 10% !important;
+    }
+
+    ::ng-deep .mat-paginator-icon {
+        width: 100% !important;
     }
 }

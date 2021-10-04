@@ -1,8 +1,10 @@
-<h1 mat-dialog-title>Mise à Jour Kilométrage Véhicule {{vehicule?.matricule}} </h1>
+<h1 mat-dialog-title>Mise à Jour Kilométrage Véhicule {{vehicule?.matricule}} </h1> <!-- titre boite dialogue -->
+<!-- contenu boite de dialogue ne s'affiche que si le vehicule est chargé -->
 <div mat-dialog-content *ngIf="vehicule">
     <form class="" [formGroup]="form" >
+        <!-- input Kilometrage Actuel -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Kilométrage Actuel</mat-label>
                 <input matInput formControlName="kmActuel" name="km-actuel" id="km-actuel" value="{{vehicule.kmactuel}}"
                     type="text">
@@ -18,8 +20,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input carburant consommé -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Montant Carburant Consommé En TND</mat-label>
                 <input matInput formControlName="montantConsomme" name="montantConsomme" id="montantConsomme"
                     value="{{vehicule.montantConsomme}}" type="text">

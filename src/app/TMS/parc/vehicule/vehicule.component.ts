@@ -7,6 +7,7 @@ import { DatePipe } from '@angular/common';
 import { kmactuelValidator } from './kmactuel.validator';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
+import Swal from 'sweetalert2'
 
 // ***************************************Page vehicule********************************************
 @Component({
@@ -159,8 +160,27 @@ export class MesVehiculesComponent implements OnInit {
 
   //Bouton supprimer vehicule
   async supprimerVehicule(id: any) { //supprimer vehicule
-    await this.service.supprimerVehicule(id).toPromise();
-    this.chargerVehicules();
+    Swal.fire({
+      title: 'Êtes-vous sûr?',
+      text: "Vous allez supprimer le vehicul!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Supprimer!',
+      cancelButtonText: 'Annuler'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.supprimerVehicule(id).toPromise();
+        this.chargerVehicules();
+        Swal.fire(
+          'Supprimé!',
+          'Le vehicul a été supprimé.',
+          'success'
+        )
+      }
+    })
+
   }
 
   //Badge rouge de notification
@@ -238,8 +258,23 @@ export class AjouterCarburantComponent {
     var formData: any = new FormData;
     formData.append("nom", this.form.get('nom').value);
     formData.append("prixCarburant", this.form.get('prixCarburant').value);
-    await this.service.creerCarburant(formData).toPromise();
-    this.fermerAjouterCarburant();
+    Swal.fire({
+      title: 'Voulez vous enregistrer?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Enregistrer',
+      denyButtonText: `Ne pas enregistrer`,
+      cancelButtonText: 'Annuler',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.creerCarburant(formData).toPromise();
+        this.fermerAjouterCarburant();
+        Swal.fire('Carburant enregistré!', '', 'success')
+      } else if (result.isDenied) {
+        this.fermerAjouterCarburant();
+      }
+    })
+
   }
 
   //bouton Annuler
@@ -353,8 +388,22 @@ export class AjoutComponent implements OnInit {
     formData.append("description", "");
     formData.append("etatVehicule", "Disponible");
     formData.append("positionVehicule", "Sfax");
-    await this.service.createvehicule(formData).toPromise();
-    this.dialogRef.close();
+    Swal.fire({
+      title: 'Voulez vous enregistrer?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Enregistrer',
+      denyButtonText: `Ne pas enregistrer`,
+      cancelButtonText: 'Annuler',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.createvehicule(formData).toPromise();
+        this.dialogRef.close();
+        Swal.fire('Vehicul enregistré!', '', 'success')
+      } else if (result.isDenied) {
+        this.dialogRef.close();
+      }
+    })
 
   }
 
@@ -633,8 +682,23 @@ export class MiseAJourComponent implements OnInit {
     formData.append("datevisite", new Date(this.form.get('datevisite').value));
     formData.append("dateassurance", new Date(this.form.get('dateassurance').value));
     formData.append("datetaxe", new Date(this.form.get('datetaxe').value));
-    await this.service.miseajourvehicule(this.idVehicule, formData).toPromise();
-    this.fermerMiseAJourVehicule();
+    Swal.fire({
+      title: 'Voulez vous enregistrer les modifications?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Enregistrer',
+      denyButtonText: `Ne pas enregistrer`,
+      cancelButtonText: 'Annuler',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.miseajourvehicule(this.idVehicule, formData).toPromise();
+        this.fermerMiseAJourVehicule();
+        Swal.fire('Modifications enregistrées!', '', 'success')
+      } else if (result.isDenied) {
+        this.fermerMiseAJourVehicule();
+      }
+    })
+
   }
 }
 
@@ -678,8 +742,22 @@ export class MiseAJourConsommationComponent implements OnInit {
     formData.append("kmactuel", this.form.get('kmActuel').value);
     formData.append("montantConsomme", this.form.get('montantConsomme').value);
     formData.append("distanceparcourie", Number(this.form.get('kmActuel').value) - Number(this.vehicule.kmactuel));
-    await this.service.miseajourkm(this.idVehicule, formData).toPromise();
-    this.fermerMiseAJourConsommation();
+    Swal.fire({
+      title: 'Voulez vous enregistrer?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Enregistrer',
+      denyButtonText: `Ne pas enregistrer`,
+      cancelButtonText: 'Annuler',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.miseajourkm(this.idVehicule, formData).toPromise();
+        this.fermerMiseAJourConsommation();
+        Swal.fire('Vehicul enregistré!', '', 'success')
+      } else if (result.isDenied) {
+        this.fermerMiseAJourConsommation();
+      }
+    })
   }
 }
 
@@ -743,7 +821,25 @@ export class NotificationComponent implements OnInit {
     var formData: any = new FormData();
     formData.append("sujet", "");
     formData.append("description", "");
-    this.service.reclamationvehicule(this.idVehicule, formData).toPromise();
+    Swal.fire({
+      title: 'Êtes-vous sûr?',
+      text: "Vous allez supprimer la reclamation!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Supprimer!',
+      cancelButtonText: 'Annuler'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.reclamationvehicule(this.idVehicule, formData).toPromise();
+        Swal.fire(
+          'Supprimé!',
+          'La réclamation a été supprimée.',
+          'success'
+        )
+      }
+    })
     this.reclamationExiste = false;
   }
 
@@ -861,8 +957,23 @@ export class ReclamationComponent implements OnInit {
     var formData: any = new FormData();
     formData.append("sujet", this.form.get('sujet').value);
     formData.append("description", this.form.get('description').value);
-    await this.service.reclamationvehicule(this.idVehicule, formData).toPromise();
-    this.dialogRef.close();
+    Swal.fire({
+      title: 'Voulez vous enregistrer?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Enregistrer',
+      denyButtonText: `Ne pas enregistrer`,
+      cancelButtonText: 'Annuler',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.reclamationvehicule(this.idVehicule, formData).toPromise();
+        this.dialogRef.close();
+        Swal.fire('Réclamation enregistrée!', '', 'success')
+      } else if (result.isDenied) {
+        this.dialogRef.close();
+      }
+    })
+
   }
 }
 
@@ -952,22 +1063,47 @@ export class VehiculesLoueComponent implements OnInit {
 
   //Bouton supprimer vehicule Loue
   supprimerVehiculeLoue(id: any): void { //supprimer vehicule
-    this.service.supprimerVehiculeLoue(id).subscribe();
-    setTimeout(() => {
-      this._router.navigateByUrl("/Menu", { skipLocationChange: true }).then(() => {
-        this._router.navigate([decodeURI(this._location.path())]);
-      });
-    }, 500);
+    Swal.fire({
+      title: 'Êtes-vous sûr?',
+      text: "Vous allez supprimer le vehicul!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Supprimer!',
+      cancelButtonText: 'Annuler'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.supprimerVehiculeLoue(id).toPromise();
+        this.chargerVehicules();
+        Swal.fire(
+          'Supprimé!',
+          'Le vehicul a été supprimé.',
+          'success'
+        )
+      }
+    })
   }
-  
+
   //Utilisé dans le date picker de modification
   async changerDate(id: any, index: any) { //changengemetn date debut et fin de location
     var formData: any = new FormData();
     formData.append("id", id);
     formData.append("date_debut_location", this.form.get('date').value[index].dateDebut);
     formData.append("date_fin_location", this.form.get('date').value[index].dateFin);
-    await this.service.majDateLocation(formData).toPromise();
-    this.chargerVehicules();
+    Swal.fire({
+      title: 'Voulez vous enregistrer les modifications?',
+      showDenyButton: true,
+      confirmButtonText: 'Enregistrer',
+      denyButtonText: `Annuler`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.majDateLocation(formData).toPromise();
+        this.chargerVehicules();
+        Swal.fire('Modifications enregistrées!', '', 'success')
+      }
+    })
+
 
   }
 }
@@ -1094,8 +1230,23 @@ export class AjouterVehiculeLoueComponent implements OnInit {
     formData.append("position_vehicule", "Sfax");
     formData.append("date_debut_location", new Date(this.form.get('dateDebut').value));
     formData.append("date_fin_location", new Date(this.form.get('dateFin').value));
-    await this.service.creerVehiculeLoue(formData).toPromise();
-    this.dialogRef.close();
+    Swal.fire({
+      title: 'Voulez vous enregistrer?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Enregistrer',
+      denyButtonText: `Ne pas enregistrer`,
+      cancelButtonText: 'Annuler',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.creerVehiculeLoue(formData).toPromise();
+        this.dialogRef.close();
+        Swal.fire('Vehicul enregistré!', '', 'success')
+      } else if (result.isDenied) {
+        this.dialogRef.close();
+      }
+    })
+
 
   }
 }
@@ -1123,28 +1274,28 @@ export class DetailVehiculeLoueComponent implements OnInit {
     this.idVehicule = Number(localStorage.getItem('idV')); // ID du vehicule selectionné
     await this.chargerVehiculeLoue();
     this.testerTypeMatricule();
-    
+
   }
 
-  async chargerVehiculeLoue(){ //charger les données du vehicule selectionné
+  async chargerVehiculeLoue() { //charger les données du vehicule selectionné
     this.vehicule = await this.service.vehiculeLoue(this.idVehicule).toPromise();
   }
 
-  testerTypeMatricule(){ //teste le type de matricule
+  testerTypeMatricule() { //teste le type de matricule
     this.matricule = this.vehicule.matricule;
-      if (this.vehicule.matricule.includes('TUN')) {
-        this.tun = true;
-        this.rs = false;
-        this.serie = this.matricule.split('TUN')[0];
-        this.numCar = this.matricule.split('TUN')[1];
-      }
-      if (this.vehicule.matricule.includes('RS')) {
-        this.tun = false;
-        this.rs = true;
-        this.matRS = this.matricule.replace('RS', '');
-      }
+    if (this.vehicule.matricule.includes('TUN')) {
+      this.tun = true;
+      this.rs = false;
+      this.serie = this.matricule.split('TUN')[0];
+      this.numCar = this.matricule.split('TUN')[1];
+    }
+    if (this.vehicule.matricule.includes('RS')) {
+      this.tun = false;
+      this.rs = true;
+      this.matRS = this.matricule.replace('RS', '');
+    }
   }
-  
+
   //Bouton Fermer
   fermerDetailVehiculeLoue(): void { //fermer la boite de dialogue
     this.dialogRef.close();

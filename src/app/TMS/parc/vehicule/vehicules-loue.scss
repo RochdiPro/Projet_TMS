@@ -1,28 +1,20 @@
-.indisponible {
+.indisponible { //si vehicule indisponible on met le fond de sont ligne gris
   background: #dddddd;
 }
-.disponible {
+.disponible { //si vehicule dispo son etat s'affiche vert
   color: #4bb543;
 }
-.enMission {
+.enMission { //si vehicule en mission son etat s'affiche jaune
   color: #f7b924;
-}
-.example-section {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  height: 60px;
 }
 
 table {
   width: 100%;
 }
-.custom-width {
-  width: 30%;
-}
+
 
 @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
-  /* Force table to not be like tables anymore */
+  //forcer le tableau pour ne pas s'afficher comme tableau
   table {
     margin-top: 60px;
   }
@@ -35,7 +27,7 @@ table {
     display: block;
   }
 
-  /* Hide table headers (but not display: none;, for accessibility) */
+  //cacher les table headers (pas avec display: none;, pour raison d'accessibilité)
   thead tr {
     position: absolute;
     top: -9999px;
@@ -49,7 +41,7 @@ table {
   }
 
   td {
-    /* Behave  like a "row" */
+    // se comporter comme un "row"
     border: none;
     border-bottom: 1px solid #eee;
     position: relative;
@@ -76,9 +68,9 @@ table {
   }
 
   td:before {
-    /* Now like a table header */
+    //se comporter comme un table header
     position: absolute;
-    /* Top/left values mimic padding */
+    //valeur du Top/left imittent le padding
     top: 6px;
     left: 6px;
     width: 45%;
@@ -86,9 +78,7 @@ table {
     white-space: nowrap;
   }
 
-  /*
-	Label the data
-	*/
+  // donner un label pour les données
   td:nth-of-type(1):before {
     content: "Type Carosserie";
     font-weight: bold;

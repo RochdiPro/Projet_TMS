@@ -1,42 +1,32 @@
-.example-form {
-  min-width: 150px;
-  max-width: 500px;
+.full-width { //pour que les inputs prennent le width total du container
   width: 100%;
-}
-
-.example-full-width {
-  width: 100%;
-}
-
-.dim {
-  width: 31%;
 }
 .mat-dialog-content,
-.mat-dialog-title {
+.mat-dialog-title { //pour enlever le margin des cotés du boite de dialogue
   margin: 0 !important;
   padding: 12px 24px !important;
 }
 input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
+input::-webkit-inner-spin-button { //pour enlever les deux bouton qui augmente et diminue la valeyr d'un input de type number
   -webkit-appearance: none;
   margin: 0;
 }
 
-.matriculetun {
+.matriculetun { //pour le background du matricule type tun
   background-image: url(../../../../assets/images/matricule.png);
   height: 57px;
   width: 272px;
   position: relative;
   background-repeat: no-repeat;
 }
-.matriculers {
+.matriculers { //pour le background du matricule type rs
   height: 57px;
   width: 272px;
   background-image: url(../../../../assets/images/rs-mat.png);
   position: relative;
   background-repeat: no-repeat;
 }
-#numSerie {
+#numSerie { //pour le input du serie
   display: inline;
   width: 80px;
   top: 10px;
@@ -48,7 +38,7 @@ input::-webkit-inner-spin-button {
   color: white;
   font-size: 24px;
 }
-#numCar {
+#numCar { //pour le input du numero voiture
   display: inline;
   width: 100px;
   top: 10px;
@@ -60,19 +50,19 @@ input::-webkit-inner-spin-button {
   color: white;
   font-size: 24px;
 }
-.form-control {
+.form-control { //pour les inputs du matricule
   background: #ebebeb;
   color: #666;
   border: none;
   padding: 0.5rem 1rem;
 }
 
-.matricule {
+.matricule { //pour le div qui contient les matricules
   display: flex;
   align-items: center;
   justify-content: center;
 }
-#numRS {
+#numRS { //pour le input du matricule rs
   display: inline;
   width: 130px;
   top: 10px;
@@ -84,7 +74,7 @@ input::-webkit-inner-spin-button {
   color: white;
   font-size: 24px;
 }
-
+//pour l'affichage mobile
 @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
   .matriculetun {
     background-image: url(../../../../assets/images/matricule.png);

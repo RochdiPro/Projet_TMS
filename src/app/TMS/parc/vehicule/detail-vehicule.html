@@ -23,57 +23,74 @@
 </div>
 <div mat-dialog-content>
   <ul class="list-group" *ngIf="vehicule && carburant">
+    <!-- afficher marque -->
     <div class="position-relative form-group"><label for="marque" class="">Marque</label>
       <li class="list-group-item">{{vehicule.marque}}</li>
     </div>
+    <!-- afficher le modele -->
     <div class="position-relative form-group"><label for="modele" class="">Modele</label>
       <li class="list-group-item">{{vehicule.modele}}</li>
     </div>
+    <!-- afficher le couleur -->
     <div class="position-relative form-group"><label for="couleur" class="">Couleur</label>
       <li class="list-group-item">{{vehicule.couleur}}</li>
     </div>
+    <!-- afficher la categorie -->
     <div class="position-relative form-group"><label for="categories" class="">Categories Permis Accordées</label>
       <li class="list-group-item">{{vehicule.categories}}</li>
     </div>
+    <!-- afficher kilometrage actuel -->
     <div class="position-relative form-group"><label for="kmactuel" class="">Kilométrage Actuel</label>
       <li class="list-group-item">{{vehicule.kmactuel}}</li>
     </div>
+    <!-- afficher kilometrage prochain entretien -->
     <div class="position-relative form-group"><label for="kmprochainentretien" class="">Kilométrage Prochain
         Entretien</label>
       <li class="list-group-item">{{vehicule.kmprochainentretien}}</li>
     </div>
+    <!-- afficher kilometrage restant pour le prochain entretien -->
     <div class="position-relative form-group"><label for="typeentretien" class="">Prochain Entretien Dans</label>
       <li class="list-group-item">{{vehicule.kmprochainentretien-vehicule.kmactuel}}</li>
     </div>
+    <!-- afficher type carburant -->
     <div class="position-relative form-group"><label for="carburant" class="">Carburant</label>
       <li class="list-group-item">{{vehicule.carburant}}</li>
     </div>
+    <!-- afficher consomation normale -->
     <div class="position-relative form-group"><label for="consommationnormale" class="">Consommation Normale</label>
       <li class="list-group-item">{{vehicule.consommationNormale}}</li>
     </div>
+    <!-- afficher consomation actuelle -->
     <div class="position-relative form-group" *ngIf="vehicule.distanceparcourie!=null"><label for="consommationactuelle"
         class="">Consommation Actulle</label>
       <li class="list-group-item">
         {{(((vehicule.montantConsomme/carburant.prixCarburant)/vehicule.distanceparcourie)*100).toFixed(2)}}</li>
     </div>
+    <!-- afficher charge utile -->
     <div class="position-relative form-group"><label for="charge_utile" class="">Charge Utile</label>
       <li class="list-group-item">{{vehicule.charge_utile}}</li>
     </div>
+    <!-- afficher longueuer -->
     <div class="position-relative form-group"><label for="longueuer" class="">Longueur</label>
       <li class="list-group-item">{{vehicule.longueur}}</li>
     </div>
+    <!-- afficher largeur -->
     <div class="position-relative form-group"><label for="longueuer" class="">Largeur</label>
       <li class="list-group-item">{{vehicule.largeur}}</li>
     </div>
+    <!-- afficher hauteur -->
     <div class="position-relative form-group"><label for="longueuer" class="">Hauteur</label>
       <li class="list-group-item">{{vehicule.hauteur}}</li>
     </div>
+    <!-- afficher date prochaine visite -->
     <div class="position-relative form-group"><label for="datevisite" class="">Date Prochaine Visite</label>
       <li class="list-group-item">{{vehicule.datevisite | date:' d MMMM y' : '' : 'fr'}}</li>
     </div>
+    <!-- date expiration assurance -->
     <div class="position-relative form-group"><label for="dateassurance" class="">Date D'Expiration D'Assurance</label>
       <li class="list-group-item">{{vehicule.dateassurance | date:' d MMMM y' : '' : 'fr'}}</li>
     </div>
+    <!-- date expiration des taxes -->
     <div class="position-relative form-group"><label for="datetaxe" class="">Date D'Expiration Des Taxes</label>
       <li class="list-group-item">{{vehicule.datetaxe | date:' d MMMM y' : '' : 'fr'}}</li>
     </div>

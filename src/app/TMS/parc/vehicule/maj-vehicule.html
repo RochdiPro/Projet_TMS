@@ -1,9 +1,9 @@
-<h1 mat-dialog-title>Mise à Jour Véhicule {{vehicule?.matricule}} </h1>
+<h1 mat-dialog-title>Mise à Jour Véhicule {{vehicule?.matricule}} </h1> <!--Titre-->
 <div mat-dialog-content class="scrollbar scrollbar-primary">
-    <form class="example-form" [formGroup]="form" *ngIf="vehicule">
-
+    <form class="form" [formGroup]="form" *ngIf="vehicule">
+        <!-- input kilometrage actuel -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Kilométrage Actuel</mat-label>
                 <input matInput placeholder="Ex. 100000" formControlName="kmactuel" name="km-actuel" id="km-actuel"
                     value="{{vehicule.kmactuel}}" type="text">
@@ -15,8 +15,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input kilometrage prochain entretien -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Kilométrage Prochain Entretien</mat-label>
                 <input matInput placeholder="Ex. 100000" formControlName="kmprochainentretien"
                     name="km-prochain-entretien" id="km-prochain-entretien" value="{{vehicule.kmprochainentretien}}"
@@ -29,9 +30,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
-
+        <!-- input consommation normale -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Consommation Normale En L/100Km</mat-label>
                 <input matInput placeholder="Ex. 6" formControlName="consommationnormale" name="consommationnormale"
                     id="consommationnormale" type="text">
@@ -43,8 +44,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input carburant consommé -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Carburant Consommé En TND</mat-label>
                 <input matInput placeholder="Ex. 100" formControlName="montantConsomme" name="montantConsomme"
                     id="montantConsomme" value="{{vehicule.montantConsomme}}" type="text">
@@ -56,8 +58,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- input carburant -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Carburant</mat-label>
                 <mat-select formControlName="carburant" name="carburant" id="carburant" required>
                     <mat-option value="Essence">
@@ -74,9 +77,10 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- date picker prochaine visite -->
         <div class="position-relative form-group">
 
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Date Prochaine Visite</mat-label>
                 <input matInput [matDatepicker]="dateVisite" formControlName="datevisite">
                 <mat-datepicker-toggle matSuffix [for]="dateVisite"></mat-datepicker-toggle>
@@ -87,8 +91,9 @@
             </mat-form-field>
 
         </div>
+        <!-- date picker expiration assurance -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Date D'Expiration D'Assurance</mat-label>
                 <input matInput [matDatepicker]="dateAssurance" formControlName="dateassurance">
                 <mat-datepicker-toggle matSuffix [for]="dateAssurance"></mat-datepicker-toggle>
@@ -98,8 +103,9 @@
                 </mat-error>
             </mat-form-field>
         </div>
+        <!-- date picker expiration taxes -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Date D'Expiration Des Taxes</mat-label>
                 <input matInput [matDatepicker]="dateTaxe" formControlName="datetaxe">
                 <mat-datepicker-toggle matSuffix [for]="dateTaxe"></mat-datepicker-toggle>
@@ -109,8 +115,6 @@
                 </mat-error>
             </mat-form-field>
         </div>
-
-
     </form>
 </div>
 <div mat-dialog-actions class="float-right" *ngIf="vehicule">

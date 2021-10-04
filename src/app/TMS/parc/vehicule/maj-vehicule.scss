@@ -1,13 +1,13 @@
-.example-form {
+.form { //style du formulaire
     min-width: 150px;
     max-width: 500px;
     width: 100%;
   }
   
-  .example-full-width {
+  .full-width {
     width: 100%;
   }
-  .mat-dialog-content, .mat-dialog-title {
+  .mat-dialog-content, .mat-dialog-title { //enlever les margin du boite de dialogue
     margin: 0 !important;
     padding: 12px 24px !important;
 }

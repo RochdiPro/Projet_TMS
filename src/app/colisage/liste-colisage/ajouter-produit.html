@@ -1,22 +1,23 @@
 <mat-vertical-stepper [linear]="isLinear" #stepper>
-    <mat-step [stepControl]="premierFormGroup">
+    <mat-step [stepControl]="premierFormGroup"> <!-- premier step -->
         <form [formGroup]="premierFormGroup">
             <ng-template matStepLabel>Informations D'emballage</ng-template>
             Informations
             <div class="input-inline">
+                <!-- input Nom emballage -->
                 <mat-form-field appearance="fill" class="premier-input">
                     <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
                     <input matInput formControlName="nom" required >
                 </mat-form-field>
-
+                <!-- input poids emballage -->
                 <mat-form-field appearance="fill" class="deuxieme-input">
                     <mat-label>Poids d'emballage (Kg)</mat-label>
                     <input matInput formControlName="poidsEmballage" required type="number">
                 </mat-form-field>
-
+                <!-- toggle du fragilité -->
                 <mat-slide-toggle formControlName="fragilite" color="primary" style="margin-bottom: 5%;">Fragile</mat-slide-toggle>
             </div>
-
+            <!-- les inputs de dimensions -->
             Dimensions
             <div class="input-inline">
                 <mat-form-field appearance="fill" class="premier-input">
@@ -32,6 +33,7 @@
                     <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number">
                 </mat-form-field>
             </div>
+            <!-- les inputs de volume -->
             Volume
             <div class="input-inline">
                 <mat-form-field appearance="fill" class="premier-input">
@@ -39,13 +41,15 @@
                     <input matInput formControlName="volume" required type="number">
                 </mat-form-field>
             </div>
+            <!-- bouton suivant -->
             <div style="float: right;">
                 <button mat-button matStepperNext color="primary">Suivant</button>
             </div>
         </form>
     </mat-step>
-    <mat-step [stepControl]="deuxiemeFormGroup" label="Sélection Des Produits à Emballer">
+    <mat-step [stepControl]="deuxiemeFormGroup" label="Sélection Des Produits à Emballer"> <!-- deuxieme step -->
         <form [formGroup]="deuxiemeFormGroup">
+            <!-- champ de filtrage par nom produit -->
             <div class="position-relative custom-control">
                 <section>
                     <mat-form-field class="custom-width" [formGroup]="formFiltreProduit">
@@ -57,68 +61,71 @@
                 </section>
             </div>
             <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
-                <table mat-table [dataSource]="dataSourceProduits" class=" table1">
+                <mat-table [dataSource]="dataSourceProduits" class=" table1"> <!-- tableau fiche produit -->
                     <!-- Colonne Id Produit -->
                     <ng-container matColumnDef="id_Produit">
-                        <th mat-header-cell *matHeaderCellDef>ID</th>
-                        <td mat-cell *matCellDef="let element">{{element.id_Produit}}</td>
+                        <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="ID">{{element.id_Produit}}</mat-cell>
                     </ng-container>
                     <!-- Colonne Nom Produit -->
                     <ng-container matColumnDef="nom_Produit">
-                        <th mat-header-cell *matHeaderCellDef>Produit</th>
-                        <td mat-cell *matCellDef="let element">{{element.nom_Produit}}</td>
+                        <mat-header-cell *matHeaderCellDef>Produit</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="Nom Produit">{{element.nom_Produit}}</mat-cell>
                     </ng-container>
                     <!-- Colonne marque -->
                     <ng-container matColumnDef="marque">
-                        <th mat-header-cell *matHeaderCellDef>Marque</th>
-                        <td mat-cell *matCellDef="let element">{{element.marque}}</td>
+                        <mat-header-cell *matHeaderCellDef>Marque</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="Marque">{{element.marque}}</mat-cell>
                     </ng-container>
                     <!-- Colonne Valeur Unite -->
                     <ng-container matColumnDef="valeur_Unite">
-                        <th mat-header-cell *matHeaderCellDef>Quantité</th>
-                        <td mat-cell *matCellDef="let element">{{element.valeur_Unite}}</td>
+                        <mat-header-cell *matHeaderCellDef>Quantité</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="Quantité">{{element.valeur_Unite}}</mat-cell>
                     </ng-container>
                     <!-- Colonne Unite -->
                     <ng-container matColumnDef="unite">
-                        <th mat-header-cell *matHeaderCellDef>Unite</th>
-                        <td mat-cell *matCellDef="let element">{{element.unite}}</td>
+                        <mat-header-cell *matHeaderCellDef>Unite</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="Unité">{{element.unite}}</mat-cell>
                     </ng-container>
                     <!-- Colonne Type produit -->
                     <ng-container matColumnDef="typeProduit">
-                        <th mat-header-cell *matHeaderCellDef>Type Produit</th>
-                        <td mat-cell *matCellDef="let element">{{element.type1}}</td>
+                        <mat-header-cell *matHeaderCellDef>Type Produit</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="Type">{{element.type1}}</mat-cell>
                     </ng-container>
                     <!-- Colonne sous type -->
                     <ng-container matColumnDef="sousType">
-                        <th mat-header-cell *matHeaderCellDef>Sous Type</th>
-                        <td mat-cell *matCellDef="let element">{{element.type2}}</td>
+                        <mat-header-cell *matHeaderCellDef>Sous Type</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="Sous type">{{element.type2}}</mat-cell>
                     </ng-container>
-                    <tr mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit"></tr>
-                    <tr mat-row (click)="choisirProduit(row)" [class.demo-row-is-clicked]="produitClique.has(row)"
-                        *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></tr>
-                </table>
+                    <mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit"></mat-header-row>
+                    <mat-row (click)="choisirProduit(row)" [class.demo-row-is-clicked]="produitClique.has(row)"
+                        *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></mat-row>
+                </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
             </div>
+            <!-- boutons de navigation entre les steps -->
             <div style="float: right;">
                 <button mat-button matStepperPrevious color="primary">Précédent</button>
                 <button mat-button matStepperNext (click)="deuxiemeSuivant()" color="primary">Suivant</button>
             </div>
         </form>
     </mat-step>
-    <mat-step [stepControl]="troisiemeFormGroup" label="Saisir les données d'emballage">
+    <mat-step [stepControl]="troisiemeFormGroup" label="Saisir les données d'emballage"> <!-- troisieme step -->
         <form [formGroup]="troisiemeFormGroup" *ngIf="produitSelectionne[0]">
             <div>
-
-                Produit: {{produitSelectionne[0].nom_Produit}}
+                Produit: {{produitSelectionne[0].nom_Produit}} <!-- afficher nom produit-->
                 <div class="input-inline">
+                    <!-- champs poids unitaire -->
                     <mat-form-field appearance="fill" class="premier-input">
                         <mat-label style="text-transform: capitalize;">Poids unitaire (Kg)</mat-label>
                         <input matInput formControlName="poids" required type="number">
                     </mat-form-field>
+                    <!-- champ de quantité dans l'emballage -->
                     <mat-form-field appearance="fill" class="deuxieme-input">
                         <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
                         <input matInput formControlName="qte" required type="number">
                     </mat-form-field>
+                    <!-- Select de l'unité -->
                     <mat-form-field appearance="fill" class="troisieme-input">
                         <mat-label>Unite</mat-label>
                         <mat-select formControlName="unite">
@@ -129,7 +136,7 @@
                         </mat-select>
                     </mat-form-field>
                 </div>
-
+                <!-- Boutons de navigation entre les steps -->
                 <div style="float: right;">
                     <button mat-button matStepperPrevious color="primary">Précédent</button>
                     <button mat-button matStepperNext (click)="troisiemeSuivant()" color="primary">Suivant</button>
@@ -137,59 +144,59 @@
             </div>
         </form>
     </mat-step>
-    <mat-step>
+    <mat-step> <!-- quatrieme step -->
         <ng-template matStepLabel>Valider</ng-template>
         <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
-            <table mat-table [dataSource]="dataSourceProduit">
+            <mat-table [dataSource]="dataSourceProduit" class="table2">
                 <!-- Colonne Id Produit -->
                 <ng-container matColumnDef="id_Produit">
-                    <th mat-header-cell *matHeaderCellDef>ID</th>
-                    <td mat-cell *matCellDef="let element">{{element.id_Produit}}</td>
+                    <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                    <mat-cell *matCellDef="let element" data-label="ID">{{element.id_Produit}}</mat-cell>
                 </ng-container>
                 <!-- Colonne Nom Produit -->
                 <ng-container matColumnDef="nom_Produit">
-                    <th mat-header-cell *matHeaderCellDef>Produit</th>
-                    <td mat-cell *matCellDef="let element">{{element.nom_Produit}}</td>
+                    <mat-header-cell *matHeaderCellDef>Produit</mat-header-cell>
+                    <mat-cell *matCellDef="let element" data-label="Produit">{{element.nom_Produit}}</mat-cell>
                 </ng-container>
                 <!-- Colonne marque -->
                 <ng-container matColumnDef="marque">
-                    <th mat-header-cell *matHeaderCellDef>Marque</th>
-                    <td mat-cell *matCellDef="let element">{{element.marque}}</td>
+                    <mat-header-cell *matHeaderCellDef>Marque</mat-header-cell>
+                    <mat-cell *matCellDef="let element" data-label="Marque">{{element.marque}}</mat-cell>
                 </ng-container>
                 <!-- Colonne Valeur Unite -->
                 <ng-container matColumnDef="valeur_Unite">
-                    <th mat-header-cell *matHeaderCellDef>Quantité</th>
-                    <td mat-cell *matCellDef="let element">
+                    <mat-header-cell *matHeaderCellDef>Quantité</mat-header-cell>
+                    <mat-cell *matCellDef="let element" data-label="Quantité">
                         {{this.troisiemeFormGroup.get('qte').value }}
-                    </td>
+                    </mat-cell>
                 </ng-container>
                 <!-- Colonne Unite -->
                 <ng-container matColumnDef="unite">
-                    <th mat-header-cell *matHeaderCellDef>Unite</th>
-                    <td mat-cell *matCellDef="let element">
+                    <mat-header-cell *matHeaderCellDef>Unite</mat-header-cell>
+                    <mat-cell *matCellDef="let element" data-label="Unité">
                         {{this.troisiemeFormGroup.get('unite').value}}
-                    </td>
+                    </mat-cell>
                 </ng-container>
                 <!-- Colonne Type produit -->
                 <ng-container matColumnDef="typeProduit">
-                    <th mat-header-cell *matHeaderCellDef>Poids U.Net</th>
-                    <td mat-cell *matCellDef="let element">
+                    <mat-header-cell *matHeaderCellDef>Poids U.Net</mat-header-cell>
+                    <mat-cell *matCellDef="let element" data-label="Poids U.Net">
                         {{this.troisiemeFormGroup.get('poids').value }}
-                    </td>
+                    </mat-cell>
                 </ng-container>
                 <!-- Colonne sous type -->
                 <ng-container matColumnDef="sousType">
-                    <th mat-header-cell *matHeaderCellDef>Poids T.Net</th>
-                    <td mat-cell *matCellDef="let element">
+                    <mat-header-cell *matHeaderCellDef>Poids T.Net</mat-header-cell>
+                    <mat-cell *matCellDef="let element" data-label="Poids T.Net">
                         {{calculerPoidsProduitNet(this.troisiemeFormGroup.get('poids').value,this.troisiemeFormGroup.get('qte').value)}}
-                    </td>
+                    </mat-cell>
                 </ng-container>
-                <tr mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit"></tr>
-                <tr mat-row *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></tr>
-            </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                <mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></mat-row>
+            </mat-table>
         </div>
-        <mat-grid-list cols="6" rowHeight="3:1" style="margin-left: 2.5%;" *ngIf="produitSelectionne[0] && troisiemeStepEstRemplit">
+        <!-- afficher l'information d'emballage -->
+        <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)" style="margin-left: 2.5%;" *ngIf="produitSelectionne[0] && troisiemeStepEstRemplit">
             <mat-grid-tile>
                 <div class="w-100 titre">Nom D'emballage:</div>
             </mat-grid-tile>
@@ -236,6 +243,7 @@
                 <div class="w-100">{{this.premierFormGroup.get('volume').value}} m3</div>
             </mat-grid-tile>
         </mat-grid-list>
+        <!-- bouton de navigation entre steps et bouton valider -->
         <div style="float: right;">
             <button mat-button (click)="stepper.reset(); reinitialiserStepper();" color="warn">Réinitialiser</button>
             <button mat-button matStepperPrevious color="primary">Précédent</button>

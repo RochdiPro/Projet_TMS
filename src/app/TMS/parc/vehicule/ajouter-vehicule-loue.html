@@ -7,7 +7,7 @@
         <div class="position-relative form-group">
             <!-- choix type matricule -->
             <div class="position-relative form-group">
-                <mat-form-field class="example-full-width">
+                <mat-form-field class="full-width">
                     <mat-label>Choisir un type de matricule</mat-label>
                     <mat-select formControlName="typematricule" name="typematricule" id="typematricule"
                         (selectionChange)="testTypeMatricule()" [(value)]="typeMatriculeSelectionne" required>
@@ -42,7 +42,7 @@
         </div>
         <!-- input filed marque -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Marque</mat-label>
                 <input matInput formControlName="marque" name="marque" id="marque" type="text"
                     style="text-transform:capitalize;" required>
@@ -53,7 +53,7 @@
         </div>
         <!-- input field modele -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Modele</mat-label>
                 <input matInput formControlName="modele" name="modele" id="modele" type="text"
                     style="text-transform:capitalize;" required>
@@ -64,7 +64,7 @@
         </div>
         <!-- input field couleur -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Couleur</mat-label>
                 <input matInput formControlName="couleur" name="couleur" id="couleur" type="text"
                     style="text-transform:capitalize;" required>
@@ -75,7 +75,7 @@
         </div>
         <!-- Select de type carosserie -->
         <div class="position-relative form-group" id="categories">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Categorie du Vehicule</mat-label>
                 <mat-select formControlName="carosserie" name="carosserie" id="carosserie" [(value)]="categorie" required>
                     <mat-option *ngFor="let carosseries of carosserie" [value]="carosseries.value">
@@ -88,7 +88,7 @@
         </div>
         <!-- input field proprietaire -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Proprietaire</mat-label>
                 <input matInput placeholder="Ex. 100000" formControlName="proprietaire"
                     name="proprietaire" id="proprietaire" type="text" required>
@@ -99,7 +99,7 @@
         </div>
         <!-- input field num tel proprietaire -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Tél. Proprietaire</mat-label>
                 <input matInput formControlName="telephone" name="telephone"
                     id="telephone" type="tel" pattern="[0-9]{8}" maxlength="8" required >
@@ -113,7 +113,7 @@
         </div>
         <!-- input Field charge utile -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Charge Utile Maximale En Kg</mat-label>
                 <input matInput placeholder="Ex. 600" formControlName="chargeUtile" name="chargeUtile" id="chargeUtile"
                     type="number" required>
@@ -127,7 +127,7 @@
         </div>
         <!-- input field Longueur -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Longueur en cm</mat-label>
                 <input matInput formControlName="longueur" name="longueur" id="longueur" type="number" required>
                 <mat-error *ngIf="form.controls['longueur'].hasError('required')">
@@ -140,7 +140,7 @@
         </div>
         <!-- input field largeur -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Largeur en cm</mat-label>
                 <input matInput formControlName="largeur" name="largeur" id="largeur" type="number" required>
                 <mat-error *ngIf="form.controls['largeur'].hasError('required')">
@@ -153,7 +153,7 @@
         </div>
         <!-- input field hauteur -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Hauteur en cm</mat-label>
                 <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="number" required>
                 <mat-error *ngIf="form.controls['hauteur'].hasError('required')">
@@ -166,7 +166,7 @@
         </div>
         <!-- Date Location -->
         <div class="position-relative form-group">
-            <mat-form-field class="example-full-width">
+            <mat-form-field class="full-width">
                 <mat-label>Période De Location</mat-label>
                 <mat-date-range-input [rangePicker]="picker" [min]="minDate">
                   <input matStartDate formControlName="dateDebut" placeholder="Date de debut" required>

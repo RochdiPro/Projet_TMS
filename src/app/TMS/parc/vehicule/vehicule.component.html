@@ -14,11 +14,13 @@
       <div class="main-card mb-3 card">
          <div class="card-body">
             <ul class="tabs-animated-shadow tabs-animated nav" id="tab">
+               <!-- bouton mes vehicules -->
                <li class="nav-item">
                    <a role="tab" class="nav-link" id="tab-c-0" data-toggle="tab" routerLink="/Menu/TMS/Vehicules/Mes-Vehicules" (click)="activerMesVehicules()" [ngClass]="{'active': mesVehicules}">
                        <span>Mes Véhicules</span>
                    </a>
                </li>
+               <!-- bouton vehicules loués -->
                <li class="nav-item">
                    <a role="tab" class="nav-link" id="tab-c-1" data-toggle="tab" routerLink="/Menu/TMS/Vehicules/Vehicules-Loues" (click)="activerVehiculesLoues()" [ngClass]="{'active': vehiculesLoues}">
                        <span>Véhicules Loués</span>
