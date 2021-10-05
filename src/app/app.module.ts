@@ -47,6 +47,7 @@ import { ColisageComponent } from './colisage/colisage.component';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatListModule} from '@angular/material/list';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -127,7 +128,8 @@ registerLocaleData(localeFr, 'fr');
     SelectAutocompleteModule,
     MatStepperModule,
     MatRadioModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatListModule
     
     ],
   providers: [MatDatepickerModule,DatePipe,{ provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],

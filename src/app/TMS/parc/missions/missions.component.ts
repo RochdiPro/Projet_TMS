@@ -10,208 +10,12 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { DomSanitizer } from '@angular/platform-browser';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ILatLng } from 'src/app/directions-map.directive';
-import { SelectAutocompleteComponent } from 'mat-select-autocomplete';
+import { ColisageService } from 'src/app/colisage.service';
 
 
-//--------------------------------------------------------------------------------------------------------------
-//----------------------------------------------- TAB MISSIONS -------------------------------------------------
-//--------------------------------------------------------------------------------------------------------------
+//les interfaces necessaires pour le chargement des tableau
 
-@Component({
-  selector: 'app-missions',
-  templateUrl: './missions.component.html',
-  styleUrls: ['./missions.component.scss']
-})
-
-export class MissionsComponent implements OnInit, AfterViewInit {
-  today = new Date();
-  date = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate(), 0, 0, 0);
-  form = new FormGroup({ dateL: new FormControl(this.date), nom: new FormControl(""), matricule: new FormControl("") });
-  filtreEtatMission = "";  //utilisée dans le filtrage par etat mission
-  nomFiltre = false;   //utilisée pour l'activation ou désactivation du filtrage par nom
-  matriculeFiltre = false;  //utilisée pour l'activation ou désactivation du filtrage par matricule
-  dateFiltre = false;   //utilisée pour l'activation ou désactivation du filtrage par date
-  etatMissionFiltre = false;  //utilisée pour l'activation ou désactivation du filtrage par etatMission
-  displayedColumns: string[] = ['id', 'nom', 'matricule', 'dateLivraison', 'trajet', 'etatMission', 'actions', 'Detail']; //les colonne du tableau mission
-  dataSource = new MatTableDataSource<tableMissions>();
-  dateRecherche: any;
-  check = true;
-  mission: any;
-  trajet: any;
-  destinations: any = [];
-  destinationsOptimise: any = [];
-  commande: any;
-
-
-
-  constructor(public service: ParcTransportService, public datepipe: DatePipe, private router: Router, private dialog: MatDialog) {
-    this.refresh();
-  }
-  refresh() { // rafraichir la liste des missions
-    this.service.missions().subscribe(res => {
-      this.dataSource.data = res as tableMissions[];
-      this.filtrerMission();
-
-    });
-  }
-  viderNom() { //pour vider le champs de filtrage par chauffeur
-    this.nomFiltre = false;
-    this.form.controls['nom'].setValue('');
-    this.filtrerMission();
-  }
-  viderMatricule() { //pour vider le champs de filtrage par matricule
-    this.matriculeFiltre = false;
-    this.form.controls['matricule'].setValue('');
-    this.filtrerMission();
-  }
-  filtrerMission() { //pour faire le filtrage des missions
-    if (this.filtreEtatMission === undefined) this.filtreEtatMission = "";
-    this.date = new Date(this.form.get('dateL').value);
-    this.dateRecherche = this.datepipe.transform(this.date, 'yyyy-MM-dd');
-    this.service.filtrerMissions("date_creation", this.dateRecherche, "nom_chauffeur", this.form.get('nom').value, "matricule", this.form.get('matricule').value, "etat_mission", this.filtreEtatMission).subscribe(res => {
-      this.dataSource.data = res as tableMissions[];
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-    });
-  }
-  disableEnableDate() { //pour activer et desactiver le filtrage par date
-    if (this.check) {
-      this.form.controls['dateL'].enable();
-    } else {
-      this.form.controls['dateL'].disable();
-    }
-  }
-  changerEtatMission(id: any) { //pour changer l'état du mission
-    this.service.filtrerCommande("id_mission", id).subscribe(res => {
-      this.commande = res;
-      var formData: any = new FormData();
-      var termine = true;
-      this.commande.forEach((element: any) => {
-        if (element.etat === "En Cours") {
-          termine = false;
-        }
-      });
-      if (termine) { //si la mission est terminée on change l'etat du véhicule vers disponible est on réinitialise la surface et le poids restants du véhicule
-
-        formData.append("id", id);
-        formData.append("valeur", "Terminée"); //mise a jour etat mission vers terminée
-        this.service.mission(id).subscribe((affectation: any) => {
-          this.service.vehicules().subscribe((vehicule: any) => {
-            let v = vehicule.filter((x: any) => x.matricule == affectation.matricule);
-
-
-            let formData = new FormData();
-            formData.append("id", v[0].id);
-            formData.append("etatVehicule", "Disponible"); //changer etat vehicule vers disponible
-            this.service.majEtatVehicule(formData);
-            let formData2: any = new FormData();
-            formData2.append("id", v[0].id);
-            formData2.append("charge_restante", v[0].charge_utile);
-            formData2.append("surface_restante", v[0].longueur * v[0].largeur * v[0].hauteur); //reinitialise le poids et la surface
-            this.service.majChargeEtSurface(formData2);
-          });
-        });
-      } else {
-        formData.append("id", id);
-        formData.append("valeur", "En Cours"); //mise a jour etat mission vers en cours
-        this.service.mission(id).subscribe((affectation: any) => {
-          this.service.vehicules().subscribe((vehicule: any) => {
-            let v = vehicule.filter((x: any) => x.matricule == affectation.matricule);
-
-
-            let formData3 = new FormData();
-            formData3.append("id", v[0].id);
-            formData3.append("etatVehicule", "En Mission"); //changer etat vehicule vers en mission
-            this.service.majEtatVehicule(formData3);
-          });
-        });
-      }
-
-      this.service.majEtatMission(formData);
-      setTimeout(() => { this.refresh() }, 100);
-
-    });
-  }
-  supprimmerMission(id: any) {
-
-  }
-  // ouvrirQR(id: any) {
-  //   localStorage.setItem("idMission", id);
-  //   this.service.affectation(id).subscribe((aff: any) => {
-  //     localStorage.setItem("etatMission", aff.etatMission);
-  //     const dialogRef = this.dialog.open(QrCodeComponent, {
-  //       width: '200px',
-  //       height: '200px',
-  //       panelClass: 'qr-code',
-  //       autoFocus: false,
-  //     });
-  //   });
-
-  // }
-
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  ngOnInit(): void {
-  }
-
-
-  ouvrirAffecterCommande() { // ouvrir la boite de dialogue d'affectation des commandes
-    localStorage.setItem('date', this.form.get('dateL').value);
-    const dialogRef = this.dialog.open(AffecterCommande, {
-      width: '450px',
-      panelClass: "custom-dialog",
-      autoFocus: false,
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      this.filtrerMission();
-
-
-    });
-  }
-
-
-
-  detailDialog(id: any, idM: any): void { // ouvrir la boite de dialogue de détail d'une mission
-    localStorage.setItem('idC', id);
-    localStorage.setItem('idM', idM);
-    const dialogRef = this.dialog.open(DetailComponent, {
-      width: '70vw',
-      panelClass: "custom-dialog-detail",
-      autoFocus: false,
-    });
-
-  }
-  ouvrirMap(id: any, type: any) { // ouvrir google map avec le trajet
-    this.service.mission(id).subscribe(res => {
-      this.mission = res;
-      this.trajet = this.mission.trajet.split("/"); //recuperation du trajet
-      var origine = this.trajet[0].split(":");
-      origine = origine[1]; //definitionde l'origine
-      var finChemin = this.trajet[this.trajet.length - 1].split(":");
-      finChemin = finChemin[1]; //definition du fin de chemin
-      var pointStop = '';
-      for (let i = 1; i < this.trajet.length - 1; i++) {
-        var x = this.trajet[i].split(":");
-        pointStop += x[1] + '%7C';
-      }
-      pointStop = pointStop.slice(0, -3); //definition des points de stop
-      window.open("https://www.google.com/maps/dir/?api=1&origin=" + origine + "&destination=" + finChemin + "&travelmode=driving&waypoints=" + pointStop); //affichage du map avec le trajet
-
-    });
-
-  }
-
-}
-
-export interface tableMissions {
+export interface tableMissions { //inteface pour charger le table mission
   id: number;
   nom: string;
   matricule: String;
@@ -220,7 +24,7 @@ export interface tableMissions {
   idE: number;
 }
 
-export interface Commandes {
+export interface Commandes { //interface pour charger la liste des commandes
   reference: number;
   id_expediteur: number;
   expediteur: String;
@@ -238,6 +42,58 @@ export interface Commandes {
   description: String;
   articles: String;
 }
+
+export interface tableCommandes {
+  id: number;
+  idMission: number;
+  referenceCommande: number;
+  destinataire: string;
+  destination: String;
+  etat: String;
+}
+
+export interface tableFactures { //interface pour charger liste des factures
+  id_Facture: number;
+  id_Clt: number;
+}
+
+export interface tableBL { //interface pour charger liste des bls
+  id_Bl: number;
+  id_Clt: number;
+}
+
+//--------------------------------------------------------------------------------------------------------------
+//----------------------------------------------- TAB MISSIONS -------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
+
+@Component({
+  selector: 'app-missions',
+  templateUrl: './missions.component.html',
+  styleUrls: ['./missions.component.scss']
+})
+
+export class MissionsComponent implements OnInit {
+  listerMissionEstActive = false;
+  ajouterMissionEstActive = false;
+
+
+  constructor(public router: Router) { }
+
+  ngOnInit() {
+    if (this.router.url === '/Menu/TMS/Missions/Liste_Missions') this.activerListerMissions();
+    if (this.router.url === '/Menu/TMS/Missions/Ajouter_Missions') this.activerAjouterMissions();
+  }
+
+  activerListerMissions() {
+    this.listerMissionEstActive = true;
+    this.ajouterMissionEstActive = false;
+  }
+  activerAjouterMissions() {
+    this.listerMissionEstActive = false;
+    this.ajouterMissionEstActive = true;
+  }
+}
+
 
 // *******************************************************************************************************************
 // ***************************************Lister Missions*************************************************************
@@ -434,7 +290,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
 
   }
 
- 
+
 
 }
 
@@ -448,189 +304,78 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   styleUrls: ['./ajouterMission.scss'],
 })
 export class AjouterMissionComponent implements OnInit {
-  chauffeurSelectionne: any;
-  vehiculeSelectionne: any;
-  employes: any;
-  employe: any;
-  chauffeurs: any;
-  vehicules: any;
-  vehicule: any;
-  form: FormGroup;
-  dataSourceFactures = new MatTableDataSource<tableFactures>();
-  dataSourceBL = new MatTableDataSource<tableBL>();
-  minDate = new Date();
-  displayedColumns: string[] = ['reference', 'origine', 'id_Clt', 'nom_Clt', 'adresse', 'poids', 'volume', 'produits'];
-  selectionChauffeur = false;
-  selectionVehicule = false;
-  infoChauffeur = false;
-  infoVehicule = false;
-  aujourdhui = new Date();
-  date = new Date(this.aujourdhui.getFullYear(), this.aujourdhui.getMonth(), this.aujourdhui.getDate(), 0, 0, 0);
-  factures: any;
-  bonLivraisons: any;
-  listeClients:any;
+  commandesNonAffecteSelectionne: String[];
+  listeFactures: any;
+  listeBLs: any;
   client: any;
-  poidsRestant: Number;
-  volumeRestant: Number;
-  facture: any;
-  BL: any; 
-  xmldata: any;
-  new_obj: any;
-  obj_articles: any = [];
+  listeCommandes: Object[] = [];
+  commandesNordEst: any;
+  listeIdsClients: any = [];
 
+  constructor(public fb: FormBuilder, public serviceColisage: ColisageService, public datepipe: DatePipe) { }
 
-
-  constructor(public fb: FormBuilder, public service: ParcTransportService, public datepipe: DatePipe) {}
-
-  ngOnInit(): void { //creation du form groupe et chargement des listes de vehicules et employes
-    this.form = this.fb.group({
-      dateLivraison: ['',[Validators.required]],
-      vehicule: ['', [Validators.required]],
-      chauffeur: ['', [Validators.required]],
-    });
-    this.chargerEmployes();
-    this.chargerVehicules();
-    this.chargerListeClients();
-    this.getDetail(13);
+  async ngOnInit() {
+    await this.chargerListeFactures();
+    await this.chargerListeBLs();
+    this.preparerListeCommande();
   }
 
-  chargerEmployes(){ //appel au service qui permet de lister les employes
-    this.service.employes().subscribe((data) => {
-      this.employes = data;
-      this.chauffeurs = this.employes.filter((x: any) => x.role == "chauffeur");
+  async chargerListeFactures() {
+    this.listeFactures = await this.serviceColisage.factures().toPromise();
+  }
+
+  async chargerListeBLs() {
+    this.listeBLs = await this.serviceColisage.bonLivraisons().toPromise();
+  }
+
+  chargerClient() {
+    this.listeFactures.forEach(async (facture : any) => {
+      this.client = await this.serviceColisage.client(facture.id_Clt).toPromise();
+      this.listeIdsClients.push(this.client.id_Clt);
     });
   }
 
-  chargerVehicules(){ //appel au service qui permet de lister les Vehicules
-    this.service.vehicules().subscribe((data) => {
-      this.vehicules = data;
+  preparerListeCommande() {
+    this.listeFactures.forEach(async (facture: any) => {
+      var commande = {
+        id: facture.id_Facture,
+        id_Clt: this.client.id_Clt,
+        nom_Clt: this.client.nom_Client,
+        region: this.client.region,
+        ville: this.client.ville,
+        date_Creation: facture.date_Creation,
+        type: "Facture"
+      };
+      this.listeCommandes.push(commande);
+      console.log("hello")
     });
-  }
-
-  afficherSelectChauffeur(){ //afficher le mat select du chauffeur
-    this.selectionChauffeur = true;
-  }
-
-  afficherInfoChauffeur(){ //afficher les informations du chauffeur
-    this.infoChauffeur = true;
-  }
-
-  afficherSelectVehicule(){ //afficher le mat-select du vehicule
-    this.selectionVehicule = true
-  }
-
-  afficherInfoVehicule(){ //afficher les informations du vehicule
-    this.infoVehicule = true;
-  }
-
-  calculerVolumeVehicule(){ //calculer le volume dans une vehicule
-    return (Number(this.vehiculeSelectionne.longueur)*Number(this.vehiculeSelectionne.largeur)*Number(this.vehiculeSelectionne.hauteur)*0.000001)
-  }
-
-  reinitialiserVolumePoidsRestant(){
-    this.volumeRestant = this.calculerVolumeVehicule();
-    this.poidsRestant = this.vehiculeSelectionne.charge_utile;
-  }
-
-  testerValiditePermis(){
-    let validite: String;
-    let datePermis = new Date(this.chauffeurSelectionne.date_de_Permis);
-    var differenceDate = this.date.getTime() - datePermis.getTime();
-    var differenceDateEnJour = differenceDate / (1000 * 3600 * 24);
-    if (differenceDateEnJour > 3650){
-      validite = "Non Valide"
-    } else {
-      validite = "Valide"
-    }
-    return validite;
-  }
-  
-  chargerListeFactures(){
-    this.service.factures().subscribe((data) => {
-      this.factures = data;
-      this.factures = this.factures.filter((x: any) => x.frais_Livraison === 0);
-      this.dataSourceFactures.data = this.factures as tableFactures[];
-    })
-  }
-
-  chargerListeBLs(){
-    this.service.bon_Livraison().subscribe((data) => {
-      this.bonLivraisons = data;
-      this.bonLivraisons = this.bonLivraisons.filter((x: any) => x.frais_Livraison === 0);
-      this.dataSourceBL.data = this.bonLivraisons as tableBL[];
-    })
-  }
-
-  chargerListeClients(){
-    this.service.clients().subscribe((data) => {
-      this.listeClients = data;
+    this.listeBLs.forEach(async (BL: any) => {
+      this.client = await this.chargerClient(BL.id_Clt).toPromise();
+      var commande = {
+        id: BL.id_Bl,
+        id_Clt: this.client.id_Clt,
+        nom_Clt: this.client.nom_Client,
+        region: this.client.region,
+        ville: this.client.ville,
+        date_Creation: BL.date_Creation,
+        type: "BL"
+      };
+      this.listeCommandes.push(commande);
+      console.log("fsdgdsfg")
     });
+    console.log(this.listeCommandes[0])
   }
 
-  getClientParId(id: any){
-    this.client = this.listeClients.filter((x: any) => x.id_Clt === Number(id));
-    return this.client[0];
-
-  }
-
-  getDetail(id: any) {
-    this.service.Detail_Facture(id).subscribe((detail: any) => {
-      const reader = new FileReader();
+  chargerCommandesNordEst(){
     
-      reader.onloadend = () => {
-        this.facture = reader.result;
-        var parseString = require('xml2js').parseString;
-        let data1;
-        parseString(atob(this.facture.substr(28)), function (err: any, result: any) {
-          data1 = result.Facture;
-
-        })
-        this.xmldata= data1
-        console.log( this.xmldata)
-        
-        for (let i = 0; i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
-
-          this.new_obj = {}
-          this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-          this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
-          
-          this.obj_articles.push(this.new_obj)
-        }
-
-        for (let i = 0; i < this.xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
-
-          this.new_obj = {}
-          this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-          this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
-          
-          this.obj_articles.push(this.new_obj)
-        }
-
-        for (let i = 0; i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
-
-          this.new_obj = {}
-          this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-          this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
-          
-          this.obj_articles.push(this.new_obj)
-        }
-        console.log(this.obj_articles);
-      }
-      reader.readAsDataURL(detail);
-    });
+    // this.commandesNordEst = this.listeCommandes.filter((commande: any) => commande.region ==="");
+    console.log(this.listeBLs)
+    console.log(this.listeCommandes[0])
   }
 
- 
-}
-export interface tableFactures {
-  id_Facture: number;
-  id_Clt: number;
+
 }
 
-export interface tableBL {
-  id_Bl: number;
-  id_Clt: number;
-}
 
 //--------------------------------------------------------------------------------------------------------------------
 //----------------------------------------Detail Component---------------------------------------------------
@@ -744,14 +489,7 @@ export class DetailComponent implements OnInit {
   }
 
 }
-export interface tableCommandes {
-  id: number;
-  idMission: number;
-  referenceCommande: number;
-  destinataire: string;
-  destination: String;
-  etat: String;
-}
+
 
 //------------------------------boite dialogue MAPS-------------------------------
 
@@ -843,7 +581,7 @@ export class AffecterCommande {
   toppings = new FormControl();
   commandeSelectionne: any;
 
-  commandesFiltrees : any;
+  commandesFiltrees: any;
   minDate = new Date();
   today = new Date();
   date = new Date(this.today.getFullYear(), this.today.getMonth(), this.today.getDate(), 0, 0, 0);
@@ -868,17 +606,17 @@ export class AffecterCommande {
   //   });
   // }
 
-  assignCopy(){
+  assignCopy() {
     this.commandesFiltrees = Object.assign([], this.commandes);
- }
- filtrerCommandes(value: any){
-    if(!value){
-        this.assignCopy();
+  }
+  filtrerCommandes(value: any) {
+    if (!value) {
+      this.assignCopy();
     } // when nothing has typed
     this.commandesFiltrees = Object.assign([], this.commandes).filter(
-       item => item.reference.toString().toLowerCase().indexOf(value.toLowerCase()) > -1
+      item => item.reference.toString().toLowerCase().indexOf(value.toLowerCase()) > -1
     )
- }
+  }
 }
 
 //--------------------------------------------------------------------------------------------------------------------
