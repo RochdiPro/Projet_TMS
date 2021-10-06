@@ -1,33 +1,41 @@
-.container{
+.container {
     max-width: 100%;
 }
-.cadre{
+.cadre {
     margin-right: 0;
     margin-left: 0;
     margin-top: 15px;
     border: solid #f7f7f9;
-    border-width: .2rem;
-    border-radius: .3rem;
+    border-width: 0.2rem;
+    border-radius: 0.3rem;
     height: 160px;
     overflow-y: auto;
 }
-.cadre2{
+.cadre2 {
     margin-right: 0;
     margin-left: 0;
     margin-top: 15px;
     border: solid #f7f7f9;
-    border-width: .2rem;
-    border-radius: .3rem;
+    border-width: 0.2rem;
+    border-radius: 0.3rem;
     height: 200px;
     overflow-y: auto;
 }
-.col-sm-4, .col-sm-8, .col-sm{
+.col-sm-4,
+.col-sm-8,
+.col-sm {
     padding: 0 5px;
 }
-h3{
+h3 {
     position: absolute;
     top: -11px;
     margin: 10px 0 0 10px;
     background: white;
     padding: 0 10px;
+}
+::ng-deep .mat-list-base .mat-list-item .mat-list-text,
+.mat-list-base .mat-list-option .mat-list-text {
+    display: flex !important;
+    flex-direction: row !important;
+    font-size: 75% !important;
 }

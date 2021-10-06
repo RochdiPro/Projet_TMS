@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-8">
-            <h3>Missions Non Affectées</h3>
+            <h3>Commandes Non Affectées</h3>
             <div class="cadre">
                 <mat-selection-list #commandesNonAffecte color="primary" [(ngModel)]="commandesNonAffecteSelectionne">
                     <mat-list-option value="C1">
@@ -70,91 +70,87 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-4 ">
+        <div class="col-sm ">
             <h3>Nord-Est</h3>
             <div class="cadre2">
                 <mat-selection-list #commandes color="primary">
-                    <mat-list-option>
-                        C1-Nord-Est
-                    </mat-list-option>
-                    <mat-list-option>
-                        C2-Nord-Est
-                    </mat-list-option>
-                    <mat-list-option>
-                        C3-Nord-Est
-                    </mat-list-option>
-                    <mat-list-option>
-                        C4-Nord-Est
-                    </mat-list-option>
-                    <mat-list-option>
-                        C5-Nord-Est
-                    </mat-list-option>
-                    <mat-list-option>
-                        C6-Nord-Est
-                    </mat-list-option>
-                    <mat-list-option>
-                        C7-Nord-Est
-                    </mat-list-option>
-                    <mat-list-option>
-                        C8-Nord-Est
-                    </mat-list-option>
-                    <mat-list-option>
-                        C9-Nord-Est
+                    <mat-list-option *ngFor="let commande of commandesNordEst" [value]="commande">
+                        <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                        {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
                     </mat-list-option>
                 </mat-selection-list>
             </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm">
             <h3>Nord-Ouest</h3>
             <div class="cadre2">
                 <mat-selection-list #commandes color="primary">
-                    <mat-list-option>
-                        C1-Nord-Ouest
+                    <mat-list-option *ngFor="let commande of commandesNordOuest" [value]="commande">
+                        <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                        {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
                     </mat-list-option>
-                    <mat-list-option>
-                        C2-Nord-Ouest
+                </mat-selection-list>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm" id="col-sm">
+            <h3>Centre-Est</h3>
+            <div class="cadre2">
+                <mat-selection-list #commandes color="primary">
+                    <mat-list-option *ngFor="let commande of commandesCentreEst" [value]="commande">
+                        <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                        {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
                     </mat-list-option>
-                    <mat-list-option>
-                        C3-Nord-Ouest
+                </mat-selection-list>
+            </div>
+        </div>
+        <div class="col-sm">
+            <h3>Centre-Ouest</h3>
+            <div class="cadre2">
+                <mat-selection-list #commandes color="primary">
+                    <mat-list-option *ngFor="let commande of commandesCentreOuest" [value]="commande">
+                        <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                        {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
                     </mat-list-option>
-                    <mat-list-option>
-                        C4-Nord-Ouest
-                    </mat-list-option>
-                    <mat-list-option>
-                        C5-Nord-Ouest
-                    </mat-list-option>
-                    <mat-list-option>
-                        C6-Nord-Ouest
-                    </mat-list-option>
-                    <mat-list-option>
-                        C7-Nord-Ouest
-                    </mat-list-option>
-                    <mat-list-option>
-                        C8-Nord-Ouest
-                    </mat-list-option>
-                    <mat-list-option>
-                        C9-Nord-Ouest
+                </mat-selection-list>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <h3>Sud-Est</h3>
+            <div class="cadre2">
+                <mat-selection-list #commandes color="primary">
+                    <mat-list-option *ngFor="let commande of commandesSudEst" [value]="commande">
+                        <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                        {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
                     </mat-list-option>
                 </mat-selection-list>
             </div>
         </div>
         <div class="col-sm" id="col-sm">
-            <h3>Centre-Est</h3>
-            <div class="cadre2">sdfdsf</div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-4">
-            <h3>Centre-Ouest</h3>
-            <div class="cadre2">sdfdsf</div>
-        </div>
-        <div class="col-sm-4">
-            <h3>Sud-Est</h3>
-            <div class="cadre2">sdfdsf</div>
-        </div>
-        <div class="col-sm" id="col-sm">
             <h3>Sud-Ouest</h3>
-            <div class="cadre2">sdfdsf</div>
+            <div class="cadre2">
+                <mat-selection-list #commandes color="primary">
+                    <mat-list-option *ngFor="let commande of commandesSudOuest" [value]="commande">
+                        <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                        {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}} &nbsp;
+                        <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                    </mat-list-option>
+                </mat-selection-list>
+            </div>
         </div>
     </div>
 </div>

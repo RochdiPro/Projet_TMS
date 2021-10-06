@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 const erp = "/ERP/";
 const infonet = "/INFONET/";
@@ -72,6 +73,25 @@ export class ColisageService {
   public factures(){
     return this.httpClient.get(infonet + 'Factures');
   }
+  
+  //Filtre Facture
+  public filtreFacture(Champ: any, Valeur: any) {
+    return this.httpClient.get(infonet + 'Filtre_Facture', {
+      params: {
+        Champ: Champ,
+        Valeur: Valeur
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+  //Filtre Bon Livraison
+  public filtreBonLivraison(Champ: any, Valeur: any) {
+    return this.httpClient.get(infonet + 'Filtre_Bon_Livraison', {
+      params: {
+        Champ: Champ,
+        Valeur: Valeur
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
 
   //charger la liste des Bons de livraison
   public bonLivraisons(){
@@ -84,5 +104,27 @@ export class ColisageService {
         Id_Clt : idClt
       }, observe: 'body'
     }).pipe(catchError(this.handleError));
+  }
+
+  //charger Les details du facture
+  public  Detail_Facture(Id: any): Observable<any> {
+
+    return this.httpClient.get(infonet + "Detail_Facture"
+      , {
+        params: {
+          Id_Facture: Id
+        }, responseType: 'blob'
+      }).pipe(catchError(this.handleError))
+  }
+
+  //charger Les details du bon livraison
+  public  Detail_BL(Id: any): Observable<any> {
+
+    return this.httpClient.get(infonet + "Detail_Bon_Livraison"
+      , {
+        params: {
+          Id_BL: Id
+        }, responseType: 'blob'
+      }).pipe(catchError(this.handleError))
   }
 }
