@@ -63,12 +63,14 @@ export class ListeColisageComponent implements AfterViewInit, OnInit {
     if (this.form.get('type_Emballage').value === undefined) this.form.get('type_Emballage').setValue("");
     this.service.fltreListeproduit("nom_produit", this.form.get('nom_Produit').value, "nom_emballage", this.form.get('nom_Emballage').value, "type_emballage", this.form.get('type_Emballage').value).subscribe((data) => {
       this.dataSource.data = data as tableColisage[];
+      this.dataSource.data = this.dataSource.data.sort((a,b) => a.id > b.id ? -1 : 1);
     });
   }
 
   chargerListeColisage() { //chargement du liste de colisage
     this.service.listeColisage().subscribe((data) => {
       this.dataSource.data = data as tableColisage[];
+      this.dataSource.data = this.dataSource.data.sort((a,b) => a.id > b.id ? -1 : 1);
     });
   }
 
@@ -178,7 +180,9 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     });
 
     this.dataSourceProduits.data = this.produitsAffiche as tableProduits[];
+    this.dataSourceProduits.data = this.dataSourceProduits.data.sort((a,b) => a.id_Produit > b.id_Produit ? -1 : 1);
     this.dataSourceProduit.data = this.produitsAffiche as tableProduits[];
+    this.dataSourceProduit.data = this.dataSourceProduit.data.sort((a,b) => a.id_Produit > b.id_Produit ? -1 : 1);
   }
 
   chargerListeColisage(): any {
@@ -189,11 +193,12 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.premierFormGroup = this.formBuilder.group({
       nom: ['', Validators.required],
       poidsEmballage: ['', Validators.required],
+      type: ['', Validators.required],
       fragilite: [false],
-      longueur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      largeur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      hauteur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      volume: ['', [Validators.required, Validators.pattern("^[0-9]*$")]]
+      longueur: ['', Validators.required],
+      largeur: ['', Validators.required],
+      hauteur: ['', Validators.required],
+      volume: ['', Validators.required]
 
     });
     this.deuxiemeFormGroup = this.formBuilder.group({
@@ -229,9 +234,11 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
 
     this.deuxiemeFormGroup.get('validateur').setValue("validé");
   }
-
-  deuxiemeSuivant() { //pour le deuxieme bouton suivant
+  premierSuivant(){
     this.dataSourceProduit.data = this.produitSelectionne as tableProduits[];
+    this.premierFormGroup.get('nom').setValue(this.produitSelectionne[0].nom_Produit)
+  }
+  deuxiemeSuivant() { //pour le deuxieme bouton suivant
     this.troisiemeFormGroup.get('unite').setValue(this.produitSelectionne[0].unite)
 
   }

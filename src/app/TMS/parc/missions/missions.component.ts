@@ -11,8 +11,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ILatLng } from 'src/app/directions-map.directive';
 import { ColisageService } from 'src/app/colisage.service';
-import { catchError } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 
 
 //les interfaces necessaires pour le chargement des tableau
@@ -333,7 +331,7 @@ export class AjouterMissionComponent implements OnInit {
   facture_articles: any = [];
   BL_articles: any = [];
 
-  constructor(public fb: FormBuilder, public serviceColisage: ColisageService, public datepipe: DatePipe) { }
+  constructor(public fb: FormBuilder, public serviceColisage: ColisageService, public serviceTransport: ParcTransportService, public datepipe: DatePipe) { }
 
   async ngOnInit() {
     await this.getListeFactures();
@@ -372,7 +370,7 @@ export class AjouterMissionComponent implements OnInit {
     var region: String;
     for (let j = 0; j < this.listeFactures.length; j++) {
       await this.getDetailFacture(this.listeFactures[j].id_Facture)
-      console.log(this.facture_articles)
+      console.log(this.listeFactures[j].id_Facture)
     }
     this.listeFactures.forEach((facture: any) => {
       for (const reg of this.regions) {
@@ -380,7 +378,6 @@ export class AjouterMissionComponent implements OnInit {
           region = reg.nom;
         }
       }
-      this.getDetailFacture(facture.id_Facture)
       var commande = {
         id: i,
         id_Facture: facture.id_Facture,
@@ -438,7 +435,7 @@ export class AjouterMissionComponent implements OnInit {
     
     const reader = new FileReader();
 
-    reader.onloadend = await () => {
+    reader.onloadend = () => {
       this.facture_articles = [];
       this.facture = reader.result;
       var parseString = require('xml2js').parseString;

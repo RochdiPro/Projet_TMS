@@ -1,52 +1,4 @@
 <mat-vertical-stepper [linear]="isLinear" #stepper>
-    <mat-step [stepControl]="premierFormGroup"> <!-- premier step -->
-        <form [formGroup]="premierFormGroup">
-            <ng-template matStepLabel>Informations D'emballage</ng-template>
-            Informations
-            <div class="input-inline">
-                <!-- input Nom emballage -->
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
-                    <input matInput formControlName="nom" required >
-                </mat-form-field>
-                <!-- input poids emballage -->
-                <mat-form-field appearance="fill" class="deuxieme-input">
-                    <mat-label>Poids d'emballage (Kg)</mat-label>
-                    <input matInput formControlName="poidsEmballage" required type="number">
-                </mat-form-field>
-                <!-- toggle du fragilité -->
-                <mat-slide-toggle formControlName="fragilite" color="primary" style="margin-bottom: 5%;">Fragile</mat-slide-toggle>
-            </div>
-            <!-- les inputs de dimensions -->
-            Dimensions
-            <div class="input-inline">
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
-                    <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number">
-                </mat-form-field>
-                <mat-form-field appearance="fill" class="deuxieme-input">
-                    <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
-                    <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number">
-                </mat-form-field>
-                <mat-form-field appearance="fill" class="troisieme-input">
-                    <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
-                    <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number">
-                </mat-form-field>
-            </div>
-            <!-- les inputs de volume -->
-            Volume
-            <div class="input-inline">
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
-                    <input matInput formControlName="volume" required type="number">
-                </mat-form-field>
-            </div>
-            <!-- bouton suivant -->
-            <div style="float: right;">
-                <button mat-button matStepperNext color="primary">Suivant</button>
-            </div>
-        </form>
-    </mat-step>
     <mat-step [stepControl]="deuxiemeFormGroup" label="Sélection Des Produits à Emballer"> <!-- deuxieme step -->
         <form [formGroup]="deuxiemeFormGroup">
             <!-- champ de filtrage par nom produit -->
@@ -103,6 +55,65 @@
                 </mat-table>
                 <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
             </div>
+            <!-- bouton suivant -->
+            <div style="float: right;">
+                <button mat-button matStepperNext color="primary" (click)="premierSuivant()">Suivant</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="premierFormGroup" label="Saisir information d'emballage"> <!-- premier step -->
+        <form [formGroup]="premierFormGroup">
+            Informations
+            <div class="input-inline">
+                <!-- input Nom emballage -->
+                <mat-form-field appearance="fill" class="premier-input">
+                    <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
+                    <input matInput formControlName="nom" required >
+                </mat-form-field>
+                <!-- input poids emballage -->
+                <mat-form-field appearance="fill" class="deuxieme-input">
+                    <mat-label>Poids d'emballage (Kg)</mat-label>
+                    <input matInput formControlName="poidsEmballage" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                </mat-form-field>
+                <!-- input type emballage -->
+                <mat-form-field appearance="fill" class="troisieme-input">
+                    <mat-label>Type d'emballage</mat-label>
+                    <mat-select formControlName="type" required>
+                        <mat-option value="Carton">Carton</mat-option>
+                        <mat-option value="Palette">Palette</mat-option>
+                        <mat-option value="Vrac">Vrac</mat-option>
+                        <mat-option value="Sac">Sac</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <!-- toggle du fragilité -->
+            <div class="input-inline" style="margin-bottom: 2%;">
+                <mat-slide-toggle formControlName="fragilite" color="primary">Fragile</mat-slide-toggle>
+            </div>
+            <!-- les inputs de dimensions -->
+            Dimensions
+            <div class="input-inline">
+                <mat-form-field appearance="fill" class="premier-input">
+                    <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
+                    <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="deuxieme-input">
+                    <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
+                    <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="troisieme-input">
+                    <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
+                    <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                </mat-form-field>
+            </div>
+            <!-- les inputs de volume -->
+            Volume
+            <div class="input-inline">
+                <mat-form-field appearance="fill" class="premier-input">
+                    <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
+                    <input matInput formControlName="volume" required type="number">
+                </mat-form-field>
+            </div>
             <!-- boutons de navigation entre les steps -->
             <div style="float: right;">
                 <button mat-button matStepperPrevious color="primary">Précédent</button>
@@ -118,12 +129,12 @@
                     <!-- champs poids unitaire -->
                     <mat-form-field appearance="fill" class="premier-input">
                         <mat-label style="text-transform: capitalize;">Poids unitaire (Kg)</mat-label>
-                        <input matInput formControlName="poids" required type="number">
+                        <input matInput formControlName="poids" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
                     </mat-form-field>
                     <!-- champ de quantité dans l'emballage -->
                     <mat-form-field appearance="fill" class="deuxieme-input">
                         <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
-                        <input matInput formControlName="qte" required type="number">
+                        <input matInput formControlName="qte" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
                     </mat-form-field>
                     <!-- Select de l'unité -->
                     <mat-form-field appearance="fill" class="troisieme-input">

@@ -32,10 +32,32 @@ h3 {
     margin: 10px 0 0 10px;
     background: white;
     padding: 0 10px;
+    z-index: 3;
+    border-radius: 0.3rem;
 }
 ::ng-deep .mat-list-base .mat-list-item .mat-list-text,
 .mat-list-base .mat-list-option .mat-list-text {
     display: flex !important;
     flex-direction: row !important;
     font-size: 75% !important;
+}
+::ng-deep .mat-list-base{
+    padding: 0 !important;
+}
+.entete {
+    width: 100%;
+    display: inline-block;
+    padding: 10px 0;
+    position: sticky;
+    z-index: 2;
+    background: #f7f7f9;
+    top: 0;
+    text-align: right;
+}
+.contenu-list {
+    position: relative;
+    z-index: 1;
+}
+span{
+    margin: 0 15px;
 }
