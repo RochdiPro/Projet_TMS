@@ -27,6 +27,7 @@ export interface tableProduits { //interface pour recuperer les données du Fich
   unite: String;
   type1: String;
   type2: String;
+  code_Barre: String;
 
 }
 
@@ -38,7 +39,21 @@ export interface tableProduits { //interface pour recuperer les données du Fich
   templateUrl: './liste-colisage.component.html',
   styleUrls: ['./liste-colisage.component.scss']
 })
-export class ListeColisageComponent implements AfterViewInit, OnInit {
+export class ListeColisageComponent implements OnInit {
+  constructor() { }
+
+  ngOnInit(): void { }
+
+}
+//*************************************************************************************************************
+//***********************************************INTERFACE LISTER COLISAGE **********************************
+//*************************************************************************************************************
+@Component({
+  selector: 'app-lister-colisage',
+  templateUrl: './lister-colisage.html',
+  styleUrls: ['./lister-colisage.scss']
+})
+export class ListerColisageComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -63,14 +78,14 @@ export class ListeColisageComponent implements AfterViewInit, OnInit {
     if (this.form.get('type_Emballage').value === undefined) this.form.get('type_Emballage').setValue("");
     this.service.fltreListeproduit("nom_produit", this.form.get('nom_Produit').value, "nom_emballage", this.form.get('nom_Emballage').value, "type_emballage", this.form.get('type_Emballage').value).subscribe((data) => {
       this.dataSource.data = data as tableColisage[];
-      this.dataSource.data = this.dataSource.data.sort((a,b) => a.id > b.id ? -1 : 1);
+      this.dataSource.data = this.dataSource.data.sort((a, b) => a.id > b.id ? -1 : 1);
     });
   }
 
   chargerListeColisage() { //chargement du liste de colisage
     this.service.listeColisage().subscribe((data) => {
       this.dataSource.data = data as tableColisage[];
-      this.dataSource.data = this.dataSource.data.sort((a,b) => a.id > b.id ? -1 : 1);
+      this.dataSource.data = this.dataSource.data.sort((a, b) => a.id > b.id ? -1 : 1);
     });
   }
 
@@ -85,7 +100,6 @@ export class ListeColisageComponent implements AfterViewInit, OnInit {
 
     return nomProduit;
   }
-
 }
 
 
@@ -125,6 +139,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   deuxiemeFormGroup: FormGroup;
   troisiemeFormGroup: FormGroup;
   formFiltreProduit = new FormGroup({ nom_Produit: new FormControl("") });
+  formCodeBarre = new FormGroup({ code_Barre: new FormControl("") });
   colonneAfficheDuTableFicheProduit: string[] = ['id_Produit', 'nom_Produit', 'marque', 'valeur_Unite', 'unite', 'typeProduit', 'sousType']; //les colonne du tableau liste de produits
   dataSourceProduits = new MatTableDataSource<tableProduits>();
   dataSourceProduit = new MatTableDataSource<tableProduits>();
@@ -138,7 +153,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   troisiemeStepEstRemplit = false;
   produitExiste = false;
   breakpoint: number;
-
+  barcode = '';
+  interval: any;
   ngAfterViewInit() {
     this.dataSourceProduits.paginator = this.paginator;
     this.dataSourceProduits.sort = this.sort;
@@ -172,17 +188,17 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
           this.produitExiste = true;
         }
       });
-      if(!this.produitExiste){ //si le produit du fiche produit n'existe pas dans la liste colisage donc on l'ajoute à la liste a afficher dans le tableau
+      if (!this.produitExiste) { //si le produit du fiche produit n'existe pas dans la liste colisage donc on l'ajoute à la liste a afficher dans le tableau
         this.produitsAffiche.push(element);
       }
       this.produitExiste = false;
-      
+
     });
 
     this.dataSourceProduits.data = this.produitsAffiche as tableProduits[];
-    this.dataSourceProduits.data = this.dataSourceProduits.data.sort((a,b) => a.id_Produit > b.id_Produit ? -1 : 1);
+    this.dataSourceProduits.data = this.dataSourceProduits.data.sort((a, b) => a.id_Produit > b.id_Produit ? -1 : 1);
     this.dataSourceProduit.data = this.produitsAffiche as tableProduits[];
-    this.dataSourceProduit.data = this.dataSourceProduit.data.sort((a,b) => a.id_Produit > b.id_Produit ? -1 : 1);
+    this.dataSourceProduit.data = this.dataSourceProduit.data.sort((a, b) => a.id_Produit > b.id_Produit ? -1 : 1);
   }
 
   chargerListeColisage(): any {
@@ -194,6 +210,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       nom: ['', Validators.required],
       poidsEmballage: ['', Validators.required],
       type: ['', Validators.required],
+      codeBarre: ['', Validators.required],
       fragilite: [false],
       longueur: ['', Validators.required],
       largeur: ['', Validators.required],
@@ -218,28 +235,59 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.dataSourceProduits.filter = valeurFiltre;
   }
 
+  scannerCodeBarre(codeBarreScanne: any) {
+    if (this.interval)
+      clearInterval(this.interval);
+    if (codeBarreScanne.code == 'Enter') {
+      if (this.barcode)
+        this.gestionCodeBarre(this.barcode);
+      this.barcode = '';
+      return;
+    }
+    if (codeBarreScanne.key != 'Shift')
+      this.barcode += codeBarreScanne.key;
+    this.interval = setInterval(() => this.barcode = '', 20);
+  }
+
+  gestionCodeBarre(codeBarre: any) {
+    var prodSelect: any;
+    prodSelect = this.dataSourceProduits.data.filter((x: any) => x.code_Barre == codeBarre);
+    this.choisirProduit(prodSelect[0]);
+  }
+
 
   choisirProduit(prod: any) {
     if (this.produitClique.has(prod)) { //si On clique sur un produit deja selectionnée on le deselectionne
+      this.formCodeBarre.get('code_Barre').setValue('')
       this.produitClique.clear();
       this.produitSelectionne = [];
     } else {
       if (this.produitSelectionne.length !== 0) { //si on clique sur un autre produit on deselectionne l'ancien
+        this.formCodeBarre.get('code_Barre').setValue('')
         this.produitClique.clear();
         this.produitSelectionne = [];
       }
-      this.produitClique.add(prod); //on selectionne le nouveau produit cliqué
-      this.produitSelectionne.push(prod);
+      if (prod) {
+        this.formCodeBarre.get('code_Barre').setValue(prod.code_Barre)
+        this.produitClique.add(prod); //on selectionne le nouveau produit cliqué
+        this.produitSelectionne.push(prod)
+      };
     }
 
     this.deuxiemeFormGroup.get('validateur').setValue("validé");
   }
-  premierSuivant(){
+  premierSuivant() {
     this.dataSourceProduit.data = this.produitSelectionne as tableProduits[];
     this.premierFormGroup.get('nom').setValue(this.produitSelectionne[0].nom_Produit)
+    this.premierFormGroup.get('codeBarre').setValue(this.produitSelectionne[0].code_Barre)
+  }
+  premierPrecedent() {
+    this.dataSourceProduits.data = this.produitsAffiche as tableProduits[];
+    this.dataSourceProduits.data = this.dataSourceProduits.data.sort((a, b) => a.id_Produit > b.id_Produit ? -1 : 1);
   }
   deuxiemeSuivant() { //pour le deuxieme bouton suivant
     this.troisiemeFormGroup.get('unite').setValue(this.produitSelectionne[0].unite)
+    this.troisiemeFormGroup.get('qte').setValue(this.produitSelectionne[0].valeur_Unite)
 
   }
   troisiemeSuivant() { //pour le troisieme bouton suivant
@@ -248,6 +296,10 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   reinitialiserStepper() { //reinitialisation du stepper
     this.produitClique.clear();
     this.troisiemeStepEstRemplit = false;
+    this.formCodeBarre.get('code_Barre').setValue('');
+    this.formFiltreProduit.get('nom_Produit').setValue('');
+    this.dataSourceProduits.filter = '';
+
   }
 
   async valider() {  //bouton valider
@@ -271,7 +323,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     formData.append("poids_unitaire", this.poidsTotUnProduit);
     formData.append("poids_total_net", this.poidsTotUnProduit);
     formData.append("poids_emballage_total", this.poidsToltal);
-    this.service.creerProduitEmballe(formData);
+    formData.append("code_barre", this.premierFormGroup.get('codeBarre').value);
+    await this.service.creerProduitEmballe(formData).toPromise();
     await this._router.navigate(['/Menu/Colisage/Liste_Colisage'])
     Swal.fire({
       icon: 'success',
@@ -336,6 +389,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   poidsUnitaireNet: any;
   poidsTotNetProduit: any;
   breakpoint: number;
+  listeSupports: any;
 
   constructor(public service: ColisageService, private formBuilder: FormBuilder, public _router: Router) {
 
@@ -343,9 +397,9 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.dataSourceListeColisage.paginator = this.paginator.toArray()[0];;
-    this.dataSourceListeColisage.sort =this.sort.toArray()[0];
+    this.dataSourceListeColisage.sort = this.sort.toArray()[0];
     this.dataSourcePackSelectionne.paginator = this.paginator.toArray()[1];;
-    this.dataSourcePackSelectionne.sort =this.sort.toArray()[1];
+    this.dataSourcePackSelectionne.sort = this.sort.toArray()[1];
   }
 
   ngOnInit() {
@@ -357,7 +411,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       largeur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
       hauteur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
       volume: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      poidsEmballage: ['', Validators.required]
+      poidsEmballage: ['', Validators.required],
+      codeBarre: ['', Validators.required]
 
     });
     this.deuxiemeFormGroup = this.formBuilder.group({
@@ -377,6 +432,11 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.listePacks = data;
       this.dataSourceListeColisage.data = this.listePacks as tableColisage[];
     });
+  }
+
+
+  async getListeSupportParType(){
+    this.listeSupports = await this.service.filtrerSupports('type_support',this.premierFormGroup.get('type').value).toPromise();
   }
 
   appliquerFiltre(valeurFiltre: any) { //filtrer par nom Emballage
@@ -426,15 +486,15 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     return this.troisiemeFormGroup.get("pack") as FormArray
   }
 
-  nouveauPack( unite: any): FormGroup { //creation des formControls qte et unite pour chaque pack selectionné
+  nouveauPack(unite: any): FormGroup { //creation des formControls qte et unite pour chaque pack selectionné
     return this.formBuilder.group({
       qte: ['', Validators.required],
       unite: [unite, Validators.required],
     })
   }
 
-  ajouterPack( unite: any) { //lors de l'ajout du pack on ajoute les formControls crées a FormArray
-    this.pack().push(this.nouveauPack( unite));
+  ajouterPack(unite: any) { //lors de l'ajout du pack on ajoute les formControls crées a FormArray
+    this.pack().push(this.nouveauPack(unite));
   }
 
   supprimerPack() { //vider le formArray
@@ -443,13 +503,13 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   deuxiemeSuivant() { //pour chaque produit séléctionné on ajoute un formControl
     this.packSelectionne.forEach((element: any) => {
-      this.ajouterPack( element.typeEmballage);
+      this.ajouterPack(element.typeEmballage);
     });
     this.dataSourcePackSelectionne.data = this.packSelectionne as tableColisage[];
 
   }
 
-  deuxiemePrecedent() { 
+  deuxiemePrecedent() {
     this.supprimerPack();
   }
 
@@ -485,7 +545,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     this.poidsTotUnProduit = Number(poids) * Number(qte);
     console.log(this.premierFormGroup.get('nom').value);
     return (this.poidsTotUnProduit);
-    
+
   }
 
   reinitialiserStepper() { //reinitialiser le stepper

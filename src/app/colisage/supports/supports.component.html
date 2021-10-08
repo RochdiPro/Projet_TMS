@@ -5,7 +5,7 @@
              <i class="pe-7s-box2 text-success">
              </i>
           </div>
-          Colisage
+          Supports
        </div>
     </div>
 </div>
@@ -16,13 +16,13 @@
              <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav" id="tab">
                 <!-- bouton lister -->
                 <li class="nav-item">
-                   <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Packaging/Liste_Pack">
+                   <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Supports/Liste_Support" (click)="activerLister()" [ngClass]="{'active': listerEstActive}">
                       <span>Lister</span>
                    </a>
                 </li>
                 <!-- bouton ajouter -->
                 <li class="nav-item">
-                   <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Packaging/Menu_Ajouter">
+                   <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Supports/Ajouter_Support" (click)="activerAjouter()" [ngClass]="{'active': ajouterEstActive}">
                       <span>Ajouter</span>
                    </a>
                 </li>

@@ -1,0 +1,108 @@
+.mat-column-id {
+    width: 3%;
+}
+ul {
+    padding-top: 11%;
+    list-style-type: none;
+    text-align: left;
+    padding-inline-start: 0;
+}
+.mat-column-nomEmballage,
+.mat-column-typeEmballage,
+.mat-column-qte,
+.mat-column-nomProduit,
+.mat-column-unite,
+.mat-column-categorie {
+    width: auto;
+}
+:host ::ng-deep .mat-sort-header-content {
+    text-align: left;
+}
+.custom-width {
+    width: 20%;
+    margin: 0 0.5%;
+}
+.mobile-label {
+    display: none;
+}
+
+//pour mobile
+@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+    *{
+        font-size: 12px;
+    }
+    
+    .custom-width {
+        width: 92%;
+        margin: 0;
+    }
+    .mat-column-id {
+        width: auto;
+        text-align: center;
+    }
+    ul{
+        padding-top: 0%;
+        text-align: right;
+        padding-inline-start: 0;
+    }
+    .mat-table {
+        border: 0;
+        vertical-align: middle;
+    }
+
+    .mat-table caption {
+        font-size: 1em;
+    }
+
+    .mat-table .mat-row {
+        border-bottom: 5px solid #ddd;
+        display: block;
+        min-height: auto;
+    }
+
+    .mat-table .mat-cell {
+        border-bottom: 1px solid #ddd;
+        display: block;
+        font-size: 1em;
+        text-align: right;
+        font-weight: bold;
+        height: auto;
+        margin-bottom: 4%;
+        padding-right: 5%;
+        padding-bottom: 4%;
+    }
+    .mat-table .mat-cell:before {
+        content: attr(data-label);
+        float: left;
+        text-transform: uppercase;
+        font-weight: normal;
+        margin-left: 5%;
+
+        font-size: 0.85em;
+    }
+    .mat-table .mat-cell:last-child {
+        border-bottom: 0;
+    }
+    .mat-table .mat-cell:first-child {
+        margin-top: 4%;
+    }
+    .mat-table .mat-cell:last-of-type{
+        padding-right: 5%;
+    }
+    .mat-table .mat-cell:first-of-type{
+        padding-left: 0;
+    }
+    .mat-table .mat-header-cell {
+    
+        border: 10px solid;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        padding: 0;
+        position: absolute;
+        width: 1px;
+      }
+      .mat-header-row{
+          min-height: 0;
+      }
+}

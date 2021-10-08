@@ -14,10 +14,7 @@ export class ColisageService {
 
   //créer nouveau produit dans la liste de colisage
   public creerProduitEmballe(formData: any) {
-    this.httpClient.post(erp + 'creerProduitEmballe', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.httpClient.post(erp + 'creerProduitEmballe', formData).pipe(catchError(this.handleError))
   }
 
   //lister les produits emballés dans la liste de colisage 
@@ -126,5 +123,30 @@ export class ColisageService {
           Id_BL: Id
         }, responseType: 'blob'
       }).pipe(catchError(this.handleError))
+  }
+
+  //get liste supports
+  public supports() {
+    return this.httpClient.get(erp + 'Supports').pipe(catchError(this.handleError));
+  }
+
+  //get support
+  public support() {
+    return this.httpClient.get(erp + 'Support').pipe(catchError(this.handleError));
+  }
+
+  //créer support
+  public creerSupport(formData: any){
+    return this.httpClient.post(erp + 'Creer_Support', formData).pipe(catchError(this.handleError));
+  }
+
+  //filtrer par champ
+  public filtrerSupports(champ: any, valeur: any){
+    return this.httpClient.get(erp + 'filtreSupport', {
+      params:{
+        champ: champ,
+        valeur: valeur
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
   }
 }

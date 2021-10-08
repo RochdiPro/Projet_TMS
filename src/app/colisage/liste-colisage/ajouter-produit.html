@@ -1,19 +1,27 @@
 <mat-vertical-stepper [linear]="isLinear" #stepper>
-    <mat-step [stepControl]="deuxiemeFormGroup" label="Sélection Des Produits à Emballer"> <!-- deuxieme step -->
+    <mat-step [stepControl]="deuxiemeFormGroup" label="Sélection Des Produits à Emballer">
+        <!-- deuxieme step -->
         <form [formGroup]="deuxiemeFormGroup">
             <!-- champ de filtrage par nom produit -->
             <div class="position-relative custom-control">
                 <section>
                     <mat-form-field class="custom-width" [formGroup]="formFiltreProduit">
                         <mat-label>Produit</mat-label>
-                        <input matInput placeholder="Nom" formControlName="nom_Produit" (keyup)="appliquerFiltre($event)"
-                            id="nom">
+                        <input matInput placeholder="Nom" formControlName="nom_Produit"
+                            (keyup)="appliquerFiltre($event)" id="nom">
                         <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+                    </mat-form-field>
+                    <mat-form-field class="custom-width" [formGroup]="formCodeBarre" id="barcode">
+                        <mat-label>Code à barre</mat-label>
+                        <input matInput placeholder="Code à barre" formControlName="code_Barre"
+                            (keydown)="scannerCodeBarre($event)" autofocus>
+                            <mat-icon matSuffix>qr_code_scanner</mat-icon>
                     </mat-form-field>
                 </section>
             </div>
             <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
-                <mat-table [dataSource]="dataSourceProduits" class=" table1"> <!-- tableau fiche produit -->
+                <mat-table [dataSource]="dataSourceProduits" class=" table1">
+                    <!-- tableau fiche produit -->
                     <!-- Colonne Id Produit -->
                     <ng-container matColumnDef="id_Produit">
                         <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
@@ -57,23 +65,25 @@
             </div>
             <!-- bouton suivant -->
             <div style="float: right;">
-                <button mat-button matStepperNext color="primary" (click)="premierSuivant()">Suivant</button>
+                <button type="button" mat-button matStepperNext color="primary" (click)="premierSuivant()">Suivant</button>
             </div>
         </form>
     </mat-step>
-    <mat-step [stepControl]="premierFormGroup" label="Saisir information d'emballage"> <!-- premier step -->
+    <mat-step [stepControl]="premierFormGroup" label="Saisir information d'emballage">
+        <!-- premier step -->
         <form [formGroup]="premierFormGroup">
             Informations
             <div class="input-inline">
                 <!-- input Nom emballage -->
                 <mat-form-field appearance="fill" class="premier-input">
                     <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
-                    <input matInput formControlName="nom" required >
+                    <input matInput formControlName="nom" required>
                 </mat-form-field>
                 <!-- input poids emballage -->
                 <mat-form-field appearance="fill" class="deuxieme-input">
                     <mat-label>Poids d'emballage (Kg)</mat-label>
-                    <input matInput formControlName="poidsEmballage" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                    <input matInput formControlName="poidsEmballage" required type="number"
+                        pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
                 </mat-form-field>
                 <!-- input type emballage -->
                 <mat-form-field appearance="fill" class="troisieme-input">
@@ -86,8 +96,15 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-            <!-- toggle du fragilité -->
-            <div class="input-inline" style="margin-bottom: 2%;">
+
+            <div class="input-inline">
+                <!-- input poids emballage -->
+                <mat-form-field appearance="fill" class="premier-input">
+                    <mat-label>Code à barre</mat-label>
+                    <input matInput formControlName="codeBarre" required type="text">
+                    <mat-icon matSuffix>qr_code_scanner</mat-icon>
+                </mat-form-field>
+                <!-- toggle du fragilité -->
                 <mat-slide-toggle formControlName="fragilite" color="primary">Fragile</mat-slide-toggle>
             </div>
             <!-- les inputs de dimensions -->
@@ -95,15 +112,18 @@
             <div class="input-inline">
                 <mat-form-field appearance="fill" class="premier-input">
                     <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
-                    <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                    <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number"
+                        pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="deuxieme-input">
                     <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
-                    <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                    <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number"
+                        pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
                 </mat-form-field>
                 <mat-form-field appearance="fill" class="troisieme-input">
                     <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
-                    <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                    <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number"
+                        pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
                 </mat-form-field>
             </div>
             <!-- les inputs de volume -->
@@ -116,25 +136,29 @@
             </div>
             <!-- boutons de navigation entre les steps -->
             <div style="float: right;">
-                <button mat-button matStepperPrevious color="primary">Précédent</button>
-                <button mat-button matStepperNext (click)="deuxiemeSuivant()" color="primary">Suivant</button>
+                <button type="button" mat-button matStepperPrevious color="primary" (click)="premierPrecedent()">Précédent</button>
+                <button type="button" mat-button matStepperNext (click)="deuxiemeSuivant()" color="primary">Suivant</button>
             </div>
         </form>
     </mat-step>
-    <mat-step [stepControl]="troisiemeFormGroup" label="Saisir les données d'emballage"> <!-- troisieme step -->
+    <mat-step [stepControl]="troisiemeFormGroup" label="Saisir les données du produit">
+        <!-- troisieme step -->
         <form [formGroup]="troisiemeFormGroup" *ngIf="produitSelectionne[0]">
             <div>
-                Produit: {{produitSelectionne[0].nom_Produit}} <!-- afficher nom produit-->
+                Produit: {{produitSelectionne[0].nom_Produit}}
+                <!-- afficher nom produit-->
                 <div class="input-inline">
                     <!-- champs poids unitaire -->
                     <mat-form-field appearance="fill" class="premier-input">
                         <mat-label style="text-transform: capitalize;">Poids unitaire (Kg)</mat-label>
-                        <input matInput formControlName="poids" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                        <input matInput formControlName="poids" required type="number"
+                            pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
                     </mat-form-field>
                     <!-- champ de quantité dans l'emballage -->
                     <mat-form-field appearance="fill" class="deuxieme-input">
                         <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
-                        <input matInput formControlName="qte" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                        <input matInput formControlName="qte" required type="number"
+                            pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
                     </mat-form-field>
                     <!-- Select de l'unité -->
                     <mat-form-field appearance="fill" class="troisieme-input">
@@ -155,7 +179,8 @@
             </div>
         </form>
     </mat-step>
-    <mat-step> <!-- quatrieme step -->
+    <mat-step>
+        <!-- quatrieme step -->
         <ng-template matStepLabel>Valider</ng-template>
         <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
             <mat-table [dataSource]="dataSourceProduit" class="table2">
@@ -207,7 +232,8 @@
             </mat-table>
         </div>
         <!-- afficher l'information d'emballage -->
-        <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)" style="margin-left: 2.5%;" *ngIf="produitSelectionne[0] && troisiemeStepEstRemplit">
+        <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)" style="margin-left: 2.5%;"
+            *ngIf="produitSelectionne[0] && troisiemeStepEstRemplit">
             <mat-grid-tile>
                 <div class="w-100 titre">Nom D'emballage:</div>
             </mat-grid-tile>
@@ -252,6 +278,12 @@
             </mat-grid-tile>
             <mat-grid-tile>
                 <div class="w-100">{{this.premierFormGroup.get('volume').value}} m3</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100 titre">Code à barre:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100">{{this.premierFormGroup.get('codeBarre').value}}</div>
             </mat-grid-tile>
         </mat-grid-list>
         <!-- bouton de navigation entre steps et bouton valider -->

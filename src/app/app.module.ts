@@ -42,12 +42,13 @@ import { QRCodeModule } from 'angular2-qrcode';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectAutocompleteModule } from 'mat-select-autocomplete';
-import { ListeColisageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent } from './colisage/liste-colisage/liste-colisage.component';
+import { ListeColisageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent, ListerColisageComponent } from './colisage/liste-colisage/liste-colisage.component';
 import { ColisageComponent } from './colisage/colisage.component';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatListModule} from '@angular/material/list';
+import { SupportsComponent, ListerSupportsComponent, AjouterSupportComponent } from './colisage/supports/supports.component';
 
 registerLocaleData(localeFr, 'fr');
 
@@ -85,7 +86,11 @@ registerLocaleData(localeFr, 'fr');
     MenuAjouterComponent,
     AjouterPackComponent,
     AjouterVehiculeLoueComponent,
-    DetailVehiculeLoueComponent
+    DetailVehiculeLoueComponent,
+    SupportsComponent,
+    ListerColisageComponent,
+    ListerSupportsComponent, 
+    AjouterSupportComponent
    
   ],
   imports: [

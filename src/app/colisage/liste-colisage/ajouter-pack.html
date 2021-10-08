@@ -11,9 +11,9 @@
                     <input matInput formControlName="nom" required>
                 </mat-form-field>
                 <!-- input poids emballage -->
-                <mat-form-field appearance="fill" class="troisieme-input">
+                <mat-form-field appearance="fill" class="deuxieme-input">
                     <mat-label>Type d'emballage</mat-label>
-                    <mat-select formControlName="type" required>
+                    <mat-select formControlName="type" required (selectionChange) = "getListeSupportParType()">
                         <mat-option value="Carton">Carton</mat-option>
                         <mat-option value="Palette">Palette</mat-option>
                         <mat-option value="Vrac">Vrac</mat-option>
@@ -24,16 +24,20 @@
                 <mat-form-field appearance="fill" class="troisieme-input">
                     <mat-label>Emballage</mat-label>
                     <mat-select formControlName="type" required>
-                        <mat-option value="Carton">Carton</mat-option>
-                        <mat-option value="Palette">Palette</mat-option>
-                        <mat-option value="Vrac">Vrac</mat-option>
-                        <mat-option value="Sac">Sac</mat-option>
+                        <mat-option *ngFor="let support of listeSupports" value="support">{{support.nom_support}}</mat-option>
                     </mat-select>
                 </mat-form-field>
 
             </div>
-            <!-- toggle du fragilité -->
-            <div class="input-inline" style="margin-bottom: 2%;">
+            
+            <div class="input-inline">
+                <!-- input poids emballage -->
+                <mat-form-field appearance="fill" class="premier-input">
+                    <mat-label>Code à barre</mat-label>
+                    <input matInput formControlName="codeBarre" required type="text">
+                    <mat-icon matSuffix>qr_code_scanner</mat-icon>
+                </mat-form-field>
+                <!-- toggle du fragilité -->
                 <mat-slide-toggle formControlName="fragilite" color="primary">Fragile</mat-slide-toggle>
             </div>
             <!-- les inputs de dimensions -->
