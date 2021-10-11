@@ -4,37 +4,55 @@
         <form [formGroup]="premierFormGroup">
             <ng-template matStepLabel>Informations D'emballage</ng-template> <!-- titre du step -->
             Informations
+            <mat-radio-group aria-label="Selectionner un mode" formControlName="typeSelectionEmballage"
+                (change)="testTypeSelection()">
+                <mat-radio-button color="primary" value="auto">Séléction par code à barre</mat-radio-button>
+                <div id="input-codeBarre">
+                    <!-- input code a barre -->
+                    <mat-form-field appearance="fill" class="premier-input">
+                        <mat-label>Séléction par code à barre</mat-label>
+                        <input matInput placeholder="Code à barre" formControlName="codeBarre"
+                            (keydown)="scannerCodeBarreSupport($event)" autofocus>
+                        <mat-icon matSuffix>qr_code_scanner</mat-icon>
+                    </mat-form-field>
+                    <div id="nomEmballage" *ngIf="support">Nom d'emballage: <b>{{support ? support[0].nom_support :
+                            ''}}</b></div>
+                    <div id="typeEmballage" *ngIf="support">Type d'emballage: <b>{{support ? support[0].type_support :
+                            ''}}</b></div>
+                </div>
+                <mat-radio-button color="primary" value="manuel">Séléction manuel</mat-radio-button>
+                <div class="input-inline">
+                    <!-- select type emballage -->
+                    <mat-form-field appearance="fill" class="deuxieme-input">
+                        <mat-label>Type d'emballage</mat-label>
+                        <mat-select formControlName="type" required (selectionChange)="getListeSupportParType()">
+                            <mat-option value="Carton">Carton</mat-option>
+                            <mat-option value="Palette">Palette</mat-option>
+                            <mat-option value="Vrac">Vrac</mat-option>
+                            <mat-option value="Sac">Sac</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- select nom emballage -->
+                    <mat-form-field appearance="fill" class="troisieme-input">
+                        <mat-label>Emballage</mat-label>
+                        <mat-select formControlName="nomEmballage" required [(value)]="supportSelectionne" (selectionChange)="selectionnerSupport()">
+                            <mat-option *ngFor="let support of listeSupports" [value]="support">{{support.nom_support}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                </div>
+            </mat-radio-group>
             <div class="input-inline">
-                <!-- input nom emballage -->
+                <!-- input nom pack -->
                 <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
+                    <mat-label style="text-transform: capitalize;">Nom du pack</mat-label>
                     <input matInput formControlName="nom" required>
                 </mat-form-field>
                 <!-- input poids emballage -->
                 <mat-form-field appearance="fill" class="deuxieme-input">
-                    <mat-label>Type d'emballage</mat-label>
-                    <mat-select formControlName="type" required (selectionChange) = "getListeSupportParType()">
-                        <mat-option value="Carton">Carton</mat-option>
-                        <mat-option value="Palette">Palette</mat-option>
-                        <mat-option value="Vrac">Vrac</mat-option>
-                        <mat-option value="Sac">Sac</mat-option>
-                    </mat-select>
-                </mat-form-field>
-                <!-- input type emballage -->
-                <mat-form-field appearance="fill" class="troisieme-input">
-                    <mat-label>Emballage</mat-label>
-                    <mat-select formControlName="type" required>
-                        <mat-option *ngFor="let support of listeSupports" value="support">{{support.nom_support}}</mat-option>
-                    </mat-select>
-                </mat-form-field>
-
-            </div>
-            
-            <div class="input-inline">
-                <!-- input poids emballage -->
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label>Code à barre</mat-label>
-                    <input matInput formControlName="codeBarre" required type="text">
+                    <mat-label>Code à barre du pack</mat-label>
+                    <input matInput formControlName="codeBarrePack" required type="text">
                     <mat-icon matSuffix>qr_code_scanner</mat-icon>
                 </mat-form-field>
                 <!-- toggle du fragilité -->
@@ -43,30 +61,37 @@
             <!-- les inputs de dimensions -->
             Dimensions
             <div class="input-inline">
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
-                    <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                </mat-form-field>
-                <mat-form-field appearance="fill" class="deuxieme-input">
-                    <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
-                    <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                </mat-form-field>
-                <mat-form-field appearance="fill" class="troisieme-input">
-                    <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
-                    <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                </mat-form-field>
-            </div>
-            <!-- les inputs du volume -->
-            Volume
-            <div class="input-inline">
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
-                    <input matInput formControlName="volume" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                </mat-form-field>
+                <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)"
+                    style="margin-left: 2.5%;">
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Longueur:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100">{{longueur ? longueur : ''}}</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Largeur:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100">{{largeur ? largeur : ''}}</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Hauteur:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100">{{hauteur ? hauteur : ''}}</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100 titre">Volume:</div>
+                    </mat-grid-tile>
+                    <mat-grid-tile>
+                        <div class="w-100">{{volume ? volume : ''}}</div>
+                    </mat-grid-tile>
+                </mat-grid-list>
             </div>
             <!-- bouton suivant -->
             <div style="float: right;">
-                <button mat-button matStepperNext color="primary">Suivant</button>
+                <button type="button" mat-button matStepperNext color="primary" (click)="verifierValiditeSupport()">Suivant</button>
             </div>
         </form>
     </mat-step>
@@ -81,6 +106,12 @@
                         <input matInput placeholder="Nom" formControlName="nom_Emballage"
                             (keyup)="appliquerFiltre($event)" id="nom">
                         <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+                    </mat-form-field>
+                    <mat-form-field class="custom-width" [formGroup]="formCodeBarre" id="barcode">
+                        <mat-label>Code à barre</mat-label>
+                        <input matInput placeholder="Code à barre" formControlName="code_Barre"
+                            (keydown)="scannerCodeBarrePack($event)" autofocus>
+                            <mat-icon matSuffix>qr_code_scanner</mat-icon>
                     </mat-form-field>
                 </section>
             </div>
@@ -140,8 +171,8 @@
             </div>
             <!-- boutons de navigation entre les steps -->
             <div style="float: right;">
-                <button mat-button matStepperPrevious color="primary">Précédent</button>
-                <button mat-button matStepperNext color="primary" (click)="deuxiemeSuivant()">Suivant</button>
+                <button type="button" mat-button matStepperPrevious color="primary">Précédent</button>
+                <button type="button" mat-button matStepperNext color="primary" (click)="deuxiemeSuivant()">Suivant</button>
             </div>
         </form>
     </mat-step>
@@ -153,7 +184,7 @@
                 <div *ngFor="let pack of pack().controls; let i=index" [formGroupName]="i">
                     Pack: {{packSelectionne[i].nomEmballage}}
                     <!--afficher le nom d'emballage selectionné-->
-                    <div class="input-inline">*
+                    <div class="input-inline">
                         <!-- input field quantité -->
                         <mat-form-field appearance="fill" class="troisieme-stepper-input" style="margin-right: 2%;">
                             <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
@@ -296,14 +327,14 @@
             </mat-grid-tile>
             <mat-grid-tile>
                 <div class="w-100">
-                    {{this.premierFormGroup.get('longueur').value}}x{{this.premierFormGroup.get('largeur').value}}x{{this.premierFormGroup.get('hauteur').value}}
+                    {{longueur}}x{{largeur}}x{{hauteur}}
                 </div>
             </mat-grid-tile>
             <mat-grid-tile>
                 <div class="w-100 titre">Volume:</div>
             </mat-grid-tile>
             <mat-grid-tile>
-                <div class="w-100">{{this.premierFormGroup.get('volume').value}} m3</div>
+                <div class="w-100">{{volume}} m3</div>
             </mat-grid-tile>
         </mat-grid-list>
         <div style="float: right;">

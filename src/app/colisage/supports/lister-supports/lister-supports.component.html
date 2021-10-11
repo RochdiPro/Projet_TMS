@@ -19,7 +19,18 @@
           <td style="text-align:center">{{support.poids_emballage}}</td>
           <td style="text-align:center">{{support.longueur + "x" + support.largeur + "x" + support.hauteur}}</td>
           <td style="text-align:center">{{support.volume}}</td>
-          <td style="text-align:center;"></td>
+          <td style="text-align:center; width: 120px;">
+             <!-- Bouton modifier vehicule -->
+             <button class="mb-2  btn " (click)="modifierSupport(support)">
+                <mat-icon aria-hidden="false" aria-label="modifier">edit</mat-icon>
+             </button>
+             <!-- fin Bouton modifier vehicule -->
+             <!-- Bouton supprimer vehicule -->
+             <button class="mb-2  btn " (click)="supprimerSupport(support)">
+                <mat-icon aria-hidden="false" aria-label="Supprimer" style="color: #ff0000;">delete_outline</mat-icon>
+             </button>
+             <!-- fin Bouton supprimer vehicule -->
+          </td>
  
  
        </tr>

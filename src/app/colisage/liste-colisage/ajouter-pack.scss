@@ -1,7 +1,8 @@
 .mat-table {
     margin-top: 10px;
 }
-ul { //enlever les points de ul
+ul {
+    //enlever les points de ul
     padding-top: 11%;
     list-style-type: none;
     text-align: left;
@@ -13,44 +14,74 @@ ul { //enlever les points de ul
 .mat-column-typeEmballage,
 .mat-column-qte,
 .mat-column-unite,
-.mat-column-categorie { //width des colonne et centrer le text
+.mat-column-categorie {
+    //width des colonne et centrer le text
     width: auto;
 }
 
-.table1 .mat-row .mat-cell { //lors du hover du premier tableau on change le curseur 
+.table1 .mat-row .mat-cell {
+    //lors du hover du premier tableau on change le curseur
     cursor: pointer;
 }
 
-.table1 .mat-row:hover { //lors du hover du ligne premier tableau on change le couleur du ligne vers le gris
+.table1 .mat-row:hover {
+    //lors du hover du ligne premier tableau on change le couleur du ligne vers le gris
     background-color: rgba($color: #000, $alpha: 0.04);
 }
 
-.demo-row-is-clicked { //lors du click en une ligne du premier tableau on change le couleur ver le gris
+.demo-row-is-clicked {
+    //lors du click en une ligne du premier tableau on change le couleur ver le gris
     font-weight: bold;
     background-color: rgba($color: #000, $alpha: 0.04);
 }
 .titre {
     font-weight: bold;
 }
-.input-inline { //aligner les inputs 
+.input-inline {
+    //aligner les inputs
     display: inline-block;
     width: 100%;
 }
-.premier-input { //width du premier input dans le div avec la classe input-inline
+.premier-input {
+    //width du premier input dans le div avec la classe input-inline
     width: 32%;
     margin-right: 2%;
 }
-.deuxieme-input { //width du deuxieme input dans le div avec la classe input-inline
+.deuxieme-input {
+    //width du deuxieme input dans le div avec la classe input-inline
     width: 32%;
     margin-right: 2%;
 }
-.troisieme-input { //width du troisieme input dans le div avec la classe input-inline
+.troisieme-input {
+    //width du troisieme input dans le div avec la classe input-inline
     width: 32%;
 }
-.troisieme-stepper-input { //width des inputs dans le troisieme step
+.troisieme-stepper-input {
+    //width des inputs dans le troisieme step
     width: 49%;
 }
 
+mat-radio-group{
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+}
+
+mat-radio-button{
+    margin: 5px !important;
+}
+
+#input-codeBarre{
+    display: flex;
+    flex-direction: row;
+}
+#nomEmballage, #typeEmballage {
+    margin-top: 15px;
+    width: 32%;
+}
+#barcode{
+    margin-left: 2%;
+}
 //pour mobile
 @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
     * {
@@ -152,13 +183,26 @@ ul { //enlever les points de ul
         line-height: 25px;
     }
 
-    ::ng-deep .mat-icon-button { ////diminuer taille bouton icons paginator
+    ::ng-deep .mat-icon-button {
+        ////diminuer taille bouton icons paginator
         width: 10% !important;
         max-width: 40px;
     }
 
-    ::ng-deep .mat-paginator-icon { //diminuer taille icons paginator
+    ::ng-deep .mat-paginator-icon {
+        //diminuer taille icons paginator
         width: 100% !important;
         max-width: 40px;
     }
+
+    #input-codeBarre{
+        display: flex;
+        flex-direction: column;
+    }
+
+    #nomEmballage, #typeEmballage {
+        margin-top: 10px;
+        width: 100%;
+    }
+
 }

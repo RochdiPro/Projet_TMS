@@ -10,7 +10,11 @@ import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component'
 import { AjouterMissionComponent, ListerMissionsComponent, MissionsComponent } from './TMS/parc/missions/missions.component';
 import { ColisageComponent } from './colisage/colisage.component';
 import { ListeColisageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent, ListerColisageComponent } from './colisage/liste-colisage/liste-colisage.component';
-import { AjouterSupportComponent, ListerSupportsComponent, SupportsComponent } from './colisage/supports/supports.component';
+import { SupportsComponent } from './colisage/supports/supports.component';
+import { AjouterSupportComponent } from './colisage/supports/ajouter-support/ajouter-support.component'
+import { ListerSupportsComponent } from './colisage/supports/lister-supports/lister-supports.component'
+import { ModifierSupportComponent } from './colisage/supports/modifier-support/modifier-support.component'
+
 
 
 const routes: Routes =
@@ -41,6 +45,7 @@ const routes: Routes =
               path: 'Supports', component: SupportsComponent, children: [
                 { path: 'Liste_Support', component: ListerSupportsComponent },
                 { path: 'Ajouter_Support', component: AjouterSupportComponent },
+                { path: 'Modifier_Support', component: ModifierSupportComponent },
               ]
             },
 

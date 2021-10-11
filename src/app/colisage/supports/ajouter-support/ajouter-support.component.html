@@ -9,7 +9,7 @@
         <!-- input type emballage -->
         <mat-form-field appearance="fill" class="deuxieme-input">
             <mat-label>Type d'emballage</mat-label>
-            <mat-select formControlName="type_Support" required>
+            <mat-select formControlName="type_Support" required (selectionChange)= "testType()">
                 <mat-option value="Carton">Carton</mat-option>
                 <mat-option value="Palette">Palette</mat-option>
                 <mat-option value="Vrac">Vrac</mat-option>

@@ -258,12 +258,12 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
 
   choisirProduit(prod: any) {
     if (this.produitClique.has(prod)) { //si On clique sur un produit deja selectionnée on le deselectionne
-      this.formCodeBarre.get('code_Barre').setValue('')
+      this.formCodeBarre.get('code_Barre').setValue('');
       this.produitClique.clear();
       this.produitSelectionne = [];
     } else {
       if (this.produitSelectionne.length !== 0) { //si on clique sur un autre produit on deselectionne l'ancien
-        this.formCodeBarre.get('code_Barre').setValue('')
+        this.formCodeBarre.get('code_Barre').setValue('');
         this.produitClique.clear();
         this.produitSelectionne = [];
       }
@@ -307,7 +307,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     formData.append("idProduit", "FP-" + this.produitSelectionne[0].id_Produit);
     formData.append("nomProduit", this.produitSelectionne[0].nom_Produit);
     formData.append("nomEmballage", this.premierFormGroup.get('nom').value);
-    formData.append("typeEmballage", "Standard");
+    formData.append("typeEmballage", this.premierFormGroup.get("type").value);
     formData.append("qte", this.troisiemeFormGroup.get('qte').value);
     formData.append("unite", this.troisiemeFormGroup.get('unite').value);
     formData.append("categorie", this.produitSelectionne[0].type2);
@@ -374,6 +374,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   premierFormGroup: FormGroup;
   deuxiemeFormGroup: FormGroup;
   troisiemeFormGroup: FormGroup;
+  formCodeBarre = new FormGroup({ code_Barre: new FormControl("") });
   colonneAfficheTableauLC1: string[] = ['id', 'nomEmballage', 'typeEmballage', 'nomProduit', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
   colonneAfficheTableauLC2: string[] = ['id', 'nomEmballage', 'typeEmballage', 'poidsUnitaireNet', 'qte', 'unite', 'poidsTotNet', 'poidsTot', 'categorie']; //les colonne du tableau liste de colisage
   dataSourcePackSelectionne = new MatTableDataSource<tableColisage>();
@@ -390,6 +391,16 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   poidsTotNetProduit: any;
   breakpoint: number;
   listeSupports: any;
+  interval: any;
+  barcode = '';
+  support: any;
+  supportSelectionne: any;
+  longueur: any;
+  largeur: any;
+  hauteur: any;
+  volume: any;
+  poidsEmballage: any;
+  typeEmballage: any;
 
   constructor(public service: ColisageService, private formBuilder: FormBuilder, public _router: Router) {
 
@@ -406,13 +417,12 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     this.premierFormGroup = this.formBuilder.group({
       nom: ['', Validators.required],
       type: ['', Validators.required],
+      nomEmballage: ['', Validators.required],
       fragilite: [false],
-      longueur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      largeur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      hauteur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      volume: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      poidsEmballage: ['', Validators.required],
-      codeBarre: ['', Validators.required]
+      codeBarre: ['', Validators.required],
+      codeBarrePack: ['', Validators.required],
+      typeSelectionEmballage: ['auto', Validators.required],
+      valider: ['', Validators.required],
 
     });
     this.deuxiemeFormGroup = this.formBuilder.group({
@@ -426,6 +436,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     };
     this.chargerListeColisage();
     this.breakpoint = (window.innerWidth <= 760) ? 2 : 6;
+    this.testTypeSelection()
   }
   chargerListeColisage() { //charger la liste de colisage
     this.service.listeColisage().subscribe((data) => {
@@ -435,8 +446,74 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
 
 
-  async getListeSupportParType(){
-    this.listeSupports = await this.service.filtrerSupports('type_support',this.premierFormGroup.get('type').value).toPromise();
+  async getListeSupportParType() {
+    this.premierFormGroup.get("codeBarre").setValue("");
+    this.listeSupports = await this.service.filtrerSupports('type_support', this.premierFormGroup.get('type').value).toPromise();
+  }
+
+  scannerCodeBarreSupport(codeBarreScanne: any) {
+    if (this.interval)
+      clearInterval(this.interval);
+    if (codeBarreScanne.code == 'Enter') {
+      if (this.barcode)
+        this.gestionCodeBarreSupport(this.barcode);
+      this.barcode = '';
+      return;
+    }
+    if (codeBarreScanne.key != 'Shift')
+      this.barcode += codeBarreScanne.key;
+    this.interval = setInterval(() => this.barcode = '', 20);
+  }
+
+  async gestionCodeBarreSupport(codeBarre: any) {
+    this.support = await this.service.filtrerSupports('code_barre', codeBarre).toPromise();
+    if (this.support.length === 0) {
+      this.support = undefined;
+      Swal.fire({
+        title: 'Support inexistant!',
+        text: "Ajoutez le dans la liste des support avant de l'utiliser.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ok',
+        cancelButtonText: 'Annuler'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this._router.navigate(['/Menu/Menu_Colisage/Supports/Ajouter_Support']);
+        }
+      })
+    } else {
+      this.longueur = this.support[0].longueur;
+      this.largeur = this.support[0].largeur;
+      this.hauteur = this.support[0].hauteur;
+      this.volume = this.support[0].volume;
+      this.poidsEmballage = this.support[0].poids_emballage;
+      this.typeEmballage = this.support[0].type_support;
+
+      this.premierFormGroup.get('valider').setValue('validé');
+    }
+
+  }
+
+  selectionnerSupport() {
+    this.longueur = this.supportSelectionne.longueur;
+    this.largeur = this.supportSelectionne.largeur;
+    this.hauteur = this.supportSelectionne.hauteur;
+    this.volume = this.supportSelectionne.volume;
+    this.poidsEmballage = this.supportSelectionne.poids_emballage;
+    this.typeEmballage = this.supportSelectionne.type_support;
+    this.premierFormGroup.get('valider').setValue('validé');
+
+  }
+
+  verifierValiditeSupport(){
+    if(this.premierFormGroup.get('valider').value === ''){
+      Swal.fire({
+        icon: 'error',
+        text: 'Prière de vérifier que le support est valide!',
+      })
+    }
   }
 
   appliquerFiltre(valeurFiltre: any) { //filtrer par nom Emballage
@@ -444,14 +521,6 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     valeurFiltre = valeurFiltre.trim(); // Remove whitespace
     valeurFiltre = valeurFiltre.toLowerCase(); // MatTableDataSource defaults to lowercase matches
     this.dataSourceListeColisage.filter = valeurFiltre;
-  }
-
-  calculVolume() { //calculer le volume de l'emballage
-    let toutLesChampsDeDimensionsSontRemplit = this.premierFormGroup.get('hauteur').value !== "" && this.premierFormGroup.get('longueur').value !== "" && this.premierFormGroup.get('largeur').value !== "";
-    if (toutLesChampsDeDimensionsSontRemplit) {
-      let volume = Number(this.premierFormGroup.get('hauteur').value) * Number(this.premierFormGroup.get('longueur').value) * Number(this.premierFormGroup.get('largeur').value); //calcul
-      this.premierFormGroup.get('volume').setValue(volume); //changer la valeur de l'input par le volume calculé
-    }
   }
 
   getIdProduit(produits: any) {
@@ -470,10 +539,38 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     return nomProduit;
   }
 
+  scannerCodeBarrePack(codeBarreScanne: any) {
+    if (this.interval)
+      clearInterval(this.interval);
+    if (codeBarreScanne.code == 'Enter') {
+      if (this.barcode)
+        this.gestionCodeBarrePack(this.barcode);
+      this.barcode = '';
+      return;
+    }
+    if (codeBarreScanne.key != 'Shift')
+      this.barcode += codeBarreScanne.key;
+    this.interval = setInterval(() => this.barcode = '', 20);
+  }
+
+  gestionCodeBarrePack(codeBarre: any) {
+    var prodSelect: any;
+    prodSelect = this.dataSourceListeColisage.data.filter((x: any) => x.code_barre == codeBarre);
+    console.log(prodSelect);
+    if(prodSelect.length === 0) {
+      this.formCodeBarre.get('code_Barre').setValue('');
+    } else {
+      this.formCodeBarre.get('code_Barre').setValue('');
+      this.formCodeBarre.get('code_Barre').setValue(codeBarre);
+    }
+    this.choisirPack(prodSelect[0]);
+  }
+
   choisirPack(p: any) { //selectionner les packs désirés
     if (this.packClique.has(p)) { //si on clique sur un pack déja selectionné on le désélectionne
       this.packClique.delete(p);
       this.packSelectionne.splice(this.packSelectionne.indexOf(p), 1);
+      this.formCodeBarre.get('code_Barre').setValue('');
     } else {  //sinon on selectionne le pack
       this.packClique.add(p);
       this.packSelectionne.push(p);
@@ -532,8 +629,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     for (let i = 0; i < this.packSelectionne.length; i++) {
       this.poidsToltalBrut += Number(this.packSelectionne[i].poids_emballage_total) * Number(this.troisiemeFormGroup.get('pack').value[i].qte);
     }
-    this.poidsToltalBrut = this.poidsToltalBrut + Number(this.premierFormGroup.get('poidsEmballage').value);
-    console.log(this.poidsToltalBrut);
+    this.poidsToltalBrut = this.poidsToltalBrut + Number(this.poidsEmballage);
     return this.poidsToltalBrut;
   }
 
@@ -543,13 +639,40 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
   calculerPoidsPackBrut(poids: any, qte: any) { //poids total brut de chaque pack selectionné
     this.poidsTotUnProduit = Number(poids) * Number(qte);
-    console.log(this.premierFormGroup.get('nom').value);
     return (this.poidsTotUnProduit);
 
   }
 
   reinitialiserStepper() { //reinitialiser le stepper
     this.packClique.clear();
+  }
+
+  testTypeSelection() {
+    this.premierFormGroup.get('valider').setValue('');
+    if (this.premierFormGroup.get("typeSelectionEmballage").value === "manuel") {
+      this.premierFormGroup.get("codeBarre").setValue("");
+      this.support = undefined;
+      this.premierFormGroup.get("codeBarre").disable();
+      this.premierFormGroup.get("codeBarre").setValidators([]);
+      this.premierFormGroup.get("codeBarre").updateValueAndValidity();
+      this.premierFormGroup.get("type").enable();
+      this.premierFormGroup.get("type").setValidators([Validators.required]);
+      this.premierFormGroup.get("type").updateValueAndValidity();
+      this.premierFormGroup.get("nomEmballage").enable();
+      this.premierFormGroup.get("nomEmballage").setValidators([Validators.required]);
+      this.premierFormGroup.get("nomEmballage").updateValueAndValidity();
+    } else {
+      this.supportSelectionne = undefined;
+      this.premierFormGroup.get("codeBarre").enable();
+      this.premierFormGroup.get("codeBarre").setValidators([Validators.required]);
+      this.premierFormGroup.get("codeBarre").updateValueAndValidity();
+      this.premierFormGroup.get("type").updateValueAndValidity();
+      this.premierFormGroup.get("type").setValidators([]);
+      this.premierFormGroup.get("type").disable();
+      this.premierFormGroup.get("nomEmballage").disable();
+      this.premierFormGroup.get("nomEmballage").setValidators([]);
+      this.premierFormGroup.get("nomEmballage").updateValueAndValidity();
+    }
   }
 
   async valider() { //Bouton valider 
@@ -565,7 +688,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     formData.append("idProduit", id_Pack);
     formData.append("nomProduit", nom_Pack);
     formData.append("nomEmballage", this.premierFormGroup.get('nom').value);
-    formData.append("typeEmballage", this.premierFormGroup.get('type').value);
+    formData.append("typeEmballage", this.typeEmballage);
     formData.append("qte", this.qte);
     formData.append("unite", this.troisiemeFormGroup.get('pack').value[0].unite);
     formData.append("categorie", this.packSelectionne[0].categorie);
@@ -574,15 +697,16 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     } else {
       formData.append("fragile", "Non");
     }
-    formData.append("hauteur", Number(this.premierFormGroup.get('hauteur').value));
-    formData.append("longueur", Number(this.premierFormGroup.get('longueur').value));
-    formData.append("largeur", Number(this.premierFormGroup.get('largeur').value));
-    formData.append("volume", Number(this.premierFormGroup.get('volume').value));
+    formData.append("hauteur", Number(this.hauteur));
+    formData.append("longueur", Number(this.longueur));
+    formData.append("largeur", Number(this.largeur));
+    formData.append("volume", Number(this.volume));
     formData.append("poids_unitaire", this.poidsToltalNet);
     formData.append("poids_total_net", this.poidsToltalNet);
     formData.append("poids_emballage_total", this.poidsToltalBrut);
-    this.service.creerProduitEmballe(formData);
-    await this._router.navigate(['/Menu/Colisage/Liste_Colisage'])
+    formData.append("code_barre", this.premierFormGroup.get("codeBarrePack").value);
+    await this.service.creerProduitEmballe(formData).toPromise();
+    await this._router.navigate(['/Menu/Menu_Colisage/Packaging/Liste_Pack'])
     Swal.fire({
       icon: 'success',
       title: 'Produit bien ajouté',

@@ -48,7 +48,10 @@ import {MatStepperModule} from '@angular/material/stepper';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatListModule} from '@angular/material/list';
-import { SupportsComponent, ListerSupportsComponent, AjouterSupportComponent } from './colisage/supports/supports.component';
+import { SupportsComponent } from './colisage/supports/supports.component';
+import { AjouterSupportComponent } from './colisage/supports/ajouter-support/ajouter-support.component'
+import { ListerSupportsComponent } from './colisage/supports/lister-supports/lister-supports.component';
+import { ModifierSupportComponent } from './colisage/supports/modifier-support/modifier-support.component'
 
 registerLocaleData(localeFr, 'fr');
 
@@ -90,7 +93,7 @@ registerLocaleData(localeFr, 'fr');
     SupportsComponent,
     ListerColisageComponent,
     ListerSupportsComponent, 
-    AjouterSupportComponent
+    AjouterSupportComponent, ModifierSupportComponent
    
   ],
   imports: [

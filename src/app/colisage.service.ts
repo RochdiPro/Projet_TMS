@@ -140,6 +140,20 @@ export class ColisageService {
     return this.httpClient.post(erp + 'Creer_Support', formData).pipe(catchError(this.handleError));
   }
 
+  //modifier support
+  public modifierSupport(formData: any){
+    return this.httpClient.put(erp + 'modifierSupport', formData).pipe(catchError(this.handleError));
+  }
+
+  //supprimer support
+  public supprimerSupport(id: any){
+    return this.httpClient.delete(erp + "supprimerSupport" , {
+      params:{
+        id: id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   //filtrer par champ
   public filtrerSupports(champ: any, valeur: any){
     return this.httpClient.get(erp + 'filtreSupport', {
