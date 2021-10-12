@@ -10,6 +10,7 @@
     border-radius: 0.3rem;
     height: 160px;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 .cadre2 {
     margin-right: 0;
@@ -20,12 +21,9 @@
     border-radius: 0.3rem;
     height: 200px;
     overflow-y: auto;
+    overflow-x: hidden;
 }
-.col-sm-4,
-.col-sm-8,
-.col-sm {
-    padding: 0 5px;
-}
+
 h3 {
     position: absolute;
     top: -11px;
@@ -41,7 +39,7 @@ h3 {
     flex-direction: row !important;
     font-size: 75% !important;
 }
-::ng-deep .mat-list-base{
+::ng-deep .mat-list-base {
     padding: 0 !important;
 }
 .entete {
@@ -58,6 +56,39 @@ h3 {
     position: relative;
     z-index: 1;
 }
-span{
-    margin: 0 15px;
+span {
+    margin: 0 10px;
+}
+#nb-voyages {
+    height: 20px;
+    width: 40px;
+    caret-color: transparent;
+    border: 1px solid grey;
+}
+label {
+    margin: 0;
+    margin-right: 1%;
+}
+::ng-deep .mat-checkbox-layout {
+    margin-bottom: 2.5px !important;
+}
+
+#separation {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid #C5C5C5;
+    line-height: 0.1em;
+    margin: 10px 0 20px;
+}
+
+#separation span {
+    background:#fff; 
+    padding:0 10px; 
+}
+
+//pour l'affichage mobile
+@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+    .entete {
+        font-size: 11px;
+    }
 }

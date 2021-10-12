@@ -1,8 +1,25 @@
-@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+.mat-badge-content { //badge de notification
+    width: 12px;
+    height: 12px;
+    text-align: center;
+    align-items: center;
+    padding: 0px;
+    margin: 0px;
+    margin-top: 5px;
+  }
+  .custom-width { //largeur des inputs de modification de carburants
+    width: 30%;
+  }
+  .disponible { //si le vehicule est dispo on colore le text vert
+    color: #4bb543;
+  }
+  .enMission { //si le vehicule est en mission on colore le text jaune
+    color: #f7b924;
+  }
+  
+  //pour mobile
+  @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
     //forcer le tableau pour ne pas s'afficher comme tableau
-    table {
-      margin-top: 60px;
-    }
     table,
     thead,
     tbody,
@@ -40,7 +57,6 @@
       padding-left: 0;
       padding-top: 0;
       padding-bottom: 0;
-      width: 100% !important;
     }
   
     th {
@@ -51,11 +67,9 @@
       font-weight: normal;
       color: white;
       background-color: #3f51b5;
-      position: relative;
-      padding-left: 50%;
     }
   
-    td:before, th:before {
+    td:before {
       //se comporter comme un table header
       position: absolute;
       //valeur du Top/left imittent le padding
@@ -66,42 +80,31 @@
       white-space: nowrap;
     }
   
-    // donner un label pour les données
-    th:before {
-      content: "Support";
-      font-weight: normal;
-      text-align: left;
-      margin-left: 10px;
-    }
-
-    // donner un label pour les données
+    
+      // donner un label pour les données
     td:nth-of-type(1):before {
-      content: "Nom";
+      content: "Type Carosserie";
       font-weight: bold;
       text-align: left;
       margin-left: 10px;
+  
     }
     td:nth-of-type(2):before {
-      content: "Type";
+      content: "Km Actuel";
       font-weight: bold;
       text-align: left;
       margin-left: 10px;
+  
     }
     td:nth-of-type(3):before {
-      content: "Poids";
+      content: "Prochain Entretien Dans";
       font-weight: bold;
       text-align: left;
       margin-left: 10px;
+  
     }
     td:nth-of-type(4):before {
-      content: "Dimensions";
-      font-weight: bold;
-      color: #52595d;
-      text-align: left;
-      margin-left: 10px;
-    }
-    td:nth-of-type(5):before {
-      content: "Volume";
+      content: "Disponibilité";
       font-weight: bold;
       color: #52595d;
       text-align: left;

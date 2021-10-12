@@ -36,6 +36,16 @@ export class ParcTransportService {
     );
   }
 
+  //filtrer vehicule
+  public filtrerVehicule(champ: any, valeur: any){
+    return this.http.get(erp + 'filtre-vehicule', {
+      params:{
+        champ: champ,
+        valeur: valeur
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   //ajouter une reclamation pour un vehicule
   public reclamationvehicule(id: any, formData: any) {
     return this.http.put(erp + 'reclamationvehicule/' + id, formData).pipe(
@@ -127,6 +137,16 @@ export class ParcTransportService {
     return this.http.put(erp + 'Maj_Date_Location', formData).pipe(
       catchError(this.handleError)
     );
+  }
+
+  //filtrer vehicule
+  public filtrerVehiculeLoues(champ: any, valeur: any){
+    return this.http.get(erp + 'filtre-vehicule-loue', {
+      params:{
+        champ: champ,
+        valeur: valeur
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
   }
 
   //lister les employes

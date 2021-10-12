@@ -1,0 +1,248 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md">
+            <h3>Mission</h3>
+            <div class="cadre">
+                <div class="entete">
+                    <span><b>Durée: </b>480min</span>
+                    <span><b>Volume: </b>123</span>
+                    <span><b>Poids: </b>123</span>
+                </div>
+                <div class="contenu-list">
+                    <mat-selection-list #commandesNonAffecte color="primary"
+                        [(ngModel)]="commandesNonAffecteSelectionne">
+                        <mat-list-option value="C1">
+                            C1
+                        </mat-list-option>
+                        <mat-list-option value="C2">
+                            C2
+                        </mat-list-option>
+                        <mat-list-option value="C3">
+                            C3
+                        </mat-list-option>
+                        <mat-list-option value="C4">
+                            C4
+                        </mat-list-option>
+                        <mat-list-option value="C5">
+                            C5
+                        </mat-list-option>
+                        <mat-list-option value="C6">
+                            C6
+                        </mat-list-option>
+                        <mat-list-option value="C7">
+                            C7
+                        </mat-list-option>
+                        <mat-list-option value="C8">
+                            C8
+                        </mat-list-option>
+                        <mat-list-option value="C9">
+                            C9
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+        </div>
+        <div class="col-md">
+            <h3>Vehicules</h3>
+            <div class="cadre">
+                <div class="entete" [formGroup]="form">
+                    <span>
+                        <label for="nb-voyages">Nb voyages</label>
+                        <input type="number" autocomplete="off" min="1" id="nb-voyages" formControlName="nombreVoyages">
+                    </span>
+                    <span>
+                        <label for="multiple-vehicules">Multi véhicules</label>
+                        <mat-checkbox class="example-margin" id="multiple-vehicules" color="primary"
+                            formControlName="multiVehicule"></mat-checkbox>
+                    </span>
+                    <span><b>Poids:</b>123</span>
+                    <span><b>Volume:</b>123</span>
+                </div>
+                <div class="contenu-list">
+                    <mat-selection-list #Vehicules>
+                        <div id="separation" *ngIf="listeVehicules"><span>véhicules possédées</span></div>
+                        <mat-list-option *ngFor="let vehicule of listeVehicules">
+                            {{vehicule.matricule}}
+                        </mat-list-option>
+                        <div id="separation" *ngIf="listeVehiculesLoues"><span>véhicules loués</span></div>
+                        <mat-list-option *ngFor="let vehiculeLoue of listeVehiculesLoues">
+                            {{vehiculeLoue.matricule}}
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md ">
+            <h3>Nord-Est</h3>
+            <div class="cadre2">
+                <div class="entete">
+                    <span><b>P.Total:</b>123</span>
+                    <span><b>V.Total:</b>123</span>
+                    <span><b>score:</b>123</span>
+                    <span>
+                        <button mat-mini-fab color="primary">
+                            <mat-icon>playlist_add</mat-icon>
+                        </button>
+                    </span>
+                </div>
+                <div class="contenu-list">
+                    <mat-selection-list #commandes color="primary">
+                        <mat-list-option *ngFor="let commande of commandesNordEst" [value]="commande">
+                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
+                            &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+        </div>
+        <div class="col-md">
+            <h3>Nord-Ouest</h3>
+            <div class="cadre2">
+                <div class="entete">
+                    <span><b>P.Total:</b>123</span>
+                    <span><b>V.Total:</b>123</span>
+                    <span><b>score:</b>123</span>
+                    <span>
+                        <button mat-mini-fab color="primary">
+                            <mat-icon>playlist_add</mat-icon>
+                        </button>
+                    </span>
+                </div>
+                <div class="contenu-list">
+                    <mat-selection-list #commandes color="primary">
+                        <mat-list-option *ngFor="let commande of commandesNordOuest" [value]="commande">
+                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
+                            &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md" id="col-md">
+            <h3>Centre-Est</h3>
+            <div class="cadre2">
+                <div class="entete">
+                    <span><b>P.Total:</b>123</span>
+                    <span><b>V.Total:</b>123</span>
+                    <span><b>score:</b>123</span>
+                    <span>
+                        <button mat-mini-fab color="primary">
+                            <mat-icon>playlist_add</mat-icon>
+                        </button>
+                    </span>
+                </div>
+                <div class="contenu-list">
+                    <mat-selection-list #commandes color="primary">
+                        <mat-list-option *ngFor="let commande of commandesCentreEst" [value]="commande">
+                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
+                            &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+        </div>
+        <div class="col-md">
+            <h3>Centre-Ouest</h3>
+            <div class="cadre2">
+                <div class="entete">
+                    <span><b>P.Total:</b>123</span>
+                    <span><b>V.Total:</b>123</span>
+                    <span><b>score:</b>123</span>
+                    <span>
+                        <button mat-mini-fab color="primary">
+                            <mat-icon>playlist_add</mat-icon>
+                        </button>
+                    </span>
+                </div>
+                <div class="contenu-list">
+                    <mat-selection-list #commandes color="primary">
+                        <mat-list-option *ngFor="let commande of commandesCentreOuest" [value]="commande">
+                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
+                            &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+            <h3>Sud-Est</h3>
+            <div class="cadre2">
+                <div class="entete">
+                    <span><b>P.Total:</b>123</span>
+                    <span><b>V.Total:</b>123</span>
+                    <span><b>score:</b>123</span>
+                    <span>
+                        <button mat-mini-fab color="primary">
+                            <mat-icon>playlist_add</mat-icon>
+                        </button>
+                    </span>
+                </div>
+                <div class="contenu-list">
+                    <mat-selection-list #commandes color="primary">
+                        <mat-list-option *ngFor="let commande of commandesSudEst" [value]="commande">
+                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
+                            &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+        </div>
+        <div class="col-md" id="col-md">
+            <h3>Sud-Ouest</h3>
+            <div class="cadre2">
+                <div class="entete">
+                    <span><b>P.Total:</b>123</span>
+                    <span><b>V.Total:</b>123</span>
+                    <span><b>score:</b>123</span>
+                    <span>
+                        <button mat-mini-fab color="primary">
+                            <mat-icon>playlist_add</mat-icon>
+                        </button>
+                    </span>
+                </div>
+                <div class="contenu-list">
+                    <mat-selection-list #commandes color="primary">
+                        <mat-list-option *ngFor="let commande of commandesSudOuest" [value]="commande">
+                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
+                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
+                            &nbsp;
+                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                        </mat-list-option>
+                    </mat-selection-list>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md">
+            <h3>File d'attente</h3>
+            <div class="cadre2">
+                <div class="contenu-list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

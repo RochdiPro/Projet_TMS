@@ -8,7 +8,7 @@ import { SubChildComponent } from './sub-child/sub-child.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MenuTMSComponent } from './TMS/menu-tms/menu-tms.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { VehiculeComponent, MesVehiculesComponent, AjouterCarburantComponent, DetailVehiculeComponent, MiseAJourComponent, ReclamationComponent, AjoutComponent, NotificationComponent, MiseAJourConsommationComponent, VehiculesLoueComponent, AjouterVehiculeLoueComponent, DetailVehiculeLoueComponent } from './TMS/parc/vehicule/vehicule.component';
+import { VehiculeComponent } from './TMS/parc/vehicule/vehicule.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { registerLocaleData } from '@angular/common';
@@ -34,7 +34,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { MenuParcComponent } from './TMS/parc/menu-parc/menu-parc.component';
 import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
-import { MissionsComponent, ListerMissionsComponent, DetailComponent,MapsComponent, AjouterMissionComponent, AffecterCommande, QrCodeComponent } from './TMS/parc/missions/missions.component';
+import { MissionsComponent, ListerMissionsComponent, DetailComponent,MapsComponent, AffecterCommande, QrCodeComponent } from './TMS/parc/missions/missions.component';
 import { AgmCoreModule } from '@agm/core';
 import { DirectionsMapDirective } from './directions-map.directive';
 import { SafePipeModule } from 'safe-pipe';
@@ -52,7 +52,9 @@ import { SupportsComponent } from './colisage/supports/supports.component';
 import { AjouterSupportComponent } from './colisage/supports/ajouter-support/ajouter-support.component'
 import { ListerSupportsComponent } from './colisage/supports/lister-supports/lister-supports.component';
 import { ModifierSupportComponent } from './colisage/supports/modifier-support/modifier-support.component'
-
+import { AjoutComponent, AjouterCarburantComponent, DetailVehiculeComponent, MesVehiculesComponent, MiseAJourComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent } from './TMS/parc/vehicule/mes-vehicules/mes-vehicules.component';
+import { AjouterVehiculeLoueComponent, DetailVehiculeLoueComponent, VehiculeLoueComponent } from './TMS/parc/vehicule/vehicule-loue/vehicule-loue.component';
+import { AjoutMissionComponent} from './TMS/parc/missions/ajout-mission/ajout-mission.component'
 registerLocaleData(localeFr, 'fr');
 
 
@@ -69,7 +71,7 @@ registerLocaleData(localeFr, 'fr');
     DetailVehiculeComponent,
     MiseAJourComponent,
     ReclamationComponent,
-    VehiculesLoueComponent,
+    VehiculeLoueComponent,
     AjoutComponent,
     NotificationComponent,
     MiseAJourConsommationComponent,
@@ -78,7 +80,6 @@ registerLocaleData(localeFr, 'fr');
     MissionsComponent,
     ListerMissionsComponent,
     DetailComponent,
-    AjouterMissionComponent,
     DirectionsMapDirective,
     MapsComponent,
     AffecterCommande,
@@ -93,7 +94,8 @@ registerLocaleData(localeFr, 'fr');
     SupportsComponent,
     ListerColisageComponent,
     ListerSupportsComponent, 
-    AjouterSupportComponent, ModifierSupportComponent
+    AjouterSupportComponent, ModifierSupportComponent, VehiculeLoueComponent,
+    AjoutMissionComponent
    
   ],
   imports: [

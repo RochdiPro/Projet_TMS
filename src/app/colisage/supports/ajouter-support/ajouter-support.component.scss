@@ -13,3 +13,17 @@ h1{
     text-align: center;
     margin-bottom: 5%;
 }
+
+@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+    .premier-input {
+        width: 100%;
+        margin-right: 0%;
+    }
+    .deuxieme-input {
+        width: 100%;
+        margin-right: 0%;
+    }
+    .troisieme-input {
+        width: 100%;
+    }
+}

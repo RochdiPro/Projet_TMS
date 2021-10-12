@@ -13,7 +13,7 @@ input::-webkit-inner-spin-button { //pour enlever les deux bouton qui augmente e
 }
 
 .matriculetun { //pour le background du matricule type tun
-  background-image: url(../../../../assets/images/matricule.png);
+  background-image: url(../../../../../assets/images/matricule.png);
   height: 57px;
   width: 272px;
   position: relative;
@@ -22,7 +22,7 @@ input::-webkit-inner-spin-button { //pour enlever les deux bouton qui augmente e
 .matriculers { //pour le background du matricule type rs
   height: 57px;
   width: 272px;
-  background-image: url(../../../../assets/images/rs-mat.png);
+  background-image: url(../../../../../assets/images/rs-mat.png);
   position: relative;
   background-repeat: no-repeat;
 }
@@ -77,7 +77,7 @@ input::-webkit-inner-spin-button { //pour enlever les deux bouton qui augmente e
 //pour l'affichage mobile
 @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
   .matriculetun {
-    background-image: url(../../../../assets/images/matricule.png);
+    background-image: url(../../../../../assets/images/matricule.png);
     height: 57px;
     width: 272px;
     position: relative;
@@ -87,7 +87,7 @@ input::-webkit-inner-spin-button { //pour enlever les deux bouton qui augmente e
   .matriculers {
     height: 57px;
     width: 272px;
-    background-image: url(../../../../assets/images/rs-mat.png);
+    background-image: url(../../../../../assets/images/rs-mat.png);
     position: relative;
     background-repeat: no-repeat;
     background-size: 100% auto;
