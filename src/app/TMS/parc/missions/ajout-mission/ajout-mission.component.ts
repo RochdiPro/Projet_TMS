@@ -35,11 +35,12 @@ export class AjoutMissionComponent implements OnInit {
   BL: any;
   xmldata: any;
   new_obj: any;
-  facture_articles: any = [];
+  articles: any = [];
   BL_articles: any = [];
-  form = new FormGroup({nombreVoyages: new FormControl(1), multiVehicule: new FormControl(false)});
+  form = new FormGroup({ nombreVoyages: new FormControl(1), multiVehicule: new FormControl(false) });
   listeVehicules: any;
   listeVehiculesLoues: any;
+  listeColisage: any;
 
   constructor(public fb: FormBuilder, public serviceColisage: ColisageService, public serviceTransport: ParcTransportService, public datepipe: DatePipe) { }
 
@@ -55,6 +56,7 @@ export class AjoutMissionComponent implements OnInit {
     this.getCommandesSudOuest();
     this.getVehiculeDisponibles();
     this.getVehiculeLoueDisponibles();
+    this.getListeColisage();
   }
 
   async getListeFactures() {
@@ -74,62 +76,76 @@ export class AjoutMissionComponent implements OnInit {
       this.client = await this.serviceColisage.client(this.listeBLs[j].id_Clt).toPromise();
       this.listeClients.push(this.client);
     }
+    console.log("done");
   }
 
-  async getVehiculeDisponibles(){
-    this.listeVehicules = await this.serviceTransport.filtrerVehicule("etat_vehicule","Disponible").toPromise();
+  async getVehiculeDisponibles() {
+    this.listeVehicules = await this.serviceTransport.filtrerVehicule("etat_vehicule", "Disponible").toPromise();
   }
 
-  async getVehiculeLoueDisponibles(){
-    this.listeVehiculesLoues = await this.serviceTransport.filtrerVehiculeLoues("etat_vehicule","Disponible").toPromise();
+  async getVehiculeLoueDisponibles() {
+    this.listeVehiculesLoues = await this.serviceTransport.filtrerVehiculeLoues("etat_vehicule", "Disponible").toPromise();
   }
 
   async preparerListeCommande() {
     await this.getClient();
     let i = 0;
     var region: String;
+    var poidsCommande = 0;
     for (let j = 0; j < this.listeFactures.length; j++) {
-      await this.getDetailFacture(this.listeFactures[j].id_Facture)
-      console.log(this.listeFactures[j].id_Facture)
-    }
-    this.listeFactures.forEach((facture: any) => {
+      await this.getDetailFacture(this.listeFactures[j].id_Facture);
+      console.log(this.articles);
       for (const reg of this.regions) {
         if (reg.ville.includes(this.listeClients[i].ville)) {
           region = reg.nom;
         }
       }
+      //stopped here ---------------------------------------
+      for (let k = 0; k < this.articles.length; k++) {
+        var qteArticleRestante = this.articles[k].qte;
+        var differenceQte = 0;
+        var listePacks = this.listeColisage.filter((pack: any) => pack.idProduit === this.articles[k].id);
+        listePacks = listePacks.filter((pack:any) => pack.qte < this.articles[k].qte);
+        for (const pack of listePacks) {
+          differenceQte = qteArticleRestante - pack.qte;
+        }
+
+      }
       var commande = {
         id: i,
-        id_Facture: facture.id_Facture,
+        id_Facture: this.listeFactures[j].id_Facture,
         id_Clt: this.listeClients[i].id_Clt,
         nom_Clt: this.listeClients[i].nom_Client,
         region: region,
         ville: this.listeClients[i].ville,
-        date_Creation: facture.date_Creation,
+        date_Creation: this.listeFactures[j].date_Creation,
         type: "Facture"
       };
       this.listeCommandes.push(commande);
       i++;
-    });
-    this.listeBLs.forEach((BL: any) => {
+    }
+    for (let j = 0; j < this.listeBLs.length; j++) {
+      await this.getDetailBL(this.listeBLs[j].id_Bl)
+      console.log(this.BL_articles);
       for (const reg of this.regions) {
         if (reg.ville.includes(this.listeClients[i].ville)) {
           region = reg.nom;
         }
       }
-      var commande = {
+      var commandebl = {
         id: i,
-        id_BL: BL.id_Bl,
+        id_BL: this.listeBLs[j].id_Bl,
         id_Clt: this.listeClients[i].id_Clt,
         nom_Clt: this.listeClients[i].nom_Client,
         region: region,
         ville: this.listeClients[i].ville,
-        date_Creation: BL.date_Creation,
+        date_Creation: this.listeBLs[j].date_Creation,
         type: "BL"
       };
-      this.listeCommandes.push(commande);
+      this.listeCommandes.push(commandebl);
       i++;
-    });
+
+    }
   }
 
   getCommandesNordEst() {
@@ -150,100 +166,118 @@ export class AjoutMissionComponent implements OnInit {
   getCommandesSudOuest() {
     this.commandesSudOuest = this.listeCommandes.filter((commande: any) => commande.region === "Sud-Ouest");
   }
+  async getListeColisage(){
+    this.listeColisage = await this.serviceColisage.listeColisage().toPromise();
+  }
   async getDetailFacture(id: any) { //pour avoir les ids et les qtes des produits dans une facture
     var detail = await this.serviceColisage.Detail_Facture(id).toPromise();
-
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      this.facture_articles = [];
-      this.facture = reader.result;
-      var parseString = require('xml2js').parseString;
-      let data1;
-      parseString(atob(this.facture.substr(28)), function (err: any, result: any) {
-        data1 = result.Facture;
-
-      })
-      this.xmldata = data1
-      if (this.xmldata.Produits[0].Produits_Simples[0].Produit) {
-        for (let i = 0; i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
-
-          this.new_obj = {}
-          this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-          this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
-
-          this.facture_articles.push(this.new_obj)
-        }
-      }
-      if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
-        for (let i = 0; i < this.xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
-
-          this.new_obj = {}
-          this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-          this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
-
-          this.facture_articles.push(this.new_obj)
-        }
-      }
-      if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
-        for (let i = 0; i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
-
-          this.new_obj = {}
-          this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-          this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
-
-          this.facture_articles.push(this.new_obj)
-        }
-      }
-    };
-    reader.readAsDataURL(detail);
-  }
-  async getDetailBL(id: any) {  //pour avoir les ids et les qtes des produits dans un bon livraison
-    this.serviceColisage.Detail_BL(id).subscribe((detail: any) => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
-      reader.onloadend = () => {
-        this.BL = reader.result;
-        var parseString = require('xml2js').parseString;
-        let data1;
-        parseString(atob(this.BL.substr(28)), function (err: any, result: any) {
-          data1 = result.Bon_Livraison;
+      reader.onloadend = async () => {
+        try {
 
-        })
-        this.xmldata = data1
-        if (this.xmldata.Produits[0].Produits_Simples[0].Produit) {
-          for (let i = 0; i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
+          this.articles = [];
+          this.facture = reader.result;
+          var parseString = require('xml2js').parseString;
+          let data1;
+          parseString(atob(this.facture.substr(28)), function (err: any, result: any) {
+            data1 = result.Facture;
 
-            this.new_obj = {}
-            this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-            this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
+          })
+          this.xmldata = data1
+          if (this.xmldata.Produits[0].Produits_Simples[0].Produit) {
+            for (let i = 0; i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
 
-            this.BL_articles.push(this.new_obj)
+              this.new_obj = {}
+              this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
+              this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
+
+              this.articles.push(this.new_obj)
+            }
           }
-        }
-        if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
-          for (let i = 0; i < this.xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
+          if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
+            for (let i = 0; i < this.xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
 
-            this.new_obj = {}
-            this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-            this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
+              this.new_obj = {}
+              this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
+              this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
 
-            this.BL_articles.push(this.new_obj)
+              this.articles.push(this.new_obj)
+            }
           }
-        }
-        if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
-          for (let i = 0; i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
+          if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
+            for (let i = 0; i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
 
-            this.new_obj = {}
-            this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-            this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
+              this.new_obj = {}
+              this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
+              this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
 
-            this.BL_articles.push(this.new_obj)
+              this.articles.push(this.new_obj)
+            }
           }
+          resolve(this.articles)
+        } catch (err) {
+          reject(err);
         }
-      }
+      };
       reader.readAsDataURL(detail);
     });
+  }
+  async getDetailBL(id: any) {  //pour avoir les ids et les qtes des produits dans un bon livraison
+    var detail = await this.serviceColisage.Detail_BL(id).toPromise();
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+
+      reader.onloadend = async () => {
+        try {
+          this.BL_articles = [];
+          this.BL = reader.result;
+          var parseString = require('xml2js').parseString;
+          let data1;
+          parseString(atob(this.BL.substr(28)), function (err: any, result: any) {
+            data1 = result.Bon_Livraison;
+
+          })
+          this.xmldata = data1
+          if (this.xmldata.Produits[0].Produits_Simples[0].Produit) {
+            for (let i = 0; i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
+
+              this.new_obj = {}
+              this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
+              this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
+
+              this.BL_articles.push(this.new_obj)
+            }
+          }
+          if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
+            for (let i = 0; i < this.xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
+
+              this.new_obj = {}
+              this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
+              this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
+
+              this.BL_articles.push(this.new_obj)
+            }
+          }
+          if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
+            for (let i = 0; i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
+
+              this.new_obj = {}
+              this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
+              this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
+
+              this.BL_articles.push(this.new_obj)
+            }
+          }
+          resolve(this.BL_articles)
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.readAsDataURL(detail);
+    }
+    )
   }
 
 

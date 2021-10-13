@@ -46,7 +46,7 @@ export class ColisageService {
     return this.httpClient.get(infonet + 'Fiche_Produits');
   }
 
-  //lister les produits dans la fiche produits
+  //get produit by id
   public produit(id :any) {
     return this.httpClient.get(infonet + 'Fiche_Produit' , {
       params: {

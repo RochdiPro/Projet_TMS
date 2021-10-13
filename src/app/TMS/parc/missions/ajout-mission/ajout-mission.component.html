@@ -1,13 +1,33 @@
 <div class="container">
     <div class="row">
-        <div class="col-md">
+        <div class="col-perso">
             <h3>Mission</h3>
             <div class="cadre">
                 <div class="entete">
                     <span><b>Durée: </b>480min</span>
                     <span><b>Volume: </b>123</span>
                     <span><b>Poids: </b>123</span>
+                    <div class="header">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="padding: 0;">
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
+                                </div>
+                            </div>
+                            <div style="width: 60px;">
+                                <button mat-mini-fab color="primary">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="contenu-list">
                     <mat-selection-list #commandesNonAffecte color="primary"
                         [(ngModel)]="commandesNonAffecteSelectionne">
@@ -42,7 +62,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md">
+        <div class="col-perso">
             <h3>Vehicules</h3>
             <div class="cadre">
                 <div class="entete" [formGroup]="form">
@@ -57,6 +77,24 @@
                     </span>
                     <span><b>Poids:</b>123</span>
                     <span><b>Volume:</b>123</span>
+                    <div class="header">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="padding: 0;">
+                                    <div class="col-4"><span style="font-weight: bold; margin: 0;">Vehicule</span></div>
+                                    <div class="col-4"><span style="font-weight: bold; margin: 0;">Temps dispo</span>
+                                    </div>
+                                    <div class="col-4"><span style="font-weight: bold; margin: 0;">Nv temps dispo</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width: 60px;">
+                                <button mat-mini-fab color="primary">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="contenu-list">
                     <mat-selection-list #Vehicules>
@@ -74,53 +112,98 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md ">
+        <div class="col-perso ">
             <h3>Nord-Est</h3>
             <div class="cadre2">
                 <div class="entete">
                     <span><b>P.Total:</b>123</span>
                     <span><b>V.Total:</b>123</span>
                     <span><b>score:</b>123</span>
-                    <span>
-                        <button mat-mini-fab color="primary">
-                            <mat-icon>playlist_add</mat-icon>
-                        </button>
-                    </span>
+                    <div class="header">
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="padding: 0;">
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
+                                </div>
+                            </div>
+                            <div style="width: 60px;">
+                                <button mat-mini-fab color="primary">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+
+
+                    </div>
                 </div>
                 <div class="contenu-list">
                     <mat-selection-list #commandes color="primary">
                         <mat-list-option *ngFor="let commande of commandesNordEst" [value]="commande">
-                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
-                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
-                            &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                            <div class="row" style="width: 100%;">
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                            </div>
                         </mat-list-option>
                     </mat-selection-list>
                 </div>
             </div>
         </div>
-        <div class="col-md">
+        <div class="col-perso">
             <h3>Nord-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
                     <span><b>P.Total:</b>123</span>
                     <span><b>V.Total:</b>123</span>
                     <span><b>score:</b>123</span>
-                    <span>
-                        <button mat-mini-fab color="primary">
-                            <mat-icon>playlist_add</mat-icon>
-                        </button>
-                    </span>
+                    <div class="header">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="padding: 0;">
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
+                                </div>
+                            </div>
+                            <div style="width: 60px;">
+                                <button mat-mini-fab color="primary">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="contenu-list">
                     <mat-selection-list #commandes color="primary">
                         <mat-list-option *ngFor="let commande of commandesNordOuest" [value]="commande">
-                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
-                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
-                            &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                            <div class="row" style="width: 100%;">
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                            </div>
                         </mat-list-option>
                     </mat-selection-list>
                 </div>
@@ -128,53 +211,95 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md" id="col-md">
+        <div class="col-perso" id="col-perso">
             <h3>Centre-Est</h3>
             <div class="cadre2">
                 <div class="entete">
                     <span><b>P.Total:</b>123</span>
                     <span><b>V.Total:</b>123</span>
                     <span><b>score:</b>123</span>
-                    <span>
-                        <button mat-mini-fab color="primary">
-                            <mat-icon>playlist_add</mat-icon>
-                        </button>
-                    </span>
+                    <div class="header">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="padding: 0;">
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
+                                </div>
+                            </div>
+                            <div style="width: 60px;">
+                                <button mat-mini-fab color="primary">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="contenu-list">
                     <mat-selection-list #commandes color="primary">
                         <mat-list-option *ngFor="let commande of commandesCentreEst" [value]="commande">
-                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
-                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
-                            &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                            <div class="row" style="width: 100%;">
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                            </div>
                         </mat-list-option>
                     </mat-selection-list>
                 </div>
             </div>
         </div>
-        <div class="col-md">
+        <div class="col-perso">
             <h3>Centre-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
                     <span><b>P.Total:</b>123</span>
                     <span><b>V.Total:</b>123</span>
                     <span><b>score:</b>123</span>
-                    <span>
-                        <button mat-mini-fab color="primary">
-                            <mat-icon>playlist_add</mat-icon>
-                        </button>
-                    </span>
+                    <div class="header">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="padding: 0;">
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
+                                </div>
+                            </div>
+                            <div style="width: 60px;">
+                                <button mat-mini-fab color="primary">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="contenu-list">
                     <mat-selection-list #commandes color="primary">
                         <mat-list-option *ngFor="let commande of commandesCentreOuest" [value]="commande">
-                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
-                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
-                            &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                            <div class="row" style="width: 100%;">
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                            </div>
                         </mat-list-option>
                     </mat-selection-list>
                 </div>
@@ -182,65 +307,118 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md">
+        <div class="col-perso">
             <h3>Sud-Est</h3>
             <div class="cadre2">
                 <div class="entete">
                     <span><b>P.Total:</b>123</span>
                     <span><b>V.Total:</b>123</span>
                     <span><b>score:</b>123</span>
-                    <span>
-                        <button mat-mini-fab color="primary">
-                            <mat-icon>playlist_add</mat-icon>
-                        </button>
-                    </span>
+                    <div class="header">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="padding: 0;">
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
+                                </div>
+                            </div>
+                            <div style="width: 60px;">
+                                <button mat-mini-fab color="primary">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="contenu-list">
                     <mat-selection-list #commandes color="primary">
                         <mat-list-option *ngFor="let commande of commandesSudEst" [value]="commande">
-                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
-                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
-                            &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                            <div class="row" style="width: 100%;">
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                            </div>
                         </mat-list-option>
                     </mat-selection-list>
                 </div>
             </div>
         </div>
-        <div class="col-md" id="col-md">
+        <div class="col-perso" id="col-perso">
             <h3>Sud-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
                     <span><b>P.Total:</b>123</span>
                     <span><b>V.Total:</b>123</span>
                     <span><b>score:</b>123</span>
-                    <span>
-                        <button mat-mini-fab color="primary">
-                            <mat-icon>playlist_add</mat-icon>
-                        </button>
-                    </span>
+                    <div class="header">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row" style="padding: 0;">
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
+                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
+                                </div>
+                            </div>
+                            <div style="width: 60px;">
+                                <button mat-mini-fab color="primary">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="contenu-list">
                     <mat-selection-list #commandes color="primary">
                         <mat-list-option *ngFor="let commande of commandesSudOuest" [value]="commande">
-                            <span style="font-weight: bold; margin-right: 3px;">Réf:</span>
-                            {{commande.type === "Facture" ? "F-" + commande.id_Facture : "BL-" + commande.id_BL}} &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Client:</span> {{commande.nom_Clt}}
-                            &nbsp;
-                            <span style="font-weight: bold; margin-right: 3px;">Ville:</span> {{commande.ville}}
+                            <div class="row" style="width: 100%;">
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
+                                    "BL-" +
+                                    commande.id_BL}}</div>
+                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
+                                <div class="col-2 contenu">{{commande.ville}}</div>
+                            </div>
                         </mat-list-option>
                     </mat-selection-list>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md">
+    <div class="row" id="file-attente">
+        <div class="col-perso">
             <h3>File d'attente</h3>
             <div class="cadre2">
+                <div class="entete-file-attente">
+                    <div class="row">
+                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Région</span></div>
+                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Vehicule</span></div>
+                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Sc/G</span></div>
+                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Volume V</span></div>
+                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Volume</span></div>
+                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Poids V</span></div>
+                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Poids</span></div>
+                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;"></span></div>
+                    </div>
+                </div>
                 <div class="contenu-list">
-
                 </div>
             </div>
         </div>

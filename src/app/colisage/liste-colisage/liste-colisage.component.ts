@@ -304,7 +304,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
 
   async valider() {  //bouton valider
     var formData: any = new FormData();
-    formData.append("idProduit", "FP-" + this.produitSelectionne[0].id_Produit);
+    formData.append("idProduit", this.produitSelectionne[0].id_Produit);
     formData.append("nomProduit", this.produitSelectionne[0].nom_Produit);
     formData.append("nomEmballage", this.premierFormGroup.get('nom').value);
     formData.append("typeEmballage", this.premierFormGroup.get("type").value);
@@ -676,16 +676,16 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
 
   async valider() { //Bouton valider 
-    let id_Pack = "LC-"
+    let idProduit = ""
     let nom_Pack = ""
     this.packSelectionne.forEach((element: any) => {
       nom_Pack += element.nomEmballage + "/"
-      id_Pack += element.id + "/"
+      idProduit += element.idProduit + "/"
     });
-    id_Pack = id_Pack.slice(0, -1);
+    idProduit = idProduit.slice(0, -1);
     nom_Pack = nom_Pack.slice(0, -1);
     var formData: any = new FormData();
-    formData.append("idProduit", id_Pack);
+    formData.append("idProduit", idProduit);
     formData.append("nomProduit", nom_Pack);
     formData.append("nomEmballage", this.premierFormGroup.get('nom').value);
     formData.append("typeEmballage", this.typeEmballage);
