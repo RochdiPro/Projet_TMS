@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ColisageService } from 'src/app/colisage.service';
@@ -36,7 +36,7 @@ export class AjoutMissionComponent implements OnInit {
   xmldata: any;
   new_obj: any;
   articles: any = [];
-  BL_articles: any = [];
+  articlesBl: any = [];
   form = new FormGroup({ nombreVoyages: new FormControl(1), multiVehicule: new FormControl(false) });
   listeVehicules: any;
   listeVehiculesLoues: any;
@@ -47,6 +47,7 @@ export class AjoutMissionComponent implements OnInit {
   async ngOnInit() {
     await this.getListeFactures();
     await this.getListeBLs();
+    await this.getListeColisage();
     await this.preparerListeCommande();
     this.getCommandesNordEst();
     this.getCommandesNordOuest();
@@ -56,7 +57,6 @@ export class AjoutMissionComponent implements OnInit {
     this.getCommandesSudOuest();
     this.getVehiculeDisponibles();
     this.getVehiculeLoueDisponibles();
-    this.getListeColisage();
   }
 
   async getListeFactures() {
@@ -76,7 +76,6 @@ export class AjoutMissionComponent implements OnInit {
       this.client = await this.serviceColisage.client(this.listeBLs[j].id_Clt).toPromise();
       this.listeClients.push(this.client);
     }
-    console.log("done");
   }
 
   async getVehiculeDisponibles() {
@@ -91,10 +90,10 @@ export class AjoutMissionComponent implements OnInit {
     await this.getClient();
     let i = 0;
     var region: String;
-    var poidsCommande = 0;
     for (let j = 0; j < this.listeFactures.length; j++) {
+      var packsArray = [];
+      var poidsCommande = 0;
       await this.getDetailFacture(this.listeFactures[j].id_Facture);
-      console.log(this.articles);
       for (const reg of this.regions) {
         if (reg.ville.includes(this.listeClients[i].ville)) {
           region = reg.nom;
@@ -102,14 +101,27 @@ export class AjoutMissionComponent implements OnInit {
       }
       //stopped here ---------------------------------------
       for (let k = 0; k < this.articles.length; k++) {
-        var qteArticleRestante = this.articles[k].qte;
+        var qteArticleRestante = this.articles[k].qte[0];
         var differenceQte = 0;
-        var listePacks = this.listeColisage.filter((pack: any) => pack.idProduit === this.articles[k].id);
-        listePacks = listePacks.filter((pack:any) => pack.qte < this.articles[k].qte);
-        for (const pack of listePacks) {
-          differenceQte = qteArticleRestante - pack.qte;
+        var packConvenable: any;
+        var listePacks = await this.listeColisage.filter((pack: any) => pack.idProduit === this.articles[k].id[0]);
+        if (listePacks.length > 0) {
+          differenceQte = qteArticleRestante - listePacks[0].qte;
+          do {
+            packConvenable = listePacks[0];
+            for (const pack of listePacks) {
+              if ((qteArticleRestante - pack.qte) < differenceQte) {
+                differenceQte = qteArticleRestante - pack.qte;
+                packConvenable = pack;
+              }
+            }
+            qteArticleRestante = qteArticleRestante - packConvenable.qte
+            packsArray.push(packConvenable);
+          } while (qteArticleRestante > 0);
+          for (let index = 0; index < packsArray.length; index++) {
+            poidsCommande += packsArray[index].poids_emballage_total;
+          }
         }
-
       }
       var commande = {
         id: i,
@@ -119,18 +131,52 @@ export class AjoutMissionComponent implements OnInit {
         region: region,
         ville: this.listeClients[i].ville,
         date_Creation: this.listeFactures[j].date_Creation,
-        type: "Facture"
+        type: "Facture",
+        poids: poidsCommande
       };
       this.listeCommandes.push(commande);
       i++;
     }
     for (let j = 0; j < this.listeBLs.length; j++) {
+      var packsArray = [];
+      var poidsCommande = 0;
       await this.getDetailBL(this.listeBLs[j].id_Bl)
-      console.log(this.BL_articles);
       for (const reg of this.regions) {
         if (reg.ville.includes(this.listeClients[i].ville)) {
           region = reg.nom;
         }
+      }
+      //stopped here ---------------------------------------
+      for (let k = 0; k < this.articlesBl.length; k++) {
+        var qteArticleRestante = this.articlesBl[k].qte[0];
+        var differenceQte = 0;
+        var packConvenable: any;
+        var listePacks = await this.listeColisage.filter((pack: any) => pack.idProduit === this.articlesBl[k].id[0]);
+        listePacks = await listePacks.filter((pack: any) => this.articlesBl[k].qte[0] >= Number(pack.qte));
+        console.log(listePacks)
+        if (listePacks.length > 0) {
+          differenceQte = qteArticleRestante - listePacks[0].qte;
+          do {
+            packConvenable = listePacks[0];
+            for (const pack of listePacks) {
+              if ((qteArticleRestante - pack.qte) < differenceQte) {
+                differenceQte = qteArticleRestante - pack.qte;
+                packConvenable = pack;
+              }
+            }
+
+            console.log(this.listeBLs[j].id_Bl)
+            console.log(qteArticleRestante)
+            console.log(packConvenable)
+            qteArticleRestante = qteArticleRestante - packConvenable.qte
+            packsArray.push(packConvenable);
+          } while (qteArticleRestante > 0);
+          for (let index = 0; index < packsArray.length; index++) {
+            poidsCommande += packsArray[index].poids_emballage_total;
+          }
+          poidsCommande = Number(poidsCommande.toFixed(3))
+        }
+
       }
       var commandebl = {
         id: i,
@@ -140,12 +186,14 @@ export class AjoutMissionComponent implements OnInit {
         region: region,
         ville: this.listeClients[i].ville,
         date_Creation: this.listeBLs[j].date_Creation,
-        type: "BL"
+        type: "BL",
+        poids: poidsCommande
       };
       this.listeCommandes.push(commandebl);
       i++;
 
     }
+    this.listeCommandes = this.listeCommandes.filter((commande: any) => commande.poids > 0)
   }
 
   getCommandesNordEst() {
@@ -166,7 +214,7 @@ export class AjoutMissionComponent implements OnInit {
   getCommandesSudOuest() {
     this.commandesSudOuest = this.listeCommandes.filter((commande: any) => commande.region === "Sud-Ouest");
   }
-  async getListeColisage(){
+  async getListeColisage() {
     this.listeColisage = await this.serviceColisage.listeColisage().toPromise();
   }
   async getDetailFacture(id: any) { //pour avoir les ids et les qtes des produits dans une facture
@@ -231,7 +279,7 @@ export class AjoutMissionComponent implements OnInit {
 
       reader.onloadend = async () => {
         try {
-          this.BL_articles = [];
+          this.articlesBl = [];
           this.BL = reader.result;
           var parseString = require('xml2js').parseString;
           let data1;
@@ -247,7 +295,7 @@ export class AjoutMissionComponent implements OnInit {
               this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
               this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
 
-              this.BL_articles.push(this.new_obj)
+              this.articlesBl.push(this.new_obj)
             }
           }
           if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
@@ -257,7 +305,7 @@ export class AjoutMissionComponent implements OnInit {
               this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
               this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
 
-              this.BL_articles.push(this.new_obj)
+              this.articlesBl.push(this.new_obj)
             }
           }
           if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
@@ -267,10 +315,10 @@ export class AjoutMissionComponent implements OnInit {
               this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
               this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
 
-              this.BL_articles.push(this.new_obj)
+              this.articlesBl.push(this.new_obj)
             }
           }
-          resolve(this.BL_articles)
+          resolve(this.articlesBl)
         } catch (err) {
           reject(err);
         }

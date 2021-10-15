@@ -35,11 +35,11 @@ export interface tableProduits { //interface pour recuperer les données du Fich
 //***********************************************INTERFACE LISTE DE COLISAGE **********************************
 //*************************************************************************************************************
 @Component({
-  selector: 'app-liste-colisage',
-  templateUrl: './liste-colisage.component.html',
-  styleUrls: ['./liste-colisage.component.scss']
+  selector: 'app-liste-emballage',
+  templateUrl: './liste-emballage.component.html',
+  styleUrls: ['./liste-emballage.component.scss']
 })
-export class ListeColisageComponent implements OnInit {
+export class ListeEmballageComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void { }
@@ -53,7 +53,7 @@ export class ListeColisageComponent implements OnInit {
   templateUrl: './lister-colisage.html',
   styleUrls: ['./lister-colisage.scss']
 })
-export class ListerColisageComponent implements OnInit {
+export class ListerEmballageComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -241,6 +241,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     if (codeBarreScanne.code == 'Enter') {
       if (this.barcode)
         this.gestionCodeBarre(this.barcode);
+      this.formCodeBarre.get('code_Barre').setValue('');
+      this.formCodeBarre.get('code_Barre').setValue(this.barcode);
       this.barcode = '';
       return;
     }
@@ -252,9 +254,23 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   gestionCodeBarre(codeBarre: any) {
     var prodSelect: any;
     prodSelect = this.dataSourceProduits.data.filter((x: any) => x.code_Barre == codeBarre);
-    this.choisirProduit(prodSelect[0]);
+    this.choisirProduitScanne(prodSelect[0]);
   }
+  choisirProduitScanne(prod: any) {
+    if (this.produitClique.has(prod)) { //si On clique sur un produit deja selectionnée on supprime le contenu de input pour le remplir ensuit
+    } else {
+      if (this.produitSelectionne.length !== 0) { //si on clique sur un autre produit on deselectionne l'ancien
+        this.produitClique.clear();
+        this.produitSelectionne = [];
+      }
+      if (prod) {
+        this.produitClique.add(prod); //on selectionne le nouveau produit cliqué
+        this.produitSelectionne.push(prod)
+      };
+    }
 
+    this.deuxiemeFormGroup.get('validateur').setValue("validé");
+  }
 
   choisirProduit(prod: any) {
     if (this.produitClique.has(prod)) { //si On clique sur un produit deja selectionnée on le deselectionne
@@ -305,6 +321,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   async valider() {  //bouton valider
     var formData: any = new FormData();
     formData.append("idProduit", this.produitSelectionne[0].id_Produit);
+    formData.append("idComposant", "FP-" + this.produitSelectionne[0].id_Produit);
     formData.append("nomProduit", this.produitSelectionne[0].nom_Produit);
     formData.append("nomEmballage", this.premierFormGroup.get('nom').value);
     formData.append("typeEmballage", this.premierFormGroup.get("type").value);
@@ -325,7 +342,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     formData.append("poids_emballage_total", this.poidsToltal);
     formData.append("code_barre", this.premierFormGroup.get('codeBarre').value);
     await this.service.creerProduitEmballe(formData).toPromise();
-    await this._router.navigate(['/Menu/Colisage/Liste_Colisage'])
+    await this._router.navigate(['/Menu/Menu_Colisage/Packaging/Liste_Pack'])
     Swal.fire({
       icon: 'success',
       title: 'Produit bien ajouté',
@@ -457,6 +474,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     if (codeBarreScanne.code == 'Enter') {
       if (this.barcode)
         this.gestionCodeBarreSupport(this.barcode);
+      this.premierFormGroup.get("codeBarre").setValue("");
+      this.premierFormGroup.get("codeBarre").setValue(this.barcode);
       this.barcode = '';
       return;
     }
@@ -507,8 +526,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   }
 
-  verifierValiditeSupport(){
-    if(this.premierFormGroup.get('valider').value === ''){
+  verifierValiditeSupport() {
+    if (this.premierFormGroup.get('valider').value === '') {
       Swal.fire({
         icon: 'error',
         text: 'Prière de vérifier que le support est valide!',
@@ -545,6 +564,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     if (codeBarreScanne.code == 'Enter') {
       if (this.barcode)
         this.gestionCodeBarrePack(this.barcode);
+      this.formCodeBarre.get('code_Barre').setValue('');
+      this.formCodeBarre.get('code_Barre').setValue(this.barcode);
       this.barcode = '';
       return;
     }
@@ -556,16 +577,17 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   gestionCodeBarrePack(codeBarre: any) {
     var prodSelect: any;
     prodSelect = this.dataSourceListeColisage.data.filter((x: any) => x.code_barre == codeBarre);
-    console.log(prodSelect);
-    if(prodSelect.length === 0) {
-      this.formCodeBarre.get('code_Barre').setValue('');
-    } else {
-      this.formCodeBarre.get('code_Barre').setValue('');
-      this.formCodeBarre.get('code_Barre').setValue(codeBarre);
-    }
-    this.choisirPack(prodSelect[0]);
+    this.choisirPackScanne(prodSelect[0]);
   }
+  choisirPackScanne(p: any){
+    if (this.packClique.has(p)) { //si on clique sur un pack déja selectionné on le désélectionne
+    } else {  //sinon on selectionne le pack
+      this.packClique.add(p);
+      this.packSelectionne.push(p);
+    }
 
+    this.deuxiemeFormGroup.get('validateur').setValue("valide"); //pour valider le deuxieme matStep
+  }
   choisirPack(p: any) { //selectionner les packs désirés
     if (this.packClique.has(p)) { //si on clique sur un pack déja selectionné on le désélectionne
       this.packClique.delete(p);
@@ -677,16 +699,21 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   async valider() { //Bouton valider 
     let idProduit = ""
-    let nom_Pack = ""
+    let nomPack = ""
+    let idComposant = ""
     this.packSelectionne.forEach((element: any) => {
-      nom_Pack += element.nomEmballage + "/"
-      idProduit += element.idProduit + "/"
+      nomPack += element.nomEmballage + "/";
+      idProduit += element.idProduit + "/";
+      idComposant += element.id + "/";
+
     });
     idProduit = idProduit.slice(0, -1);
-    nom_Pack = nom_Pack.slice(0, -1);
+    nomPack = nomPack.slice(0, -1);
+    idComposant = idComposant.slice(0, -1);
     var formData: any = new FormData();
     formData.append("idProduit", idProduit);
-    formData.append("nomProduit", nom_Pack);
+    formData.append("idComposant", idComposant);
+    formData.append("nomProduit", nomPack);
     formData.append("nomEmballage", this.premierFormGroup.get('nom').value);
     formData.append("typeEmballage", this.typeEmballage);
     formData.append("qte", this.qte);

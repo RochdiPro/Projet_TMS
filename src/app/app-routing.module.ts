@@ -9,7 +9,7 @@ import { VehiculeComponent } from './TMS/parc/vehicule/vehicule.component';
 import { ChauffeursComponent } from './TMS/parc/chauffeurs/chauffeurs.component';
 import { ListerMissionsComponent, MissionsComponent } from './TMS/parc/missions/missions.component';
 import { ColisageComponent } from './colisage/colisage.component';
-import { ListeColisageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent, ListerColisageComponent } from './colisage/liste-colisage/liste-colisage.component';
+import { ListeEmballageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent, ListerEmballageComponent } from './colisage/liste-emballage/liste-emballage.component';
 import { SupportsComponent } from './colisage/supports/supports.component';
 import { AjouterSupportComponent } from './colisage/supports/ajouter-support/ajouter-support.component'
 import { ListerSupportsComponent } from './colisage/supports/lister-supports/lister-supports.component'
@@ -17,6 +17,10 @@ import { ModifierSupportComponent } from './colisage/supports/modifier-support/m
 import { MesVehiculesComponent } from './TMS/parc/vehicule/mes-vehicules/mes-vehicules.component';
 import { VehiculeLoueComponent } from './TMS/parc/vehicule/vehicule-loue/vehicule-loue.component';
 import { AjoutMissionComponent } from './TMS/parc/missions/ajout-mission/ajout-mission.component';
+import { CommandeComponent } from './colisage/commande/commande.component'
+import { AjouterCommandeComponent } from './colisage/commande/ajouter-commande/ajouter-commande.component'
+
+
 
 
 
@@ -37,8 +41,8 @@ const routes: Routes =
         {
           path: 'Menu_Colisage', component: ColisageComponent, children: [
             {
-              path: 'Packaging', component: ListeColisageComponent, children: [
-                { path: 'Liste_Pack', component: ListerColisageComponent },
+              path: 'Packaging', component: ListeEmballageComponent, children: [
+                { path: 'Liste_Pack', component: ListerEmballageComponent },
                 { path: 'Menu_Ajouter', component: MenuAjouterComponent },
                 { path: 'Ajouter_Produit', component: AjouterProduitComponent },
                 { path: 'Ajouter_Pack', component: AjouterPackComponent }
@@ -49,6 +53,11 @@ const routes: Routes =
                 { path: 'Liste_Support', component: ListerSupportsComponent },
                 { path: 'Ajouter_Support', component: AjouterSupportComponent },
                 { path: 'Modifier_Support', component: ModifierSupportComponent },
+              ]
+            },
+            {
+              path: 'commandes', component: CommandeComponent, children: [
+                { path: 'ajouter-commande', component: AjouterCommandeComponent },
               ]
             },
 

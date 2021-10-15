@@ -94,6 +94,11 @@ export class ColisageService {
   public bonLivraisons(){
     return this.httpClient.get(infonet + 'Bon_Livraisons');
   }
+
+  //charger liste Clients
+  public clients(){
+    return this.httpClient.get(infonet + 'Clients').pipe(catchError(this.handleError));
+  }
   //charger Client
   public client(idClt: any){
     return this.httpClient.get(infonet + 'Client', {
@@ -127,27 +132,27 @@ export class ColisageService {
 
   //get liste supports
   public supports() {
-    return this.httpClient.get(erp + 'Supports').pipe(catchError(this.handleError));
+    return this.httpClient.get(erp + 'supports').pipe(catchError(this.handleError));
   }
 
   //get support
   public support() {
-    return this.httpClient.get(erp + 'Support').pipe(catchError(this.handleError));
+    return this.httpClient.get(erp + 'support').pipe(catchError(this.handleError));
   }
 
   //créer support
   public creerSupport(formData: any){
-    return this.httpClient.post(erp + 'Creer_Support', formData).pipe(catchError(this.handleError));
+    return this.httpClient.post(erp + 'creer-support', formData).pipe(catchError(this.handleError));
   }
 
   //modifier support
   public modifierSupport(formData: any){
-    return this.httpClient.put(erp + 'modifierSupport', formData).pipe(catchError(this.handleError));
+    return this.httpClient.put(erp + 'modifier-support', formData).pipe(catchError(this.handleError));
   }
 
   //supprimer support
   public supprimerSupport(id: any){
-    return this.httpClient.delete(erp + "supprimerSupport" , {
+    return this.httpClient.delete(erp + "supprimer-support" , {
       params:{
         id: id
       }, observe: 'body'
@@ -156,7 +161,7 @@ export class ColisageService {
 
   //filtrer par champ
   public filtrerSupports(champ: any, valeur: any){
-    return this.httpClient.get(erp + 'filtreSupport', {
+    return this.httpClient.get(erp + 'filtre-support', {
       params:{
         champ: champ,
         valeur: valeur

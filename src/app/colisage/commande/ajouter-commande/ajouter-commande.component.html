@@ -1,0 +1,59 @@
+<div class="mat-elevation-z8">
+    <mat-table [dataSource]="dataSource">
+
+        <!-- Colonne reference -->
+        <ng-container matColumnDef="reference">
+            <mat-header-cell *matHeaderCellDef> Reference </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.reference}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne id client -->
+        <ng-container matColumnDef="idClient">
+            <mat-header-cell *matHeaderCellDef> Id client </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.idClient}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne nom client -->
+        <ng-container matColumnDef="nomClient">
+            <mat-header-cell *matHeaderCellDef> Nom client </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.nomClient}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne ville -->
+        <ng-container matColumnDef="ville">
+            <mat-header-cell *matHeaderCellDef> Ville </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.ville}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne adresse -->
+        <ng-container matColumnDef="adresse">
+            <mat-header-cell *matHeaderCellDef> Adresse </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.adresse}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne date creation -->
+        <ng-container matColumnDef="dateCreation">
+            <mat-header-cell *matHeaderCellDef> Date de création </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.dateCreation | date:"dd/MM/yyyy" }} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne actions -->
+        <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button style="color: #4CAF50;" aria-label="Bouton ajouter commande">
+                    <mat-icon>add_box</mat-icon>
+                </button>
+                <button mat-icon-button style="color: #24a0ed;" aria-label="Bouton voir info" (click)="ouvrirBoiteDialogueInfo(element)">
+                    <mat-icon>info</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator>
+</div>

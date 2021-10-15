@@ -1,4 +1,4 @@
-<h1>Ajouter un nouveau support</h1>
+<h1>Ajouter un nouveau support de charge</h1>
 <form [formGroup]="form">
     <div class="input-inline">
         <!-- input nom emballage -->
@@ -51,7 +51,7 @@
             <input matInput formControlName="volume" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
         </mat-form-field>
         <mat-form-field appearance="fill" class="premier-input">
-            <mat-label style="text-transform: capitalize;">Poids</mat-label>
+            <mat-label style="text-transform: capitalize;">Poids (kg)</mat-label>
             <input matInput formControlName="poids_Emballage" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
         </mat-form-field>
     </div>

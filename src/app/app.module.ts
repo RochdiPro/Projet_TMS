@@ -42,7 +42,7 @@ import { QRCodeModule } from 'angular2-qrcode';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { SelectAutocompleteModule } from 'mat-select-autocomplete';
-import { ListeColisageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent, ListerColisageComponent } from './colisage/liste-colisage/liste-colisage.component';
+import { ListeEmballageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent, ListerEmballageComponent } from './colisage/liste-emballage/liste-emballage.component';
 import { ColisageComponent } from './colisage/colisage.component';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatRadioModule} from '@angular/material/radio';
@@ -54,7 +54,9 @@ import { ListerSupportsComponent } from './colisage/supports/lister-supports/lis
 import { ModifierSupportComponent } from './colisage/supports/modifier-support/modifier-support.component'
 import { AjoutComponent, AjouterCarburantComponent, DetailVehiculeComponent, MesVehiculesComponent, MiseAJourComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent } from './TMS/parc/vehicule/mes-vehicules/mes-vehicules.component';
 import { AjouterVehiculeLoueComponent, DetailVehiculeLoueComponent, VehiculeLoueComponent } from './TMS/parc/vehicule/vehicule-loue/vehicule-loue.component';
-import { AjoutMissionComponent} from './TMS/parc/missions/ajout-mission/ajout-mission.component'
+import { AjoutMissionComponent} from './TMS/parc/missions/ajout-mission/ajout-mission.component';
+import { CommandeComponent } from './colisage/commande/commande.component';
+import { AjouterCommandeComponent, BoiteDialogueInfo } from './colisage/commande/ajouter-commande/ajouter-commande.component'
 registerLocaleData(localeFr, 'fr');
 
 
@@ -84,7 +86,7 @@ registerLocaleData(localeFr, 'fr');
     MapsComponent,
     AffecterCommande,
     QrCodeComponent,
-    ListeColisageComponent,
+    ListeEmballageComponent,
     ColisageComponent,
     AjouterProduitComponent,
     MenuAjouterComponent,
@@ -92,10 +94,13 @@ registerLocaleData(localeFr, 'fr');
     AjouterVehiculeLoueComponent,
     DetailVehiculeLoueComponent,
     SupportsComponent,
-    ListerColisageComponent,
+    ListerEmballageComponent,
     ListerSupportsComponent, 
     AjouterSupportComponent, ModifierSupportComponent, VehiculeLoueComponent,
-    AjoutMissionComponent
+    AjoutMissionComponent,
+    CommandeComponent,
+    AjouterCommandeComponent,
+    BoiteDialogueInfo
    
   ],
   imports: [

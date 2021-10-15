@@ -116,8 +116,8 @@
             <h3>Nord-Est</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>P.Total:</b>123</span>
-                    <span><b>V.Total:</b>123</span>
+                    <span><b>Poids Total:</b>123</span>
+                    <span><b>Volume Total:</b>123</span>
                     <span><b>score:</b>123</span>
                     <div class="header">
 
@@ -147,15 +147,12 @@
                         <mat-list-option *ngFor="let commande of commandesNordEst" [value]="commande">
                             <div class="row" style="width: 100%;">
                                 <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
+                                    "BL-" + commande.id_BL}}</div>
                                 <div class="col-2 contenu">{{commande.nom_Clt}}</div>
                                 <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.poids}}</div>
+                                <div class="col-2 contenu">0</div>
+                                <div class="col-2 contenu">0</div>
                             </div>
                         </mat-list-option>
                     </mat-selection-list>
@@ -166,8 +163,8 @@
             <h3>Nord-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>P.Total:</b>123</span>
-                    <span><b>V.Total:</b>123</span>
+                    <span><b>Poids Total:</b>123</span>
+                    <span><b>Volume Total:</b>123</span>
                     <span><b>score:</b>123</span>
                     <div class="header">
                         <div class="row">
@@ -198,11 +195,9 @@
                                     commande.id_BL}}</div>
                                 <div class="col-2 contenu">{{commande.nom_Clt}}</div>
                                 <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.poids}}</div>
+                                <div class="col-2 contenu">{{0}}</div>
+                                <div class="col-2 contenu">{{0}}</div>
                             </div>
                         </mat-list-option>
                     </mat-selection-list>
@@ -215,8 +210,8 @@
             <h3>Centre-Est</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>P.Total:</b>123</span>
-                    <span><b>V.Total:</b>123</span>
+                    <span><b>Poids Total:</b>123</span>
+                    <span><b>Volume Total:</b>123</span>
                     <span><b>score:</b>123</span>
                     <div class="header">
                         <div class="row">
@@ -247,11 +242,9 @@
                                     commande.id_BL}}</div>
                                 <div class="col-2 contenu">{{commande.nom_Clt}}</div>
                                 <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.poids}}</div>
+                                <div class="col-2 contenu">{{0}}</div>
+                                <div class="col-2 contenu">{{0}}</div>
                             </div>
                         </mat-list-option>
                     </mat-selection-list>
@@ -262,8 +255,8 @@
             <h3>Centre-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>P.Total:</b>123</span>
-                    <span><b>V.Total:</b>123</span>
+                    <span><b>Poids Total:</b>123</span>
+                    <span><b>Volume Total:</b>123</span>
                     <span><b>score:</b>123</span>
                     <div class="header">
                         <div class="row">
@@ -294,11 +287,9 @@
                                     commande.id_BL}}</div>
                                 <div class="col-2 contenu">{{commande.nom_Clt}}</div>
                                 <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.poids}}</div>
+                                <div class="col-2 contenu">{{0}}</div>
+                                <div class="col-2 contenu">{{0}}</div>
                             </div>
                         </mat-list-option>
                     </mat-selection-list>
@@ -311,8 +302,8 @@
             <h3>Sud-Est</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>P.Total:</b>123</span>
-                    <span><b>V.Total:</b>123</span>
+                    <span><b>Poids Total:</b>123</span>
+                    <span><b>Volume Total:</b>123</span>
                     <span><b>score:</b>123</span>
                     <div class="header">
                         <div class="row">
@@ -343,11 +334,9 @@
                                     commande.id_BL}}</div>
                                 <div class="col-2 contenu">{{commande.nom_Clt}}</div>
                                 <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.poids}}</div>
+                                <div class="col-2 contenu">{{0}}</div>
+                                <div class="col-2 contenu">{{0}}</div>
                             </div>
                         </mat-list-option>
                     </mat-selection-list>
@@ -358,8 +347,8 @@
             <h3>Sud-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>P.Total:</b>123</span>
-                    <span><b>V.Total:</b>123</span>
+                    <span><b>Poids Total:</b>123</span>
+                    <span><b>Volume Total:</b>123</span>
                     <span><b>score:</b>123</span>
                     <div class="header">
                         <div class="row">
@@ -390,11 +379,9 @@
                                     commande.id_BL}}</div>
                                 <div class="col-2 contenu">{{commande.nom_Clt}}</div>
                                 <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
+                                <div class="col-2 contenu">{{commande.poids}}</div>
+                                <div class="col-2 contenu">0</div>
+                                <div class="col-2 contenu">0</div>
                             </div>
                         </mat-list-option>
                     </mat-selection-list>
