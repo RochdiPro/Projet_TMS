@@ -56,7 +56,7 @@ import { AjoutComponent, AjouterCarburantComponent, DetailVehiculeComponent, Mes
 import { AjouterVehiculeLoueComponent, DetailVehiculeLoueComponent, VehiculeLoueComponent } from './TMS/parc/vehicule/vehicule-loue/vehicule-loue.component';
 import { AjoutMissionComponent} from './TMS/parc/missions/ajout-mission/ajout-mission.component';
 import { CommandeComponent } from './colisage/commande/commande.component';
-import { AjouterCommandeComponent, BoiteDialogueInfo } from './colisage/commande/ajouter-commande/ajouter-commande.component'
+import { AjouterCommandeComponent, BoiteDialogueInfo, BoiteDialogueCreerCommande } from './colisage/commande/ajouter-commande/ajouter-commande.component'
 registerLocaleData(localeFr, 'fr');
 
 
@@ -100,7 +100,8 @@ registerLocaleData(localeFr, 'fr');
     AjoutMissionComponent,
     CommandeComponent,
     AjouterCommandeComponent,
-    BoiteDialogueInfo
+    BoiteDialogueInfo,
+    BoiteDialogueCreerCommande
    
   ],
   imports: [

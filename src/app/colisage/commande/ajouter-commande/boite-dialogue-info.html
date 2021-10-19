@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>Information {{typeDocument}} {{data.commande.id}}</h1>
 <div mat-dialog-content>
-    <h2>Informations du client</h2>
+    <h2>Client</h2>
     <div class="row">
         <div class="colonne entete">Nom:</div>
         <div class="colonne">{{data.commande.nomClient}}</div>
@@ -31,8 +31,10 @@
         <div class="colonne entete">Numéro piéce d'identité:</div>
         <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>   
     </div>
+    <hr>
+    <h2>Produits</h2>
+
 </div>
-<div mat-dialog-actions>
-    <button mat-button >No Thanks</button>
-    <button mat-button cdkFocusInitial>Ok</button>
+<div mat-dialog-actions class="boutons">
+    <button mat-button cdkFocusInitial color="primary" (click)="fermerBoiteDialogue()">Ok</button>
 </div>

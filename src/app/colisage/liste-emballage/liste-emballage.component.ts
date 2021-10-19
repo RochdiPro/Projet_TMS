@@ -638,7 +638,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     this.poidsUnitaireNet = "";
     for (let i = 0; i < this.packSelectionne.length; i++) {
       this.poidsToltalNet += Number(this.packSelectionne[i].poids_total_net) * Number(this.troisiemeFormGroup.get('pack').value[i].qte);
-      this.qte += this.troisiemeFormGroup.get('pack').value[i].qte + "/" //enregistrer la qte des produits dans une chaine de caractéres
+      let qteTT = Number(this.packSelectionne[i].qte) * Number(this.troisiemeFormGroup.get('pack').value[i].qte)
+      this.qte += qteTT + "/" //enregistrer la qte des produits dans une chaine de caractéres
       this.poidsUnitaireNet += this.packSelectionne[i].poids_total_net + "/" //enregistrer le poids unitaire des produits dans une chaine de caractéres
     }
     this.qte = this.qte.slice(0, -1); //enlever le dernier "/"

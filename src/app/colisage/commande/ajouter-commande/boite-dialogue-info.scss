@@ -1,9 +1,24 @@
 .colonne{
-    width: 25%;
+    width: 50%;
 }
 .row{
     margin-left: 10px;
 }
 .entete{
     font-weight: bold;
+}
+.boutons{
+    float: right;
+}
+@media (min-width: 780px) {
+    .colonne{
+        width: 25%;
+    }
+    .row{
+        margin-left: 10px;
+    }
+    .entete{
+        font-weight: bold;
+    }
+    
 }
