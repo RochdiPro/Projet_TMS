@@ -204,13 +204,16 @@ export class BoiteDialogueInfo implements OnInit {
   indicateurTypeCommande: String;
   typeDocument: String;
   articles: any;
-  listeColisage: any;
+  listeArticlesDetail: any = [];
+  listeEmballage: any;
+  listeProduitDansListeEmballage: any;
   constructor(public dialogRef: MatDialogRef<BoiteDialogueInfo>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService) { }
 
   async ngOnInit() {
     this.indicateurTypeCommande = this.data.commande.reference.split("-")[0];
     this.getTypeCommande();
-    await this.getDetail();
+    await this.getListeEmballage();
+    this.getDetail();
   }
 
   getTypeCommande() {
@@ -221,8 +224,8 @@ export class BoiteDialogueInfo implements OnInit {
       this.typeDocument = "Bon Livraison";
     }
   }
-  async getListeColisage(){
-    this.listeColisage = await this.serviceColisage.listeColisage().toPromise();
+  async getListeEmballage() {
+    this.listeEmballage = await this.serviceColisage.listeColisage().toPromise();
   }
 
   async getDetail() {
@@ -234,7 +237,55 @@ export class BoiteDialogueInfo implements OnInit {
       var detail = await this.serviceColisage.Detail_BL(this.data.commande.id).toPromise();
       this.articles = await getDetailBL(detail);
     }
+    for (let i = 0; i < this.articles.length; i++) {
+      console.log(this.articles[i])
+      let qteProduitCommande = this.articles[i].qte;
+      let listeEmballageProduit = [];
+      this.listeProduitDansListeEmballage = this.listeEmballage.filter((emballage: any) => emballage.idProduit === this.articles[i].id);
+      console.log(this.listeEmballage)
+      if (this.listeProduitDansListeEmballage.length > 0) {
+        do {
+          let differenceQte = (index: any) => { return qteProduitCommande - this.listeProduitDansListeEmballage[index].qte }
+          let emballage: any;
+          let qteEmballage
+          for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) {
+            console.log((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0)
+            if (j !== 0) {
+              if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && (differenceQte(j) < differenceQte(j - 1))) {
+                let difference = differenceQte(j);
+                qteEmballage = 0;
+                do {
+                  difference -= this.listeProduitDansListeEmballage[j].qte
+                  qteEmballage++;
+                } while (difference > 0);
+                emballage = this.listeProduitDansListeEmballage[j];
+                console.log('I am here')
+              }
+            } else if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0) {
+              let difference = differenceQte(j);
+              qteEmballage = 0;
+              do {
+                difference -= this.listeProduitDansListeEmballage[j].qte
+                qteEmballage++;
+              } while (difference > 0);
+              emballage = this.listeProduitDansListeEmballage[j];
+              console.log('I am here2')
+            }
+          }
+          console.log(emballage)
+          console.log(qteProduitCommande)
+          qteProduitCommande -= (emballage.qte * qteEmballage);
+          listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
 
+        } while (qteProduitCommande > 0);
+        console.log(listeEmballageProduit)
+        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, listeEmballageProduit));
+      } else {
+        console.log('produit pas in liste emballage')
+      }
+      
+    }
+    console.log(this.listeArticlesDetail)
   }
 
   fermerBoiteDialogue() {
@@ -252,15 +303,94 @@ export class BoiteDialogueInfo implements OnInit {
 export class BoiteDialogueCreerCommande implements OnInit {
   indicateurTypeCommande: String;
   typeDocument: String;
-  constructor(public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService) { }
+  articles: any;
+  listeArticlesDetail: any = [];
+  listeEmballage: any;
+  listeProduitDansListeEmballage: any;
+  firstFormGroup: FormGroup;
+  secondFormGroup: FormGroup;
+
+  latMap: any = 34.74056;
+  lngMap: any = 10.76028;
+  lat: any = 0;
+  lng: any = 0;
+  zoom: number = 5;
+  constructor(private fb: FormBuilder,public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService) { }
 
   ngOnInit() {
+    this.firstFormGroup = this.fb.group({
+      firstCtrl: ['', Validators.required]
+    });
+    this.secondFormGroup = this.fb.group({
+      secondCtrl: ['', Validators.required]
+    });
     this.indicateurTypeCommande = this.data.commande.reference.split("-")[0]
     if (this.indicateurTypeCommande === "F")
       this.typeDocument = "Facture";
     else
       this.typeDocument = "Bon Livraison";
   }
+
+  async getDetail() {
+    if (this.indicateurTypeCommande === "F") {
+      var detail = await this.serviceColisage.Detail_Facture(this.data.commande.id).toPromise();
+      this.articles = await getDetailFacture(detail);
+    }
+    else {
+      var detail = await this.serviceColisage.Detail_BL(this.data.commande.id).toPromise();
+      this.articles = await getDetailBL(detail);
+    }
+    for (let i = 0; i < this.articles.length; i++) {
+      console.log(this.articles[i])
+      let qteProduitCommande = this.articles[i].qte;
+      let listeEmballageProduit = [];
+      this.listeProduitDansListeEmballage = this.listeEmballage.filter((emballage: any) => emballage.idProduit === this.articles[i].id);
+      console.log(this.listeProduitDansListeEmballage)
+      if (this.listeProduitDansListeEmballage.length > 0) {
+        do {
+          let differenceQte = (index: any) => { return qteProduitCommande - this.listeProduitDansListeEmballage[index].qte }
+          let emballage: any;
+          let qteEmballage
+          for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) {
+            console.log((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0)
+            if (j !== 0) {
+              if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && (differenceQte(j) < differenceQte(j - 1))) {
+                let difference = differenceQte(j);
+                qteEmballage = 0;
+                do {
+                  difference -= this.listeProduitDansListeEmballage[j].qte
+                  qteEmballage++;
+                } while (difference > 0);
+                emballage = this.listeProduitDansListeEmballage[j];
+                console.log('I am here')
+              }
+            } else if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0) {
+              let difference = differenceQte(j);
+              qteEmballage = 0;
+              do {
+                difference -= this.listeProduitDansListeEmballage[j].qte
+                qteEmballage++;
+              } while (difference > 0);
+              emballage = this.listeProduitDansListeEmballage[j];
+              console.log('I am here2')
+            }
+          }
+          console.log(emballage)
+          console.log(qteProduitCommande)
+          qteProduitCommande -= (emballage.qte * qteEmballage);
+          listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
+
+        } while (qteProduitCommande > 0);
+        console.log(listeEmballageProduit)
+        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, listeEmballageProduit));
+      } else {
+        console.log('produit pas in liste emballage')
+      }
+      
+    }
+    console.log(this.listeArticlesDetail)
+  }
+
 
 }
 
@@ -300,6 +430,24 @@ class BonLivraison {
   dateCreation: Date;
 
   constructor() { }
+
+}
+class Article {
+  id: number;
+  nom: string;
+  qte: number;
+  type: string;
+  listeEmballage: any[];
+  numSerie: number;
+
+  constructor(id: number, nom: string, qte: number, type: string, numSerie: number, listeEmballage: any[]) {
+    this.id = id;
+    this.nom = nom
+    this.qte = qte;
+    this.type = type;
+    this.numSerie = numSerie
+    this.listeEmballage = listeEmballage;
+  }
 
 }
 
@@ -344,8 +492,10 @@ async function getDetailFacture(detail: any) { //pour avoir les ids et les qtes 
           for (let i = 0; i < xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
 
             new_obj = {}
-            new_obj.id = xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-            new_obj.qte = xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
+            new_obj.id = xmldata.Produits[0].Produits_Simples[0].Produit[i].Id[0];
+            new_obj.nom = xmldata.Produits[0].Produits_Simples[0].Produit[i].Nom[0];
+            new_obj.qte = xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte[0];
+            new_obj.type = "Produit simple";
 
             articles.push(new_obj)
           }
@@ -354,8 +504,11 @@ async function getDetailFacture(detail: any) { //pour avoir les ids et les qtes 
           for (let i = 0; i < xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
 
             new_obj = {}
-            new_obj.id = xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-            new_obj.qte = xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
+            new_obj.id = xmldata.Produits[0].Produits_Series[0].Produit[i].Id[0];
+            new_obj.nom = xmldata.Produits[0].Produits_Series[0].Produit[i].Nom[0];
+            new_obj.qte = xmldata.Produits[0].Produits_Series[0].Produit[i].Qte[0];
+            new_obj.type = "Produit serie";
+            new_obj.numSerie = xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0].N_Serie[0];
 
             articles.push(new_obj)
           }
@@ -364,8 +517,10 @@ async function getDetailFacture(detail: any) { //pour avoir les ids et les qtes 
           for (let i = 0; i < xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
 
             new_obj = {}
-            new_obj.id = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-            new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
+            new_obj.id = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id[0];
+            new_obj.nom = xmldata.Produits[0].Produits_4Gs[0].Produit[i].nom[0];
+            new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte[0];
+            new_obj.type = "Produit 4G";
 
             articles.push(new_obj)
           }
@@ -401,8 +556,10 @@ async function getDetailBL(detail: any) {  //pour avoir les ids et les qtes des 
           for (let i = 0; i < xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
 
             new_obj = {}
-            new_obj.id = xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-            new_obj.qte = xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
+            new_obj.id = xmldata.Produits[0].Produits_Simples[0].Produit[i].Id[0];
+            new_obj.nom = xmldata.Produits[0].Produits_Simples[0].Produit[i].Nom[0];
+            new_obj.qte = xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte[0];
+            new_obj.type = "Produit simple";
 
             articlesBl.push(new_obj)
           }
@@ -411,8 +568,11 @@ async function getDetailBL(detail: any) {  //pour avoir les ids et les qtes des 
           for (let i = 0; i < xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
 
             new_obj = {}
-            new_obj.id = xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-            new_obj.qte = xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
+            new_obj.id = xmldata.Produits[0].Produits_Series[0].Produit[i].Id[0];
+            new_obj.nom = xmldata.Produits[0].Produits_Series[0].Produit[i].Nom[0];
+            new_obj.qte = xmldata.Produits[0].Produits_Series[0].Produit[i].Qte[0];
+            new_obj.type = "Produit serie";
+            new_obj.numSerie = xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0].N_Serie[0];
 
             articlesBl.push(new_obj)
           }
@@ -421,8 +581,10 @@ async function getDetailBL(detail: any) {  //pour avoir les ids et les qtes des 
           for (let i = 0; i < xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
 
             new_obj = {}
-            new_obj.id = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-            new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
+            new_obj.id = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id[0];
+            new_obj.nom = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Nom[0];
+            new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte[0];
+            new_obj.type = "Produit 4G";
 
             articlesBl.push(new_obj)
           }

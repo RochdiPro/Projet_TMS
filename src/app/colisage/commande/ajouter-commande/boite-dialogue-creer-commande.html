@@ -1,1 +1,139 @@
 <h1 mat-dialog-title>{{typeDocument}} {{data.commande.id}}</h1>
+<mat-vertical-stepper [linear]="false" #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+        <form [formGroup]="firstFormGroup">
+            <ng-template matStepLabel>Informations du client</ng-template>
+            <h2>Client</h2>
+            <div class="row">
+                <div class="colonne entete">Nom:</div>
+                <div class="colonne">{{data.commande.nomClient}}</div>
+                <div class="colonne entete">Identifiant:</div>
+                <div class="colonne">{{data.commande.idClient}}</div>
+            </div>
+            <div class="row">
+                <div class="colonne entete">Contact:</div>
+                <div class="colonne">{{data.commande.contact}}</div>
+                <div class="colonne entete">Téléphone:</div>
+                <div class="colonne">{{data.commande.telephone}}</div>
+            </div>
+            <div class="row">
+                <div class="colonne entete">Email:</div>
+                <div class="colonne">{{data.commande.email}}</div>
+                <div class="colonne entete">Catégorie client</div>
+                <div class="colonne">{{data.commande.categorieClient}}</div>
+            </div>
+            <div class="row">
+                <div class="colonne entete">Ville:</div>
+                <div class="colonne">{{data.commande.ville}}</div>
+                <div class="colonne entete">Adresse:</div>
+                <div class="colonne">{{data.commande.adresse}}</div>
+            </div>
+            <div class="row">
+                <div class="colonne entete">Type piéce d'identité:</div>
+                <div class="colonne">{{data.commande.typePieceIdentite}}</div>
+                <div class="colonne entete">Numéro piéce d'identité:</div>
+                <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
+            </div>
+            <div class="map">
+                <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false">
+                    <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true">
+                        <agm-info-window>gfbhfg</agm-info-window>
+                    </agm-marker>
+                </agm-map>
+            </div>
+            <div>
+                <button mat-button matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+        <form [formGroup]="secondFormGroup">
+            <ng-template matStepLabel>Produits</ng-template>
+            <div class="produits">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">id</th>
+                            <th scope="col">Nom produit</th>
+                            <th scope="col">Quantité</th>
+                            <th scope="col">Type produit</th>
+                            <th scope="col">Numero de Serie</th>
+                            <th scope="col">Imei</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let article of listeArticlesDetail">
+                            <th scope="row">{{article.id}}</th>
+                            <td>{{article.nom}}</td>
+                            <td>{{article.qte}}</td>
+                            <td>{{article.type}}</td>
+                            <td>
+                                <ng-container *ngIf="article.type === 'Produit serie'; else pasNumSerie">
+                                    {{article.numSerie}}
+                                </ng-container>
+                                <ng-template #pasNumSerie>
+                                    pas de num serie
+                                </ng-template>
+                            </td>
+                            <td>
+                                <ng-container *ngIf="article.type === 'Produit 4G'; else pasNumImei">
+
+                                </ng-container>
+                                <ng-template #pasNumImei>
+                                    pas de num IMEI
+                                </ng-template>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button matStepperNext>Next</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step>
+        <ng-template matStepLabel>Valider</ng-template>
+        <h2>Client</h2>
+        <div class="row">
+            <div class="colonne entete">Nom:</div>
+            <div class="colonne">{{data.commande.nomClient}}</div>
+            <div class="colonne entete">Identifiant:</div>
+            <div class="colonne">{{data.commande.idClient}}</div>
+        </div>
+        <div class="row">
+            <div class="colonne entete">Contact:</div>
+            <div class="colonne">{{data.commande.contact}}</div>
+            <div class="colonne entete">Téléphone:</div>
+            <div class="colonne">{{data.commande.telephone}}</div>
+        </div>
+        <div class="row">
+            <div class="colonne entete">Email:</div>
+            <div class="colonne">{{data.commande.email}}</div>
+            <div class="colonne entete">Catégorie client</div>
+            <div class="colonne">{{data.commande.categorieClient}}</div>
+        </div>
+        <div class="row">
+            <div class="colonne entete">Ville:</div>
+            <div class="colonne">{{data.commande.ville}}</div>
+            <div class="colonne entete">Adresse:</div>
+            <div class="colonne">{{data.commande.adresse}}</div>
+        </div>
+        <div class="row">
+            <div class="colonne entete">Type piéce d'identité:</div>
+            <div class="colonne">{{data.commande.typePieceIdentite}}</div>
+            <div class="colonne entete">Numéro piéce d'identité:</div>
+            <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
+        </div>
+        <div class="map">
+            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false">
+                <agm-info-window></agm-info-window>
+            </agm-map>
+        </div>
+        <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="stepper.reset()">Reset</button>
+        </div>
+    </mat-step>
+</mat-vertical-stepper>

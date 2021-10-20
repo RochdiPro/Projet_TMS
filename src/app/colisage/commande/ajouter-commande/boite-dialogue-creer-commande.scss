@@ -1,0 +1,38 @@
+.mat-form-field {
+    margin-top: 16px;
+}
+.colonne{
+    width: 50%;
+}
+.row{
+    margin-left: 10px;
+}
+.entete{
+    font-weight: bold;
+}
+.boutons{
+    float: right;
+}
+.produits{
+    height: 200px;
+    overflow-y: auto;
+}
+.map{
+    margin-top: 10px;
+}
+agm-map {
+    height: 200px;
+    width: 95%;
+}
+@media (min-width: 780px) {
+    .colonne{
+        width: 25%;
+    }
+    .row{
+        margin-left: 10px;
+    }
+    .entete{
+        font-weight: bold;
+    }
+    
+}

@@ -10,6 +10,10 @@
 .boutons{
     float: right;
 }
+.produits{
+    max-height: 200px;
+    overflow-y: auto;
+}
 @media (min-width: 780px) {
     .colonne{
         width: 25%;

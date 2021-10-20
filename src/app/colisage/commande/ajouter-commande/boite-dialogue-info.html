@@ -33,6 +33,42 @@
     </div>
     <hr>
     <h2>Produits</h2>
+    <div class="produits">
+        <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">id</th>
+                <th scope="col">Nom produit</th>
+                <th scope="col">Quantité</th>
+                <th scope="col">Type produit</th>
+                <th scope="col">Numero de Serie</th>
+                <th scope="col">Imei</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let article of listeArticlesDetail">
+                <th scope="row">{{article.id}}</th>
+                <td>{{article.nom}}</td>
+                <td>{{article.qte}}</td>
+                <td>{{article.type}}</td>
+                <td><ng-container *ngIf="article.type === 'Produit serie'; else pasNumSerie">
+                    {{article.numSerie}}
+                </ng-container>
+                <ng-template #pasNumSerie>
+                    pas de num serie
+                </ng-template>
+                </td>
+                <td><ng-container *ngIf="article.type === 'Produit 4G'; else pasNumImei">
+                    
+                </ng-container>
+                <ng-template #pasNumImei>
+                    pas de num IMEI
+                </ng-template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+    </div>
 
 </div>
 <div mat-dialog-actions class="boutons">
