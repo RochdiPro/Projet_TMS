@@ -35,9 +35,11 @@
                 <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
             </div>
             <div class="map">
-                <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false">
-                    <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true">
-                        <agm-info-window>gfbhfg</agm-info-window>
+                <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
+                    (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
+                    <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
+                        (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
+                        <agm-info-window>{{data.commande.adresse}}</agm-info-window>
                     </agm-marker>
                 </agm-map>
             </div>
@@ -59,6 +61,7 @@
                             <th scope="col">Type produit</th>
                             <th scope="col">Numero de Serie</th>
                             <th scope="col">Imei</th>
+                            <th>Emballer</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -83,6 +86,7 @@
                                     pas de num IMEI
                                 </ng-template>
                             </td>
+                            <td><button mat-icon-button><i class="fas fa-box" style="color: #f7b91e;" (click)="ouvrirBoiteDialogueEmballer(article)"></i></button></td>
                         </tr>
                     </tbody>
                 </table>

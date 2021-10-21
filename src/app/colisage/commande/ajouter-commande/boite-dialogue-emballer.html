@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>Produit: {{data.produit.nom}}</h1>
+<div mat-dialog-content>
+    <div id="quantite-non-emballe">
+        <h2 class="quantite-non-emballe">Quantité produit non emballées: &nbsp;</h2><h3 class="quantite-non-emballe" [ngClass]="{'tout-emballee': quantiteNonEmballee === 0 , 'pas-tout-emballe': quantiteNonEmballee > 0}">{{quantiteNonEmballee}}</h3>
+    </div>
+    <div id="emballage">
+        <form [formGroup]="form">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Nom Emballage</th>
+                        <th scope="col">Quantité produit</th>
+                        <th scope="col">Suggestion</th>
+                        <th scope="col">Quantité emballage</th>
+                    </tr>
+                </thead>
+                <tbody formArrayName="qte">
+                    <tr *ngFor="let emballage of listeEmballages; let i=index" [formGroupName]="i">
+                        <th scope="row">{{emballage.id}}</th>
+                        <td>{{emballage.nomEmballage}}</td>
+                        <td>{{emballage.qte}}</td>
+                        <td>x{{donnerSuggestion(emballage)}}</td>
+                        <td>
+                            <mat-form-field appearance="fill" style="width: 100px;"> 
+                                <mat-label>Quantité</mat-label>
+                                <input matInput type="number" formControlName="qte" [max]="quantiteNonEmballee/emballage.qte" [min]="minInput">
+                              </mat-form-field>
+                            <button mat-icon-button><mat-icon style="color: #3f51b5; margin-bottom: 4px;" (click)="ajouterQuantiteEmballage()">check_circle</mat-icon></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button>No Thanks</button>
+  <button mat-button cdkFocusInitial>Ok</button>
+</div>

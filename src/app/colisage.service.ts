@@ -168,4 +168,14 @@ export class ColisageService {
       }, observe: 'body'
     }).pipe(catchError(this.handleError));
   }
+
+  //get position client by id
+  public positionClient(id: any) {
+    return this.httpClient.get(erp + 'position-client/' + id).pipe(catchError(this.handleError));
+  }
+
+  //create position client
+  public creerPositionClient(formData: any) {
+    return this.httpClient.post(erp + 'position-client', formData).pipe(catchError(this.handleError));
+  }
 }

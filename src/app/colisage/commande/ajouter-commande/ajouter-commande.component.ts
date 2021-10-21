@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -238,18 +238,15 @@ export class BoiteDialogueInfo implements OnInit {
       this.articles = await getDetailBL(detail);
     }
     for (let i = 0; i < this.articles.length; i++) {
-      console.log(this.articles[i])
       let qteProduitCommande = this.articles[i].qte;
       let listeEmballageProduit = [];
       this.listeProduitDansListeEmballage = this.listeEmballage.filter((emballage: any) => emballage.idProduit === this.articles[i].id);
-      console.log(this.listeEmballage)
       if (this.listeProduitDansListeEmballage.length > 0) {
         do {
           let differenceQte = (index: any) => { return qteProduitCommande - this.listeProduitDansListeEmballage[index].qte }
           let emballage: any;
           let qteEmballage
           for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) {
-            console.log((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0)
             if (j !== 0) {
               if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && (differenceQte(j) < differenceQte(j - 1))) {
                 let difference = differenceQte(j);
@@ -259,7 +256,6 @@ export class BoiteDialogueInfo implements OnInit {
                   qteEmballage++;
                 } while (difference > 0);
                 emballage = this.listeProduitDansListeEmballage[j];
-                console.log('I am here')
               }
             } else if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0) {
               let difference = differenceQte(j);
@@ -269,23 +265,17 @@ export class BoiteDialogueInfo implements OnInit {
                 qteEmballage++;
               } while (difference > 0);
               emballage = this.listeProduitDansListeEmballage[j];
-              console.log('I am here2')
             }
           }
-          console.log(emballage)
-          console.log(qteProduitCommande)
           qteProduitCommande -= (emballage.qte * qteEmballage);
           listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
 
         } while (qteProduitCommande > 0);
-        console.log(listeEmballageProduit)
         this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, listeEmballageProduit));
       } else {
-        console.log('produit pas in liste emballage')
       }
-      
+
     }
-    console.log(this.listeArticlesDetail)
   }
 
   fermerBoiteDialogue() {
@@ -315,22 +305,54 @@ export class BoiteDialogueCreerCommande implements OnInit {
   lat: any = 0;
   lng: any = 0;
   zoom: number = 5;
-  constructor(private fb: FormBuilder,public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService) { }
+  positionExiste = false;
+  positionClient: any = {
+    latitude: 34.74056, longitude: 10.76028
+  };
+  constructor(private fb: FormBuilder, public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService, public dialogue: MatDialog) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.firstFormGroup = this.fb.group({
       firstCtrl: ['', Validators.required]
     });
     this.secondFormGroup = this.fb.group({
       secondCtrl: ['', Validators.required]
     });
+    this.getTypeDocument();
+    this.getPositionClient();
+    await this.getListeEmballage();
+    this.getDetail();
+  }
+
+  getTypeDocument() {
     this.indicateurTypeCommande = this.data.commande.reference.split("-")[0]
     if (this.indicateurTypeCommande === "F")
       this.typeDocument = "Facture";
     else
-      this.typeDocument = "Bon Livraison";
+      this.typeDocument = "Bon Livraison"
   }
 
+  async getPositionClient() {
+    this.positionClient = await this.serviceColisage.positionClient(this.data.commande.idClient).toPromise();
+    if (this.positionClient === null) {
+      this.latMap = 34.74056;
+      this.lngMap = 10.76028;
+      this.zoom = 5;
+      this.positionExiste = false;
+    } else {
+      this.lat = this.positionClient.latitude;
+      this.lng = this.positionClient.longitude;
+      this.latMap = Number(this.positionClient.latitude);
+      this.lngMap = Number(this.positionClient.longitude);
+      this.zoom = 15;
+      this.positionExiste = true;
+
+
+    }
+  }
+  async getListeEmballage() {
+    this.listeEmballage = await this.serviceColisage.listeColisage().toPromise();
+  }
   async getDetail() {
     if (this.indicateurTypeCommande === "F") {
       var detail = await this.serviceColisage.Detail_Facture(this.data.commande.id).toPromise();
@@ -341,18 +363,15 @@ export class BoiteDialogueCreerCommande implements OnInit {
       this.articles = await getDetailBL(detail);
     }
     for (let i = 0; i < this.articles.length; i++) {
-      console.log(this.articles[i])
       let qteProduitCommande = this.articles[i].qte;
       let listeEmballageProduit = [];
       this.listeProduitDansListeEmballage = this.listeEmballage.filter((emballage: any) => emballage.idProduit === this.articles[i].id);
-      console.log(this.listeProduitDansListeEmballage)
       if (this.listeProduitDansListeEmballage.length > 0) {
         do {
           let differenceQte = (index: any) => { return qteProduitCommande - this.listeProduitDansListeEmballage[index].qte }
           let emballage: any;
           let qteEmballage
           for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) {
-            console.log((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0)
             if (j !== 0) {
               if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && (differenceQte(j) < differenceQte(j - 1))) {
                 let difference = differenceQte(j);
@@ -362,7 +381,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
                   qteEmballage++;
                 } while (difference > 0);
                 emballage = this.listeProduitDansListeEmballage[j];
-                console.log('I am here')
               }
             } else if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0) {
               let difference = differenceQte(j);
@@ -372,29 +390,118 @@ export class BoiteDialogueCreerCommande implements OnInit {
                 qteEmballage++;
               } while (difference > 0);
               emballage = this.listeProduitDansListeEmballage[j];
-              console.log('I am here2')
             }
           }
-          console.log(emballage)
-          console.log(qteProduitCommande)
           qteProduitCommande -= (emballage.qte * qteEmballage);
           listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
 
         } while (qteProduitCommande > 0);
-        console.log(listeEmballageProduit)
         this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, listeEmballageProduit));
-      } else {
-        console.log('produit pas in liste emballage')
       }
-      
+
     }
-    console.log(this.listeArticlesDetail)
+  }
+
+  positionerMarquer(event: any) { //pour positionner un marqueur sur le map
+    if (!this.positionExiste) {
+      this.lat = event.coords.lat;
+      this.lng = event.coords.lng;
+      this.positionExiste = true;
+    }
+
+  }
+  modifierPositionMarquer(event: any) { //pour modifier la position du marqueur existant
+    this.lat = event.coords.lat;
+    this.lng = event.coords.lng;
+
+  }
+
+  ouvrirBoiteDialogueEmballer(produit: any) {
+    const dialogRef = this.dialogue.open(BoiteDialogueEmballer, {
+      width: '600px',
+      data: { produit: produit }
+    })
   }
 
 
 }
 
+// ***********************************Boite de dialogue Emballer ******************************************************
+@Component({
+  selector: 'boite-dialogue-emballer',
+  templateUrl: 'boite-dialogue-emballer.html',
+  styleUrls: ['boite-dialogue-emballer.scss']
+})
 
+export class BoiteDialogueEmballer implements OnInit {
+  quantiteNonEmballee: number;
+  listeEmballages: any;
+  form: FormGroup;
+  maxInput: number;
+  minInput: number = 0;
+  constructor(public dialogRef: MatDialogRef<BoiteDialogueEmballer>, @Inject(MAT_DIALOG_DATA) public data: any, private serviceColisage: ColisageService, private fb: FormBuilder) { }
+
+  async ngOnInit() {
+    this.quantiteNonEmballee = this.data.produit.qte;
+    this.form = this.fb.group({
+      qte: this.fb.array([])
+    })
+    await this.getListeEmballages();
+    this.ajouterChampQte();
+    console.log(this.data.produit)
+  }
+  get qteForm() {
+    return this.form.get('qte') as FormArray;
+  }
+  ajouterChampQte() {
+    this.listeEmballages.forEach((emballage: any) => {
+      const qte = this.fb.group({
+        qte: [0, [Validators.max(this.data.produit.qte / emballage.qte), Validators.min(0)]]
+      })
+      this.qteForm.push(qte)
+
+    });
+  }
+  async getListeEmballages() {
+    this.listeEmballages = await this.serviceColisage.listeColisage().toPromise();
+    this.listeEmballages = this.listeEmballages.filter((emballage: any) => emballage.idProduit === this.data.produit.id);
+  }
+  ajouterQuantiteEmballage() {
+    var qteFormArray = this.form.get('qte') as FormArray;
+    this.quantiteNonEmballee = this.data.produit.qte;
+    var quantiteProdEmballe = 0;
+    var j = 0;
+    for (let i = 0; i < qteFormArray.length; i++) {
+      quantiteProdEmballe += this.form.get('qte').value[i].qte * this.listeEmballages[i].qte;
+    }
+    try {
+      if ((this.quantiteNonEmballee - quantiteProdEmballe) >= 0) {
+        this.quantiteNonEmballee -= quantiteProdEmballe;
+        this.listeEmballages.forEach((emballage: any) => {
+          qteFormArray.at(j).get('qte').setValidators([Validators.max(this.quantiteNonEmballee / emballage.qte), Validators.min(0)])
+          qteFormArray.at(j).get('qte').updateValueAndValidity()
+          j++;
+  
+        });
+      } else {
+        throw new Error("qte<0");
+        
+      }
+      
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+  donnerSuggestion(emballage: any){
+    var listeSuggestion = this.data.produit.listeEmballage.filter((emb: any) => emb.emballage.id === emballage.id);
+    var qteSuggestion = 0;
+    if(listeSuggestion.length > 0){
+      qteSuggestion = listeSuggestion[0].qteEmballage;
+    }
+    return  qteSuggestion
+  }
+}
 //************************************ Declaration des classe pour construire les objets ******************************
 class Facture {
   id: Number;
