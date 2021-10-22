@@ -1,8 +1,118 @@
 <h1 mat-dialog-title>{{typeDocument}} {{data.commande.id}}</h1>
-<mat-vertical-stepper [linear]="false" #stepper>
-    <mat-step [stepControl]="firstFormGroup">
-        <form [formGroup]="firstFormGroup">
-            <ng-template matStepLabel>Informations du client</ng-template>
+<div mat-dialog-content>
+    <mat-vertical-stepper [linear]="false" #stepper>
+        <!-- Step 1 -->
+        <mat-step [stepControl]="firstFormGroup">
+            <form [formGroup]="firstFormGroup">
+                <ng-template matStepLabel>Informations du client</ng-template>
+                <h2>Client</h2>
+                <div class="row">
+                    <div class="colonne entete">Nom:</div>
+                    <div class="colonne">{{data.commande.nomClient}}</div>
+                    <div class="colonne entete">Identifiant:</div>
+                    <div class="colonne">{{data.commande.idClient}}</div>
+                </div>
+                <div class="row">
+                    <div class="colonne entete">Contact:</div>
+                    <div class="colonne">{{data.commande.contact}}</div>
+                    <div class="colonne entete">Téléphone:</div>
+                    <div class="colonne">{{data.commande.telephone}}</div>
+                </div>
+                <div class="row">
+                    <div class="colonne entete">Email:</div>
+                    <div class="colonne">{{data.commande.email}}</div>
+                    <div class="colonne entete">Catégorie client</div>
+                    <div class="colonne">{{data.commande.categorieClient}}</div>
+                </div>
+                <div class="row">
+                    <div class="colonne entete">Ville:</div>
+                    <div class="colonne">{{data.commande.ville}}</div>
+                    <div class="colonne entete">Adresse:</div>
+                    <div class="colonne">{{data.commande.adresse}}</div>
+                </div>
+                <div class="row">
+                    <div class="colonne entete">Type piéce d'identité:</div>
+                    <div class="colonne">{{data.commande.typePieceIdentite}}</div>
+                    <div class="colonne entete">Numéro piéce d'identité:</div>
+                    <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
+                </div>
+                <div class="map">
+                    <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
+                        (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
+                        <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
+                            (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
+                            <agm-info-window>{{data.commande.adresse}}</agm-info-window>
+                        </agm-marker>
+                    </agm-map>
+                </div>
+                <div>
+                    <button mat-button matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <!-- step 2 -->
+        <mat-step [stepControl]="secondFormGroup">
+            <form [formGroup]="secondFormGroup">
+                <ng-template matStepLabel>Produits</ng-template>
+                <div class="produits">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">id</th>
+                                <th scope="col">Nom produit</th>
+                                <th scope="col">Quantité</th>
+                                <th scope="col">Type produit</th>
+                                <th scope="col">Numero de Serie</th>
+                                <th scope="col">Imei</th>
+                                <th>Emballer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let article of listeArticlesDetail">
+                                <th scope="row">{{article.id}}</th>
+                                <td>{{article.nom}}</td>
+                                <td>{{article.qte}}</td>
+                                <td>{{article.type}}</td>
+                                <td>
+                                    <ng-container *ngIf="article.type === 'Produit serie'; else pasNumSerie">
+                                        {{article.numSerie}}
+                                    </ng-container>
+                                    <ng-template #pasNumSerie>
+                                        <div style="color: #D3D3D3;">pas de num serie</div>
+                                    </ng-template>
+                                </td>
+                                <td>
+                                    <ng-container *ngIf="article.type === 'Produit 4G'; else pasNumImei">
+
+                                    </ng-container>
+                                    <ng-template #pasNumImei>
+                                        <div style="color: #D3D3D3;">pas de num IMEI</div>
+                                    </ng-template>
+                                </td>
+                                <td><button mat-icon-button (click)="ouvrirBoiteDialogueEmballer(article)">
+                                        <i class="fas fa-box" style="color: #f7b91e;"
+                                            *ngIf="article.qteNonEmballe !== 0 && article.listeEmballageChoisi.length !== 0"
+                                            matTooltip="Emballage produit n'est pas terminé"></i>
+                                        <i class="fas fa-box-open" style="color: #f7b91e;"
+                                            *ngIf="article.qteNonEmballe !== 0 && article.listeEmballageChoisi.length === 0"
+                                            matTooltip="Produit n'est pas emballé"></i>
+                                        <i class="fas fa-box" style="color: #4caf50;"
+                                            *ngIf="article.qteNonEmballe === 0 && article.listeEmballageChoisi.length !== 0"
+                                            matTooltip="Produit emballé"></i>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button matStepperNext (click)="creerListeEmballageChoisi()">Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <!-- step 3 -->
+        <mat-step>
+            <ng-template matStepLabel>Valider</ng-template>
             <h2>Client</h2>
             <div class="row">
                 <div class="colonne entete">Nom:</div>
@@ -35,109 +145,55 @@
                 <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
             </div>
             <div class="map">
-                <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
-                    (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
-                    <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
-                        (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
+                <agm-map [latitude]="lat" [longitude]="lng" [zoom]="13" [disableDefaultUI]="false"
+                    [disableDoubleClickZoom]="true">
+                    <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' *ngIf="positionExiste">
                         <agm-info-window>{{data.commande.adresse}}</agm-info-window>
                     </agm-marker>
                 </agm-map>
             </div>
-            <div>
-                <button mat-button matStepperNext>Next</button>
-            </div>
-        </form>
-    </mat-step>
-    <mat-step [stepControl]="secondFormGroup">
-        <form [formGroup]="secondFormGroup">
-            <ng-template matStepLabel>Produits</ng-template>
-            <div class="produits">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">id</th>
-                            <th scope="col">Nom produit</th>
-                            <th scope="col">Quantité</th>
-                            <th scope="col">Type produit</th>
-                            <th scope="col">Numero de Serie</th>
-                            <th scope="col">Imei</th>
-                            <th>Emballer</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let article of listeArticlesDetail">
-                            <th scope="row">{{article.id}}</th>
-                            <td>{{article.nom}}</td>
-                            <td>{{article.qte}}</td>
-                            <td>{{article.type}}</td>
-                            <td>
-                                <ng-container *ngIf="article.type === 'Produit serie'; else pasNumSerie">
-                                    {{article.numSerie}}
-                                </ng-container>
-                                <ng-template #pasNumSerie>
-                                    pas de num serie
-                                </ng-template>
-                            </td>
-                            <td>
-                                <ng-container *ngIf="article.type === 'Produit 4G'; else pasNumImei">
-
-                                </ng-container>
-                                <ng-template #pasNumImei>
-                                    pas de num IMEI
-                                </ng-template>
-                            </td>
-                            <td><button mat-icon-button><i class="fas fa-box" style="color: #f7b91e;" (click)="ouvrirBoiteDialogueEmballer(article)"></i></button></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <h2>Liste colisage</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Pack</th>
+                        <th scope="col">Produit</th>
+                        <th scope="col">Qte</th>
+                        <th scope="col">No. Pack</th>
+                        <th scope="col">LxlxH (cm)</th>
+                        <th scope="col">Volume (m³)</th>
+                        <th scope="col">Poids net (kg)</th>
+                        <th scope="col">Poids brut (kg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let article of this.listeEmballageChoisi">
+                        <th scope="row">{{article.emballage.idProduit}}</th>
+                        <td>{{article.emballage.nomEmballage}}</td>
+                        <td>{{article.emballage.nomProduit}}</td>
+                        <td>{{getNombreArticles(article)}}</td>
+                        <td>{{article.qte}}</td>
+                        <td>{{getDimensionsPack(article)}}</td>
+                        <td>{{getVolumePack(article)}}</td>
+                        <td>{{getPoidsPackNet(article)}}</td>
+                        <td>{{getPoidsPackBrut(article)}}</td>     
+                    </tr>
+                    <tr>
+                        <th scope="row" colspan="3"></th>
+                        <td>Total</td>
+                        <td>{{nombrePackTotal}}</td>
+                        <td></td>
+                        <td>{{volumeTotal}}</td>
+                        <td>{{poidsTotalNet}}</td>
+                        <td>{{poidsTotalBrut}}</td>
+                    </tr>
+                </tbody>
+            </table>
             <div>
                 <button mat-button matStepperPrevious>Back</button>
-                <button mat-button matStepperNext>Next</button>
+                <button mat-button (click)="stepper.reset()">Reset</button>
             </div>
-        </form>
-    </mat-step>
-    <mat-step>
-        <ng-template matStepLabel>Valider</ng-template>
-        <h2>Client</h2>
-        <div class="row">
-            <div class="colonne entete">Nom:</div>
-            <div class="colonne">{{data.commande.nomClient}}</div>
-            <div class="colonne entete">Identifiant:</div>
-            <div class="colonne">{{data.commande.idClient}}</div>
-        </div>
-        <div class="row">
-            <div class="colonne entete">Contact:</div>
-            <div class="colonne">{{data.commande.contact}}</div>
-            <div class="colonne entete">Téléphone:</div>
-            <div class="colonne">{{data.commande.telephone}}</div>
-        </div>
-        <div class="row">
-            <div class="colonne entete">Email:</div>
-            <div class="colonne">{{data.commande.email}}</div>
-            <div class="colonne entete">Catégorie client</div>
-            <div class="colonne">{{data.commande.categorieClient}}</div>
-        </div>
-        <div class="row">
-            <div class="colonne entete">Ville:</div>
-            <div class="colonne">{{data.commande.ville}}</div>
-            <div class="colonne entete">Adresse:</div>
-            <div class="colonne">{{data.commande.adresse}}</div>
-        </div>
-        <div class="row">
-            <div class="colonne entete">Type piéce d'identité:</div>
-            <div class="colonne">{{data.commande.typePieceIdentite}}</div>
-            <div class="colonne entete">Numéro piéce d'identité:</div>
-            <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
-        </div>
-        <div class="map">
-            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false">
-                <agm-info-window></agm-info-window>
-            </agm-map>
-        </div>
-        <div>
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-button (click)="stepper.reset()">Reset</button>
-        </div>
-    </mat-step>
-</mat-vertical-stepper>
+        </mat-step>
+    </mat-vertical-stepper>
+</div>

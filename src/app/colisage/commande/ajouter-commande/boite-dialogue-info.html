@@ -51,18 +51,18 @@
                 <td>{{article.nom}}</td>
                 <td>{{article.qte}}</td>
                 <td>{{article.type}}</td>
-                <td><ng-container *ngIf="article.type === 'Produit serie'; else pasNumSerie">
+                <td><ng-container *ngIf="article.type === 'Produit serie' || article.type === 'Produit 4G'; else pasNumSerie">
                     {{article.numSerie}}
                 </ng-container>
                 <ng-template #pasNumSerie>
-                    pas de num serie
+                    <div style="color: #D3D3D3;">pas de num serie</div>
                 </ng-template>
                 </td>
                 <td><ng-container *ngIf="article.type === 'Produit 4G'; else pasNumImei">
-                    
+                    {{article.numImei1}}/{{article.numImei2}}
                 </ng-container>
                 <ng-template #pasNumImei>
-                    pas de num IMEI
+                    <div style="color: #D3D3D3;">pas de num IMEI</div>
                 </ng-template>
                 </td>
               </tr>

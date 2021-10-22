@@ -5,6 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ColisageService } from 'src/app/colisage.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-ajouter-commande',
@@ -140,14 +141,14 @@ export class AjouterCommandeComponent implements OnInit {
 
   ouvrirBoiteDialogueInfo(commande: any) {
     const dialogRef = this.dialogue.open(BoiteDialogueInfo, {
-      width: '800px',
+      width: '1000px',
       data: { commande: commande }
     });
   }
 
   ouvrirBoiteDialogueCreerCommande(commande: any) {
     const dialogRef = this.dialogue.open(BoiteDialogueCreerCommande, {
-      width: '800px',
+      width: '1000px',
       data: { commande: commande }
     });
   }
@@ -271,7 +272,7 @@ export class BoiteDialogueInfo implements OnInit {
           listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
 
         } while (qteProduitCommande > 0);
-        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, listeEmballageProduit));
+        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, this.articles[i].numImei1, this.articles[i].numImei2, listeEmballageProduit, []));
       } else {
       }
 
@@ -299,6 +300,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   listeProduitDansListeEmballage: any;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
+  listeEmballageChoisi: any =[];
 
   latMap: any = 34.74056;
   lngMap: any = 10.76028;
@@ -361,6 +363,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     else {
       var detail = await this.serviceColisage.Detail_BL(this.data.commande.id).toPromise();
       this.articles = await getDetailBL(detail);
+      console.log(this.articles);
     }
     for (let i = 0; i < this.articles.length; i++) {
       let qteProduitCommande = this.articles[i].qte;
@@ -396,7 +399,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
           listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
 
         } while (qteProduitCommande > 0);
-        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, listeEmballageProduit));
+        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, this.articles[i].numImei1, this.articles[i].numImei2, listeEmballageProduit, []));
       }
 
     }
@@ -421,8 +424,67 @@ export class BoiteDialogueCreerCommande implements OnInit {
       width: '600px',
       data: { produit: produit }
     })
+    dialogRef.afterClosed().subscribe(result => {
+      produit.qteNonEmballe = result.qteNonEmballe;
+      produit.listeEmballageChoisi = result.listeEmballageChoisi;
+    });
+  }
+  creerListeEmballageChoisi(){
+    this.listeArticlesDetail.forEach((article : any) => {
+      this.listeEmballageChoisi = this.listeEmballageChoisi.concat(article.listeEmballageChoisi)  
+    });
+  }
+  getNombreArticles(article: any) {
+    return article.qte*article.emballage.qte
   }
 
+  getDimensionsPack(article: any){
+    return article.emballage.longueur + 'x' + article.emballage.largeur + 'x' + article.emballage.hauteur
+  }
+
+  getVolumePack(article: any){
+    return article.emballage.volume*article.qte
+  }
+
+  getPoidsPackNet(article: any){
+    return article.emballage.poids_total_net*article.qte
+  }
+
+  getPoidsPackBrut(article: any) {
+    return article.emballage.poids_emballage_total*article.qte
+  }
+
+  get nombrePackTotal(){
+    var nombrePack = 0
+    this.listeEmballageChoisi.forEach((emballage : any) => {
+      nombrePack += emballage.qte
+    });
+    return nombrePack
+  }
+
+  get volumeTotal(){
+    var volumeTotal = 0
+    this.listeEmballageChoisi.forEach((emballage : any) => {
+      volumeTotal += emballage.emballage.volume
+    });
+    return volumeTotal
+  }
+
+  get poidsTotalNet(){
+    var poidsTotalNet =0
+    this.listeEmballageChoisi.forEach((emballage : any) => {
+      poidsTotalNet += this.getPoidsPackNet(emballage);
+    });
+    return poidsTotalNet
+  }
+
+  get poidsTotalBrut(){
+    var poidsTotalBrut =0
+    this.listeEmballageChoisi.forEach((emballage : any) => {
+      poidsTotalBrut += this.getPoidsPackBrut(emballage);
+    });
+    return poidsTotalBrut.toFixed(1)
+  }
 
 }
 
@@ -439,27 +501,45 @@ export class BoiteDialogueEmballer implements OnInit {
   form: FormGroup;
   maxInput: number;
   minInput: number = 0;
+  listeEmballagesChoisi: any = [];
   constructor(public dialogRef: MatDialogRef<BoiteDialogueEmballer>, @Inject(MAT_DIALOG_DATA) public data: any, private serviceColisage: ColisageService, private fb: FormBuilder) { }
 
   async ngOnInit() {
     this.quantiteNonEmballee = this.data.produit.qte;
     this.form = this.fb.group({
       qte: this.fb.array([])
+
     })
     await this.getListeEmballages();
-    this.ajouterChampQte();
+    await this.ajouterChampQte();
+    this.ajouterQuantiteEmballage()
     console.log(this.data.produit)
   }
   get qteForm() {
     return this.form.get('qte') as FormArray;
   }
-  ajouterChampQte() {
+  async ajouterChampQte() {
     this.listeEmballages.forEach((emballage: any) => {
-      const qte = this.fb.group({
-        qte: [0, [Validators.max(this.data.produit.qte / emballage.qte), Validators.min(0)]]
-      })
-      this.qteForm.push(qte)
+      let qte: any;
+      if (emballage.qte > this.quantiteNonEmballee) {
+        qte = this.fb.group({
+          qte: [{ value: 0, disabled: true }, [Validators.max(this.data.produit.qte / emballage.qte), Validators.min(0)]]
+        })
+      } else {
+        if (this.data.produit.listeEmballageChoisi.length > 0) {
+          const emb = this.data.produit.listeEmballageChoisi.filter((emb: any) => emb.emballage.id === emballage.id)
+          qte = this.fb.group({
+            qte: [emb[0].qte, [Validators.min(0)]]
+          })
+        } else {
+          qte = this.fb.group({
+            qte: [0, [Validators.min(0)]]
+          })
+        }
 
+
+      }
+      this.qteForm.push(qte)
     });
   }
   async getListeEmballages() {
@@ -471,35 +551,54 @@ export class BoiteDialogueEmballer implements OnInit {
     this.quantiteNonEmballee = this.data.produit.qte;
     var quantiteProdEmballe = 0;
     var j = 0;
+    var listeEmballage = [];
     for (let i = 0; i < qteFormArray.length; i++) {
-      quantiteProdEmballe += this.form.get('qte').value[i].qte * this.listeEmballages[i].qte;
+      if (this.listeEmballages[i].qte <= this.quantiteNonEmballee) {
+        quantiteProdEmballe += this.form.get('qte').value[i].qte * this.listeEmballages[i].qte;
+        listeEmballage.push({ emballage: this.listeEmballages[i], qte: this.form.get('qte').value[i].qte })
+      }
     }
     try {
       if ((this.quantiteNonEmballee - quantiteProdEmballe) >= 0) {
         this.quantiteNonEmballee -= quantiteProdEmballe;
-        this.listeEmballages.forEach((emballage: any) => {
-          qteFormArray.at(j).get('qte').setValidators([Validators.max(this.quantiteNonEmballee / emballage.qte), Validators.min(0)])
-          qteFormArray.at(j).get('qte').updateValueAndValidity()
-          j++;
-  
-        });
       } else {
-        throw new Error("qte<0");
-        
-      }
-      
-    } catch (error) {
-      console.log(error)
-    }
+        throw new Error();
 
+      }
+
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Valeur invalide...',
+        text: 'Quantité necessaire est dépassée!'
+      }).then((result) => {
+        this.listeEmballages.forEach((emballage: any) => {
+          if ((this.form.get('qte').value[j].qte * emballage.qte) > this.quantiteNonEmballee) {
+            qteFormArray.at(j).get('qte').setValue(0);
+            j++;
+          }
+        });
+      })
+    }
+    this.listeEmballagesChoisi = listeEmballage;
+    console.log(this.listeEmballagesChoisi)
   }
-  donnerSuggestion(emballage: any){
+  donnerSuggestion(emballage: any) {
     var listeSuggestion = this.data.produit.listeEmballage.filter((emb: any) => emb.emballage.id === emballage.id);
     var qteSuggestion = 0;
-    if(listeSuggestion.length > 0){
+    if (listeSuggestion.length > 0) {
       qteSuggestion = listeSuggestion[0].qteEmballage;
     }
-    return  qteSuggestion
+    return qteSuggestion
+  }
+  valider() {
+    this.listeEmballagesChoisi = this.listeEmballagesChoisi.filter((emballage: any) => emballage.qte > 0)
+    const result = { qteNonEmballe: this.quantiteNonEmballee, listeEmballageChoisi: this.listeEmballagesChoisi }
+    this.dialogRef.close(result);
+  }
+  annuler(){
+    const result = { qteNonEmballe: this.data.produit.qteNonEmballe, listeEmballageChoisi: this.data.produit.listeEmballageChoisi }
+    this.dialogRef.close(result);
   }
 }
 //************************************ Declaration des classe pour construire les objets ******************************
@@ -546,14 +645,22 @@ class Article {
   type: string;
   listeEmballage: any[];
   numSerie: number;
+  numImei1: number;
+  numImei2: number;
+  qteNonEmballe: number;
+  listeEmballageChoisi: any[]
 
-  constructor(id: number, nom: string, qte: number, type: string, numSerie: number, listeEmballage: any[]) {
+  constructor(id: number, nom: string, qte: number, qteNonEmballe: number, type: string, numSerie: number, numImei1: number, numImei2: number, listeEmballage: any[], listeEmballageChoisi: any[]) {
     this.id = id;
     this.nom = nom
     this.qte = qte;
+    this.qteNonEmballe = qteNonEmballe
     this.type = type;
     this.numSerie = numSerie
+    this.numImei1 = numImei1
+    this.numImei2 = numImei2
     this.listeEmballage = listeEmballage;
+    this.listeEmballageChoisi = listeEmballageChoisi;
   }
 
 }
@@ -628,6 +735,9 @@ async function getDetailFacture(detail: any) { //pour avoir les ids et les qtes 
             new_obj.nom = xmldata.Produits[0].Produits_4Gs[0].Produit[i].nom[0];
             new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte[0];
             new_obj.type = "Produit 4G";
+            new_obj.numSerie = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].N_Serie[0];
+            new_obj.numImei1 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].E1[0];
+            new_obj.numImei2 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].E2[0];
 
             articles.push(new_obj)
           }
@@ -692,6 +802,9 @@ async function getDetailBL(detail: any) {  //pour avoir les ids et les qtes des 
             new_obj.nom = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Nom[0];
             new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte[0];
             new_obj.type = "Produit 4G";
+            new_obj.numSerie = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].N_Serie[0];
+            new_obj.numImei1 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].E1[0];
+            new_obj.numImei2 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].E2[0];
 
             articlesBl.push(new_obj)
           }
