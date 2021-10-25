@@ -12,3 +12,24 @@
     width: 100px;
     border-radius: 4px;
 }
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+.spinner {
+    width: 0px !important;
+    height: 0px !important;
+    padding: 10px 0 10px 0;
+}
+.spinner .mat-icon{
+    width: 20px;
+    height: 20px;
+}

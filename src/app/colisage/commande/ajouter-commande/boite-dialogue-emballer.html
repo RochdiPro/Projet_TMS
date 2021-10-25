@@ -1,7 +1,10 @@
 <h1 mat-dialog-title>Produit: {{data.produit.nom}}</h1>
 <div mat-dialog-content>
     <div id="quantite-non-emballe">
-        <h2 class="quantite-non-emballe">Quantité produit non emballées: &nbsp;</h2><h2 class="quantite-non-emballe" [ngClass]="{'tout-emballee': quantiteNonEmballee === 0 , 'pas-tout-emballe': quantiteNonEmballee > 0}">{{quantiteNonEmballee}}</h2>
+        <h2 class="quantite-non-emballe">Quantité produit non emballées: &nbsp;</h2>
+        <h2 class="quantite-non-emballe"
+            [ngClass]="{'tout-emballee': quantiteNonEmballee === 0 , 'pas-tout-emballe': quantiteNonEmballee > 0}">
+            {{quantiteNonEmballee}}</h2>
     </div>
     <div id="emballage">
         <form [formGroup]="form">
@@ -22,10 +25,18 @@
                         <td>{{emballage.qte}}</td>
                         <td>x{{donnerSuggestion(emballage)}}</td>
                         <td>
-                            <mat-form-field appearance="fill" style="width: 100px;"> 
+                            <mat-form-field appearance="fill" style="width: 100px;">
                                 <mat-label>Quantité</mat-label>
-                                <input matInput type="number" formControlName="qte" [max]="quantiteNonEmballee/emballage.qte" [min]="minInput" onkeyup="if(this.value<0)this.value=0" (change)="ajouterQuantiteEmballage()" (keyup)="ajouterQuantiteEmballage()">
-                              </mat-form-field>                        </td>
+                                {{listeMax[i]}}
+                                <input matInput type="number" formControlName="qte" [max]="listeMax[i]"
+                                    [min]="minInput" onkeyup="if(this.value<0)this.value=0"
+                                    (change)="ajouterQuantiteEmballage(); updateMax(i)" (keyup)="ajouterQuantiteEmballage(); updateMax(i)">
+                                    <div matSuffix style="display: flex; flex-direction: column;">
+                                        <button mat-icon-button class="spinner"><mat-icon>expand_less</mat-icon></button>
+                                        <button mat-icon-button class="spinner"><mat-icon>expand_more</mat-icon></button>
+                                    </div>
+                                </mat-form-field>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -33,6 +44,6 @@
     </div>
 </div>
 <div mat-dialog-actions style="float: right;">
-  <button mat-button (click)="annuler()">Annuler</button>
-  <button mat-raised-button color="primary" cdkFocusInitial (click)="valider()">Valider</button>
+    <button mat-button (click)="annuler()">Annuler</button>
+    <button mat-raised-button color="primary" cdkFocusInitial (click)="valider()">Valider</button>
 </div>

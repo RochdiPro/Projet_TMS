@@ -300,7 +300,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   listeProduitDansListeEmballage: any;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-  listeEmballageChoisi: any =[];
+  listeEmballageChoisi: any = [];
 
   latMap: any = 34.74056;
   lngMap: any = 10.76028;
@@ -365,41 +365,51 @@ export class BoiteDialogueCreerCommande implements OnInit {
       this.articles = await getDetailBL(detail);
       console.log(this.articles);
     }
-    for (let i = 0; i < this.articles.length; i++) {
-      let qteProduitCommande = this.articles[i].qte;
+    for (let i = 0; i < this.articles.length; i++) { //pour chaque article
+      let qteProduitCommande = Number(this.articles[i].qte);
       let listeEmballageProduit = [];
       this.listeProduitDansListeEmballage = this.listeEmballage.filter((emballage: any) => emballage.idProduit === this.articles[i].id);
-      if (this.listeProduitDansListeEmballage.length > 0) {
+      if (this.listeProduitDansListeEmballage.length > 0) { //s'il y a des element dans la listeProduitDansListeEmballage
         do {
-          let differenceQte = (index: any) => { return qteProduitCommande - this.listeProduitDansListeEmballage[index].qte }
+          let differenceQte = (index: any) => { return qteProduitCommande - Number(this.listeProduitDansListeEmballage[index].qte) }
           let emballage: any;
-          let qteEmballage
-          for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) {
-            if (j !== 0) {
-              if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && (differenceQte(j) < differenceQte(j - 1))) {
+          let qteEmballage;
+          let differenceQuantite = 0;
+          for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) { //pour chaque emballage d'un produit
+            if (j !== 0) { //tous les element sauf le premier element
+              // console.log((qteProduitCommande >= Number(this.listeProduitDansListeEmballage[j].qte)) && (differenceQte(j) < differenceQte(j - 1)))
+              if (qteProduitCommande >= Number(this.listeProduitDansListeEmballage[j].qte)) { //si qte commande > qte emballage
+                if (differenceQte(j) < differenceQuantite) {
+                  differenceQuantite = differenceQte(j);
+                  let difference = differenceQte(j);
+                  qteEmballage = 0;
+                  do {
+                    difference -= Number(this.listeProduitDansListeEmballage[j].qte)
+                    qteEmballage++;
+                  } while (difference >= 0);
+                  emballage = this.listeProduitDansListeEmballage[j];
+                }
+
+              }
+            } else if (j == 0) { //si c'est le premier element du liste
+              if (qteProduitCommande >= Number(this.listeProduitDansListeEmballage[j].qte)) {
+                differenceQuantite = differenceQte(j);
                 let difference = differenceQte(j);
                 qteEmballage = 0;
                 do {
-                  difference -= this.listeProduitDansListeEmballage[j].qte
+                  difference -= Number(this.listeProduitDansListeEmballage[j].qte)
                   qteEmballage++;
-                } while (difference > 0);
+                } while (difference >= 0);
                 emballage = this.listeProduitDansListeEmballage[j];
               }
-            } else if ((qteProduitCommande >= this.listeProduitDansListeEmballage[j].qte) && j === 0) {
-              let difference = differenceQte(j);
-              qteEmballage = 0;
-              do {
-                difference -= this.listeProduitDansListeEmballage[j].qte
-                qteEmballage++;
-              } while (difference > 0);
-              emballage = this.listeProduitDansListeEmballage[j];
+
             }
           }
-          qteProduitCommande -= (emballage.qte * qteEmballage);
+          qteProduitCommande -= (Number(emballage.qte) * qteEmballage);
           listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
 
         } while (qteProduitCommande > 0);
-        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, this.articles[i].numImei1, this.articles[i].numImei2, listeEmballageProduit, []));
+        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, Number(this.articles[i].qte), Number(this.articles[i].qte), this.articles[i].type, this.articles[i].numSerie, this.articles[i].numImei1, this.articles[i].numImei2, listeEmballageProduit, []));
       }
 
     }
@@ -429,58 +439,58 @@ export class BoiteDialogueCreerCommande implements OnInit {
       produit.listeEmballageChoisi = result.listeEmballageChoisi;
     });
   }
-  creerListeEmballageChoisi(){
-    this.listeArticlesDetail.forEach((article : any) => {
-      this.listeEmballageChoisi = this.listeEmballageChoisi.concat(article.listeEmballageChoisi)  
+  creerListeEmballageChoisi() {
+    this.listeArticlesDetail.forEach((article: any) => {
+      this.listeEmballageChoisi = this.listeEmballageChoisi.concat(article.listeEmballageChoisi)
     });
   }
   getNombreArticles(article: any) {
-    return article.qte*article.emballage.qte
+    return article.qte * article.emballage.qte
   }
 
-  getDimensionsPack(article: any){
+  getDimensionsPack(article: any) {
     return article.emballage.longueur + 'x' + article.emballage.largeur + 'x' + article.emballage.hauteur
   }
 
-  getVolumePack(article: any){
-    return article.emballage.volume*article.qte
+  getVolumePack(article: any) {
+    return article.emballage.volume * article.qte
   }
 
-  getPoidsPackNet(article: any){
-    return article.emballage.poids_total_net*article.qte
+  getPoidsPackNet(article: any) {
+    return article.emballage.poids_total_net * article.qte
   }
 
   getPoidsPackBrut(article: any) {
-    return article.emballage.poids_emballage_total*article.qte
+    return article.emballage.poids_emballage_total * article.qte
   }
 
-  get nombrePackTotal(){
+  get nombrePackTotal() {
     var nombrePack = 0
-    this.listeEmballageChoisi.forEach((emballage : any) => {
+    this.listeEmballageChoisi.forEach((emballage: any) => {
       nombrePack += emballage.qte
     });
     return nombrePack
   }
 
-  get volumeTotal(){
+  get volumeTotal() {
     var volumeTotal = 0
-    this.listeEmballageChoisi.forEach((emballage : any) => {
+    this.listeEmballageChoisi.forEach((emballage: any) => {
       volumeTotal += emballage.emballage.volume
     });
     return volumeTotal
   }
 
-  get poidsTotalNet(){
-    var poidsTotalNet =0
-    this.listeEmballageChoisi.forEach((emballage : any) => {
+  get poidsTotalNet() {
+    var poidsTotalNet = 0
+    this.listeEmballageChoisi.forEach((emballage: any) => {
       poidsTotalNet += this.getPoidsPackNet(emballage);
     });
     return poidsTotalNet
   }
 
-  get poidsTotalBrut(){
-    var poidsTotalBrut =0
-    this.listeEmballageChoisi.forEach((emballage : any) => {
+  get poidsTotalBrut() {
+    var poidsTotalBrut = 0
+    this.listeEmballageChoisi.forEach((emballage: any) => {
       poidsTotalBrut += this.getPoidsPackBrut(emballage);
     });
     return poidsTotalBrut.toFixed(1)
@@ -502,10 +512,13 @@ export class BoiteDialogueEmballer implements OnInit {
   maxInput: number;
   minInput: number = 0;
   listeEmballagesChoisi: any = [];
+  listeMax: number[] = [];
+  quantiteNonEmballeePrecedente: number;
   constructor(public dialogRef: MatDialogRef<BoiteDialogueEmballer>, @Inject(MAT_DIALOG_DATA) public data: any, private serviceColisage: ColisageService, private fb: FormBuilder) { }
 
   async ngOnInit() {
-    this.quantiteNonEmballee = this.data.produit.qte;
+    this.quantiteNonEmballee = Number(this.data.produit.qte);
+    this.quantiteNonEmballeePrecedente = Number(this.data.produit.qte);
     this.form = this.fb.group({
       qte: this.fb.array([])
 
@@ -523,7 +536,7 @@ export class BoiteDialogueEmballer implements OnInit {
       let qte: any;
       if (emballage.qte > this.quantiteNonEmballee) {
         qte = this.fb.group({
-          qte: [{ value: 0, disabled: true }, [Validators.max(this.data.produit.qte / emballage.qte), Validators.min(0)]]
+          qte: [{ value: 0, disabled: true }, [Validators.max(Number(this.data.produit.qte) / Number(emballage.qte)), Validators.min(0)]]
         })
       } else {
         if (this.data.produit.listeEmballageChoisi.length > 0) {
@@ -539,22 +552,42 @@ export class BoiteDialogueEmballer implements OnInit {
 
 
       }
-      this.qteForm.push(qte)
+      this.qteForm.push(qte);
+      this.listeMax.push(Number(this.data.produit.qte) / Number(emballage.qte))
     });
   }
   async getListeEmballages() {
     this.listeEmballages = await this.serviceColisage.listeColisage().toPromise();
     this.listeEmballages = this.listeEmballages.filter((emballage: any) => emballage.idProduit === this.data.produit.id);
+    this.listeEmballages = this.listeEmballages.sort((emballage1: any, emballage2: any) => Number(emballage1.qte) > Number(emballage2.qte) ? 1 : -1)
+  }
+  updateMax(i: any) {
+    for (let j = 0; j < this.listeMax.length; j++) {
+      if (j !== i) {
+        this.listeMax[j] = this.quantiteNonEmballee / Number(this.listeEmballages[j].qte);
+        this.listeMax[j] = Math.trunc(this.listeMax[j])
+        console.log(this.listeMax[j])
+      } else {
+        if (this.quantiteNonEmballeePrecedente < this.quantiteNonEmballee) {
+          this.listeMax[j] = this.quantiteNonEmballee / Number(this.listeEmballages[j].qte);
+        this.listeMax[j] = Math.trunc(this.listeMax[j])
+          
+        }
+      }
+
+    }
+    this.quantiteNonEmballeePrecedente = this.quantiteNonEmballee;
+
   }
   ajouterQuantiteEmballage() {
     var qteFormArray = this.form.get('qte') as FormArray;
-    this.quantiteNonEmballee = this.data.produit.qte;
+    this.quantiteNonEmballee = Number(this.data.produit.qte);
     var quantiteProdEmballe = 0;
     var j = 0;
     var listeEmballage = [];
     for (let i = 0; i < qteFormArray.length; i++) {
-      if (this.listeEmballages[i].qte <= this.quantiteNonEmballee) {
-        quantiteProdEmballe += this.form.get('qte').value[i].qte * this.listeEmballages[i].qte;
+      if (Number(this.listeEmballages[i].qte) <= this.quantiteNonEmballee) {
+        quantiteProdEmballe += Number(this.form.get('qte').value[i].qte) * Number(this.listeEmballages[i].qte);
         listeEmballage.push({ emballage: this.listeEmballages[i], qte: this.form.get('qte').value[i].qte })
       }
     }
@@ -581,7 +614,6 @@ export class BoiteDialogueEmballer implements OnInit {
       })
     }
     this.listeEmballagesChoisi = listeEmballage;
-    console.log(this.listeEmballagesChoisi)
   }
   donnerSuggestion(emballage: any) {
     var listeSuggestion = this.data.produit.listeEmballage.filter((emb: any) => emb.emballage.id === emballage.id);
@@ -596,7 +628,7 @@ export class BoiteDialogueEmballer implements OnInit {
     const result = { qteNonEmballe: this.quantiteNonEmballee, listeEmballageChoisi: this.listeEmballagesChoisi }
     this.dialogRef.close(result);
   }
-  annuler(){
+  annuler() {
     const result = { qteNonEmballe: this.data.produit.qteNonEmballe, listeEmballageChoisi: this.data.produit.listeEmballageChoisi }
     this.dialogRef.close(result);
   }
