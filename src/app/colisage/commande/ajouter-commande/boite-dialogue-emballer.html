@@ -1,8 +1,10 @@
 <h1 mat-dialog-title>Produit: {{data.produit.nom}}</h1>
 <div mat-dialog-content>
     <div id="quantite-non-emballe">
-        <h2 class="quantite-non-emballe">Quantité produit non emballées: &nbsp;</h2>
-        <h2 class="quantite-non-emballe"
+        <h2 class="quantite">Quantité produit demandée: &nbsp;</h2>
+        <h2 class="quantite" style="color: #3f51b5; margin-left: 25px;">{{data.produit.qte}}</h2><br>
+        <h2 class="quantite">Quantité produit non emballée: &nbsp;</h2>
+        <h2 class="quantite"
             [ngClass]="{'tout-emballee': quantiteNonEmballee === 0 , 'pas-tout-emballe': quantiteNonEmballee > 0}">
             {{quantiteNonEmballee}}</h2>
     </div>
@@ -27,14 +29,9 @@
                         <td>
                             <mat-form-field appearance="fill" style="width: 100px;">
                                 <mat-label>Quantité</mat-label>
-                                {{listeMax[i]}}
                                 <input matInput type="number" formControlName="qte" [max]="listeMax[i]"
                                     [min]="minInput" onkeyup="if(this.value<0)this.value=0"
                                     (change)="ajouterQuantiteEmballage(); updateMax(i)" (keyup)="ajouterQuantiteEmballage(); updateMax(i)">
-                                    <div matSuffix style="display: flex; flex-direction: column;">
-                                        <button mat-icon-button class="spinner"><mat-icon>expand_less</mat-icon></button>
-                                        <button mat-icon-button class="spinner"><mat-icon>expand_more</mat-icon></button>
-                                    </div>
                                 </mat-form-field>
                         </td>
                     </tr>

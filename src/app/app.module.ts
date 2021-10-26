@@ -52,11 +52,10 @@ import { SupportsComponent } from './colisage/supports/supports.component';
 import { AjouterSupportComponent } from './colisage/supports/ajouter-support/ajouter-support.component'
 import { ListerSupportsComponent } from './colisage/supports/lister-supports/lister-supports.component';
 import { ModifierSupportComponent } from './colisage/supports/modifier-support/modifier-support.component'
-import { AjoutComponent, AjouterCarburantComponent, DetailVehiculeComponent, MesVehiculesComponent, MiseAJourComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent } from './TMS/parc/vehicule/mes-vehicules/mes-vehicules.component';
-import { AjouterVehiculeLoueComponent, DetailVehiculeLoueComponent, VehiculeLoueComponent } from './TMS/parc/vehicule/vehicule-loue/vehicule-loue.component';
+import { AjoutComponent, AjouterCarburantComponent, DetailVehiculeComponent, MesVehiculesComponent, MiseAJourComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent, BoiteDialogueEntretien } from './TMS/parc/vehicule/mes-vehicules/mes-vehicules.component';import { AjouterVehiculeLoueComponent, DetailVehiculeLoueComponent, VehiculeLoueComponent } from './TMS/parc/vehicule/vehicule-loue/vehicule-loue.component';
 import { AjoutMissionComponent} from './TMS/parc/missions/ajout-mission/ajout-mission.component';
 import { CommandeComponent } from './colisage/commande/commande.component';
-import { AjouterCommandeComponent, BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer } from './colisage/commande/ajouter-commande/ajouter-commande.component'
+import { AjouterCommandeComponent, BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer, BoiteDialogueDetailProduit } from './colisage/commande/ajouter-commande/ajouter-commande.component'
 registerLocaleData(localeFr, 'fr');
 
 
@@ -72,6 +71,7 @@ registerLocaleData(localeFr, 'fr');
     AjouterCarburantComponent,
     DetailVehiculeComponent,
     MiseAJourComponent,
+    BoiteDialogueEntretien,
     ReclamationComponent,
     VehiculeLoueComponent,
     AjoutComponent,
@@ -102,7 +102,8 @@ registerLocaleData(localeFr, 'fr');
     AjouterCommandeComponent,
     BoiteDialogueInfo,
     BoiteDialogueCreerCommande,
-    BoiteDialogueEmballer
+    BoiteDialogueEmballer,
+    BoiteDialogueDetailProduit
    
   ],
   imports: [

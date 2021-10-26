@@ -1,0 +1,43 @@
+#check-box-vidange {
+    display: grid;
+    grid-template-areas:
+        "huileMoteur    liquideRefroidissement"
+        "huileBoiteVitesse  huileBoiteVitesse";
+    grid-template-columns: 1fr 1fr;
+}
+#huile-moteur {
+    grid-area: huileMoteur;
+}
+#liquide-refroidissement {
+    grid-area: liquideRefroidissement;
+}
+#huile-boite-vitesse {
+    grid-area: huileBoiteVitesse;
+}
+
+#check-box-pieces {
+    display: grid;
+    grid-template-areas:
+        "filtreHuilde    filtreAir"
+        "filtreClimatiseur  filtrCarburant"
+        "bougies  courroies";
+    grid-template-columns: 1fr 1fr;
+}
+#filtre-huile {
+    grid-area: filtreHuilde;
+}
+#filtre-air {
+    grid-area: filtreAir;
+}
+#filtre-climatiseur {
+    grid-area: filtreClimatiseur;
+}
+#filtre-carburant {
+    grid-area: filtrCarburant;
+}
+#bougies {
+    grid-area: bougies;
+}
+#courroies {
+    grid-area: courroies;
+}

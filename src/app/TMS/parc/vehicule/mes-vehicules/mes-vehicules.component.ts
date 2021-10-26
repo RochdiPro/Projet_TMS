@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ParcTransportService } from 'src/app/parc-transport.service';
 import Swal from 'sweetalert2';
@@ -123,6 +123,13 @@ export class MesVehiculesComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(res => {
       this.chargerVehicules();
+    })
+  }
+
+   //Bouton ouvrir dialogue entretien
+   ouvrirEntretien(){
+    const dialogRef = this.dialog.open(BoiteDialogueEntretien, {
+      width: '600px',
     })
   }
 
@@ -943,5 +950,50 @@ export class ReclamationComponent implements OnInit {
       }
     })
 
+  }
+}
+
+// ********************************Boite dialogue entretien ******************************************
+@Component({
+  selector: 'boite-dialogue-entretien',
+  templateUrl: 'boite-dialogue-entretien.html',
+  styleUrls: ['boite-dialogue-entretien.scss']
+})
+
+export class BoiteDialogueEntretien implements OnInit {
+  form: FormGroup;
+  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<BoiteDialogueEntretien>, @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+  ngOnInit() {
+    this.form = this.fb.group({
+      huileMoteur: false,
+      liquideReferoidissement: false,
+      huileBoiteVitesse: false,
+      filtreHuilde: false,
+      filtreAir: false,
+      filtreClimatiseur: false,
+      filtrCarburant: false,
+      bougies: false,
+      courroies: false
+    })
+  }
+  transformerBoolean(variable: boolean) {
+    if (variable) {
+      return "oui"
+    } else {
+      return "non"
+    }
+  }
+  valider() {
+    let formdata = new FormData;
+    formdata.append('', this.transformerBoolean(this.form.get('huileMoteur').value))
+    formdata.append('', this.transformerBoolean(this.form.get('liquideReferoidissement').value))
+    formdata.append('', this.transformerBoolean(this.form.get('huileBoiteVitesse').value))
+    formdata.append('', this.transformerBoolean(this.form.get('filtreHuilde').value))
+    formdata.append('', this.transformerBoolean(this.form.get('filtreAir').value))
+    formdata.append('', this.transformerBoolean(this.form.get('filtreClimatiseur').value))
+    formdata.append('', this.transformerBoolean(this.form.get('filtrCarburant').value))
+    formdata.append('', this.transformerBoolean(this.form.get('bougies').value))
+    formdata.append('', this.transformerBoolean(this.form.get('courroies').value))
   }
 }

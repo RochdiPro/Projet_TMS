@@ -170,25 +170,6 @@ export class AjouterCommandeComponent implements OnInit {
     }
   }
 
-  trierTableau() {
-    switch (this.typeDeTrie) {
-      case "date-ascendant":
-        this.dataSource.data = this.listeCommandes.sort((commandeA: any, commandeB: any) => commandeA.dateCreation > commandeB.dateCreation ? 1 : -1) as TableCommandes[];
-        break;
-      case "date-descendant":
-        this.dataSource.data = this.listeCommandes.sort((commandeA: any, commandeB: any) => commandeA.dateCreation > commandeB.dateCreation ? -1 : 1) as TableCommandes[];
-        break;
-      case "nom-ascendant":
-        this.dataSource.data = this.listeCommandes.sort((commandeA: any, commandeB: any) => commandeA.nomClient > commandeB.nomClient ? 1 : -1) as TableCommandes[];
-        break;
-      case "nom-descendant":
-        this.dataSource.data = this.listeCommandes.sort((commandeA: any, commandeB: any) => commandeA.nomClient > commandeB.nomClient ? -1 : 1) as TableCommandes[];
-        break;
-
-      default:
-        break;
-    }
-  }
 
 }
 
@@ -208,7 +189,7 @@ export class BoiteDialogueInfo implements OnInit {
   listeArticlesDetail: any = [];
   listeEmballage: any;
   listeProduitDansListeEmballage: any;
-  constructor(public dialogRef: MatDialogRef<BoiteDialogueInfo>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService) { }
+  constructor(public dialogRef: MatDialogRef<BoiteDialogueInfo>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService, private dialog: MatDialog) { }
 
   async ngOnInit() {
     this.indicateurTypeCommande = this.data.commande.reference.split("-")[0];
@@ -272,15 +253,24 @@ export class BoiteDialogueInfo implements OnInit {
           listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
 
         } while (qteProduitCommande > 0);
-        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, this.articles[i].numImei1, this.articles[i].numImei2, listeEmballageProduit, []));
+        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, this.articles[i].qte, this.articles[i].qte, this.articles[i].type, this.articles[i].numSerie, this.articles[i].produit4Gs, this.articles[i].numeroLots, listeEmballageProduit, []));
       } else {
       }
 
     }
+    console.log(this.articles)
   }
 
   fermerBoiteDialogue() {
     this.dialogRef.close()
+  }
+
+  ouvrirBoiteDialogueDetailProduit(article: any) {
+    const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
+      width: '600px',
+      maxHeight: '600px',
+      data: { produit: article }
+    })
   }
 }
 
@@ -311,7 +301,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   positionClient: any = {
     latitude: 34.74056, longitude: 10.76028
   };
-  constructor(private fb: FormBuilder, public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService, public dialogue: MatDialog) { }
+  constructor(private fb: FormBuilder, public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService, public dialog: MatDialog) { }
 
   async ngOnInit() {
     this.firstFormGroup = this.fb.group({
@@ -409,7 +399,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
           listeEmballageProduit.push({ emballage: emballage, qteEmballage: qteEmballage });
 
         } while (qteProduitCommande > 0);
-        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, Number(this.articles[i].qte), Number(this.articles[i].qte), this.articles[i].type, this.articles[i].numSerie, this.articles[i].numImei1, this.articles[i].numImei2, listeEmballageProduit, []));
+        this.listeArticlesDetail.push(new Article(this.articles[i].id, this.articles[i].nom, Number(this.articles[i].qte), Number(this.articles[i].qte), this.articles[i].type, this.articles[i].numSerie, this.articles[i].produit4Gs, this.articles[i].numeroLots, listeEmballageProduit, []));
       }
 
     }
@@ -430,7 +420,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   }
 
   ouvrirBoiteDialogueEmballer(produit: any) {
-    const dialogRef = this.dialogue.open(BoiteDialogueEmballer, {
+    const dialogRef = this.dialog.open(BoiteDialogueEmballer, {
       width: '600px',
       data: { produit: produit }
     })
@@ -438,6 +428,13 @@ export class BoiteDialogueCreerCommande implements OnInit {
       produit.qteNonEmballe = result.qteNonEmballe;
       produit.listeEmballageChoisi = result.listeEmballageChoisi;
     });
+  }
+  ouvrirBoiteDialogueDetailProduit(article: any) {
+    const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
+      width: '600px',
+      maxHeight: '600px',
+      data: { produit: article }
+    })
   }
   creerListeEmballageChoisi() {
     this.listeArticlesDetail.forEach((article: any) => {
@@ -564,15 +561,9 @@ export class BoiteDialogueEmballer implements OnInit {
   updateMax(i: any) {
     for (let j = 0; j < this.listeMax.length; j++) {
       if (j !== i) {
-        this.listeMax[j] = this.quantiteNonEmballee / Number(this.listeEmballages[j].qte);
+        this.listeMax[j] = (this.quantiteNonEmballee / Number(this.listeEmballages[j].qte) + this.form.get('qte').value[j].qte);
         this.listeMax[j] = Math.trunc(this.listeMax[j])
         console.log(this.listeMax[j])
-      } else {
-        if (this.quantiteNonEmballeePrecedente < this.quantiteNonEmballee) {
-          this.listeMax[j] = this.quantiteNonEmballee / Number(this.listeEmballages[j].qte);
-        this.listeMax[j] = Math.trunc(this.listeMax[j])
-          
-        }
       }
 
     }
@@ -633,7 +624,25 @@ export class BoiteDialogueEmballer implements OnInit {
     this.dialogRef.close(result);
   }
 }
+// --------------------------------------------------------------------------------------------------------------------
+// *********************************** Boite Dialogue Detail produit **************************************************
+// --------------------------------------------------------------------------------------------------------------------
+@Component({
+  selector: 'boite-dialogue-detail-produit',
+  templateUrl: 'boite-dialogue-detail-produit.html',
+  styleUrls: ['boite-dialogue-detail-produit.scss']
+})
+
+export class BoiteDialogueDetailProduit implements OnInit {
+  constructor(public dialogRef: MatDialogRef<BoiteDialogueDetailProduit>, @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+  ngOnInit() { }
+}
+
+
+// --------------------------------------------------------------------------------------------------------------------
 //************************************ Declaration des classe pour construire les objets ******************************
+// --------------------------------------------------------------------------------------------------------------------
 class Facture {
   id: Number;
   reference: String;
@@ -676,28 +685,30 @@ class Article {
   qte: number;
   type: string;
   listeEmballage: any[];
-  numSerie: number;
-  numImei1: number;
-  numImei2: number;
+  numSerie: any[];
+  produit4Gs: any[];
+  numeroLots: any[];
   qteNonEmballe: number;
   listeEmballageChoisi: any[]
 
-  constructor(id: number, nom: string, qte: number, qteNonEmballe: number, type: string, numSerie: number, numImei1: number, numImei2: number, listeEmballage: any[], listeEmballageChoisi: any[]) {
+  constructor(id: number, nom: string, qte: number, qteNonEmballe: number, type: string, numSerie: any[], produit4Gs: any[], numeroLots: any[], listeEmballage: any[], listeEmballageChoisi: any[]) {
     this.id = id;
     this.nom = nom
     this.qte = qte;
     this.qteNonEmballe = qteNonEmballe
     this.type = type;
     this.numSerie = numSerie
-    this.numImei1 = numImei1
-    this.numImei2 = numImei2
+    this.produit4Gs = produit4Gs
+    this.numeroLots = numeroLots
     this.listeEmballage = listeEmballage;
     this.listeEmballageChoisi = listeEmballageChoisi;
   }
 
 }
 
+// -----------------------------------------------------------------------------------------
 // ******************************* Interfaces pour afficher les tableau ********************
+// -----------------------------------------------------------------------------------------
 interface TableCommandes {
   id: Number;
   reference: String;
@@ -713,7 +724,12 @@ interface TableCommandes {
   categorieClient: String;
   dateCreation: Date;
 }
-//************************** fonctions reutilisable ***************
+
+
+
+// -------------------------------------------------------------------------------------------------------------
+//**************************************************** fonctions reutilisable **********************************
+// -------------------------------------------------------------------------------------------------------------
 async function getDetailFacture(detail: any) { //pour avoir les ids et les qtes des produits dans une facture
   var facture: any;
   var xmldata: any;
@@ -750,11 +766,16 @@ async function getDetailFacture(detail: any) { //pour avoir les ids et les qtes 
           for (let i = 0; i < xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
 
             new_obj = {}
+            let numSerie: any = []
             new_obj.id = xmldata.Produits[0].Produits_Series[0].Produit[i].Id[0];
             new_obj.nom = xmldata.Produits[0].Produits_Series[0].Produit[i].Nom[0];
             new_obj.qte = xmldata.Produits[0].Produits_Series[0].Produit[i].Qte[0];
             new_obj.type = "Produit serie";
-            new_obj.numSerie = xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0].N_Serie[0];
+            for (let j = 0; j < xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0].N_Serie.length; j++) {
+              numSerie.push(xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0].N_Serie[j])
+
+            }
+            new_obj.numSerie = numSerie;
 
             articles.push(new_obj)
           }
@@ -763,14 +784,40 @@ async function getDetailFacture(detail: any) { //pour avoir les ids et les qtes 
           for (let i = 0; i < xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
 
             new_obj = {}
+            let produit4Gs: any = [];
+            let produit4G: any = {};
             new_obj.id = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id[0];
-            new_obj.nom = xmldata.Produits[0].Produits_4Gs[0].Produit[i].nom[0];
+            new_obj.nom = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Nom[0];
             new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte[0];
             new_obj.type = "Produit 4G";
-            new_obj.numSerie = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].N_Serie[0];
-            new_obj.numImei1 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].E1[0];
-            new_obj.numImei2 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].E2[0];
+            for (let j = 0; j < xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G.length; j++) {
+              produit4G.numSerie = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[j].N_Serie[0];
+              produit4G.numImei1 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[j].E1[0];
+              produit4G.numImei2 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[j].E2[0];
+              produit4Gs.push(produit4G);
+            }
+            new_obj.produit4Gs = produit4Gs;
 
+            articles.push(new_obj)
+          }
+        }
+        if (xmldata.Produits[0].Produits_N_Lot) {
+          for (let i = 0; i < xmldata.Produits[0].Produits_N_Lot[0].Produit.length; i++) {
+
+            new_obj = {}
+            let numeroLots: any = [];
+            let numeroLot: any = {};
+            new_obj.id = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Id[0];
+            new_obj.nom = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Nom[0];
+            new_obj.qte = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Qte[0];
+            new_obj.type = "Numero Lot";
+            for (let j = 0; j < xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot.length; j++) {
+              numeroLot.numero = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot[j].Numero[0];
+              numeroLot.quantite = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot[j].Qte[0];
+              numeroLot.date = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot[j].Date[0];
+              numeroLots.push(numeroLot);
+            }
+            new_obj.numeroLots = numeroLots;
             articles.push(new_obj)
           }
         }
@@ -817,11 +864,16 @@ async function getDetailBL(detail: any) {  //pour avoir les ids et les qtes des 
           for (let i = 0; i < xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
 
             new_obj = {}
+            let numSerie: any = []
             new_obj.id = xmldata.Produits[0].Produits_Series[0].Produit[i].Id[0];
             new_obj.nom = xmldata.Produits[0].Produits_Series[0].Produit[i].Nom[0];
             new_obj.qte = xmldata.Produits[0].Produits_Series[0].Produit[i].Qte[0];
             new_obj.type = "Produit serie";
-            new_obj.numSerie = xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0].N_Serie[0];
+            for (let j = 0; j < xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0].N_Serie.length; j++) {
+              numSerie.push(xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0].N_Serie[j])
+
+            }
+            new_obj.numSerie = numSerie;
 
             articlesBl.push(new_obj)
           }
@@ -830,14 +882,40 @@ async function getDetailBL(detail: any) {  //pour avoir les ids et les qtes des 
           for (let i = 0; i < xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
 
             new_obj = {}
+            let produit4Gs: any = [];
             new_obj.id = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id[0];
             new_obj.nom = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Nom[0];
             new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte[0];
             new_obj.type = "Produit 4G";
-            new_obj.numSerie = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].N_Serie[0];
-            new_obj.numImei1 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].E1[0];
-            new_obj.numImei2 = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[0].E2[0];
+            for (let j = 0; j < xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G.length; j++) {
+              produit4Gs.push({
+                numSerie: xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[j].N_Serie[0],
+                numImei1: xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[j].E1[0],
+                numImei2: xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0].Produit_4G[j].E2[0]
+              });
+            }
+            new_obj.produit4Gs = produit4Gs;
 
+            articlesBl.push(new_obj)
+          }
+        }
+        if (xmldata.Produits[0].Produits_N_Lot) {
+          for (let i = 0; i < xmldata.Produits[0].Produits_N_Lot[0].Produit.length; i++) {
+
+            new_obj = {}
+            let numeroLots: any = [];
+            let numeroLot: any = {};
+            new_obj.id = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Id[0];
+            new_obj.nom = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Nom[0];
+            new_obj.qte = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Qte[0];
+            new_obj.type = "Produit 4G";
+            for (let j = 0; j < xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot.length; j++) {
+              numeroLot.numero = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot[j].Numero[0];
+              numeroLot.quantite = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot[j].Qte[0];
+              numeroLot.date = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot[j].Date[0];
+              numeroLots.push(numeroLot);
+            }
+            new_obj.numeroLots = numeroLots;
             articlesBl.push(new_obj)
           }
         }

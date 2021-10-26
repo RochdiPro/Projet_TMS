@@ -1,23 +1,23 @@
 .mat-form-field {
     margin-top: 16px;
 }
-.colonne{
+.colonne {
     width: 50%;
 }
-.row{
+.row {
     margin-left: 10px;
 }
-.entete{
+.entete {
     font-weight: bold;
 }
-.boutons{
+.boutons {
     float: right;
 }
-.produits{
+.produits {
     height: 200px;
     overflow-y: auto;
 }
-.map{
+.map {
     margin-top: 10px;
 }
 agm-map {
@@ -25,14 +25,40 @@ agm-map {
     width: 95%;
 }
 @media (min-width: 780px) {
-    .colonne{
+    .colonne {
         width: 25%;
     }
-    .row{
+    .row {
         margin-left: 10px;
     }
-    .entete{
+    .entete {
         font-weight: bold;
     }
-    
+}
+#manupilation-adresse {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+#adresse-input {
+    height: 51.25px;
+    width: 201px;
+    padding: 0 20px;
+    margin-bottom: 3px;
+    border: 0;
+    background: #f5f5f5;
+    border-radius: 50px;
+}
+#adresse-input:focus {
+    outline: none;
+}
+#ajouter-adresse {
+    background: #f5f5f5;
+    margin-left: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 6px;
+    border-radius: 50px;
+    border: 2px solid #3f51b5;
 }

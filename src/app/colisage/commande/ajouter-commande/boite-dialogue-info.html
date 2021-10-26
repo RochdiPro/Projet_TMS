@@ -11,7 +11,7 @@
         <div class="colonne entete">Contact:</div>
         <div class="colonne">{{data.commande.contact}}</div>
         <div class="colonne entete">Téléphone:</div>
-        <div class="colonne">{{data.commande.telephone}}</div> 
+        <div class="colonne">{{data.commande.telephone}}</div>
     </div>
     <div class="row">
         <div class="colonne entete">Email:</div>
@@ -29,45 +29,33 @@
         <div class="colonne entete">Type piéce d'identité:</div>
         <div class="colonne">{{data.commande.typePieceIdentite}}</div>
         <div class="colonne entete">Numéro piéce d'identité:</div>
-        <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>   
+        <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
     </div>
     <hr>
     <h2>Produits</h2>
     <div class="produits">
         <table class="table">
             <thead>
-              <tr>
-                <th scope="col">id</th>
-                <th scope="col">Nom produit</th>
-                <th scope="col">Quantité</th>
-                <th scope="col">Type produit</th>
-                <th scope="col">Numero de Serie</th>
-                <th scope="col">Imei</th>
-              </tr>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Nom produit</th>
+                    <th scope="col">Quantité</th>
+                    <th scope="col">Type produit</th>
+                    <th scope="col">Details</th>
+                </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let article of listeArticlesDetail">
-                <th scope="row">{{article.id}}</th>
-                <td>{{article.nom}}</td>
-                <td>{{article.qte}}</td>
-                <td>{{article.type}}</td>
-                <td><ng-container *ngIf="article.type === 'Produit serie' || article.type === 'Produit 4G'; else pasNumSerie">
-                    {{article.numSerie}}
-                </ng-container>
-                <ng-template #pasNumSerie>
-                    <div style="color: #D3D3D3;">pas de num serie</div>
-                </ng-template>
-                </td>
-                <td><ng-container *ngIf="article.type === 'Produit 4G'; else pasNumImei">
-                    {{article.numImei1}}/{{article.numImei2}}
-                </ng-container>
-                <ng-template #pasNumImei>
-                    <div style="color: #D3D3D3;">pas de num IMEI</div>
-                </ng-template>
-                </td>
-              </tr>
+                <tr *ngFor="let article of listeArticlesDetail">
+                    <th scope="row">{{article.id}}</th>
+                    <td>{{article.nom}}</td>
+                    <td>{{article.qte}}</td>
+                    <td>{{article.type}}</td>
+                    <td style="justify-content: center;">
+                        <button mat-icon-button (click)="ouvrirBoiteDialogueDetailProduit(article)" [disabled] = "article.type === 'Produit simple'"><mat-icon>list_alt</mat-icon></button>
+                    </td>
+                </tr>
             </tbody>
-          </table>
+        </table>
     </div>
 
 </div>
