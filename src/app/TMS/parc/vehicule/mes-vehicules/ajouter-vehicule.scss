@@ -6,10 +6,16 @@
   margin: 0 !important;
   padding: 12px 24px !important;
 }
+/* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button { //pour enlever les deux bouton qui augmente et diminue la valeyr d'un input de type number
+input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 .matriculetun { //pour le background du matricule type tun

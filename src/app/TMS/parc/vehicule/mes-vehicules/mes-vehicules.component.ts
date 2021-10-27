@@ -63,7 +63,7 @@ export class MesVehiculesComponent implements OnInit {
   ouvrirMiseAJourVehicule(id: any, categories: any): void { //ouvrir la boite de dialogue de mise a jour vehicule
     localStorage.setItem('idV', id);
     localStorage.setItem('categorie', categories);
-    const dialogRef = this.dialog.open(MiseAJourComponent, {
+    const dialogRef = this.dialog.open(MajVehiculeComponent, {
       width: '450px',
       panelClass: "custom-dialog",
       autoFocus: false,
@@ -100,7 +100,7 @@ export class MesVehiculesComponent implements OnInit {
 
   // Bouton pour ajouter nouvelle vehicule
   ouvrirAjouterVehicule(): void { //ouvrir la boite de dialogue Ajouter nouvelle vehicule
-    const dialogRef = this.dialog.open(AjoutComponent, {
+    const dialogRef = this.dialog.open(AjouterVehiculeComponent, {
       width: '450px',
       panelClass: "custom-dialog",
       autoFocus: false,
@@ -126,10 +126,11 @@ export class MesVehiculesComponent implements OnInit {
     })
   }
 
-   //Bouton ouvrir dialogue entretien
-   ouvrirEntretien(){
+  //Bouton ouvrir dialogue entretien
+  ouvrirEntretien(vehicule: any) {
     const dialogRef = this.dialog.open(BoiteDialogueEntretien, {
       width: '600px',
+      data: {vehicule: vehicule}
     })
   }
 
@@ -236,18 +237,14 @@ export class AjouterCarburantComponent {
     formData.append("prixCarburant", this.form.get('prixCarburant').value);
     Swal.fire({
       title: 'Voulez vous enregistrer?',
-      showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: 'Enregistrer',
-      denyButtonText: `Ne pas enregistrer`,
-      cancelButtonText: 'Annuler',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service.creerCarburant(formData).toPromise();
         this.fermerAjouterCarburant();
         Swal.fire('Carburant enregistré!', '', 'success')
-      } else if (result.isDenied) {
-        this.fermerAjouterCarburant();
       }
     })
 
@@ -266,7 +263,7 @@ export class AjouterCarburantComponent {
   templateUrl: './ajouter-vehicule.html',
   styleUrls: ['./ajouter-vehicule.scss']
 })
-export class AjoutComponent implements OnInit {
+export class AjouterVehiculeComponent implements OnInit {
   //Declaration des variables
   typematricules = [           //les types de matricules tunisiennes
     { name: 'TUN', value: 'TUN' },
@@ -290,7 +287,7 @@ export class AjoutComponent implements OnInit {
   carburants: any;
 
   // constructeur
-  constructor(public dialogRef: MatDialogRef<AjoutComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router) {
+  constructor(public dialogRef: MatDialogRef<AjouterVehiculeComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router) {
     this.form = this.fb.group({
       typematricule: ['TUN', [Validators.required]],
       serieVoiture: [''],
@@ -301,7 +298,14 @@ export class AjoutComponent implements OnInit {
       couleur: ['', [Validators.required]],
       car: ['', [Validators.required]],
       kmactuel: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
-      kmprochainentretien: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainVidangeHuileMoteur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainVidangeLiquideRefroidissement: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainVidangeHuileBoiteVitesse: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementFiltreClimatiseur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementFiltreCarburant: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementBougies: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementCourroies: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementPneus: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
       consommationnormale: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
       carburant: ['', [Validators.required]],
       chargeUtile: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
@@ -347,7 +351,14 @@ export class AjoutComponent implements OnInit {
     formData.append("couleur", this.form.get('couleur').value);
     formData.append("categories", this.categorie);
     formData.append("kmactuel", this.form.get('kmactuel').value);
-    formData.append("kmprochainentretien", this.form.get('kmprochainentretien').value);
+    formData.append("kilometrageProchainVidangeHuileMoteur", this.form.get('kmProchainVidangeHuileMoteur').value);
+    formData.append("kilometrageProchainVidangeLiquideRefroidissement", this.form.get('kmProchainVidangeLiquideRefroidissement').value);
+    formData.append("kilometrageProchainVidangeHuileBoiteVitesse", this.form.get('kmProchainVidangeHuileBoiteVitesse').value);
+    formData.append("kilometrageProchainChangementFiltreClimatiseur", this.form.get('kmProchainChangementFiltreClimatiseur').value);
+    formData.append("kilometrageProchainChangementFiltreCarburant", this.form.get('kmProchainChangementFiltreCarburant').value);
+    formData.append("kilometrageProchainChangementBougies", this.form.get('kmProchainChangementBougies').value);
+    formData.append("kilometrageProchainChangementCourroies", this.form.get('kmProchainChangementCourroies').value);
+    formData.append("kilometrageProchainChangementPneus", this.form.get('kmProchainChangementPneus').value);
     formData.append("consommationNormale", this.form.get('consommationnormale').value);
     formData.append("montantConsomme", 0);
     formData.append("carburant", this.carburant.nom);
@@ -366,18 +377,14 @@ export class AjoutComponent implements OnInit {
     formData.append("positionVehicule", "Sfax");
     Swal.fire({
       title: 'Voulez vous enregistrer?',
-      showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: 'Enregistrer',
-      denyButtonText: `Ne pas enregistrer`,
-      cancelButtonText: 'Annuler',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service.createvehicule(formData).toPromise();
         this.dialogRef.close();
         Swal.fire('Vehicul enregistré!', '', 'success')
-      } else if (result.isDenied) {
-        this.dialogRef.close();
       }
     })
 
@@ -612,14 +619,14 @@ export class DetailVehiculeComponent implements OnInit {
   templateUrl: './maj-vehicule.html',
   styleUrls: ['./maj-vehicule.scss']
 })
-export class MiseAJourComponent implements OnInit {
+export class MajVehiculeComponent implements OnInit {
   //declaration des variables
   form: FormGroup;
   vehicule: any;
   idVehicule: any;
 
   //constructeur
-  constructor(public dialogRef: MatDialogRef<MiseAJourComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router) {
+  constructor(public dialogRef: MatDialogRef<MajVehiculeComponent>, public fb: FormBuilder, public service: ParcTransportService, public _router: Router) {
   }
 
   async ngOnInit() {
@@ -627,7 +634,14 @@ export class MiseAJourComponent implements OnInit {
     await this.chargerVehicule(this.idVehicule);
     this.form = this.fb.group({
       kmactuel: [this.vehicule.kmactuel, [Validators.required, Validators.pattern("^[0-9]*$")]],
-      kmprochainentretien: [this.vehicule.kmprochainentretien, [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainVidangeHuileMoteur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainVidangeLiquideRefroidissement: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainVidangeHuileBoiteVitesse: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementFiltreClimatiseur: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementFiltreCarburant: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementBougies: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementCourroies: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
+      kmProchainChangementPneus: ['', [Validators.required, Validators.pattern("^[0-9]*$")]],
       consommationnormale: [this.vehicule.consommationNormale, [Validators.required, Validators.pattern("^[0-9]*$")]],
       montantConsomme: [this.vehicule.montantConsomme, [Validators.required, Validators.pattern("^[0-9]*$")]],
       carburant: [this.vehicule.carburant, [Validators.required]],
@@ -650,7 +664,14 @@ export class MiseAJourComponent implements OnInit {
   async miseAJourVehicule() { //Effectuer le mise a jour
     var formData: any = new FormData();
     formData.append("kmactuel", this.form.get('kmactuel').value);
-    formData.append("kmprochainentretien", this.form.get('kmprochainentretien').value);
+    formData.append("kilometrageProchainVidangeHuileMoteur", this.form.get('kmProchainVidangeHuileMoteur').value);
+    formData.append("kilometrageProchainVidangeLiquideRefroidissement", this.form.get('kmProchainVidangeLiquideRefroidissement').value);
+    formData.append("kilometrageProchainVidangeHuileBoiteVitesse", this.form.get('kmProchainVidangeHuileBoiteVitesse').value);
+    formData.append("kilometrageProchainChangementFiltreClimatiseur", this.form.get('kmProchainChangementFiltreClimatiseur').value);
+    formData.append("kilometrageProchainChangementFiltreCarburant", this.form.get('kmProchainChangementFiltreCarburant').value);
+    formData.append("kilometrageProchainChangementBougies", this.form.get('kmProchainChangementBougies').value);
+    formData.append("kilometrageProchainChangementCourroies", this.form.get('kmProchainChangementCourroies').value);
+    formData.append("kilometrageProchainChangementPneus", this.form.get('kmProchainChangementPneus').value);
     formData.append("consommationNormale", this.form.get('consommationnormale').value);
     formData.append("montantConsomme", this.form.get('montantConsomme').value);
     formData.append("carburant", this.form.get('carburant').value);
@@ -660,18 +681,14 @@ export class MiseAJourComponent implements OnInit {
     formData.append("datetaxe", new Date(this.form.get('datetaxe').value));
     Swal.fire({
       title: 'Voulez vous enregistrer les modifications?',
-      showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: 'Enregistrer',
-      denyButtonText: `Ne pas enregistrer`,
-      cancelButtonText: 'Annuler',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service.miseajourvehicule(this.idVehicule, formData).toPromise();
         this.fermerMiseAJourVehicule();
         Swal.fire('Modifications enregistrées!', '', 'success')
-      } else if (result.isDenied) {
-        this.fermerMiseAJourVehicule();
       }
     })
 
@@ -720,18 +737,14 @@ export class MiseAJourConsommationComponent implements OnInit {
     formData.append("distanceparcourie", Number(this.form.get('kmActuel').value) - Number(this.vehicule.kmactuel));
     Swal.fire({
       title: 'Voulez vous enregistrer?',
-      showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: 'Enregistrer',
-      denyButtonText: `Ne pas enregistrer`,
-      cancelButtonText: 'Annuler',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service.miseajourkm(this.idVehicule, formData).toPromise();
         this.fermerMiseAJourConsommation();
-        Swal.fire('Vehicul enregistré!', '', 'success')
-      } else if (result.isDenied) {
-        this.fermerMiseAJourConsommation();
+        Swal.fire('Consommation enregistrée!', '', 'success')
       }
     })
   }
@@ -935,18 +948,14 @@ export class ReclamationComponent implements OnInit {
     formData.append("description", this.form.get('description').value);
     Swal.fire({
       title: 'Voulez vous enregistrer?',
-      showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: 'Enregistrer',
-      denyButtonText: `Ne pas enregistrer`,
       cancelButtonText: 'Annuler',
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service.reclamationvehicule(this.idVehicule, formData).toPromise();
         this.dialogRef.close();
         Swal.fire('Réclamation enregistrée!', '', 'success')
-      } else if (result.isDenied) {
-        this.dialogRef.close();
       }
     })
 
@@ -962,38 +971,87 @@ export class ReclamationComponent implements OnInit {
 
 export class BoiteDialogueEntretien implements OnInit {
   form: FormGroup;
-  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<BoiteDialogueEntretien>, @Inject(MAT_DIALOG_DATA) public data: any) { }
+  date = new Date();
+  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<BoiteDialogueEntretien>, @Inject(MAT_DIALOG_DATA) public data: any, public service: ParcTransportService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
       huileMoteur: false,
+      prochainVidangeHuileMoteur: [{value: '' , disabled: true}, [Validators.required]],
       liquideReferoidissement: false,
+      prochainVidangeLiquideReferoidissement: [{value: '' , disabled: true}, [Validators.required]],
       huileBoiteVitesse: false,
-      filtreHuilde: false,
+      prochainVidangeHuileBoiteVitesse: [{value: '' , disabled: true}, [Validators.required]],
+      filtreHuile: false,
       filtreAir: false,
       filtreClimatiseur: false,
+      prochainChangementFiltreClimatiseur: [{value: '' , disabled: true}, [Validators.required]],
       filtrCarburant: false,
+      prochainChangementFiltrCarburant: [{value: '' , disabled: true}, [Validators.required]],
       bougies: false,
-      courroies: false
+      prochainChangementBougies: [{value: '' , disabled: true}, [Validators.required]],
+      courroies: false,
+      prochainChangementCourroies: [{value: '' , disabled: true}, [Validators.required]],
+      pneus: false,
+      prochainChangementPneus: [{value: '' , disabled: true}, [Validators.required]],
     })
   }
-  transformerBoolean(variable: boolean) {
-    if (variable) {
-      return "oui"
+  selectionnerVidangeHuileMoteur() {
+    if (this.form.get("huileMoteur").value) {
+      this.form.get("filtreHuile").setValue(true);
+      this.form.get("filtreAir").setValue(true);
+      this.form.get("filtreHuile").disable();
+      this.form.get("filtreAir").disable();
     } else {
-      return "non"
+      this.form.get("filtreHuile").enable();
+      this.form.get("filtreAir").enable();
+      this.form.get("filtreHuile").setValue(false);
+      this.form.get("filtreAir").setValue(false);
     }
   }
-  valider() {
-    let formdata = new FormData;
-    formdata.append('', this.transformerBoolean(this.form.get('huileMoteur').value))
-    formdata.append('', this.transformerBoolean(this.form.get('liquideReferoidissement').value))
-    formdata.append('', this.transformerBoolean(this.form.get('huileBoiteVitesse').value))
-    formdata.append('', this.transformerBoolean(this.form.get('filtreHuilde').value))
-    formdata.append('', this.transformerBoolean(this.form.get('filtreAir').value))
-    formdata.append('', this.transformerBoolean(this.form.get('filtreClimatiseur').value))
-    formdata.append('', this.transformerBoolean(this.form.get('filtrCarburant').value))
-    formdata.append('', this.transformerBoolean(this.form.get('bougies').value))
-    formdata.append('', this.transformerBoolean(this.form.get('courroies').value))
+  changerEtatInput(checkBoxFormControlName: any, inputFormControlName: any){
+    this.form.get(checkBoxFormControlName).value ? this.form.get(inputFormControlName).enable() : this.form.get(inputFormControlName).disable();
+  }
+
+  fermerBoiteDialogueEntretien(){
+    this.dialogRef.close();
+  }
+  async valider() {
+    let formdata: any = new FormData;
+    let formdata2: any = new FormData;
+    formdata.append('idVehicule', this.data.vehicule.id)
+    formdata.append('date', this.date)
+    formdata.append('kilometrage', this.data.vehicule.kmactuel)
+    formdata.append('huileMoteur', this.form.get('huileMoteur').value)
+    formdata.append('liquideRefroidissement', this.form.get('liquideReferoidissement').value)
+    formdata.append('huileBoiteVitesse', this.form.get('huileBoiteVitesse').value)
+    formdata.append('filtreHuile', this.form.get('filtreHuilde').value)
+    formdata.append('filtreAir', this.form.get('filtreAir').value)
+    formdata.append('filtreClimatiseur', this.form.get('filtreClimatiseur').value)
+    formdata.append('filtrCarburant', this.form.get('filtrCarburant').value)
+    formdata.append('bougies', this.form.get('bougies').value)
+    formdata.append('courroies', this.form.get('courroies').value)
+
+    formdata2.append('huileMoteur', this.form.get('prochainVidangeHuileMoteur').value)
+    formdata2.append('liquideRefroidissement', this.form.get('prochainVidangeLiquideReferoidissement').value)
+    formdata2.append('huileBoiteVitesse', this.form.get('prochainVidangeHuileBoiteVitesse').value)
+    formdata2.append('filtreHuile', this.form.get('prochainChangementFiltreClimatiseur').value)
+    formdata2.append('filtreAir', this.form.get('prochainChangementFiltrCarburant').value)
+    formdata2.append('filtreClimatiseur', this.form.get('prochainChangementBougies').value)
+    formdata2.append('filtrCarburant', this.form.get('prochainChangementCourroies').value)
+    formdata2.append('bougies', this.form.get('prochainChangementPneus').value)
+    Swal.fire({
+      title: 'Voulez vous enregistrer?',
+      showCancelButton: true,
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service.creerEntretien(formdata).toPromise();
+        await this.service.majKilometrageEntretien(formdata).toPromise();
+        this.fermerBoiteDialogueEntretien();
+        Swal.fire('Entretien enregistrée!', '', 'success')
+      }
+    })
   }
 }

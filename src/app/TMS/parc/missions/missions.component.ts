@@ -189,7 +189,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
             formData2.append("id", v[0].id);
             formData2.append("charge_restante", v[0].charge_utile);
             formData2.append("surface_restante", v[0].longueur * v[0].largeur * v[0].hauteur); //reinitialise le poids et la surface
-            this.service.majChargeEtSurface(formData2);
+            // this.service.majChargeEtSurface(formData2);
           });
         });
       } else {

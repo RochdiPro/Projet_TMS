@@ -1,26 +1,48 @@
-#check-box-vidange {
+mat-checkbox{
+    display: flex;
+    align-items: center;
+}
+
+
+//partie vidange
+#check-box-vidange {                                                                           
     display: grid;
     grid-template-areas:
-        "huileMoteur    liquideRefroidissement"
-        "huileBoiteVitesse  huileBoiteVitesse";
+        "huileMoteur inputProchainVidangeHuileMoteur"
+        "liquideRefroidissement inputProchainVidangeLiquideRefroidissement"
+        "huileBoiteVitesse  inputProchainVidangeHuileBoiteVitesse";
     grid-template-columns: 1fr 1fr;
 }
 #huile-moteur {
     grid-area: huileMoteur;
 }
+#input-prochain-vidange-huile-moteur {
+    grid-area: inputProchainVidangeHuileMoteur;
+}
 #liquide-refroidissement {
     grid-area: liquideRefroidissement;
+}
+#input-prochain-vidange-liquide-refroidissement {
+    grid-area: inputProchainVidangeLiquideRefroidissement;
 }
 #huile-boite-vitesse {
     grid-area: huileBoiteVitesse;
 }
+#input-prochain-vidange-huilde-vitesse {
+    grid-area: inputProchainVidangeHuileBoiteVitesse;
+}
+// fin partie vidange
 
+//partie changement pieces
 #check-box-pieces {
     display: grid;
     grid-template-areas:
         "filtreHuilde    filtreAir"
-        "filtreClimatiseur  filtrCarburant"
-        "bougies  courroies";
+        "filtreClimatiseur inputProchainChangementFiltreClimatiseur"
+        "filtrCarburant inputProchainChangementFiltreCarburant"
+        "bougies inputProchainChangementBougies"
+        "courroies inputProchainChangementCourroies"
+        "pneus inputProchainChangementPneus";
     grid-template-columns: 1fr 1fr;
 }
 #filtre-huile {
@@ -32,12 +54,31 @@
 #filtre-climatiseur {
     grid-area: filtreClimatiseur;
 }
+#input-prochain-changement-filtre-climatiseur {
+    grid-area: inputProchainChangementFiltreClimatiseur;
+}
 #filtre-carburant {
     grid-area: filtrCarburant;
+}
+#input-prochain-changement-filtre-carburant{
+    grid-area: inputProchainChangementFiltreCarburant;
 }
 #bougies {
     grid-area: bougies;
 }
+#input-prochain-changement-bougies{
+    grid-area: inputProchainChangementBougies;
+}
 #courroies {
     grid-area: courroies;
 }
+#input-prochain-changement-courroies{
+    grid-area: inputProchainChangementCourroies;
+}
+#pneus{
+    grid-area: pneus;
+}
+#input-prochain-changement-pneus{
+    grid-area: inputProchainChangementPneus;
+}
+//fin partie changement pieces
