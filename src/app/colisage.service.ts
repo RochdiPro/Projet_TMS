@@ -12,24 +12,24 @@ export class ColisageService {
   handleError: any;
   constructor(private httpClient: HttpClient) { }
 
-  //créer nouveau produit dans la liste de colisage
+  //créer nouveau produit dans la liste d'emballage
   public creerProduitEmballe(formData: any) {
-    return this.httpClient.post(erp + 'creerProduitEmballe', formData).pipe(catchError(this.handleError))
+    return this.httpClient.post(erp + 'creer-emballage', formData).pipe(catchError(this.handleError))
   }
 
-  //lister les produits emballés dans la liste de colisage 
+  //lister les produits emballés dans la liste d'emballage'
   public listeColisage() {
-    return this.httpClient.get(erp + 'listeColisage');
+    return this.httpClient.get(erp + 'emballages');
   }
 
   public getEmballage(id: any){
-    return this.httpClient.get(erp + 'produitEmballe', id)
+    return this.httpClient.get(erp + 'emballage', id)
   }
 
 
-  //filtrer liste colisage
+  //filtrer emballages
   public fltreListeproduit(champ1 : any, valeur1 : any, champ2 : any, valeur2 : any, champ3 : any, valeur3 : any){
-    return this.httpClient.get(erp + 'filtreListeColisage', {
+    return this.httpClient.get(erp + 'filtre-emballage', {
       params: {
         champ1: champ1,
         valeur1: valeur1,

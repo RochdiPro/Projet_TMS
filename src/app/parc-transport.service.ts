@@ -85,6 +85,15 @@ export class ParcTransportService {
     return this.httpClient.post(erp + 'create-entretien', formData).pipe(catchError(this.handleError));
   }
 
+  //get liste entretiens
+  public getEntretiensVehicule(id: any){
+    return this.httpClient.get(erp + 'entretien-vehicule', {
+      params:{
+        id: id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   //lister les carburants
   public carburants() {
     return this.httpClient.get(erp + 'carburants');

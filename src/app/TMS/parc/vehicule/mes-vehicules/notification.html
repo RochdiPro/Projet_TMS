@@ -24,9 +24,11 @@
             </div>
         </div>
         <!-- notification d'entretien -->
-        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExistanceEntretien()">
-            <i class="fas fa-exclamation-triangle"></i> Entretien Du Vehicule Dans:
-            {{vehicule.kmprochainentretien-vehicule.kmactuel}} km
+        <div *ngIf="testExistanceEntretien()">
+            <div class="alert alert-warning fade show alerte" role="alert" *ngFor="let entretien of this.listeEntretien">
+                <i class="fas fa-exclamation-triangle"></i> {{entretien.type}} dans:
+                {{entretien.kilometrage-vehicule.kmactuel}} km
+            </div>
         </div>
         <!-- notification de visite technique -->
         <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExpirationVisite()">

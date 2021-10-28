@@ -43,14 +43,37 @@
     <div class="position-relative form-group"><label for="kmactuel" class="">Kilométrage Actuel</label>
       <li class="list-group-item">{{vehicule.kmactuel}}</li>
     </div>
-    <!-- afficher kilometrage prochain entretien -->
-    <div class="position-relative form-group"><label for="kmprochainentretien" class="">Kilométrage Prochain
-        Entretien</label>
-      <li class="list-group-item">{{vehicule.kmprochainentretien}}</li>
+    <!-- afficher kilometrage restant pour le prochain vidange huile moteur -->
+    <div class="position-relative form-group"><label>Prochain vidange huile moteur dans</label>
+      <li class="list-group-item">{{vehicule.kilometrageProchainVidangeHuileMoteur-vehicule.kmactuel}}</li>
     </div>
-    <!-- afficher kilometrage restant pour le prochain entretien -->
-    <div class="position-relative form-group"><label for="typeentretien" class="">Prochain Entretien Dans</label>
-      <li class="list-group-item">{{vehicule.kmprochainentretien-vehicule.kmactuel}}</li>
+    <!-- afficher kilometrage restant pour le prochain vidange liquide refroidissement -->
+    <div class="position-relative form-group"><label>Prochain vidange liquide refroidissement dans</label>
+      <li class="list-group-item">{{vehicule.kilometrageProchainVidangeLiquideRefroidissement-vehicule.kmactuel}}</li>
+    </div>
+    <!-- afficher kilometrage restant pour le prochain vidange huile boite vitesse -->
+    <div class="position-relative form-group"><label>Prochain vidange huile boite vitesse dans</label>
+      <li class="list-group-item">{{vehicule.kilometrageProchainVidangeHuileBoiteVitesse-vehicule.kmactuel}}</li>
+    </div>
+    <!-- afficher kilometrage restant pour le prochain changement filtre climatiseur -->
+    <div class="position-relative form-group"><label>Prochain changement filtre climatiseur dans</label>
+      <li class="list-group-item">{{vehicule.kilometrageProchainChangementFiltreClimatiseur-vehicule.kmactuel}}</li>
+    </div>
+    <!-- afficher kilometrage restant pour le prochain changement filtre carburant -->
+    <div class="position-relative form-group"><label>Prochain changement filtre carburant dans</label>
+      <li class="list-group-item">{{vehicule.kilometrageProchainChangementFiltreCarburant-vehicule.kmactuel}}</li>
+    </div>
+    <!-- afficher kilometrage restant pour le prochain changement bougies -->
+    <div class="position-relative form-group"><label>Prochain changement des bougies dans</label>
+      <li class="list-group-item">{{vehicule.kilometrageProchainChangementBougies-vehicule.kmactuel}}</li>
+    </div>
+    <!-- afficher kilometrage restant pour le prochain changement courroies -->
+    <div class="position-relative form-group"><label>Prochain changement des courroies dans</label>
+      <li class="list-group-item">{{vehicule.kilometrageProchainChangementCourroies-vehicule.kmactuel}}</li>
+    </div>
+    <!-- afficher kilometrage restant pour le prochain changement pneus -->
+    <div class="position-relative form-group"><label>Prochain changement des pneus dans</label>
+      <li class="list-group-item">{{vehicule.kilometrageProchainChangementPneus-vehicule.kmactuel}}</li>
     </div>
     <!-- afficher type carburant -->
     <div class="position-relative form-group"><label for="carburant" class="">Carburant</label>
