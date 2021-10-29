@@ -207,7 +207,7 @@ export class BoiteDialogueInfo implements OnInit {
     }
   }
   async getListeEmballage() {
-    this.listeEmballage = await this.serviceColisage.listeColisage().toPromise();
+    this.listeEmballage = await this.serviceColisage.listeEmballage().toPromise();
   }
 
   async getDetail() {
@@ -301,22 +301,26 @@ export class BoiteDialogueCreerCommande implements OnInit {
   positionClient: any = {
     latitude: 34.74056, longitude: 10.76028
   };
+  positionsClientEnregistree: any = [];
+  positionEstModifie: boolean = false;
   constructor(private fb: FormBuilder, public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService, public dialog: MatDialog) { }
 
   async ngOnInit() {
     this.firstFormGroup = this.fb.group({
-      firstCtrl: ['', Validators.required]
+      adresse: ['', Validators.required],
+      nouvelleAdresse: ''
     });
     this.secondFormGroup = this.fb.group({
       secondCtrl: ['', Validators.required]
     });
     this.getTypeDocument();
-    this.getPositionClient();
     await this.getListeEmballage();
+    await this.getPositionsEnregistrees();
     this.getDetail();
   }
 
   getTypeDocument() {
+    console.log(this.data.commande)
     this.indicateurTypeCommande = this.data.commande.reference.split("-")[0]
     if (this.indicateurTypeCommande === "F")
       this.typeDocument = "Facture";
@@ -325,8 +329,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   }
 
   async getPositionClient() {
-    this.positionClient = await this.serviceColisage.positionClient(this.data.commande.idClient).toPromise();
-    if (this.positionClient === null) {
+    if (this.positionClient.idClient === undefined) {
       this.latMap = 34.74056;
       this.lngMap = 10.76028;
       this.zoom = 5;
@@ -342,8 +345,22 @@ export class BoiteDialogueCreerCommande implements OnInit {
 
     }
   }
+
+  async getPositionsEnregistrees() {
+    this.positionsClientEnregistree = await this.serviceColisage.positionClient(this.data.commande.idClient).toPromise();
+    console.log(this.positionsClientEnregistree)
+  }
+
+  ajouterAdresse() {
+    this.positionsClientEnregistree.push({ adresse: this.firstFormGroup.get('nouvelleAdresse').value, latitude: '', longitude: '' })
+  }
+
+  selectionnerAdresse() {
+    this.positionClient = this.firstFormGroup.get('adresse').value;
+    this.getPositionClient();
+  }
   async getListeEmballage() {
-    this.listeEmballage = await this.serviceColisage.listeColisage().toPromise();
+    this.listeEmballage = await this.serviceColisage.listeEmballage().toPromise();
   }
   async getDetail() {
     if (this.indicateurTypeCommande === "F") {
@@ -416,6 +433,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   modifierPositionMarquer(event: any) { //pour modifier la position du marqueur existant
     this.lat = event.coords.lat;
     this.lng = event.coords.lng;
+    this.positionEstModifie = true;
 
   }
 
@@ -461,6 +479,65 @@ export class BoiteDialogueCreerCommande implements OnInit {
     return article.emballage.poids_emballage_total * article.qte
   }
 
+  async enregistrer() {
+    let commande: any = new FormData
+    if (this.positionClient.idClient === undefined) {
+      let position: any = new FormData;
+      this.positionClient.longitude = this.lng;
+      this.positionClient.latitude = this.lat;
+      position.append('idClient', this.data.commande.idClient);
+      position.append('adresse', this.positionClient.adresse);
+      position.append('longitude', this.positionClient.longitude);
+      position.append('latitude', this.positionClient.latitude);
+
+      await this.serviceColisage.creerPositionClient(position).toPromise();
+    } else if (this.positionEstModifie) {
+      let position: any = new FormData;
+      position.append('id', this.positionClient.id);
+      position.append('idClient', this.positionClient.idClient);
+      position.append('adresse', this.positionClient.adresse);
+      position.append('longitude', this.lng);
+      position.append('latitude', this.lat);
+
+      this.serviceColisage.modifierPositionClient(position).toPromise();
+    }
+
+    for (let i = 0; i < this.listeEmballageChoisi.length; i++) {
+      let listeColisage: any = new FormData;
+      let emballage = this.listeEmballageChoisi[i];
+      listeColisage.append('reference', this.data.commande.reference)
+      listeColisage.append('emballage', emballage.emballage.nomEmballage)
+      listeColisage.append('produit', emballage.emballage.nomProduit)
+      listeColisage.append('quantite', Number(this.getNombreArticles(emballage)))
+      listeColisage.append('nombrePack', Number(emballage.qte))
+      listeColisage.append('dimensions', this.getDimensionsPack(emballage))
+      listeColisage.append('volume', Number(this.getVolumePack(emballage)))
+      listeColisage.append('poidsNet', Number(this.getPoidsPackNet(emballage)))
+      listeColisage.append('poidsBrut', Number(this.getPoidsPackBrut(emballage)))
+      console.log(typeof Number(this.getNombreArticles(emballage)))
+      console.log(typeof Number(emballage.qte))
+      console.log(typeof Number(this.getVolumePack(emballage)))
+      console.log(typeof Number(this.getPoidsPackNet(emballage)))
+      console.log(typeof Number(this.getPoidsPackBrut(emballage)))
+      await this.serviceColisage.creerColis(listeColisage).toPromise();
+
+    }
+
+    commande.append('referenceDocument', this.data.commande.reference)
+    commande.append('idClient', this.data.commande.idClient)
+    commande.append('nomClient', this.data.commande.nomClient)
+    commande.append('contact', this.data.commande.contact)
+    commande.append('telephone', this.data.commande.telephone)
+    commande.append('categorieClient', this.data.commande.categorieClient)
+    commande.append('ville', this.data.commande.ville)
+    commande.append('adresse', this.data.commande.adresse)
+    commande.append('typePieceIdentite', this.data.commande.typePieceIdentite)
+    commande.append('numPieceIdentite', this.data.commande.numeroPieceIdentite)
+    commande.append('dateCreation', this.data.commande.dateCreation)
+
+    await this.serviceColisage.creerCommande(commande).toPromise();
+  }
+
   get nombrePackTotal() {
     var nombrePack = 0
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -474,7 +551,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.listeEmballageChoisi.forEach((emballage: any) => {
       volumeTotal += emballage.emballage.volume
     });
-    return volumeTotal
+    return volumeTotal.toFixed(2)
   }
 
   get poidsTotalNet() {
@@ -482,7 +559,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.listeEmballageChoisi.forEach((emballage: any) => {
       poidsTotalNet += this.getPoidsPackNet(emballage);
     });
-    return poidsTotalNet
+    return poidsTotalNet.toFixed(2)
   }
 
   get poidsTotalBrut() {
@@ -490,7 +567,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.listeEmballageChoisi.forEach((emballage: any) => {
       poidsTotalBrut += this.getPoidsPackBrut(emballage);
     });
-    return poidsTotalBrut.toFixed(1)
+    return poidsTotalBrut.toFixed(2)
   }
 
 }
@@ -554,7 +631,7 @@ export class BoiteDialogueEmballer implements OnInit {
     });
   }
   async getListeEmballages() {
-    this.listeEmballages = await this.serviceColisage.listeColisage().toPromise();
+    this.listeEmballages = await this.serviceColisage.listeEmballage().toPromise();
     this.listeEmballages = this.listeEmballages.filter((emballage: any) => emballage.idProduit === this.data.produit.id);
     this.listeEmballages = this.listeEmballages.sort((emballage1: any, emballage2: any) => Number(emballage1.qte) > Number(emballage2.qte) ? 1 : -1)
   }

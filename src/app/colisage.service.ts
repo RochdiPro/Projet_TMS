@@ -18,7 +18,7 @@ export class ColisageService {
   }
 
   //lister les produits emballés dans la liste d'emballage'
-  public listeColisage() {
+  public listeEmballage() {
     return this.httpClient.get(erp + 'emballages');
   }
 
@@ -169,13 +169,37 @@ export class ColisageService {
     }).pipe(catchError(this.handleError));
   }
 
-  //get position client by id
-  public positionClient(id: any) {
-    return this.httpClient.get(erp + 'position-client/' + id).pipe(catchError(this.handleError));
+  //get position client by id client
+  public positionClient(idClient: any) {
+    return this.httpClient.get(erp + 'position-client-id-client' , {
+      params: {
+        idClient: idClient
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
   }
 
   //create position client
   public creerPositionClient(formData: any) {
     return this.httpClient.post(erp + 'position-client', formData).pipe(catchError(this.handleError));
+  }
+
+  //modifier position client
+  public modifierPositionClient(formData: any) {
+    return this.httpClient.put(erp + 'position-client', formData).pipe(catchError(this.handleError))
+  }
+
+   //ajouter produit au table liste colisage
+   public creerColis(formData: any){
+    return this.httpClient.post(erp + 'creer-colis', formData).pipe(catchError(this.handleError));
+  }
+
+  // creer commande
+  public creerCommande(formData: any){
+    return this.httpClient.post(erp + 'creer-commande', formData).pipe(catchError(this.handleError))
+  }
+
+  //get liste commande
+  public getListeCommandes(){
+    return this.httpClient.get(erp + 'commandes').pipe(catchError(this.handleError))
   }
 }

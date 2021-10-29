@@ -215,7 +215,7 @@ export class AjoutMissionComponent implements OnInit {
     this.commandesSudOuest = this.listeCommandes.filter((commande: any) => commande.region === "Sud-Ouest");
   }
   async getListeColisage() {
-    this.listeColisage = await this.serviceColisage.listeColisage().toPromise();
+    this.listeColisage = await this.serviceColisage.listeEmballage().toPromise();
   }
   async getDetailFacture(id: any) { //pour avoir les ids et les qtes des produits dans une facture
     var detail = await this.serviceColisage.Detail_Facture(id).toPromise();

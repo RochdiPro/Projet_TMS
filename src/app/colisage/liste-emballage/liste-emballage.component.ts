@@ -83,7 +83,7 @@ export class ListerEmballageComponent implements OnInit {
   }
 
   chargerListeColisage() { //chargement du liste de colisage
-    this.service.listeColisage().subscribe((data) => {
+    this.service.listeEmballage().subscribe((data) => {
       this.dataSource.data = data as tableColisage[];
       this.dataSource.data = this.dataSource.data.sort((a, b) => a.id > b.id ? -1 : 1);
     });
@@ -202,7 +202,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
 
   chargerListeColisage(): any {
-    return this.service.listeColisage().toPromise()
+    return this.service.listeEmballage().toPromise()
   }
 
   creerFormGroups() { //creation des formsGroups necessaires
@@ -456,7 +456,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     this.testTypeSelection()
   }
   chargerListeColisage() { //charger la liste de colisage
-    this.service.listeColisage().subscribe((data) => {
+    this.service.listeEmballage().subscribe((data) => {
       this.listePacks = data;
       this.dataSourceListeColisage.data = this.listePacks as tableColisage[];
     });

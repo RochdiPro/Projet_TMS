@@ -19,6 +19,8 @@ import { VehiculeLoueComponent } from './TMS/parc/vehicule/vehicule-loue/vehicul
 import { AjoutMissionComponent } from './TMS/parc/missions/ajout-mission/ajout-mission.component';
 import { CommandeComponent } from './colisage/commande/commande.component'
 import { AjouterCommandeComponent } from './colisage/commande/ajouter-commande/ajouter-commande.component'
+import { ListerCommandeComponent } from './colisage/commande/lister-commande/lister-commande.component'
+
 
 
 
@@ -57,7 +59,8 @@ const routes: Routes =
             },
             {
               path: 'commandes', component: CommandeComponent, children: [
-                { path: 'ajouter-commande', component: AjouterCommandeComponent },
+                { path: 'ajout-commande', component: AjouterCommandeComponent },
+                { path: 'liste-commande', component: ListerCommandeComponent },
               ]
             },
 

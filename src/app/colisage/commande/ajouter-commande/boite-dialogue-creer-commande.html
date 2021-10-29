@@ -39,16 +39,19 @@
                 <div class="map">
                     <div id="manupilation-adresse">
                         <mat-form-field appearance="fill">
-                            <mat-label>Favorite food</mat-label>
-                            <mat-select>
-                                <mat-option>
-                                    Hello
+                            <mat-label>Adresse de livraison</mat-label>
+                            <mat-select formControlName="adresse" (selectionChange)="selectionnerAdresse()">
+                                <mat-option *ngFor="let position of positionsClientEnregistree" [value]="position">
+                                    {{position.adresse}}
+                                </mat-option>
+                                <mat-option *ngIf="positionsClientEnregistree.length === 0" disabled>
+                                    Pas d'adresse
                                 </mat-option>
                             </mat-select>
                         </mat-form-field>
                         <div id="ajouter-adresse">
-                            <input type="text" id="adresse-input">
-                            <button mat-mini-fab color="primary" id="bouton-ajouter">
+                            <input type="text" id="adresse-input" formControlName="nouvelleAdresse">
+                            <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
                                 <mat-icon>add_location</mat-icon>
                             </button>
                         </div>
@@ -61,7 +64,7 @@
                         </agm-marker>
                     </agm-map>
                 </div>
-                <div>
+                <div style="float: right;">
                     <button mat-button matStepperNext>Next</button>
                 </div>
             </form>
@@ -109,7 +112,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div>
+                <div style="float: right;">
                     <button mat-button matStepperPrevious>Back</button>
                     <button mat-button matStepperNext (click)="creerListeEmballageChoisi()">Next</button>
                 </div>
@@ -195,9 +198,10 @@
                     </tr>
                 </tbody>
             </table>
-            <div>
+            <div style="float: right; margin-bottom: 10px;">
                 <button mat-button matStepperPrevious>Back</button>
                 <button mat-button (click)="stepper.reset()">Reset</button>
+                <button mat-raised-button color= "primary" (click)="enregistrer()">Valider</button>
             </div>
         </mat-step>
     </mat-vertical-stepper>
