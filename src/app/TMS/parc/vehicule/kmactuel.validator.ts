@@ -1,8 +1,8 @@
 import { AbstractControl } from "@angular/forms";
 
 export function kmactuelValidator(control: AbstractControl): { [key: string]: any } | null {
-    const kmactuel = localStorage.getItem('kmactuelV');
-    const km = (control.value <= kmactuel);
+    const kmactuel = Number(localStorage.getItem('kmactuelV'));
+    const km = (Number(control.value) <= kmactuel);
     return km ? {'kmvalide': {value: control.value}} : null ;
 }
 //validateur définie pour verifier si le kilométrage entré lors du changement du kilométrage actuelle du véhicule est valide

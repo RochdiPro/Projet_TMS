@@ -1,6 +1,6 @@
 <div class="position-relative custom-control">
     <!-- des champs de filtrage du tableau liste colisage -->
-    <section>
+    <div class="filtres">
         <!-- filtrage selon nom d'emballage -->
         <mat-form-field class="custom-width" [formGroup]="form" >
             <mat-label>Nom D'emballage</mat-label>
@@ -21,13 +21,6 @@
             </mat-select>
             <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
         </mat-form-field>
-
-        <!-- <mat-form-field class="custom-width" [formGroup]="form" >
-            <mat-label>Type D'emballage</mat-label>
-            <input matInput placeholder="Nom" formControlName="type_Emballage" (keyup)="filtrerListeColisage()"
-                id="typeEmballage">
-            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
-        </mat-form-field> -->
         <!-- filtrage selon nom produit -->
         <mat-form-field class="custom-width" [formGroup]="form">
             <mat-label>Produit</mat-label>
@@ -35,7 +28,7 @@
                 id="nomProduit">
             <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
         </mat-form-field>
-    </section>
+    </div>
 </div>
 <div class="mat-elevation-z8">
     <mat-table [dataSource]="dataSource" matSort>
@@ -82,10 +75,15 @@
             <mat-cell *matCellDef="let element" data-label="Unité"> {{element.unite}} </mat-cell>
         </ng-container>
 
-        <!-- Colonne categorie -->
-        <ng-container matColumnDef="categorie">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> Catégorie </mat-header-cell>
-            <mat-cell *matCellDef="let element" data-label="Catégorie"> {{element.categorie}} </mat-cell>
+        <!-- Colonne poids -->
+        <ng-container matColumnDef="poids">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Poids(Kg)</mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Poids(Kg)"> {{element.poids_emballage_total}} </mat-cell>
+        </ng-container>
+        <!-- Colonne poids -->
+        <ng-container matColumnDef="volume">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Volume(m³)</mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Volume(m³)"> {{element.volume}} </mat-cell>
         </ng-container>
 
         <mat-header-row *matHeaderRowDef="displayedColumns" ></mat-header-row>

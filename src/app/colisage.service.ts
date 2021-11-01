@@ -19,7 +19,7 @@ export class ColisageService {
 
   //lister les produits emballés dans la liste d'emballage'
   public listeEmballage() {
-    return this.httpClient.get(erp + 'emballages');
+    return this.httpClient.get(erp + 'emballages').pipe(catchError(this.handleError));
   }
 
   public getEmballage(id: any){

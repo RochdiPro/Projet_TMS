@@ -18,8 +18,13 @@ ul {
 :host ::ng-deep .mat-sort-header-content {
     text-align: left;
 }
+.filtres{
+    position: relative;
+    left: 11.5%;
+    width: 93%;
+}
 .custom-width {
-    width: 20%;
+    width: 12%;
     margin: 0 0.5%;
 }
 .mobile-label {
@@ -31,7 +36,10 @@ ul {
     *{
         font-size: 12px;
     }
-    
+    .filtres{
+        left: 0;
+        width: 100%;
+    }
     .custom-width {
         width: 92%;
         margin: 0;

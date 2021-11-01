@@ -165,8 +165,8 @@
                 <thead>
                     <tr>
                         <th scope="col">id</th>
-                        <th scope="col">Pack</th>
                         <th scope="col">Produit</th>
+                        <th scope="col">Pack</th>
                         <th scope="col">Qte</th>
                         <th scope="col">Nbr. Pack</th>
                         <th scope="col">LxlxH (cm)</th>
@@ -178,8 +178,8 @@
                 <tbody>
                     <tr *ngFor="let article of this.listeEmballageChoisi">
                         <th scope="row">{{article.emballage.idProduit}}</th>
-                        <td>{{article.emballage.nomEmballage}}</td>
                         <td>{{article.emballage.nomProduit}}</td>
+                        <td>{{article.emballage.nomEmballage}}</td>
                         <td>{{getNombreArticles(article)}}</td>
                         <td>{{article.qte}}</td>
                         <td>{{getDimensionsPack(article)}}</td>

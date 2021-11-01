@@ -56,7 +56,7 @@ import { AjouterVehiculeComponent, AjouterCarburantComponent, DetailVehiculeComp
 import { AjoutMissionComponent} from './TMS/parc/missions/ajout-mission/ajout-mission.component';
 import { CommandeComponent } from './colisage/commande/commande.component';
 import { AjouterCommandeComponent, BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer, BoiteDialogueDetailProduit } from './colisage/commande/ajouter-commande/ajouter-commande.component';
-import { ListerCommandeComponent } from './colisage/commande/lister-commande/lister-commande.component'
+import { ListerCommandeComponent, ModifierCommande } from './colisage/commande/lister-commande/lister-commande.component'
 registerLocaleData(localeFr, 'fr');
 
 
@@ -105,7 +105,8 @@ registerLocaleData(localeFr, 'fr');
     BoiteDialogueCreerCommande,
     BoiteDialogueEmballer,
     BoiteDialogueDetailProduit,
-    ListerCommandeComponent
+    ListerCommandeComponent,
+    ModifierCommande
    
   ],
   imports: [

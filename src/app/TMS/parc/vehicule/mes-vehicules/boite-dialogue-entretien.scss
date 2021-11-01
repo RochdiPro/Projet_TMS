@@ -2,7 +2,21 @@ mat-checkbox{
     display: flex;
     align-items: center;
 }
-
+//partie lieu intervention
+#lieu-intervention{
+    display: grid;
+    grid-template-areas: 
+    "labelLieuIntervention inputLieuIntervention";
+    grid-template-columns: 1fr 1fr;
+}
+#label-lieu-intervention{
+    grid-area: labelLieuIntervention;
+    display: flex;
+    align-items: center;
+}
+#input-lieu-intervention{
+    grid-area: inputLieuIntervention;
+}
 
 //partie vidange
 #check-box-vidange {                                                                           
@@ -42,7 +56,8 @@ mat-checkbox{
         "filtrCarburant inputProchainChangementFiltreCarburant"
         "bougies inputProchainChangementBougies"
         "courroies inputProchainChangementCourroies"
-        "pneus inputProchainChangementPneus";
+        "pneus inputProchainChangementPneus"
+        "reparation inputNoteReparation";
     grid-template-columns: 1fr 1fr;
 }
 #filtre-huile {
@@ -80,5 +95,15 @@ mat-checkbox{
 }
 #input-prochain-changement-pneus{
     grid-area: inputProchainChangementPneus;
+}
+#reparation{
+    grid-area: reparation;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+#input-note-reparation{
+    grid-area: inputNoteReparation;
 }
 //fin partie changement pieces

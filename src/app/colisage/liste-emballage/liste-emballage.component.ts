@@ -60,7 +60,7 @@ export class ListerEmballageComponent implements OnInit {
   //Declaration des variables
   form = new FormGroup({ nom_Produit: new FormControl(""), nom_Emballage: new FormControl(""), type_Emballage: new FormControl("") });
   listeColisage: any;
-  displayedColumns: string[] = ['id', 'nomEmballage', 'typeEmballage', 'nomProduit', 'qte', 'unite', 'categorie']; //les colonne du tableau liste de colisage
+  displayedColumns: string[] = ['id', 'nomEmballage', 'typeEmballage', 'nomProduit', 'qte', 'unite', 'poids','volume']; //les colonne du tableau liste de colisage
   dataSource = new MatTableDataSource<tableColisage>();
 
   ngAfterViewInit() {
@@ -70,8 +70,9 @@ export class ListerEmballageComponent implements OnInit {
 
   constructor(public service: ColisageService) {
   }
-  ngOnInit() {
-    this.chargerListeColisage();
+  async ngOnInit() {
+    await this.chargerListeColisage();
+    console.log(this.dataSource.data)
   }
 
   filtrerListeColisage() { //pour filtrer la liste colisage selon nom du produit, nom d'emballage et type D'emballage
@@ -82,11 +83,9 @@ export class ListerEmballageComponent implements OnInit {
     });
   }
 
-  chargerListeColisage() { //chargement du liste de colisage
-    this.service.listeEmballage().subscribe((data) => {
-      this.dataSource.data = data as tableColisage[];
-      this.dataSource.data = this.dataSource.data.sort((a, b) => a.id > b.id ? -1 : 1);
-    });
+  async chargerListeColisage() { //chargement du liste de colisage
+    this.dataSource.data = await this.service.listeEmballage().toPromise();
+    this.dataSource.data = this.dataSource.data.sort((a, b) => a.id > b.id ? -1 : 1);
   }
 
 
