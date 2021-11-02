@@ -44,41 +44,14 @@ export class ListerCommandeComponent implements OnInit {
 
 @Component({
   selector: 'modifier-commande',
-  templateUrl: '../ajouter-commande/boite-dialogue-creer-commande.html'
+  templateUrl: 'modifier-position-client.html'
 })
 
 export class ModifierCommande implements OnInit {
-  indicateurTypeCommande: String;
-  typeDocument: String;
-  articles: any;
-  listeArticlesDetail: any = [];
-  listeEmballage: any;
-  listeProduitDansListeEmballage: any;
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
-  listeEmballageChoisi: any = [];
-
-  latMap: any = 34.74056;
-  lngMap: any = 10.76028;
-  lat: any = 0;
-  lng: any = 0;
-  zoom: number = 5;
-  positionExiste = false;
-  positionClient: any = {
-    latitude: 34.74056, longitude: 10.76028
-  };
-  positionsClientEnregistree: any = [];
-  positionEstModifie: boolean = false;
   constructor(private fb: FormBuilder, public dialgRef: MatDialogRef<ModifierCommande>, @Inject(MAT_DIALOG_DATA) public data: any, public serviceColisage: ColisageService, public dialog: MatDialog) { }
 
   async ngOnInit() {
-    this.firstFormGroup = this.fb.group({
-      adresse: ['', Validators.required],
-      nouvelleAdresse: ''
-    });
-    this.secondFormGroup = this.fb.group({
-      secondCtrl: ['', Validators.required]
-    });
+    
 
   }
 }

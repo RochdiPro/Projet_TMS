@@ -1,0 +1,34 @@
+<div class="app-page-title">
+   <div class="page-title-wrapper">
+      <div class="page-title-heading">
+         <div class="page-title-icon">
+            <i class="pe-7s-car text-success">
+            </i>
+         </div>
+         Véhicules
+      </div>
+   </div>
+</div>
+<div class="tab-content">
+   <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
+      <div class="main-card mb-3 card">
+         <div class="card-body">
+            <ul class="tabs-animated-shadow tabs-animated nav" id="tab">
+               <!-- bouton mes vehicules -->
+               <li class="nav-item">
+                   <a role="tab" class="nav-link" id="tab-c-0" data-toggle="tab" routerLink="/Menu/TMS/Parc/Vehicules/Mes-Vehicules" (click)="activerMesVehicules()" [ngClass]="{'active': mesVehicules}">
+                       <span>Mes Véhicules</span>
+                   </a>
+               </li>
+               <!-- bouton vehicules loués -->
+               <li class="nav-item">
+                   <a role="tab" class="nav-link" id="tab-c-1" data-toggle="tab" routerLink="/Menu/TMS/Parc/Vehicules/Vehicules-Loues" (click)="activerVehiculesLoues()" [ngClass]="{'active': vehiculesLoues}">
+                       <span>Véhicules Loués</span>
+                   </a>
+               </li>
+           </ul>
+            <router-outlet></router-outlet>
+         </div>
+      </div>
+   </div>
+</div>

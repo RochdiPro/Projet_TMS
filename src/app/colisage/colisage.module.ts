@@ -1,0 +1,93 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatListModule } from '@angular/material/list';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatSelectModule } from '@angular/material/select';
+import { DatePipe } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { AgmCoreModule } from '@agm/core';
+
+
+
+import { ColisageComponent } from './colisage.component';
+import { ListeEmballageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent, ListerEmballageComponent } from './liste-emballage/liste-emballage.component';
+import { SupportsComponent } from './supports/supports.component';
+import { AjouterSupportComponent } from './supports/ajouter-support/ajouter-support.component'
+import { ListerSupportsComponent } from './supports/lister-supports/lister-supports.component';
+import { ModifierSupportComponent } from './supports/modifier-support/modifier-support.component'
+import { CommandeComponent } from './commande/commande.component';
+import { AjouterCommandeComponent, BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer, BoiteDialogueDetailProduit } from './commande/ajouter-commande/ajouter-commande.component';
+import { ListerCommandeComponent } from './commande/lister-commande/lister-commande.component';
+
+
+import { ColisageRoutingModule } from './colisage-routing.module';
+
+
+@NgModule({
+  declarations: [
+    ColisageComponent,
+    ListeEmballageComponent,
+    AjouterProduitComponent,
+    MenuAjouterComponent,
+    AjouterPackComponent,
+    SupportsComponent,
+    ListerEmballageComponent,
+    ListerSupportsComponent,
+    AjouterSupportComponent, ModifierSupportComponent,
+    CommandeComponent,
+    AjouterCommandeComponent,
+    BoiteDialogueInfo,
+    BoiteDialogueCreerCommande,
+    BoiteDialogueEmballer,
+    BoiteDialogueDetailProduit,
+    ListerCommandeComponent,
+  ],
+  imports: [
+    CommonModule,
+    ColisageRoutingModule,
+    MatStepperModule,
+    MatRadioModule,
+    MatSlideToggleModule,
+    MatListModule,
+    MatNativeDateModule,
+    MatDialogModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatSelectModule,
+    MatIconModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatCardModule,
+    MatGridListModule,
+    MatTooltipModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    AgmCoreModule.forRoot({
+      apiKey: 'AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8'
+    }),
+  ],
+  providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
+
+})
+export class ColisageModule { }
