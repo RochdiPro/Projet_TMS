@@ -22,11 +22,16 @@ import { FormsModule } from '@angular/forms';
 import { registerLocaleData } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import {MatStepperModule} from '@angular/material/stepper';
 
 import { VehiculeComponent } from './vehicule.component';
-import { AjouterVehiculeComponent, AjouterCarburantComponent, DetailVehiculeComponent, MesVehiculesComponent, MajVehiculeComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent, BoiteDialogueEntretien } from './mes-vehicules/mes-vehicules.component';
-import { AjouterVehiculeLoueComponent, DetailVehiculeLoueComponent, VehiculeLoueComponent } from './vehicule-loue/vehicule-loue.component';
-
+import { AjouterCarburantComponent, DetailVehiculeComponent, MajVehiculeComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent, BoiteDialogueEntretien, DetailVehiculeLoueComponent } from './dialogs/dialogs.component';
+import { MesVehiculesComponent } from "./mes-vehicules/mes-vehicules.component";
+import { VehiculeLoueComponent } from './vehicule-loue/vehicule-loue.component';
+import { AjouterVehiculeLoueComponent } from "./vehicule-loue/ajouter-vehicule-loue/ajouter-vehicule-loue.component";
+import { AjouterVehiculeComponent } from "./mes-vehicules/ajouter-vehicule/ajouter-vehicule.component";
+import { ListerVehiculesComponent } from './mes-vehicules/lister-vehicules/lister-vehicules.component';
+import { ListerVehiculesLoueComponent } from './vehicule-loue/lister-vehicules-loue/lister-vehicules-loue.component';
 
 import localeFr from '@angular/common/locales/fr';
 
@@ -43,12 +48,14 @@ registerLocaleData(localeFr, 'fr');
     BoiteDialogueEntretien,
     ReclamationComponent,
     VehiculeLoueComponent,
-    AjouterVehiculeComponent,
     NotificationComponent,
     MiseAJourConsommationComponent,
     AjouterVehiculeLoueComponent,
     DetailVehiculeLoueComponent,
     VehiculeLoueComponent,
+    AjouterVehiculeComponent,
+    ListerVehiculesComponent,
+    ListerVehiculesLoueComponent
   ],
   imports: [
     CommonModule,
@@ -72,7 +79,8 @@ registerLocaleData(localeFr, 'fr');
     FormsModule,
     MatCheckboxModule,
     MatButtonModule,
-    MatDatepickerModule
+    MatDatepickerModule,
+    MatStepperModule
   ],
   providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 

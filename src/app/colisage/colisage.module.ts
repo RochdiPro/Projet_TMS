@@ -27,28 +27,29 @@ import { AgmCoreModule } from '@agm/core';
 
 
 import { ColisageComponent } from './colisage.component';
-import { ListeEmballageComponent, AjouterProduitComponent, MenuAjouterComponent, AjouterPackComponent, ListerEmballageComponent } from './liste-emballage/liste-emballage.component';
+import { ListeEmballageComponent } from './liste-emballage/liste-emballage.component';
 import { SupportsComponent } from './supports/supports.component';
 import { AjouterSupportComponent } from './supports/ajouter-support/ajouter-support.component'
 import { ListerSupportsComponent } from './supports/lister-supports/lister-supports.component';
 import { ModifierSupportComponent } from './supports/modifier-support/modifier-support.component'
 import { CommandeComponent } from './commande/commande.component';
-import { AjouterCommandeComponent, BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer, BoiteDialogueDetailProduit } from './commande/ajouter-commande/ajouter-commande.component';
+import { AjouterCommandeComponent } from './commande/ajouter-commande/ajouter-commande.component';
+import { BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer, BoiteDialogueDetailProduit } from './commande/dialogs/dialogs.component';
 import { ListerCommandeComponent } from './commande/lister-commande/lister-commande.component';
 
 
 import { ColisageRoutingModule } from './colisage-routing.module';
+import { AjouterPackComponent } from './liste-emballage/ajouter-pack/ajouter-pack.component';
+import { AjouterProduitComponent } from './liste-emballage/ajouter-produit/ajouter-produit.component';
+import { ListerEmballageComponent } from './liste-emballage/lister-emballage/lister-emballage.component';
+import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-emballage/menu-ajouter-emballage.component';
 
 
 @NgModule({
   declarations: [
     ColisageComponent,
     ListeEmballageComponent,
-    AjouterProduitComponent,
-    MenuAjouterComponent,
-    AjouterPackComponent,
     SupportsComponent,
-    ListerEmballageComponent,
     ListerSupportsComponent,
     AjouterSupportComponent, ModifierSupportComponent,
     CommandeComponent,
@@ -58,6 +59,10 @@ import { ColisageRoutingModule } from './colisage-routing.module';
     BoiteDialogueEmballer,
     BoiteDialogueDetailProduit,
     ListerCommandeComponent,
+    MenuAjouterEmballageComponent,
+    AjouterPackComponent,
+    AjouterProduitComponent,
+    ListerEmballageComponent
   ],
   imports: [
     CommonModule,

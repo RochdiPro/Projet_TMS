@@ -1,0 +1,73 @@
+<!-- Bouton pour ajouter nouvelle vehicule -->
+<button mat-mini-fab color="primary" class="mt-1 mr-2 float-right add" style="margin-bottom: 13px;"
+    [routerLink]="['/Menu/TMS/Parc/Vehicules/ajouter-vehicule']" routerLinkActive="router-link-active" >
+    <mat-icon>add</mat-icon>
+</button>
+<!-- fin Bouton pour ajouter nouvelle vehicule -->
+<table class="mb-0 table" [formGroup]="form">
+    <thead>
+        <tr>
+            <th style="text-align:center">Vehicule</th>
+            <th style="text-align:center">Type Carosserie</th>
+            <th style="text-align:center">Propriétaire</th>
+            <th style="text-align:center">Tél. Propriétaire</th>
+            <th style="text-align:center">Disponibilité</th>
+            <th style="text-align:center"></th>
+
+        </tr>
+    </thead>
+    <tbody formArrayName="date">
+
+        <tr *ngFor="let vehicule of vehiculesLoues; let i=index" [formGroupName]="i"
+            [ngClass]="{'indisponible': vehicule.etat_vehicule === 'Indisponible'}">
+            <th scope="row" style="text-align:center">{{vehicule.matricule}}</th>
+            <td style="text-align:center">
+                <p class="mt-2" *ngIf="vehicule.categories === 'A/A1/B/B+E/C/C+E/D/D1/D+E/H';">DEUX ROUES</p>
+                <p class="mt-2" *ngIf="vehicule.categories === 'B/B+E/C/C+E/D/D1/D+E/H';">VOITURES PARTICULIÈRES
+                </p>
+                <p class="mt-2" *ngIf="vehicule.categories === 'C/C+E';">POIDS LOURDS</p>
+                <p class="mt-2" *ngIf="vehicule.categories === 'C+E';">POIDS LOURDS ARTICULÉS</p>
+            </td>
+            <td style="text-align:center">{{vehicule.proprietaire}}</td>
+            <td style="text-align:center">{{vehicule.num_proprietaire}}</td>
+            <td style="text-align:center"
+                [ngClass]="{'disponible': vehicule.etat_vehicule === 'Disponible', 'enMission': vehicule.etat_vehicule === 'En Mission'}">
+                {{vehicule.etat_vehicule}}</td>
+            <td style="text-align:center;">
+
+                <!-- bouton de detail vehicule -->
+                <button class="mb-2  btn icon" (click)="ouvrirDetailVehiculeLoue(vehicule.id_Vehicule_Loue)"><i
+                        class="fas fa-eye"></i></button>
+                <!-- fin bouton de detail vehicule -->
+
+                <!-- Bouton supprimer vehicule -->
+                <button class="mb-2  btn icon"><i class="fas fa-trash-alt" style="color: #ff0000;"
+                        (click)="supprimerVehiculeLoue(vehicule.id_Vehicule_Loue)"></i>
+                </button>
+                <!-- fin Bouton supprimer vehicule -->
+                <!-- Slide toggle de disponibilité -->
+                <mat-form-field class="example-full-width" appearance="fill" style="width:1px;visibility:hidden;">
+                    <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+                        <input matStartDate placeholder="Start date" formControlName="dateDebut">
+                        <input matEndDate placeholder="End date" formControlName="dateFin">
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-date-range-picker #picker>
+                        <mat-date-range-picker-actions>
+                            <button mat-button matDateRangePickerCancel>Annuler</button>
+                            <button mat-raised-button color="primary" matDateRangePickerApply
+                                (click)="changerDate(vehicule.id_Vehicule_Loue, i)">OK</button>
+                        </mat-date-range-picker-actions>
+                    </mat-date-range-picker>
+                </mat-form-field>
+                <button class="mb-2  btn icon"><i class="far fa-calendar-alt" (click)="picker.open()"></i></button>
+                <!-- fin slide toggle de disponibilité -->
+
+            </td>
+
+
+        </tr>
+
+
+    </tbody>
+</table>

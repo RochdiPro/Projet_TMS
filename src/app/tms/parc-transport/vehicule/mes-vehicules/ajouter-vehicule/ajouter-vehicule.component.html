@@ -1,1 +1,402 @@
-<p>ajouter-vehicule works!</p>
+<h1>Ajouter une Véhicule </h1>
+<div>
+    <mat-vertical-stepper [linear]="true" #stepper>
+        <mat-step [stepControl]="caracteristiquesFormGroup">
+            <form [formGroup]="caracteristiquesFormGroup">
+                <ng-template matStepLabel>Caractériqtiques</ng-template>
+                <div class="caracteristiques">
+                    <!-- div matricule -->
+                    <div>
+                        <label for="matricule" class="">Matricule Du Vehicule</label>
+                        <div class="grid-matricule">
+                            <!-- choix type matricule -->
+                            <div class="type-matricule">
+                                <mat-form-field id="type-matricule">
+                                    <mat-label>Choisir un type de matricule</mat-label>
+                                    <mat-select formControlName="typematricule" name="typematricule" id="typematricule"
+                                        (selectionChange)="testTypeMatricule()" [(value)]="typeMatriculeSelectionne"
+                                        required>
+                                        <mat-option *ngFor="let typematricule of typematricules"
+                                            [value]="typematricule.value">
+                                            {{ typematricule.value }}
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error
+                                        *ngIf="caracteristiquesFormGroup.controls['typematricule'].hasError('required')">
+                                        Veuillez choisir
+                                        un type de matricule </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <!-- Affichage input matricule TUN si le type est tun -->
+                            <div *ngIf="inputMatriculeTunEstAffiche" class=" matricule">
+                                <div class="row matriculetun">
+                                    <input placeholder="* * *" class="form-control no-spin" id="numSerie"
+                                        oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                        type="number" maxlength="3" formControlName="serieVoiture">
+                                    <input placeholder="* * * *" class="form-control no-spin" id="numCar"
+                                        oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                        type="number" maxlength="4" formControlName="numeroVoiture">
+                                </div>
+                            </div>
+                            <!-- Affichage input RS si type matricule est rs -->
+                            <div *ngIf="inputMatriculeRsEstAffiche" class="matricule">
+                                <div class="row matriculers">
+                                    <input maxlength="6" placeholder="* * * * * *" class="form-control" id="numRS"
+                                        oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                        type="number" maxlength="6" formControlName="matriculeRS">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-caracteristiques">
+                        <!-- input field marque -->
+                        <div class="marque">
+                            <mat-form-field class="full-width">
+                                <mat-label>Marque</mat-label>
+                                <input matInput formControlName="marque" name="marque" id="marque" type="text"
+                                    style="text-transform:capitalize;" required>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['marque'].hasError('required')">
+                                    Champ <strong>Obligatoire</strong>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- input field modele -->
+                        <div class="modele">
+                            <mat-form-field class="full-width">
+                                <mat-label>Modele</mat-label>
+                                <input matInput formControlName="modele" name="modele" id="modele" type="text"
+                                    style="text-transform:capitalize;" required>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['modele'].hasError('required')">
+                                    Champ <strong>Obligatoire</strong>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- input field couleur -->
+                        <div class="couleur">
+                            <mat-form-field class="full-width">
+                                <mat-label>Couleur</mat-label>
+                                <input matInput formControlName="couleur" name="couleur" id="couleur" type="text"
+                                    style="text-transform:capitalize;" required>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['couleur'].hasError('required')">
+                                    Champ <strong>Obligatoire</strong>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- Select du Categorie vehicule -->
+                        <div class="categorie" id="categories">
+                            <mat-form-field class="full-width">
+                                <mat-label>Categorie du Vehicule</mat-label>
+                                <mat-select formControlName="car" name="carosserie" id="carosserie"
+                                    [(value)]="categorie" required>
+                                    <mat-option *ngFor="let carosseries of carosserie" [value]="carosseries.value">
+                                        {{ carosseries.name }}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['car'].hasError('required')">
+                                    Veuillez
+                                    choisir une catégorie
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- Select type carburant -->
+                        <div class="carburant">
+                            <mat-form-field class="full-width">
+                                <mat-label>Carburant</mat-label>
+                                <mat-select formControlName="carburant" name="carburant" id="carburant"
+                                    [(value)]="carburant" required>
+                                    <mat-option *ngFor="let carb of carburants" [value]="carb">
+                                        {{carb.nom}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['carburant'].hasError('required')">
+                                    Veuillez choisir le
+                                    carburant
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- input Consommation normale -->
+                        <div class="consommationNormale">
+                            <mat-form-field class="full-width">
+                                <mat-label>Consommation Normale En L/100Km</mat-label>
+                                <input matInput placeholder="Ex. 6" formControlName="consommationnormale"
+                                    name="consommationnormale" id="consommationnormale" type="text" required>
+                                <mat-error
+                                    *ngIf="caracteristiquesFormGroup.controls['consommationnormale'].hasError('required')">
+                                    Champ <strong>Obligatoire</strong>
+                                </mat-error>
+                                <mat-error
+                                    *ngIf="caracteristiquesFormGroup.controls['consommationnormale'].hasError('pattern')">
+                                    Seuls les <strong>chiffres</strong> sont autorisés
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- input charge utile maximale -->
+                        <div class="charge">
+                            <mat-form-field class="full-width">
+                                <mat-label>Charge Utile Maximale En Kg</mat-label>
+                                <input matInput placeholder="Ex. 600" formControlName="chargeUtile" name="chargeUtile"
+                                    id="chargeUtile" type="text" required>
+                                <mat-error
+                                    *ngIf="caracteristiquesFormGroup.controls['chargeUtile'].hasError('required')">
+                                    Champ <strong>Obligatoire</strong>
+                                </mat-error>
+                                <mat-error
+                                    *ngIf="caracteristiquesFormGroup.controls['chargeUtile'].hasError('pattern')">
+                                    Seuls les <strong>chiffres</strong> sont autorisés
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- input longueur -->
+                        <div class="longueuer">
+                            <mat-form-field class="full-width">
+                                <mat-label>Longueur utile en cm</mat-label>
+                                <input matInput formControlName="longueur" name="longueur" id="longueur" type="text"
+                                    required>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['longueur'].hasError('required')">
+                                    Champ <strong>Obligatoire</strong>
+                                </mat-error>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['longueur'].hasError('pattern')">
+                                    Seuls les <strong>chiffres</strong> sont autorisés
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- input largeur -->
+                        <div class="largeur">
+                            <mat-form-field class="full-width">
+                                <mat-label>Largeur utile en cm</mat-label>
+                                <input matInput formControlName="largeur" name="largeur" id="largeur" type="text"
+                                    required>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['largeur'].hasError('required')">
+                                    Champ <strong>Obligatoire</strong>
+                                </mat-error>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['largeur'].hasError('pattern')">
+                                    Seuls les <strong>chiffres</strong> sont autorisés
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <!-- input hauteur -->
+                        <div class="hauteur">
+                            <mat-form-field class="full-width">
+                                <mat-label>Hauteur utile en cm</mat-label>
+                                <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="text"
+                                    required>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['hauteur'].hasError('required')">
+                                    Champ <strong>Obligatoire</strong>
+                                </mat-error>
+                                <mat-error *ngIf="caracteristiquesFormGroup.controls['hauteur'].hasError('pattern')">
+                                    Seuls les <strong>chiffres</strong> sont autorisés
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </div>
+                <div class="float-right">
+                    <!-- bouton Annuler -->
+                    <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
+                    <button mat-button matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="entretienEtPapierFormGroup">
+            <form [formGroup]="entretienEtPapierFormGroup">
+                <ng-template matStepLabel>Entretiens et expiration des Papiers</ng-template>
+                <div class="entretienEtPapier">
+                    <!-- input Kilometrage actuel -->
+                    <div class="kmActuel">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage Actuel</mat-label> <input matInput placeholder="Ex. 100000"
+                                formControlName="kmactuel" name="km-actuel" id="km-actuel" type="text" required>
+                            <mat-error *ngIf="entretienEtPapierFormGroup.controls['kmactuel'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error *ngIf="entretienEtPapierFormGroup.controls['kmactuel'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- input kilometrage prochain vidange huile moteur -->
+                    <div class="kmHuileMoteur">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage prochain vidange huile moteur</mat-label>
+                            <input matInput placeholder="Ex. 100000" formControlName="kmProchainVidangeHuileMoteur"
+                                type="number" required>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainVidangeHuileMoteur'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainVidangeHuileMoteur'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- input kilometrage prochain vidange liquide refroidissement -->
+                    <div class="kmLiquideRefroidissement">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage prochain vidange liquide de refroidissement</mat-label>
+                            <input matInput placeholder="Ex. 100000"
+                                formControlName="kmProchainVidangeLiquideRefroidissement" type="number" required>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainVidangeLiquideRefroidissement'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainVidangeLiquideRefroidissement'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- input kilometrage prochain vidange huile boite vitesse -->
+                    <div class="kmHuileBoiteVitesse">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage prochain vidange huile boite vitesse</mat-label>
+                            <input matInput placeholder="Ex. 100000"
+                                formControlName="kmProchainVidangeHuileBoiteVitesse" type="number" required>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainVidangeHuileBoiteVitesse'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainVidangeHuileBoiteVitesse'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- input kilometrage prochain changement filtre climatiseur -->
+                    <div class="kmFiltreClimatiseur">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage prochain changement filtre climatiseur</mat-label>
+                            <input matInput placeholder="Ex. 100000"
+                                formControlName="kmProchainChangementFiltreClimatiseur" type="number" required>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementFiltreClimatiseur'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementFiltreClimatiseur'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- input kilometrage prochain changement filtre carburant -->
+                    <div class="kmFiltreCarburant">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage prochain changement filtre carburant</mat-label>
+                            <input matInput placeholder="Ex. 100000"
+                                formControlName="kmProchainChangementFiltreCarburant" type="number" required>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementFiltreCarburant'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementFiltreCarburant'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- input kilometrage prochain changement bougies -->
+                    <div class="kmBougies">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage prochain changement bougies d'allumage</mat-label>
+                            <input matInput placeholder="Ex. 100000" formControlName="kmProchainChangementBougies"
+                                type="number" required>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementBougies'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementBougies'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- input kilometrage prochain changement courroies -->
+                    <div class="kmCourroies">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage prochain changement courroies</mat-label>
+                            <input matInput placeholder="Ex. 100000" formControlName="kmProchainChangementCourroies"
+                                type="number" required>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementCourroies'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementCourroies'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- input kilometrage prochain changement pneus -->
+                    <div class="kmPneus">
+                        <mat-form-field class="full-width">
+                            <mat-label>Kilométrage prochain changement pneus</mat-label>
+                            <input matInput placeholder="Ex. 100000" formControlName="kmProchainChangementPneus"
+                                type="number" required>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementPneus'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['kmProchainChangementPneus'].hasError('pattern')">
+                                Seuls les <strong>chiffres</strong> sont autorisés
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <!-- date picker date prochain visite -->
+                    <div class="dateVisite">
+
+                        <mat-form-field class="full-width">
+                            <mat-label>Date Prochaine Visite</mat-label>
+                            <input matInput [matDatepicker]="dateVisite" formControlName="datevisite" [min]="minDate">
+                            <mat-datepicker-toggle matSuffix [for]="dateVisite"></mat-datepicker-toggle>
+                            <mat-datepicker #dateVisite></mat-datepicker>
+                            <mat-error *ngIf="entretienEtPapierFormGroup.controls['datevisite'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                        </mat-form-field>
+
+                    </div>
+                    <!-- date picker date expiration assurance -->
+                    <div class="dateAssurance">
+
+                        <mat-form-field class="full-width">
+                            <mat-label>Date D'Expiration D'Assurance</mat-label>
+                            <input matInput [matDatepicker]="dateAssurance" formControlName="dateassurance"
+                                [min]="minDate">
+                            <mat-datepicker-toggle matSuffix [for]="dateAssurance"></mat-datepicker-toggle>
+                            <mat-datepicker #dateAssurance></mat-datepicker>
+                            <mat-error
+                                *ngIf="entretienEtPapierFormGroup.controls['dateassurance'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- date picker date expiration taxes -->
+                    <div class="dateTaxe">
+
+
+                        <mat-form-field class="full-width">
+                            <mat-label>Date D'Expiration Des Taxes</mat-label>
+                            <input matInput [matDatepicker]="dateTaxe" formControlName="datetaxe" [min]="minDate">
+                            <mat-datepicker-toggle matSuffix [for]="dateTaxe"></mat-datepicker-toggle>
+                            <mat-datepicker #dateTaxe></mat-datepicker>
+                            <mat-error *ngIf="entretienEtPapierFormGroup.controls['datetaxe'].hasError('required')">
+                                Champ <strong>Obligatoire</strong>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="float-right">
+                    <!-- bouton Annuler -->
+                    <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <!-- Bouton Enregistrer -->
+                    <button mat-button color="primary" class="mb-2 mr-2"
+                        (click)="enregistrerVehicule()" [disabled]="caracteristiquesFormGroup.invalid || entretienEtPapierFormGroup.invalid">Enregistrer</button>
+                </div>
+            </form>
+        </mat-step>
+    </mat-vertical-stepper>
+</div>
