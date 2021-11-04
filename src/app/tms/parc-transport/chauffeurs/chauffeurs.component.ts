@@ -5,7 +5,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ParcTransportService } from 'src/app/parc-transport.service';
+import { ChauffeurService } from './services/chauffeur.service';
 
 @Component({
   selector: 'app-chauffeurs',
@@ -24,7 +24,7 @@ export class ChauffeursComponent implements OnInit {
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  constructor(public service: ParcTransportService, public datepipe: DatePipe, public sanitizer: DomSanitizer) {
+  constructor(public service: ChauffeurService, public datepipe: DatePipe, public sanitizer: DomSanitizer) {
     this.service.employes().subscribe((data) => {
       this.employes = data;
       this.chauffeurs = this.employes.filter((x: any) => x.role == "chauffeur");

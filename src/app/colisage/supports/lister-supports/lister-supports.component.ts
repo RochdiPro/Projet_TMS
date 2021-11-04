@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ColisageService } from 'src/app/colisage.service';
-import { DataService } from 'src/app/data.service';
+import { SupportService } from '../services/support.service';
 
 @Component({
   selector: 'app-lister-supports',
@@ -10,23 +9,23 @@ import { DataService } from 'src/app/data.service';
 })
 export class ListerSupportsComponent implements OnInit {
   listeSupports : any;
-  constructor(private service : ColisageService, private data: DataService, public router: Router) { }
+  constructor(private serviceSupport : SupportService, public router: Router) { }
 
   ngOnInit(): void {
     this.chargerListeSupports();
    }
 
   async chargerListeSupports(){
-    this.listeSupports = await this.service.supports().toPromise()
+    this.listeSupports = await this.serviceSupport.supports().toPromise()
   }
 
   modifierSupport(support: any){
-    this.data.support = support;
+    this.serviceSupport.supp = support;
     this.router.navigate(['/Menu/Menu_Colisage/Supports/Modifier_Support'])
   }
 
   async supprimerSupport(support: any){
-    await this.service.supprimerSupport((support.id_support)).toPromise();
+    await this.serviceSupport.supprimerSupport((support.id_support)).toPromise();
     this.chargerListeSupports();
   }
 

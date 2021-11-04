@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ColisageService } from '../../../colisage.service';
+import { EmballageService } from '../services/emballage.service';
 
 
 @Component({
@@ -17,9 +17,14 @@ export class ListerEmballageComponent implements OnInit {
 
   //Declaration des variables
   form = new FormGroup({
+    idEmballage: new FormControl(''),
     nom_Produit: new FormControl(''),
     nom_Emballage: new FormControl(''),
     type_Emballage: new FormControl(''),
+    quantite: new FormControl(''),
+    unite: new FormControl(''),
+    poids: new FormControl(''),
+    volume: new FormControl(''),
   });
   listeColisage: any;
   displayedColumns: string[] = [
@@ -39,7 +44,7 @@ export class ListerEmballageComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  constructor(public service: ColisageService) {}
+  constructor(public service: EmballageService) {}
   async ngOnInit() {
     await this.chargerListeColisage();
     console.log(this.dataSource.data);

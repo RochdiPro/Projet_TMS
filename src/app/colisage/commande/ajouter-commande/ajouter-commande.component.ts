@@ -1,11 +1,11 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ColisageService } from 'src/app/colisage.service';
 import { BoiteDialogueCreerCommande, BoiteDialogueInfo } from '../dialogs/dialogs.component';
+import { CommandeService } from '../services/commande.service';
 
 @Component({
   selector: 'app-ajouter-commande',
@@ -52,7 +52,7 @@ export class AjouterCommandeComponent implements OnInit {
     { nom: 'Zaghouan', valeur: 'Zaghouan' },
   ]
 
-  constructor(private service: ColisageService, private dialogue: MatDialog, private fb: FormBuilder) { }
+  constructor(private serviceCommande: CommandeService, private dialogue: MatDialog, private fb: FormBuilder) { }
 
   async ngOnInit() {
     this.filtre = this.fb.group({
@@ -92,7 +92,7 @@ export class AjouterCommandeComponent implements OnInit {
   }
 
   async getListeFactures() {
-    this.listeFacturesDB = await this.service.filtreFacture("etat", "Validée").toPromise();
+    this.listeFacturesDB = await this.serviceCommande.filtreFacture("etat", "Validée").toPromise();
     this.listeFacturesDB.forEach((facture: any) => {
       var client = this.listeClients.filter((client: any) => Number(client.id_Clt) === Number(facture.id_Clt));
       var factureConstruit: Facture = new Facture;
@@ -114,7 +114,7 @@ export class AjouterCommandeComponent implements OnInit {
   }
 
   async getListeBLs() {
-    this.listeBLsDB = await this.service.filtreBonLivraison("etat", "Validée").toPromise();
+    this.listeBLsDB = await this.serviceCommande.filtreBonLivraison("etat", "Validée").toPromise();
     this.listeBLsDB.forEach((bonLivraison: any) => {
       var client = this.listeClients.filter((client: any) => Number(client.id_Clt) === Number(bonLivraison.id_Clt));
       var bonLivraisonConstruit: BonLivraison = new BonLivraison;
@@ -136,7 +136,7 @@ export class AjouterCommandeComponent implements OnInit {
   }
 
   async getListeClients() {
-    this.listeClients = await this.service.clients().toPromise();
+    this.listeClients = await this.serviceCommande.clients().toPromise();
   }
 
   ouvrirBoiteDialogueInfo(commande: any) {

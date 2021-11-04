@@ -1,8 +1,8 @@
 import { DatePipe, NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { ColisageService } from 'src/app/colisage.service';
-import { ParcTransportService } from 'src/app/parc-transport.service';
+import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
+import { EmballageService } from 'src/app/colisage/liste-emballage/services/emballage.service';
 import { VehiculeService } from '../../vehicule/services/vehicule.service';
 
 @Component({
@@ -43,7 +43,7 @@ export class AjoutMissionComponent implements OnInit {
   listeVehiculesLoues: any;
   listeColisage: any;
 
-  constructor(public fb: FormBuilder, public serviceColisage: ColisageService, public serviceVehicule: VehiculeService, public datepipe: DatePipe) { }
+  constructor(public fb: FormBuilder, private serviceCommande: CommandeService, private serviceEmballage: EmballageService, public serviceVehicule: VehiculeService, public datepipe: DatePipe) { }
 
   async ngOnInit() {
     await this.getListeFactures();
@@ -61,20 +61,20 @@ export class AjoutMissionComponent implements OnInit {
   }
 
   async getListeFactures() {
-    this.listeFactures = await this.serviceColisage.filtreFacture("etat", "Validée").toPromise();
+    this.listeFactures = await this.serviceCommande.filtreFacture("etat", "Validée").toPromise();
   }
 
   async getListeBLs() {
-    this.listeBLs = await this.serviceColisage.filtreBonLivraison("etat", "Validée").toPromise();
+    this.listeBLs = await this.serviceCommande.filtreBonLivraison("etat", "Validée").toPromise();
   }
 
   async getClient() {
     for (let i = 0; i < this.listeFactures.length; i++) {
-      this.client = await this.serviceColisage.client(this.listeFactures[i].id_Clt).toPromise();
+      this.client = await this.serviceCommande.client(this.listeFactures[i].id_Clt).toPromise();
       this.listeClients.push(this.client);
     }
     for (let j = 0; j < this.listeBLs.length; j++) {
-      this.client = await this.serviceColisage.client(this.listeBLs[j].id_Clt).toPromise();
+      this.client = await this.serviceCommande.client(this.listeBLs[j].id_Clt).toPromise();
       this.listeClients.push(this.client);
     }
   }
@@ -100,7 +100,6 @@ export class AjoutMissionComponent implements OnInit {
           region = reg.nom;
         }
       }
-      //stopped here ---------------------------------------
       for (let k = 0; k < this.articles.length; k++) {
         var qteArticleRestante = this.articles[k].qte[0];
         var differenceQte = 0;
@@ -147,7 +146,6 @@ export class AjoutMissionComponent implements OnInit {
           region = reg.nom;
         }
       }
-      //stopped here ---------------------------------------
       for (let k = 0; k < this.articlesBl.length; k++) {
         var qteArticleRestante = this.articlesBl[k].qte[0];
         var differenceQte = 0;
@@ -216,10 +214,10 @@ export class AjoutMissionComponent implements OnInit {
     this.commandesSudOuest = this.listeCommandes.filter((commande: any) => commande.region === "Sud-Ouest");
   }
   async getListeColisage() {
-    this.listeColisage = await this.serviceColisage.listeEmballage().toPromise();
+    this.listeColisage = await this.serviceEmballage.listeEmballage().toPromise();
   }
   async getDetailFacture(id: any) { //pour avoir les ids et les qtes des produits dans une facture
-    var detail = await this.serviceColisage.Detail_Facture(id).toPromise();
+    var detail = await this.serviceCommande.Detail_Facture(id).toPromise();
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
@@ -274,7 +272,7 @@ export class AjoutMissionComponent implements OnInit {
     });
   }
   async getDetailBL(id: any) {  //pour avoir les ids et les qtes des produits dans un bon livraison
-    var detail = await this.serviceColisage.Detail_BL(id).toPromise();
+    var detail = await this.serviceCommande.Detail_BL(id).toPromise();
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 

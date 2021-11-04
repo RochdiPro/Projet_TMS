@@ -5,8 +5,9 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
-import { ColisageService } from 'src/app/colisage.service';
 import Swal from 'sweetalert2';
+import { EmballageService } from '../../liste-emballage/services/emballage.service';
+import { CommandeService } from '../services/commande.service';
 
 // *********************************** Boite de dialogue info *********************************************************
 @Component({
@@ -24,7 +25,8 @@ export class BoiteDialogueInfo implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<BoiteDialogueInfo>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public serviceColisage: ColisageService,
+    public serviceEmballage: EmballageService,
+    public serviceCommande: CommandeService,
     private dialog: MatDialog
   ) {}
 
@@ -43,19 +45,19 @@ export class BoiteDialogueInfo implements OnInit {
     }
   }
   async getListeEmballage() {
-    this.listeEmballage = await this.serviceColisage
+    this.listeEmballage = await this.serviceEmballage
       .listeEmballage()
       .toPromise();
   }
 
   async getDetail() {
     if (this.indicateurTypeCommande === 'F') {
-      var detail = await this.serviceColisage
+      var detail = await this.serviceCommande
         .Detail_Facture(this.data.commande.id)
         .toPromise();
       this.articles = await getDetailFacture(detail);
     } else {
-      var detail = await this.serviceColisage
+      var detail = await this.serviceCommande
         .Detail_BL(this.data.commande.id)
         .toPromise();
       this.articles = await getDetailBL(detail);
@@ -177,7 +179,8 @@ export class BoiteDialogueCreerCommande implements OnInit {
     private fb: FormBuilder,
     public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public serviceColisage: ColisageService,
+    public serviceCommande: CommandeService,
+    public serviceEmballage: EmballageService,
     public dialog: MatDialog
   ) {}
 
@@ -219,7 +222,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   }
 
   async getPositionsEnregistrees() {
-    this.positionsClientEnregistree = await this.serviceColisage
+    this.positionsClientEnregistree = await this.serviceCommande
       .positionClient(this.data.commande.idClient)
       .toPromise();
     console.log(this.positionsClientEnregistree);
@@ -238,18 +241,18 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.getPositionClient();
   }
   async getListeEmballage() {
-    this.listeEmballage = await this.serviceColisage
+    this.listeEmballage = await this.serviceEmballage
       .listeEmballage()
       .toPromise();
   }
   async getDetail() {
     if (this.indicateurTypeCommande === 'F') {
-      var detail = await this.serviceColisage
+      var detail = await this.serviceCommande
         .Detail_Facture(this.data.commande.id)
         .toPromise();
       this.articles = await getDetailFacture(detail);
     } else {
-      var detail = await this.serviceColisage
+      var detail = await this.serviceCommande
         .Detail_BL(this.data.commande.id)
         .toPromise();
       this.articles = await getDetailBL(detail);
@@ -416,7 +419,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       position.append('longitude', this.positionClient.longitude);
       position.append('latitude', this.positionClient.latitude);
 
-      await this.serviceColisage.creerPositionClient(position).toPromise();
+      await this.serviceCommande.creerPositionClient(position).toPromise();
     } else if (this.positionEstModifie) {
       let position: any = new FormData();
       position.append('id', this.positionClient.id);
@@ -425,7 +428,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       position.append('longitude', this.lng);
       position.append('latitude', this.lat);
 
-      this.serviceColisage.modifierPositionClient(position).toPromise();
+      this.serviceCommande.modifierPositionClient(position).toPromise();
     }
 
     for (let i = 0; i < this.listeEmballageChoisi.length; i++) {
@@ -451,7 +454,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       console.log(typeof Number(this.getVolumePack(emballage)));
       console.log(typeof Number(this.getPoidsPackNet(emballage)));
       console.log(typeof Number(this.getPoidsPackBrut(emballage)));
-      await this.serviceColisage.creerColis(listeColisage).toPromise();
+      await this.serviceCommande.creerColis(listeColisage).toPromise();
     }
 
     commande.append('referenceDocument', this.data.commande.reference);
@@ -466,7 +469,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('numPieceIdentite', this.data.commande.numeroPieceIdentite);
     commande.append('dateCreation', this.data.commande.dateCreation);
 
-    await this.serviceColisage.creerCommande(commande).toPromise();
+    await this.serviceCommande.creerCommande(commande).toPromise();
   }
 
   get nombrePackTotal() {
@@ -520,7 +523,7 @@ export class BoiteDialogueEmballer implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<BoiteDialogueEmballer>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private serviceColisage: ColisageService,
+    private serviceEmballage: EmballageService,
     private fb: FormBuilder
   ) {}
 
@@ -572,7 +575,7 @@ export class BoiteDialogueEmballer implements OnInit {
     });
   }
   async getListeEmballages() {
-    this.listeEmballages = await this.serviceColisage
+    this.listeEmballages = await this.serviceEmballage
       .listeEmballage()
       .toPromise();
     this.listeEmballages = this.listeEmballages.filter(

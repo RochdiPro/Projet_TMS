@@ -3,14 +3,14 @@ import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms'
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ParcTransportService } from 'src/app/parc-transport.service';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 import { ILatLng } from 'src/app/directions-map.directive';
-import { ColisageService } from 'src/app/colisage.service';
+import { ChauffeurService } from '../chauffeurs/services/chauffeur.service';
+import { MissionsService } from './services/missions.service';
 
 
 //les interfaces necessaires pour le chargement des tableau
@@ -125,7 +125,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
 
 
 
-  constructor(public service: ParcTransportService, public datepipe: DatePipe, private router: Router, private dialog: MatDialog) {
+  constructor(public service: MissionsService, public datepipe: DatePipe, private router: Router, private dialog: MatDialog) {
     // this.refresh();
   }
   // refresh() { // rafraichir la liste des missions
@@ -326,7 +326,7 @@ export class DetailComponent implements OnInit {
   dataSource = new MatTableDataSource<tableCommandes>();
   expandedElement: tableCommandes | null;
   date_creation: any;
-  constructor(public service: ParcTransportService, public _DomSanitizationService: DomSanitizer, private dialog: MatDialog, private router: Router) {
+  constructor(public serviceMission: MissionsService, private serviceChauffeur: ChauffeurService, public _DomSanitizationService: DomSanitizer, private dialog: MatDialog, private router: Router) {
     this.refresh();
   }
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -344,15 +344,15 @@ export class DetailComponent implements OnInit {
   refresh() { // rafraichier la liste des commandes et calcule du poids et surface global
     this.id = localStorage.getItem('idC');
     this.idMission = localStorage.getItem('idM');
-    this.service.employe(this.id).subscribe((data) => {
+    this.serviceChauffeur.employe(this.id).subscribe((data) => {
       this.employe = data;
     });
-    this.service.mission(this.idMission).subscribe(res => {
+    this.serviceMission.mission(this.idMission).subscribe(res => {
       this.mission = res;
       this.date_creation = this.mission.date_creation;
 
     });
-    this.service.filtrerCommande("id_mission", this.idMission).subscribe(res => { //recuperer la commande par l'id du mission
+    this.serviceMission.filtrerCommande("id_mission", this.idMission).subscribe(res => { //recuperer la commande par l'id du mission
       this.dataSource.data = res as tableCommandes[];
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
@@ -384,7 +384,7 @@ export class DetailComponent implements OnInit {
   }
 
   supprimerCommande(id: any) { // supprimer une commande
-    this.service.supprimerCommande(id);
+    this.serviceMission.supprimerCommande(id);
     window.setTimeout(() => {
       this.refresh();
     }, 100);
@@ -393,7 +393,7 @@ export class DetailComponent implements OnInit {
   terminerCommande(id: any) { //marquer une commande comme livrée
     var formData: any = new FormData();
     formData.append("etat", "Done");
-    this.service.majEtat(id, formData);
+    this.serviceMission.majEtat(id, formData);
     window.setTimeout(() => {
       this.refresh();
     }, 100);
@@ -440,10 +440,10 @@ export class MapsComponent {
   zoom = 15;
 
 
-  constructor(public service: ParcTransportService) {
+  constructor(public serviceMission: MissionsService) {
     this.id = localStorage.getItem("idCom");
     this.type = localStorage.getItem("type");
-    this.service.commande(this.id).subscribe((data) => {
+    this.serviceMission.commande(this.id).subscribe((data) => {
       this.commande = data;
       if (this.type === "expediteur") { //afficher la position de l'expediteur
         var x = this.commande.positionExp.split(",");
@@ -508,7 +508,7 @@ export class AffecterCommande {
   form = new FormGroup({ dateLivraison: new FormControl(this.date), commande: new FormControl(""), mission: new FormControl("") });
 
 
-  constructor(public fb: FormBuilder, public service: ParcTransportService, public datepipe: DatePipe, public dialogRef: MatDialogRef<MissionsComponent>, private dialog: MatDialog) {
+  constructor(public fb: FormBuilder, public datepipe: DatePipe, public dialogRef: MatDialogRef<MissionsComponent>, private dialog: MatDialog) {
     this.assignCopy();//when you fetch collection from server.
 
   }

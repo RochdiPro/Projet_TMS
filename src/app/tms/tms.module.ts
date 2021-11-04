@@ -4,11 +4,13 @@ import { TMSComponent } from './tms.component';
 
 
 import { TmsRoutingModule } from './tms-routing.module';
+import { MenuTmsComponent } from './menu-tms/menu-tms.component';
 
 
 @NgModule({
   declarations: [
-    TMSComponent
+    TMSComponent,
+    MenuTmsComponent
   ],
   imports: [
     CommonModule,

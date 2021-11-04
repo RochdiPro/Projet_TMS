@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ColisageService } from 'src/app/colisage.service';
-import { DataService } from 'src/app/data.service';
 import Swal from 'sweetalert2';
+import { SupportService } from '../services/support.service';
 
 @Component({
   selector: 'app-modifier-support',
@@ -13,10 +12,10 @@ import Swal from 'sweetalert2';
 export class ModifierSupportComponent implements OnInit {
   form: FormGroup;
   support: any
-  constructor(private formBuilder : FormBuilder, private service : ColisageService, public _router: Router, private data : DataService) { }
+  constructor(private formBuilder : FormBuilder, private serviceSupport : SupportService, public _router: Router) { }
 
   async ngOnInit() { 
-    this.support = await this.data.support;
+    this.support = await this.serviceSupport.supp;
     this.form = this.formBuilder.group({
       nom_Support: [this.support.nom_support, Validators.required],
       type_Support: [this.support.type_support, Validators.required],
@@ -46,7 +45,7 @@ export class ModifierSupportComponent implements OnInit {
     formData.append("hauteur", this.form.get('hauteur').value);
     formData.append("volume", this.form.get('volume').value);
     formData.append( "code_barre", this.form.get('code_Barre').value);
-    await this.service.modifierSupport(formData).toPromise();
+    await this.serviceSupport.modifierSupport(formData).toPromise();
     await this._router.navigate(['/Menu/Menu_Colisage/Supports/Liste_Support'])
     Swal.fire({
       icon: 'success',

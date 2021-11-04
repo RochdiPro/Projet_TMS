@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ColisageService } from 'src/app/colisage.service';
 import Swal from 'sweetalert2';
+import { SupportService } from '../services/support.service';
 
 
 @Component({
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 })
 export class AjouterSupportComponent implements OnInit {
   form: FormGroup;
-  constructor(private formBuilder : FormBuilder, private service : ColisageService, public _router: Router) { }
+  constructor(private formBuilder : FormBuilder, private serviceSupport : SupportService, public _router: Router) { }
 
   ngOnInit() { 
     this.form = this.formBuilder.group({
@@ -42,7 +42,7 @@ export class AjouterSupportComponent implements OnInit {
     formData.append("hauteur", this.form.get('hauteur').value);
     formData.append("volume", this.form.get('volume').value);
     formData.append( "code_barre", this.form.get('code_Barre').value);
-    await this.service.creerSupport(formData).toPromise();
+    await this.serviceSupport.creerSupport(formData).toPromise();
     await this._router.navigate(['/Menu/Menu_Colisage/Supports/Liste_Support'])
     Swal.fire({
       icon: 'success',

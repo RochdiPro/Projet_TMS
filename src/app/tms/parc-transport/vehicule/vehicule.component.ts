@@ -1,13 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ParcTransportService } from 'src/app/parc-transport.service';
-import { DatePipe } from '@angular/common';
-import { kmactuelValidator } from './kmactuel.validator';
+
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Location } from '@angular/common';
-import Swal from 'sweetalert2'
+
 
 // ***************************************Page vehicule********************************************
 @Component({
