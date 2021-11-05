@@ -1,0 +1,64 @@
+<h1 mat-dialog-title>Information {{typeDocument}} {{data.commande.id}}</h1>
+<div mat-dialog-content>
+    <h2>Client</h2>
+    <div class="row">
+        <div class="colonne entete">Nom:</div>
+        <div class="colonne">{{data.commande.nomClient}}</div>
+        <div class="colonne entete">Identifiant:</div>
+        <div class="colonne">{{data.commande.idClient}}</div>
+    </div>
+    <div class="row">
+        <div class="colonne entete">Contact:</div>
+        <div class="colonne">{{data.commande.contact}}</div>
+        <div class="colonne entete">Téléphone:</div>
+        <div class="colonne">{{data.commande.telephone}}</div>
+    </div>
+    <div class="row">
+        <div class="colonne entete">Email:</div>
+        <div class="colonne">{{data.commande.email}}</div>
+        <div class="colonne entete">Catégorie client</div>
+        <div class="colonne">{{data.commande.categorieClient}}</div>
+    </div>
+    <div class="row">
+        <div class="colonne entete">Ville:</div>
+        <div class="colonne">{{data.commande.ville}}</div>
+        <div class="colonne entete">Adresse:</div>
+        <div class="colonne">{{data.commande.adresse}}</div>
+    </div>
+    <div class="row">
+        <div class="colonne entete">Type piéce d'identité:</div>
+        <div class="colonne">{{data.commande.typePieceIdentite}}</div>
+        <div class="colonne entete">Numéro piéce d'identité:</div>
+        <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
+    </div>
+    <hr>
+    <h2>Produits</h2>
+    <div class="produits">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Nom produit</th>
+                    <th scope="col">Quantité</th>
+                    <th scope="col">Type produit</th>
+                    <th scope="col">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let article of listeArticlesDetail">
+                    <th scope="row">{{article.id}}</th>
+                    <td>{{article.nom}}</td>
+                    <td>{{article.qte}}</td>
+                    <td>{{article.type}}</td>
+                    <td style="justify-content: center;">
+                        <button mat-icon-button (click)="ouvrirBoiteDialogueDetailProduit(article)" [disabled] = "article.type === 'Produit simple'"><mat-icon>list_alt</mat-icon></button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<div mat-dialog-actions class="boutons">
+    <button mat-button cdkFocusInitial color="primary" (click)="fermerBoiteDialogue()">Ok</button>
+</div>

@@ -1,0 +1,49 @@
+<h1 mat-dialog-title>Mise à Jour Kilométrage Véhicule {{vehicule?.matricule}} </h1> <!-- titre boite dialogue -->
+<!-- contenu boite de dialogue ne s'affiche que si le vehicule est chargé -->
+<div mat-dialog-content *ngIf="vehicule">
+    <form class="" [formGroup]="form" >
+        <!-- input Kilometrage Actuel -->
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Kilométrage Actuel</mat-label>
+                <input matInput formControlName="kmActuel" name="km-actuel" id="km-actuel" value="{{vehicule.kmactuel}}"
+                    type="text">
+                <mat-error *ngIf="form.controls['kmActuel'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+                <mat-error *ngIf="form.controls['kmActuel'].hasError('pattern')">
+                    Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+                <mat-error
+                    *ngIf="form.controls['kmActuel'].hasError('kmvalide') && !(form.controls['kmActuel'].hasError('pattern') || form.controls['kmActuel'].hasError('required'))">
+                    Kilométrage Actuel <strong>Invalide</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <!-- input carburant consommé -->
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Montant Carburant Consommé En TND</mat-label>
+                <input matInput formControlName="montantConsomme" name="montantConsomme" id="montantConsomme"
+                    value="{{vehicule.montantConsomme}}" type="text">
+                <mat-error *ngIf="form.controls['montantConsomme'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+                <mat-error *ngIf="form.controls['montantConsomme'].hasError('pattern')">
+                    Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+    </form>
+</div>
+<div mat-dialog-actions class="float-right" *ngIf="vehicule">
+    <!-- Bouton Annuler -->
+    <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerMiseAJourConsommation()">Annuler</button>
+    <!-- fin Bouton Annuler -->
+
+    <!-- Bouton Enregistrer -->
+    <button mat-button color="primary" class="mb-2 mr-2" (click)="miseAJourConsommation()"
+        [disabled]="form.invalid">Enregistrer</button>
+    <!-- fin Bouton Enregistrer -->
+</div>

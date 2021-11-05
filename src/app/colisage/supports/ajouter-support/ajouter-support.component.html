@@ -1,0 +1,61 @@
+<h1>Ajouter un nouveau support de charge</h1>
+<form [formGroup]="form">
+    <div class="input-inline">
+        <!-- input nom emballage -->
+        <mat-form-field appearance="fill" class="premier-input">
+            <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
+            <input matInput formControlName="nom_Support" required>
+        </mat-form-field>
+        <!-- input type emballage -->
+        <mat-form-field appearance="fill" class="deuxieme-input">
+            <mat-label>Type d'emballage</mat-label>
+            <mat-select formControlName="type_Support" required (selectionChange)= "testType()">
+                <mat-option value="Carton">Carton</mat-option>
+                <mat-option value="Palette">Palette</mat-option>
+                <mat-option value="Vrac">Vrac</mat-option>
+                <mat-option value="Sac">Sac</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <!-- input code a barre -->
+        <mat-form-field appearance="fill" class="troisieme-input">
+            <mat-label>Code à barre</mat-label>
+            <input matInput formControlName="code_Barre" required type="text">
+            <mat-icon matSuffix>qr_code_scanner</mat-icon>
+        </mat-form-field>
+    
+    </div>
+    <!-- les inputs de dimensions -->
+    Dimensions
+    <div class="input-inline">
+        <mat-form-field appearance="fill" class="premier-input">
+            <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
+            <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number"
+                pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="deuxieme-input">
+            <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
+            <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number"
+                pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="troisieme-input">
+            <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
+            <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number"
+                pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+        </mat-form-field>
+    </div>
+    <!-- les inputs du volume -->
+    Volume
+    <div class="input-inline">
+        <mat-form-field appearance="fill" class="premier-input">
+            <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
+            <input matInput formControlName="volume" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="premier-input">
+            <mat-label style="text-transform: capitalize;">Poids (kg)</mat-label>
+            <input matInput formControlName="poids_Emballage" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+        </mat-form-field>
+    </div>
+</form>
+<div style="float: right; display: inline-flex;">
+    <button mat-raised-button color="primary" (click)="creerSupport()" [disabled]="form.invalid">Valider</button>
+</div>

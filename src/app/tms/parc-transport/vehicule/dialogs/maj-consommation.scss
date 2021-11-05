@@ -1,0 +1,10 @@
+  .full-width {
+    width: 100%;
+  }
+
+  @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+    h1{ //on change la taille du titre 
+        font-size: 140%;
+        margin-bottom: 2%;
+    }
+}

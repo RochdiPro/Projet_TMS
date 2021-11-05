@@ -1,0 +1,28 @@
+.colonne{
+    width: 50%;
+}
+.row{
+    margin-left: 10px;
+}
+.entete{
+    font-weight: bold;
+}
+.boutons{
+    float: right;
+}
+.produits{
+    max-height: 200px;
+    overflow-y: auto;
+}
+@media (min-width: 780px) {
+    .colonne{
+        width: 25%;
+    }
+    .row{
+        margin-left: 10px;
+    }
+    .entete{
+        font-weight: bold;
+    }
+    
+}

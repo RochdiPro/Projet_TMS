@@ -1,0 +1,62 @@
+.mat-dialog-content, .mat-dialog-title { //pour enlever le margin des cotés du boite de dialogue
+    margin: 0 !important;
+    padding: 12px 24px !important;
+}
+
+
+.matriculetun { //pour le background du matricule type tun
+    background-image: url(../../../../../assets/images/matricule.png);
+    height: 57px;
+    width: 272px;
+    position: relative;
+    background-repeat: no-repeat;
+}
+.matriculers{ //pour le background du matricule type rs
+    height: 57px;
+    width: 272px;
+    background-image: url(../../../../../assets/images/rs-mat.png);
+    position: relative;
+    background-repeat: no-repeat;
+}
+#numSerie { //pour positionner le Serie du voiture
+    display: inline;
+    width: 80px;
+    top: 6px;
+    position: absolute;
+    left: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 24px;
+}
+#numCar { //pour positionner le numero du voiture
+    display: inline;
+    width: 100px;
+    top: 6px;
+    position: absolute;
+    right: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 24px;
+}
+
+.matricule { //pour le div qui contient les matricules
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#numRS{ //pour positionner le matricule rs
+    display: inline;
+    width: 130px;
+    top: 4px;
+    position: absolute;
+    left: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0,0,0,0);
+    color: white;
+    font-size: 24px;
+}

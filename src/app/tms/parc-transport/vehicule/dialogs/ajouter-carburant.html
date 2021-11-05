@@ -1,0 +1,43 @@
+<h1 mat-dialog-title>Ajouter Carburant</h1>
+<div>
+    <form [formGroup]="form">
+        <!-- input field Nom carburant -->
+        <div class="position-relative form-group">
+            <mat-form-field>
+                <mat-label>Nom</mat-label>
+                <input matInput formControlName="nom" name="nom" id="nom" placeholder="Nom du Carburant" type="text">
+                <mat-error *ngIf="form.controls['nom'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <!-- fin input field Nom carburant -->
+        <!-- input field prix carburant -->
+        <div>
+            <mat-form-field>
+                <mat-label>Prix</mat-label>
+                <input matInput formControlName="prixCarburant" name="prixCarburant" id="prixCarburant"
+                    placeholder="Prix" type="text">
+                <mat-error *ngIf="form.controls['prixCarburant'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+                <mat-error *ngIf="form.controls['prixCarburant'].hasError('pattern')">
+                    Forme <strong>Invalide</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <!-- fin input field prix carburant -->
+        <!-- div contenant les boutons -->
+        <div mat-dialog-actions class="float-right">
+            <!-- bouton Annuler -->
+            <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterCarburant()">Annuler</button>
+            <!-- fin bouton Annuler -->
+
+            <!-- Bouton enregistrer carburant -->
+            <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid"
+                (click)="enregistrerCarburant()">Enregistrer</button>
+            <!-- fin Bouton enregistrer carburant -->
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,108 @@
+.indisponible { //si vehicule indisponible on met le fond de sont ligne gris
+    background: #dddddd;
+  }
+  .disponible { //si vehicule dispo son etat s'affiche vert
+    color: #4bb543;
+  }
+  .enMission { //si vehicule en mission son etat s'affiche jaune
+    color: #f7b924;
+  }
+  
+  table {
+    width: 100%;
+  }
+  
+  
+  @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+    //forcer le tableau pour ne pas s'afficher comme tableau
+    table {
+      margin-top: 60px;
+    }
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+      display: block;
+    }
+  
+    //cacher les table headers (pas avec display: none;, pour raison d'accessibilité)
+    thead tr {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+  
+    tr {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+  
+    td {
+      // se comporter comme un "row"
+      border: none;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      padding-left: 50%;
+    }
+  
+    td:last-child {
+      border: none;
+      border-bottom: 1px solid #eee;
+      position: relative;
+      padding-left: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  
+    th {
+      border-radius: 5px;
+      border: none;
+      border-bottom: 1px solid #eee;
+      font-size: 20px;
+      font-weight: normal;
+      color: white;
+      background-color: #3f51b5;
+    }
+  
+    td:before {
+      //se comporter comme un table header
+      position: absolute;
+      //valeur du Top/left imittent le padding
+      top: 6px;
+      left: 6px;
+      width: 45%;
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+  
+    // donner un label pour les données
+    td:nth-of-type(1):before {
+      content: "Type Carosserie";
+      font-weight: bold;
+      text-align: left;
+      margin-left: 10px;
+    }
+    td:nth-of-type(2):before {
+      content: "Proprietaire";
+      font-weight: bold;
+      text-align: left;
+      margin-left: 10px;
+    }
+    td:nth-of-type(3):before {
+      content: "Tél. Propriétaire";
+      font-weight: bold;
+      text-align: left;
+      margin-left: 10px;
+    }
+    td:nth-of-type(4):before {
+      content: "Disponibilité";
+      font-weight: bold;
+      color: #52595d;
+      text-align: left;
+      margin-left: 10px;
+    }
+  }
+  

@@ -1,0 +1,37 @@
+<h1 mat-dialog-title>Réclamation</h1> <!--titre-->
+<div>
+    <form class="form" [formGroup]="form">
+        <!-- input sujet -->
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Sujet</mat-label>
+                <input matInput formControlName="sujet" name="sujet" id="sujet" placeholder="Sujet" type="text">
+                <mat-error *ngIf="form.controls['sujet'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <!-- input description -->
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Description</mat-label>
+                <textarea matInput formControlName="description" name="description" id="description"
+                    placeholder="Description"></textarea>
+                <mat-error *ngIf="form.controls['description'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div mat-dialog-actions class="float-right">
+            <!-- Bouton Annuler -->
+            <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerReclamation()">Annuler</button>
+            <!-- fin Bouton Annuler -->
+
+            <!-- Bouton Enregistrer -->
+            <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerReclamation()"
+                [disabled]="form.invalid">Enregistrer</button>
+            <!-- fin Bouton Enregistrer -->
+        </div>
+
+    </form>
+</div>

@@ -1,0 +1,31 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+.form { //style du formulaire
+    min-width: 150px;
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  .mat-dialog-content, .mat-dialog-title { //enlever les margin du boite de dialogue
+    margin: 0 !important;
+    padding: 12px 24px !important;
+}
+
+@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
+  h1{
+      font-size: 140%;
+      margin: 0;
+  }
+}

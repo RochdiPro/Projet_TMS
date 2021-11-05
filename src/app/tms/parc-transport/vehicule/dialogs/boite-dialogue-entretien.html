@@ -1,0 +1,112 @@
+<h1 mat-dialog-title>Entretien du vehicule {{data.vehicule.matricule}}</h1>
+<div mat-dialog-content [formGroup]="form">
+    <div id="lieu-intervention">
+        <h3 id="label-lieu-intervention">Lieu d'intervention</h3>
+        <mat-form-field appearance='fill' id="input-lieu-intervention">
+            <mat-label>Nom atelier</mat-label>
+            <input matInput formControlName="lieuIntervention" type="text">
+        </mat-form-field>
+    </div>
+    <div id="vidange">
+        <h2 id="titre">Vidange</h2>
+        <div id="check-box-vidange">
+            <mat-checkbox id="huile-moteur" color="primary" formControlName="huileMoteur"
+                style="text-transform: uppercase;"
+                (change)="selectionnerVidangeHuileMoteur(); changerEtatInput('huileMoteur', 'prochainVidangeHuileMoteur')">
+                Huile Moteur</mat-checkbox>
+            <mat-form-field appearance='fill' id="input-prochain-vidange-huile-moteur">
+                <mat-label>Vidange prochain dans</mat-label>
+                <input matInput formControlName="prochainVidangeHuileMoteur"
+                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                    type="number" maxlength="5">
+            </mat-form-field>
+            <mat-checkbox id="liquide-refroidissement" color="primary" formControlName="liquideRefroidissement"
+                style="text-transform: uppercase;"
+                (change)="changerEtatInput('liquideRefroidissement', 'prochainVidangeLiquideRefroidissement')">Liquide
+                de refroidissement</mat-checkbox>
+            <mat-form-field appearance='fill' id="input-prochain-vidange-liquide-refroidissement">
+                <mat-label>Vidange prochain dans</mat-label>
+                <input matInput formControlName="prochainVidangeLiquideRefroidissement"
+                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                    type="number" maxlength="5">
+            </mat-form-field>
+            <mat-checkbox id="huile-boite-vitesse" color="primary" formControlName="huileBoiteVitesse"
+                style="text-transform: uppercase;"
+                (change)="changerEtatInput('huileBoiteVitesse', 'prochainVidangeHuileBoiteVitesse')">Huile Boite Vitesse
+            </mat-checkbox>
+            <mat-form-field appearance='fill' id="input-prochain-vidange-huilde-vitesse">
+                <mat-label>Vidange prochain dans</mat-label>
+                <input matInput formControlName="prochainVidangeHuileBoiteVitesse"
+                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                    type="number" maxlength="5">
+            </mat-form-field>
+        </div>
+    </div>
+    <div id="pieces">
+        <h2>Pièces</h2>
+        <div id="check-box-pieces">
+            <mat-checkbox id="filtre-huile" color="primary" formControlName="filtreHuile"
+                style="text-transform: uppercase;" (change)="tetsterValidite()">filtre a huile</mat-checkbox>
+            <mat-checkbox id="filtre-air" color="primary" formControlName="filtreAir" style="text-transform: uppercase;"
+                (change)="tetsterValidite()">filtre a air</mat-checkbox>
+            <mat-checkbox id="filtre-climatiseur" color="primary" formControlName="filtreClimatiseur"
+                style="text-transform: uppercase;"
+                (change)="changerEtatInput('filtreClimatiseur', 'prochainChangementFiltreClimatiseur')">Filtre
+                climatiseur</mat-checkbox>
+            <mat-form-field appearance='fill' id="input-prochain-changement-filtre-climatiseur">
+                <mat-label>Prochain changement dans</mat-label>
+                <input matInput formControlName="prochainChangementFiltreClimatiseur"
+                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                    type="number" maxlength="5">
+            </mat-form-field>
+            <mat-checkbox id="filtre-carburant" color="primary" formControlName="filtrCarburant"
+                style="text-transform: uppercase;"
+                (change)="changerEtatInput('filtrCarburant', 'prochainChangementFiltrCarburant')">Filtre a
+                essence/gazoil</mat-checkbox>
+            <mat-form-field appearance='fill' id="input-prochain-changement-filtre-carburant">
+                <mat-label>Prochain changement dans</mat-label>
+                <input matInput formControlName="prochainChangementFiltrCarburant"
+                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                    type="number" maxlength="5">
+            </mat-form-field>
+            <mat-checkbox id="bougies" color="primary" formControlName="bougies" style="text-transform: uppercase;"
+                (change)="changerEtatInput('bougies', 'prochainChangementBougies')">
+                Bougies D'allumage</mat-checkbox>
+            <mat-form-field appearance='fill' id="input-prochain-changement-bougies">
+                <mat-label>Prochain changement dans</mat-label>
+                <input matInput formControlName="prochainChangementBougies"
+                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                    type="number" maxlength="5">
+            </mat-form-field>
+            <mat-checkbox id="courroies" color="primary" formControlName="courroies" style="text-transform: uppercase;"
+                (change)="changerEtatInput('courroies', 'prochainChangementCourroies')">
+                Courroies</mat-checkbox>
+            <mat-form-field appearance='fill' id="input-prochain-changement-courroies">
+                <mat-label>Prochain changement dans</mat-label>
+                <input matInput formControlName="prochainChangementCourroies"
+                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                    type="number" maxlength="5">
+            </mat-form-field>
+            <mat-checkbox id="pneus" color="primary" formControlName="pneus" style="text-transform: uppercase;"
+                (change)="changerEtatInput('pneus', 'prochainChangementPneus')">
+                Pneus</mat-checkbox>
+            <mat-form-field appearance='fill' id="input-prochain-changement-pneus">
+                <mat-label>Prochain changement dans</mat-label>
+                <input matInput formControlName="prochainChangementPneus"
+                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                    type="number" maxlength="5">
+            </mat-form-field>
+            <mat-checkbox id="reparation" color="primary" formControlName="reparation"
+                (change)="changerEtatInput('reparation', 'noteReparation')">
+                Réparation</mat-checkbox>
+            <mat-form-field appearance="fill" id="input-note-reparation">
+                <mat-label>Note de reparation</mat-label>
+                <textarea matInput formControlName="noteReparation"></textarea>
+            </mat-form-field>
+        </div>
+    </div>
+</div>
+<div mat-dialog-actions style="float: right;">
+    <button mat-button (click)="fermerBoiteDialogueEntretien()">Annuler</button>
+    <button mat-raised-button color='primary' (click)="valider()" [disabled]="form.invalid || !valide">Ok</button>
+</div>

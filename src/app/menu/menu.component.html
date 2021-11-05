@@ -165,58 +165,74 @@
          <div class="scrollbar-sidebar">
             <div class="app-sidebar__inner">
                <ul class="vertical-nav-menu">
-
+                  <!-- Partie menu Colisage -->
                   <li>
-                     <a routerLink="/Menu/child">
+                     <a href="#">
                         <i class="metismenu-icon pe-7s-diamond"></i>
-
-                        child
+                        Colisage
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                      </a>
                      <ul>
                         <li>
-                           <a routerLink="/Menu/child/Sub_child">
+                           <a routerLink="/Menu/Menu_Colisage/Packaging">
                               <i class="metismenu-icon"></i>
-                              sub_child
+                              Emballages
+                           </a>
+                        </li>
+                        <li>
+                           <a routerLink="/Menu/Menu_Colisage/Supports">
+                              <i class="metismenu-icon"></i>
+                              Supports de chargement
+                           </a>
+                        </li>
+                        <li>
+                           <a routerLink="/Menu/Menu_Colisage/commandes">
+                              <i class="metismenu-icon"></i>
+                              Commandes
                            </a>
                         </li>
 
                      </ul>
                   </li>
+                  <!-- Fin partie menu Colisage -->
 
-               </ul>
-               <!-- Partie menu TMS -->
-               <ul class="vertical-nav-menu">
+                  <!-- Partie menu TMS -->
+
 
                   <li>
-                     <a href="#">
+                     <a routerLink="/Menu/TMS/home">
                         <i class="metismenu-icon pe-7s-diamond"></i>
-
-                        TMS
+                        Gestion De Transport
                         <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                      </a>
                      <ul>
                         <li>
 
-                           <a routerLink="/Menu/TMS/Parc">
+                           <a routerLink="/Menu/TMS/Parc/Menu">
                               <i class="metismenu-icon"></i>
                               Parc De Transport
                               <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                            </a>
                            <ul>
                               <li>
-                                 <a routerLink="/Menu/TMS/Vehicules">
+                                 <a routerLink="/Menu/TMS/Parc/Vehicules">
                                     <i class="metismenu-icon"></i>
                                     Vehicules
                                  </a>
                               </li>
                               <li>
-                                 <a routerLink="/Menu/TMS/Chauffeurs">
+                                 <a routerLink="/Menu/TMS/Parc/Chauffeurs/liste-chauffeur">
                                     <i class="metismenu-icon"></i>
                                     Chauffeurs
                                  </a>
                               </li>
-      
+                              <li>
+                                 <a routerLink="/Menu/TMS/Parc/Missions">
+                                    <i class="metismenu-icon"></i>
+                                    Missions
+                                 </a>
+                              </li>
+
                            </ul>
 
                         </li>

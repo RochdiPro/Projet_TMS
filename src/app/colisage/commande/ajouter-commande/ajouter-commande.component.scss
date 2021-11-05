@@ -1,0 +1,24 @@
+.filtres {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: row;
+}
+.selection-filter {
+    font-size: 10.5px;
+}
+.filtre-id {
+    display: flex;
+    flex-direction: row;
+}
+.filtre-ville{
+    padding-left: 10px;
+    font-size: 13.6px;
+
+}
+.trie{
+    padding-left: 10px;
+    font-size: 13.6px; 
+}
+.trie ::ng-deep .mat-select-arrow {
+    border: none !important;
+}

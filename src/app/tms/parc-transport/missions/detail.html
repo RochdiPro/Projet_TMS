@@ -1,0 +1,205 @@
+<div mat-dialog-content class="scrollbar scrollbar-primary">
+    <!-- Info Chauffeur -->
+    <h2 style="text-transform: capitalize;">Informations du chauffeur</h2>
+    <div class="mat-elevation-z8 p-3" style="height: 130px;">
+        <div class="row" *ngIf="employe">
+            <div class="col-4">
+                <img src="data:image/png;base64,{{employe.image}}" alt="Photo du chauffeur" width="76%" height="76%">
+            </div>
+            <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <h5 style="text-transform: capitalize;">Nom : <span style="font-weight: bold;"> {{employe.nom}}
+                            </span></h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h5 style="text-transform: capitalize;">N° de Téléphone : <span style="font-weight: bold;">
+                                +{{employe.tel}} </span></h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h5 style="text-transform: capitalize;" *ngIf="mission">Matricule Du Vehicule : <span
+                                style="font-weight: bold;">{{mission[0].matricule}} </span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- INFO MISSION -->
+    <h2 style="text-transform: capitalize;">Informations Supplémentaire Du Mission</h2>
+    <div class="mat-elevation-z8 p-3">
+        <div class="row">
+            <div class="col">
+                <div class="row">
+                    <div class="col">
+                        <h5 style="text-transform: capitalize;">Nombre Des Commandes : <span style="font-weight: bold;">
+                                {{nbr_commandes}} </span></h5>
+                    </div>
+                    <div class="col">
+                        <h5 style="text-transform: capitalize;">Poids Global En Kg : <span style="font-weight: bold;">
+                                {{poids_global}}
+                            </span></h5>
+                    </div>
+                    <div class="col">
+                        <h5 style="text-transform: capitalize;">Surface Global En cm3 : <span style="font-weight: bold;">
+                                {{surface_globale}}
+                            </span></h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <h5 style="text-transform: capitalize;">Date De Debut : <span style="font-weight: bold;">
+                            {{date_creation | date:"dd-MM-yyyy"}}</span></h5>
+                    </div>
+                    <div class="col-4">
+                        <h5 style="text-transform: capitalize;">Date De Cloture : <span style="font-weight: bold;"> 12
+                            </span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste Des Commandes -->
+    <h2 style="text-transform: capitalize;">Liste des commandes</h2>
+    <div class="mat-elevation-z8 mb-3">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8" style="width: 100%;"
+            multiTemplateDataRows>
+
+            <!-- REFERENCE -->
+            <ng-container matColumnDef="referenceCommande">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> ref. </th>
+                <td mat-cell *matCellDef="let element"> {{element.referenceCommande}} </td>
+            </ng-container>
+
+            <!-- EXPEDITEUR -->
+            <ng-container matColumnDef="expediteur">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Expéditeur </th>
+                <td mat-cell *matCellDef="let element"> {{element.expediteur}} </td>
+            </ng-container>
+
+            <!-- MAP EXPEDITEUR -->
+            <ng-container matColumnDef="mapExp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Map </th>
+                <td mat-cell *matCellDef="let element"> <button class="btn"
+                        (click)="ouvrirMap(element.id,'expediteur')"> <i class="fas fa-map-marked-alt"
+                            style="color: #3f6ad8;"></i></button> </td>
+            </ng-container>
+
+            <!-- DESTINATAIRE -->
+            <ng-container matColumnDef="destinataire">
+                <th mat-header-cell *matHeaderCellDef> Destinataire </th>
+                <td mat-cell *matCellDef="let element"> {{element.destinataire}}</td>
+            </ng-container>
+
+            <!-- MAP DESTINATAIRE -->
+            <ng-container matColumnDef="mapDest">
+                <th mat-header-cell *matHeaderCellDef> Map </th>
+                <td mat-cell *matCellDef="let element"> <button class="btn"
+                        (click)="ouvrirMap(element.id,'destinataire')"> <i class="fas fa-map-marked-alt"
+                            style="color: #3f6ad8;"></i></button> </td>
+            </ng-container>
+
+            <!-- DATE DE LIVRAISON -->
+            <ng-container matColumnDef="dateLivraison">
+                <th mat-header-cell *matHeaderCellDef> Date Passage Du Commande </th>
+                <td mat-cell *matCellDef="let element"> {{element.date_commande | date : "dd-MM-yyyy"}} </td>
+            </ng-container>
+
+            <!-- ETAT -->
+            <ng-container matColumnDef="etat">
+                <th mat-header-cell *matHeaderCellDef> Etat </th>
+                <td mat-cell *matCellDef="let element">
+                    <i class="fas fa-hourglass-half attente" *ngIf="element.etat === 'En Cours'"></i>
+                    <i class="fas fa-check-circle termine" *ngIf="element.etat === 'Done'"></i>
+                </td>
+            </ng-container>
+
+            <!-- ACTION -->
+            <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef></th>
+                <td mat-cell *matCellDef="let element">
+                    <button class="btn mt-1" (click)="terminerCommande(element.id)">
+                        <mat-icon aria-hidden="false" aria-label="Cloture icon"
+                            style="color: #4BB543; font-size: medium; ">task_alt</mat-icon>
+                    </button>
+                    <button class="btn mt-1" (click)="supprimerCommande(element.id)"
+                        [disabled]="element.etat === 'Done'">
+                        <mat-icon aria-hidden="false" aria-label="Annuler icon"
+                            style="color: #ff3644; font-size: medium;">clear</mat-icon>
+                    </button>
+                    <button class="btn mt-1">
+                        <mat-icon style="color: #858885;"
+                            (click)="expandedElement = expandedElement === element ? null : element">{{expandedElement
+                            === element ? 'expand_less' : 'expand_more'}}</mat-icon>
+                    </button>
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="expandedDetail">
+                <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+                    <div class="container" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                        <div class="row">
+                            <div class="col">
+                                <div class="row">Expéditeur : &nbsp; <span style="font-weight: bold;">
+                                        {{element.expediteur}}</span>
+                                </div>
+                                <div class="row">Adresse : &nbsp; <span style="font-weight: bold;">
+                                        {{element.adresse_expediteur}}</span></div>
+                                <div class="row">Contact : &nbsp; <span style="font-weight: bold;">
+                                        {{element.contact_expediteur}}</span></div>
+                                <div class="row">Téléphone : &nbsp; <span style="font-weight: bold;">
+                                        {{element.tel_expediteur}}</span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="row">Destinataire : &nbsp; <span style="font-weight: bold;">
+                                        {{element.destinataire}}</span>
+                                </div>
+                                <div class="row">Adresse de Livraison : &nbsp; <span style="font-weight: bold;">
+                                        {{element.adresse_destinataire}}</span>
+                                </div>
+                                <div class="row">Contact : &nbsp; <span style="font-weight: bold;">
+                                        {{element.contact_destinataire}}</span></div>
+                                <div class="row">Téléphone : &nbsp; <span style="font-weight: bold;">
+                                        {{element.tel_destinataire}}</span>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="row">Date Du Passage Du Commande : &nbsp; <span style="font-weight: bold;">
+                                        {{element.date_commande | date:'dd-MM-yyyy'}}</span>
+                                </div>
+                                <div class="row">Type : &nbsp; <span style="font-weight: bold;"> {{element.type}}</span>
+                                </div>
+                                <div class="row">Nombre D'Objets : &nbsp; <span style="font-weight: bold;">
+                                        {{element.nbr_obj}}</span>
+                                </div>
+                                <div class="row">Description Des Biens: &nbsp; <span style="font-weight: bold;">
+                                        {{element.description}}</span></div>
+
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-4">Dimensions : <span style="font-weight: bold;">
+                                    {{element.dimensions}}</span></div>
+                            <div class="col-4">Poids Total : <span style="font-weight: bold;"> {{element.poids}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let element; columns: displayedColumns;" class="example-element-row"
+                [class.example-expanded-row]="expandedElement === element">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+        </table>
+
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+    </div>
+</div>

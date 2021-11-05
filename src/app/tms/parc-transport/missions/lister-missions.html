@@ -1,0 +1,147 @@
+<div class="position-relative custom-control">
+    <section>
+        <mat-form-field class="custom-width" [formGroup]="form">
+            <mat-label>Filtre Chauffeur</mat-label>
+            <input matInput placeholder="Nom" formControlName="nom" (keyup)="filtrerMission()" id="nom"
+                (focus)="nomFiltre = true">
+            <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="viderNom()">
+                <i class="fa fa-filter" aria-hidden="true"></i>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form">
+            <mat-label>Filtre Matricule</mat-label>
+            <input matInput placeholder="Matricule" formControlName="matricule" (keyup)="filtrerMission()"
+                (focus)="matriculeFiltre = true">
+            <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="viderMatricule()">
+                <i class="fa fa-filter" aria-hidden="true"></i>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="custom-width">
+            <mat-label>Filtre Etat Mission</mat-label>
+            <mat-select [(value)]="filtreEtatMission" (selectionChange)="etatMissionFiltre= true; filtrerMission();">
+                <mat-option></mat-option>
+                <mat-option value="Accordée">Accordée</mat-option>
+                <mat-option value="En Cours">En Cours</mat-option>
+                <mat-option value="Terminée">Terminée</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form">
+            <mat-label>Date de Livraison</mat-label>
+            <input matInput [matDatepicker]="picker1" formControlName="dateL" (dateChange)="filtrerMission()">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        <mat-checkbox class="ml-3" color="primary" [checked]="check" value="true"
+            (change)="check=!check; filtrerMission(); disableEnableDate()">Filtrer Par Date</mat-checkbox>
+        <button mat-mini-fab color="primary" class="float-right ml-5 mt-2 mr-2" (click)="ouvrirAffecterCommande()"
+            matTooltip="Ajouter" matTooltipPosition="before">
+            <mat-icon>add</mat-icon>
+        </button>
+    </section>
+</div>
+<div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+            <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+        </ng-container>
+
+        <!-- Colonne Nom -->
+        <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <!-- <div class="filterer" *ngIf="nomFiltre == true">
+                    <mat-form-field [formGroup]="form">
+                        <input matInput placeholder="Nom" style="width: 100px;" autofocus formControlName="nom"
+                            (keyup)="filtrerMission()" id="nom">
+                        <span class="filter"><i class="fa fa-filter" aria-hidden="true" (click)="viderNom()"></i></span>
+                    </mat-form-field>
+                </div> -->
+                Chauffeur
+            </th>
+            <td mat-cell *matCellDef="let element"> {{element.nom}} </td>
+        </ng-container>
+
+        <!-- Colonne Matricule -->
+        <ng-container matColumnDef="matricule">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <!-- <div class="filterer" *ngIf="matriculeFiltre == true">
+                    <mat-form-field [formGroup]="form">
+                        <input matInput placeholder="Matricule" style="width: 80px;" autofocus
+                            formControlName="matricule" (keyup)="filtrerMission()">
+                        <span class="filter"><i class="fa fa-filter" aria-hidden="true"
+                                (click)="viderMatricule()"></i></span>
+                    </mat-form-field>
+                </div> -->
+                Matricule
+            </th>
+            <td mat-cell *matCellDef="let element"> {{element.matricule}} </td>
+        </ng-container>
+
+        <!-- Colonne Date -->
+        <ng-container matColumnDef="dateLivraison">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de Livraison </th>
+            <td mat-cell *matCellDef="let element"> {{element.dateLivraison | date:'dd-MM-yyyy'}} </td>
+        </ng-container>
+
+        <!-- Colonne Trajet -->
+        <ng-container matColumnDef="trajet">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Trajet </th>
+            <td mat-cell *matCellDef="let element">
+                <button class="btn " (click)="ouvrirMap(element.id,'trajet')">
+                    <i class="fas fa-road" style="color: #858885;"></i>
+                </button>
+            </td>
+        </ng-container>
+
+        <!-- Colonne qrCode -->
+        <!-- <ng-container matColumnDef="qrCode">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Qr Code </th>
+            <td mat-cell *matCellDef="let element"> <a href="#" onclick="return false;" (click)="ouvrirQR(element.id)">
+                    <i class="fas fa-qrcode qr" matTooltip="QR code" matTooltipPosition="after"></i>
+                </a></td>
+        </ng-container> -->
+
+        <!-- Colonne etat -->
+        <ng-container matColumnDef="etatMission">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header class="ml-1"> Etat Mission </th>
+            <td mat-cell *matCellDef="let element">
+                <i class="fas fa-hourglass accorde" *ngIf="element.etatMission === 'Accordée'" matTooltip="Accordée"
+                    matTooltipPosition="after"></i>
+                <i class="fas fa-hourglass-half attente" *ngIf="element.etatMission === 'En Cours'"
+                    matTooltip="En Cours" matTooltipPosition="after"></i>
+                <i class="fas fa-check-circle termine" *ngIf="element.etatMission === 'Terminée'" matTooltip="Terminée"
+                    matTooltipPosition="after"></i>
+            </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let element">
+                <button class="mb-2  btn " *ngIf="element.etatMission === 'Accordée'"><i class="fas fa-play"
+                        (click)='changerEtatMission(element.id)' style="color: #3f6ad8;" matTooltip="Lancer"
+                        matTooltipPosition="after"></i></button>
+                <button class="mb-2  btn " *ngIf="element.etatMission === 'En Cours'"><i class="fas fa-check"
+                        (click)='changerEtatMission(element.id)' style="color: #00D100;" matTooltip="Terminer"
+                        matTooltipPosition="after"></i></button>
+                <button class="mb-2  btn " *ngIf="element.etatMission === 'Terminée'" disabled><i
+                        class="fas fa-check"></i></button>
+                <button class="mb-2  btn "><i class="fas fa-trash" style="color: #FF0000;" matTooltip="Supprimer"
+                        matTooltipPosition="after"></i></button>
+
+            </td>
+        </ng-container>
+        <!-- Colonne detail -->
+        <ng-container matColumnDef="Detail">
+            <th mat-header-cell *matHeaderCellDef> Détails </th>
+            <td mat-cell *matCellDef="let element"> <button class="mb-2  btn "><i class="fas fa-info-circle"
+                        (click)='detailDialog(element.idE, element.id)' style="color: #3f6ad8;"></i></button></td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</div>

@@ -1,0 +1,89 @@
+<form [formGroup]="filtre">
+    <div class="filtres">
+        <div class="filtre-id">
+            <div class="selection-filter">
+                <mat-form-field appearance="fill" style="width: 70px; text-align: center;">
+                    <mat-select formControlName="type">
+                        <mat-option value="F-">Facture</mat-option>
+                        <mat-option value="BL-">BL</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <mat-form-field style="width: 130px;">
+                <mat-label style="padding-left: 10px;">Chercher ID</mat-label>
+                <input type="text" matInput style="padding-left: 10px;" (keyup)="filtrerParId()" formControlName="id">
+                <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+        </div>
+        <div class="filtre-ville">
+            <mat-form-field style="width: 200px;">
+                <mat-select formControlName="ville" (selectionChange)="filtrerParVille()">
+                    <mat-option value="">Toutes les villes</mat-option>
+                    <mat-option *ngFor="let ville of villes" [value]="ville.valeur">{{ville.nom}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+    
+    </div>
+</form>
+<div class="mat-elevation-z8">
+    <mat-table [dataSource]="dataSource" matSort matSortActive="dateCreation" matSortDirection="asc">
+
+        <!-- Colonne reference -->
+        <ng-container matColumnDef="reference">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Reference </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.reference}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne id client -->
+        <ng-container matColumnDef="idClient">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Id client </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.idClient}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne nom client -->
+        <ng-container matColumnDef="nomClient">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Nom client </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.nomClient}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne ville -->
+        <ng-container matColumnDef="ville">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Ville </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.ville}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne adresse -->
+        <ng-container matColumnDef="adresse">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Adresse </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.adresse}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne date creation -->
+        <ng-container matColumnDef="dateCreation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Date de création </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{ element.dateCreation | date:"dd/MM/yyyy" }} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne actions -->
+        <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef > Actions </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button style="color: #4CAF50;" aria-label="Bouton ajouter commande"
+                    (click)="ouvrirBoiteDialogueCreerCommande(element)">
+                    <mat-icon>add_circle</mat-icon>
+                </button>
+                <button mat-icon-button style="color: #24a0ed;" aria-label="Bouton voir info"
+                    (click)="ouvrirBoiteDialogueInfo(element)">
+                    <mat-icon>info</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+    </mat-paginator>
+</div>

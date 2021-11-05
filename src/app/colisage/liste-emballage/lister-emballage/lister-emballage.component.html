@@ -1,0 +1,132 @@
+<!-- des champs de filtrage du tableau liste colisage -->
+<div class="filtres">
+    <!-- filtrage par id d'emballage -->
+    <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-label>ID</mat-label>
+        <input matInput placeholder="ID" formControlName="idEmballage" (keyup)="filtrerListeColisage()"
+            id="id-emballage">
+        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+    </mat-form-field>
+    <!-- filtrage selon nom d'emballage -->
+    <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-label>Nom D'emballage</mat-label>
+        <input matInput placeholder="Nom" formControlName="nom_Emballage" (keyup)="filtrerListeColisage()"
+            id="nomEmballage">
+        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+    </mat-form-field>
+    <!-- filtrage selon type d'emballage -->
+    <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-label>Type D'emballage</mat-label>
+        <mat-select formControlName="type_Emballage" (selectionChange)="filtrerListeColisage()" id="typeEmballage">
+            <mat-option></mat-option>
+            <mat-option value="Carton">Standard</mat-option>
+            <mat-option value="Carton">Carton</mat-option>
+            <mat-option value="Palette">Palette</mat-option>
+            <mat-option value="Vrac">Vrac</mat-option>
+            <mat-option value="Sac">Sac</mat-option>
+        </mat-select>
+        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+    </mat-form-field>
+    <!-- filtrage selon nom produit -->
+    <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-label>Produit</mat-label>
+        <input matInput placeholder="Nom" formControlName="nom_Produit" (keyup)="filtrerListeColisage()"
+            id="nomProduit">
+        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+    </mat-form-field>
+    <!-- filtrage par quantité produit dans emballage -->
+    <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-label>Quantité</mat-label>
+        <input matInput placeholder="Quantité" formControlName="quantite" (keyup)="filtrerListeColisage()" id="quatite">
+        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+    </mat-form-field>
+    <!-- filtrage par unité emballage -->
+    <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-label>Unité</mat-label>
+        <input matInput placeholder="Unité" formControlName="unite" (keyup)="filtrerListeColisage()" id="unite">
+        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+    </mat-form-field>
+    <!-- filtrage par poids emballage -->
+    <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-label>Poids</mat-label>
+        <input matInput placeholder="Poids" formControlName="poids" (keyup)="filtrerListeColisage()" id="poids">
+        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+    </mat-form-field>
+    <!-- filtrage par volume emballage -->
+    <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-label>Volume</mat-label>
+        <input matInput placeholder="Volume" formControlName="volume" (keyup)="filtrerListeColisage()" id="volume">
+        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+    </mat-form-field>
+</div>
+<div class="mat-elevation-z8">
+    <mat-table [dataSource]="dataSource" matSort>
+
+        <!-- Colonne id -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="id"> {{element.id}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne produit -->
+        <ng-container matColumnDef="nomProduit">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Produits
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="produits">
+                <ul>
+                    <li *ngFor="let nom of getNomProduit(element)">{{nom}}</li>
+                </ul>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Colonne produit -->
+        <ng-container matColumnDef="nomEmballage">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Nom D'emballage
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Nom D'emballage"> {{element.nomEmballage}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne type d'emballage -->
+        <ng-container matColumnDef="typeEmballage">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Type D'emballage
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Type D'emballage"> {{element.typeEmballage}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne qte -->
+        <ng-container matColumnDef="qte">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Quantité </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Quantité">
+                <ul>
+                    <li *ngFor="let qte of getQuantiteProduit(element)">{{qte}}</li>
+                </ul>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Colonne unite -->
+        <ng-container matColumnDef="unite">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Unité </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Unité"> {{element.unite}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne poids -->
+        <ng-container matColumnDef="poids">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Poids(Kg)</mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Poids(Kg)"> {{element.poids_emballage_total}} </mat-cell>
+        </ng-container>
+        <!-- Colonne poids -->
+        <ng-container matColumnDef="volume">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Volume(m³)</mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Volume(m³)"> {{element.volume}} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+
+    <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons></mat-paginator>
+</div>

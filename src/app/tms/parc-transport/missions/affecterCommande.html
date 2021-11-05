@@ -1,0 +1,93 @@
+<h1 mat-dialog-title>Ajouter Commande </h1>
+<div mat-dialog-content class="scrollbar scrollbar-primary">
+    <form [formGroup]="form" novalidate>
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>N° Bon Reception/Expidation</mat-label>
+                <mat-select [formControl]="toppings" [(value)]="commandeSelectionne" multiple>
+                    <mat-select-trigger>
+                        {{toppings.value ? toppings.value[0] : ''}}/{{toppings.value ? toppings.value[1] : ''}}
+                        <span *ngIf="toppings.value?.length > 2" class="example-additional-selection">
+                            (+{{toppings.value.length - 2}} {{toppings.value?.length === 2 ? 'autre' : 'autres'}})
+                        </span>
+                    </mat-select-trigger>
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <mat-form-field style="width: 80%;">
+                            <input matInput #myInput placeholder="chercher..." (input)="filtrerCommandes(myInput.value)">
+                        </mat-form-field>
+                    </div>
+
+                    <!-- <div class="box-search">
+                        <mat-checkbox *ngIf="multiple"
+                        color="primary"
+                        class="box-select-all"
+                        [(ngModel)]="selectAllChecked"
+                        (change)="toggleSelectAll($event)"></mat-checkbox>
+                        <input #searchInput type="text" />
+                        <div class="box-search-icon">
+                            <button mat-icon-button class="search-button">
+                                <mat-icon class="mat-24" aria-label="Search icon">clear</mat-icon>
+                            </button>
+                        </div>
+                    </div> -->
+                    <mat-option *ngFor="let commande of commandesFiltrees" [value]="commande.reference">{{commande.reference}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Date De Livraison</mat-label>
+                <input matInput [matDatepicker]="dateLivraison" formControlName="dateLivraison" [min]="minDate">
+                <mat-datepicker-toggle matSuffix [for]="dateLivraison"></mat-datepicker-toggle>
+                <mat-datepicker #dateLivraison></mat-datepicker>
+              </mat-form-field>
+        </div>
+        <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Mission</mat-label>
+                <mat-select name="matricule" id="matricule">
+                    <!-- <mat-option *ngFor="let v of vehicule" [value]="v">
+                        {{v.matricule}}
+                    </mat-option> -->
+                    <mat-option>
+                    </mat-option>
+                </mat-select>
+                <mat-error *ngIf="false">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div>
+        <div>
+            <h4 style="display:inline-block;margin-right:2em; margin-top: 1em;">Créer Une Nouvelle Mission</h4>
+            <span><button mat-mini-fab color="primary" class="float-right ml-5 mt-2 mr-2"
+                     style="display:inline-block;">
+                    <mat-icon>add</mat-icon>
+                </button></span>
+        </div>
+
+        <!-- <div class="position-relative form-group">
+            <mat-form-field class="full-width">
+                <mat-label>Adresse Destination:</mat-label>
+                <input matInput formControlName="adresse">
+                <mat-error *ngIf="form.controls['adresse'].hasError('required')">
+                    Champ <strong>Obligatoire</strong>
+                </mat-error>
+            </mat-form-field>
+        </div> -->
+        <!-- <div class="position-relative form-group">
+            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
+                (mapClick)="positionerMarquer($event)">
+                <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
+                    (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
+                    <agm-info-window>{{adresse_destinataire}}</agm-info-window>
+                </agm-marker>
+            </agm-map>
+        </div> -->
+    </form>
+</div>
+<div mat-dialog-actions class="float-right form-group">
+    <button mat-button color="warn" class="mb-2" (click)="this.dialogRef.close();">Annuler</button>
+    <button mat-button color="primary" class="mb-2 mr-4" 
+        [disabled]="true">Enregistrer</button>
+</div>

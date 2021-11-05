@@ -22,19 +22,19 @@
           "options": {
             "outputPath": "dist/template",
             "index": "src/index.html",
-            "main": "src/main.ts",             
+            "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            
             "aot": true,
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-
+              {
+                "input": "node_modules/@progress/kendo-theme-default/dist/all.css"
+              },
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-
               "src/styles.scss"
             ],
             "scripts": []
@@ -99,8 +99,10 @@
               "src/assets"
             ],
             "styles": [
+              {
+                "input": "node_modules/@progress/kendo-theme-default/dist/all.css"
+              },
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-
               "src/styles.scss"
             ],
             "scripts": []

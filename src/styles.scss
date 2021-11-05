@@ -7,3 +7,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+  
+    .transparent .mat-dialog-container{
+      box-shadow: none;
+      background-color:rgba(0, 0, 0, 0);
+    }
+
+    .custom-dialog {
+      mat-dialog-container {
+        padding-right: 0px;
+        padding-left: 0px;
+      }
+    }
