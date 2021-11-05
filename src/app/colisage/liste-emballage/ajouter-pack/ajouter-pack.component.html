@@ -35,7 +35,8 @@
                     <!-- select nom emballage -->
                     <mat-form-field appearance="fill" class="troisieme-input">
                         <mat-label>Emballage</mat-label>
-                        <mat-select formControlName="nomEmballage" required [(value)]="supportSelectionne" (selectionChange)="selectionnerSupport()">
+                        <mat-select formControlName="nomEmballage" required [(value)]="supportSelectionne"
+                            (selectionChange)="selectionnerSupport()">
                             <mat-option *ngFor="let support of listeSupports" [value]="support">{{support.nom_support}}
                             </mat-option>
                         </mat-select>
@@ -49,16 +50,10 @@
                     <mat-label style="text-transform: capitalize;">Nom du pack</mat-label>
                     <input matInput formControlName="nom" required>
                 </mat-form-field>
-                <!-- input poids emballage -->
-                <mat-form-field appearance="fill" class="deuxieme-input">
-                    <mat-label>Code à barre du pack</mat-label>
-                    <input matInput formControlName="codeBarrePack" required type="text">
-                    <mat-icon matSuffix>qr_code_scanner</mat-icon>
-                </mat-form-field>
                 <!-- toggle du fragilité -->
                 <mat-slide-toggle formControlName="fragilite" color="primary">Fragile</mat-slide-toggle>
             </div>
-            <!-- les inputs de dimensions -->
+            <!-- affichage des dimensions -->
             Dimensions
             <div class="input-inline">
                 <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)"
@@ -91,27 +86,29 @@
             </div>
             <!-- bouton suivant -->
             <div style="float: right;">
-                <button type="button" mat-button matStepperNext color="primary" (click)="verifierValiditeSupport()">Suivant</button>
+                <button type="button" mat-button matStepperNext color="primary"
+                    (click)="verifierValiditeSupport()">Suivant</button>
             </div>
         </form>
     </mat-step>
+    <!-- deuxieme step -->
     <mat-step [stepControl]="deuxiemeFormGroup" label="Sélection Des Produits à Emballer">
-        <!-- deuxieme step -->
+        
         <form [formGroup]="deuxiemeFormGroup">
             <!-- input de filtrage par nom emballage -->
             <div class="position-relative custom-control">
                 <section>
-                    <mat-form-field class="custom-width" [formGroup]="formFiltreNomEmballage">
+                    <mat-form-field class="filtre" [formGroup]="formFiltreNomEmballage">
                         <mat-label>Nom D'emballage</mat-label>
                         <input matInput placeholder="Nom" formControlName="nom_Emballage"
                             (keyup)="appliquerFiltre($event)" id="nom">
                         <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
                     </mat-form-field>
-                    <mat-form-field class="custom-width" [formGroup]="formCodeBarre" id="barcode">
+                    <mat-form-field class="filtre" [formGroup]="formCodeBarre" id="barcode">
                         <mat-label>Code à barre</mat-label>
                         <input matInput placeholder="Code à barre" formControlName="code_Barre"
                             (keydown)="scannerCodeBarrePack($event)" autofocus>
-                            <mat-icon matSuffix>qr_code_scanner</mat-icon>
+                        <mat-icon matSuffix>qr_code_scanner</mat-icon>
                     </mat-form-field>
                 </section>
             </div>
@@ -163,16 +160,17 @@
                         <mat-header-cell *matHeaderCellDef>Catégorie</mat-header-cell>
                         <mat-cell *matCellDef="let element" data-label="Catégorie">{{element.categorie}}</mat-cell>
                     </ng-container>
-                    <mat-header-row *matHeaderRowDef="colonneAfficheTableauLC1"></mat-header-row>
+                    <mat-header-row *matHeaderRowDef="colonneAfficheTableauLC1; sticky: true"></mat-header-row>
                     <mat-row (click)="choisirPack(row)" [class.demo-row-is-clicked]="packClique.has(row)"
                         *matRowDef="let row; columns: colonneAfficheTableauLC1;"></mat-row>
                 </mat-table>
-                <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons></mat-paginator>
             </div>
             <!-- boutons de navigation entre les steps -->
             <div style="float: right;">
                 <button type="button" mat-button matStepperPrevious color="primary">Précédent</button>
-                <button type="button" mat-button matStepperNext color="primary" (click)="deuxiemeSuivant()">Suivant</button>
+                <button type="button" mat-button matStepperNext color="primary"
+                    (click)="deuxiemeSuivant()">Suivant</button>
             </div>
         </form>
     </mat-step>
@@ -206,7 +204,7 @@
                 <div style="float: right;">
                     <button mat-button matStepperPrevious (click)="deuxiemePrecedent()"
                         color="primary">Précédent</button>
-                    <button mat-button matStepperNext color="primary">Suivant</button>
+                    <button mat-button matStepperNext color="primary" (click)="genererCodeBarre()">Suivant</button>
                 </div>
             </div>
         </form>
@@ -335,6 +333,12 @@
             </mat-grid-tile>
             <mat-grid-tile>
                 <div class="w-100">{{volume}} m3</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100 titre">Code à barre:</div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="w-100"></div>
             </mat-grid-tile>
         </mat-grid-list>
         <div style="float: right;">

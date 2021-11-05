@@ -5,7 +5,6 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { EmballageService } from '../services/emballage.service';
 
-
 @Component({
   selector: 'app-lister-emballage',
   templateUrl: './lister-emballage.component.html',
@@ -16,17 +15,21 @@ export class ListerEmballageComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   //Declaration des variables
+
+  // formGroup des filtres
   form = new FormGroup({
     idEmballage: new FormControl(''),
-    nom_Produit: new FormControl(''),
-    nom_Emballage: new FormControl(''),
-    type_Emballage: new FormControl(''),
+    nomProduit: new FormControl(''),
+    nomEmballage: new FormControl(''),
+    typeEmballage: new FormControl(''),
     quantite: new FormControl(''),
     unite: new FormControl(''),
     poids: new FormControl(''),
     volume: new FormControl(''),
   });
-  listeColisage: any;
+  listeEmballage: any;
+
+  //les colonne du tableau liste de colisage
   displayedColumns: string[] = [
     'id',
     'nomEmballage',
@@ -36,8 +39,8 @@ export class ListerEmballageComponent implements OnInit {
     'unite',
     'poids',
     'volume',
-  ]; //les colonne du tableau liste de colisage
-  dataSource = new MatTableDataSource<tableColisage>();
+  ];
+  dataSource = new MatTableDataSource<tableEmballage>();
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -46,55 +49,59 @@ export class ListerEmballageComponent implements OnInit {
 
   constructor(public service: EmballageService) {}
   async ngOnInit() {
-    await this.chargerListeColisage();
-    console.log(this.dataSource.data);
+    await this.getListeColisage();
   }
 
+  //pour filtrer la liste colisage selon nom du produit, nom d'emballage et type D'emballage
   filtrerListeColisage() {
-    //pour filtrer la liste colisage selon nom du produit, nom d'emballage et type D'emballage
-    if (this.form.get('type_Emballage').value === undefined)
+    // si on selectionne l'option vide dans le select type emballage en filtre par une chaine vide pour annuler l'effet de filtrage
+    if (this.form.get('typeEmballage').value === undefined)
       this.form.get('type_Emballage').setValue('');
     this.service
-      .fltreListeproduit(
-        'nom_produit',
-        this.form.get('nom_Produit').value,
-        'nom_emballage',
-        this.form.get('nom_Emballage').value,
-        'type_emballage',
-        this.form.get('type_Emballage').value
+      .fltreListeEmballagePlusieursChammps(
+        this.form.get('idEmballage').value,
+        this.form.get('nomEmballage').value,
+        this.form.get('typeEmballage').value,
+        this.form.get('nomProduit').value,
+        this.form.get('quantite').value,
+        this.form.get('unite').value,
+        this.form.get('poids').value,
+        this.form.get('volume').value,
       )
       .subscribe((data) => {
-        this.dataSource.data = data as tableColisage[];
+        this.dataSource.data = data as tableEmballage[];
+        // tri par id descendant
         this.dataSource.data = this.dataSource.data.sort((a, b) =>
           a.id > b.id ? -1 : 1
         );
       });
   }
 
-  async chargerListeColisage() {
-    //chargement du liste de colisage
+  async getListeColisage() {
+    //get la liste de colisage
     this.dataSource.data = await this.service.listeEmballage().toPromise();
+    // tri par ordre id descendant
     this.dataSource.data = this.dataSource.data.sort((a, b) =>
       a.id > b.id ? -1 : 1
     );
   }
 
+  //recuperer la quantité de chaque produit
   getQuantiteProduit(produits: any) {
-    //recuperer la quantité de chaque produit
     let qte = produits.qte.split('/');
     return qte;
   }
 
+  //get le nom de chaque produit
   getNomProduit(produits: any) {
-    //recuperer le nom de chaque produit
     let nomProduit = produits.nomProduit.split('/');
-
     return nomProduit;
   }
 }
 
-//interface table colisage
-export interface tableColisage { //interface pour recuperer les données du liste colisage entant qu data source pour l'afficher dans le tableau
+//interface table Emballage
+export interface tableEmballage {
+  //interface pour recuperer les données du liste colisage entant qu data source pour l'afficher dans le tableau
   id: number;
   idProduit: number;
   nomProduit: String;

@@ -10,16 +10,15 @@
     <!-- filtrage selon nom d'emballage -->
     <mat-form-field class="custom-width" [formGroup]="form">
         <mat-label>Nom D'emballage</mat-label>
-        <input matInput placeholder="Nom" formControlName="nom_Emballage" (keyup)="filtrerListeColisage()"
+        <input matInput placeholder="Nom" formControlName="nomEmballage" (keyup)="filtrerListeColisage()"
             id="nomEmballage">
         <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
     </mat-form-field>
     <!-- filtrage selon type d'emballage -->
     <mat-form-field class="custom-width" [formGroup]="form">
         <mat-label>Type D'emballage</mat-label>
-        <mat-select formControlName="type_Emballage" (selectionChange)="filtrerListeColisage()" id="typeEmballage">
+        <mat-select formControlName="typeEmballage" (selectionChange)="filtrerListeColisage()" id="typeEmballage">
             <mat-option></mat-option>
-            <mat-option value="Carton">Standard</mat-option>
             <mat-option value="Carton">Carton</mat-option>
             <mat-option value="Palette">Palette</mat-option>
             <mat-option value="Vrac">Vrac</mat-option>
@@ -30,8 +29,7 @@
     <!-- filtrage selon nom produit -->
     <mat-form-field class="custom-width" [formGroup]="form">
         <mat-label>Produit</mat-label>
-        <input matInput placeholder="Nom" formControlName="nom_Produit" (keyup)="filtrerListeColisage()"
-            id="nomProduit">
+        <input matInput placeholder="Nom" formControlName="nomProduit" (keyup)="filtrerListeColisage()" id="nomProduit">
         <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
     </mat-form-field>
     <!-- filtrage par quantité produit dans emballage -->
@@ -59,6 +57,7 @@
         <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
     </mat-form-field>
 </div>
+<!-- Table liste Emballage -->
 <div class="mat-elevation-z8">
     <mat-table [dataSource]="dataSource" matSort>
 
@@ -80,7 +79,7 @@
             </mat-cell>
         </ng-container>
 
-        <!-- Colonne produit -->
+        <!-- Colonne nom d'emballage -->
         <ng-container matColumnDef="nomEmballage">
             <mat-header-cell *matHeaderCellDef mat-sort-header>
                 Nom D'emballage
@@ -117,7 +116,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> Poids(Kg)</mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Poids(Kg)"> {{element.poids_emballage_total}} </mat-cell>
         </ng-container>
-        <!-- Colonne poids -->
+        <!-- Colonne volume -->
         <ng-container matColumnDef="volume">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Volume(m³)</mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Volume(m³)"> {{element.volume}} </mat-cell>

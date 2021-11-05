@@ -8,10 +8,6 @@
             <mat-header-cell *matHeaderCellDef> Reference </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.referenceDocument}} </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="idClient">
-            <mat-header-cell *matHeaderCellDef> ID client </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.idClient}} </mat-cell>
-        </ng-container>
         <ng-container matColumnDef="nomClient">
             <mat-header-cell *matHeaderCellDef> Client </mat-header-cell>
             <mat-cell *matCellDef="let element"> {{element.nomClient}} </mat-cell>
@@ -43,9 +39,13 @@
         <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button mat-icon-button><mat-icon style="color: #5f6368;">edit_location_alt</mat-icon></button>
-                <button mat-icon-button><mat-icon style="color: #5f6368;" class="fas fa-box-open"></mat-icon></button>
-                <button mat-icon-button><mat-icon color="warn">cancel</mat-icon></button>
+                <button mat-icon-button disableRipple><i class="fas fa-box-open" style="color: #5f6368;"></i></button>
+                <button mat-icon-button disableRipple (click)="ouvrirBoiteDialogueModifierPosition(element)">
+                    <mat-icon style="color: #5f6368;">edit_location_alt</mat-icon>
+                </button>
+                <button mat-icon-button disableRipple>
+                    <mat-icon color="warn">cancel</mat-icon>
+                </button>
             </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

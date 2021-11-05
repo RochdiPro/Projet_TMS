@@ -27,7 +27,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
 
   //declaration des variables
-  isLinear = false; //pour l'activation et desactivation le passage entre les steps sans validation
+  isLinear = true; //pour l'activation et desactivation le passage entre les steps sans validation
   premierFormGroup: FormGroup;  //formGroup du premier step
   deuxiemeFormGroup: FormGroup; //formGroup du deuxieme step
   troisiemeFormGroup: FormGroup; //formGroup du troisieme step
@@ -82,14 +82,14 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   async chargerFicheProduit() {
     //charger la liste de fiche produits
     this.listeProduits = await this.service.listeProduits().toPromise();
-    let listeColisage = await this.chargerListeColisage();
+    let listeEmballage = await this.getListeEmballage();
     this.produitsAffiche = [];
     this.listeProduits.forEach((element: any) => {
       //verifier si un produit existe deja dans la liste colisage
-      listeColisage.forEach((prodColis: any) => {
-        let idP = prodColis.idProduit.split();
-        let id = 'FP-' + element.id_Produit;
-        let idProduitExiste = id === idP[0] || idP.length !== 1;
+      listeEmballage.forEach((prodEmballe: any) => {
+        let idProduitEmballe = prodEmballe.idProduit.split("/");
+        let idProduit = element.id_Produit;
+        let idProduitExiste = idProduit === Number(idProduitEmballe[0]) && idProduitEmballe.length === 1;
         if (idProduitExiste) {
           this.produitExiste = true;
         }
@@ -111,7 +111,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     );
   }
 
-  chargerListeColisage(): any {
+  getListeEmballage(): any {
     return this.service.listeEmballage().toPromise();
   }
 

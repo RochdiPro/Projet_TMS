@@ -1,6 +1,6 @@
 //changement style scroll bar
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 2.5px;
 }
 ::-webkit-scrollbar-track {
   background: white;
@@ -13,6 +13,7 @@
   background: #888;
 }
 
+//style du tableau
 .mat-column-id {
   width: 3%;
 }
@@ -37,16 +38,16 @@ ul {
 :host ::ng-deep .mat-sort-header-content {
   text-align: left;
 }
+// style des filtres
 .filtres {
   padding: 0 24px;
 }
+// width des inputs du filtre
 .custom-width {
   width: 12.5%;
   padding-right: 10px;
 }
-.mobile-label {
-  display: none;
-}
+
 
 //pour mobile
 @media only screen and (max-width: 760px),

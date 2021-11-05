@@ -3,6 +3,7 @@ import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dial
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { BoiteDialogueModifierPositionComponent } from '../dialogs/dialogs.component';
 import { CommandeService } from '../services/commande.service';
 
 @Component({
@@ -14,7 +15,7 @@ export class ListerCommandeComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['id', 'reference', 'idClient', 'nomClient', 'contact', 'telephone', 'ville', 'adresse', 'date', 'etat', 'actions'];
+  displayedColumns: string[] = ['id', 'reference', 'nomClient', 'contact', 'telephone', 'ville', 'adresse', 'date', 'etat', 'actions'];
   dataSource = new MatTableDataSource;
   constructor(public serviceCommande: CommandeService, public dialog: MatDialog) { }
 
@@ -27,13 +28,15 @@ export class ListerCommandeComponent implements OnInit {
     await this.getListeCommandes();
   }
 
+  //recuperer la liste des commandes
   async getListeCommandes() {
     this.dataSource = await this.serviceCommande.getListeCommandes().toPromise()
   }
 
-  ouvrirBoiteDialogueModifierCommande() {
-    const dialogRef = this.dialog.open(ModifierCommande, {
-      width: '600'
+  ouvrirBoiteDialogueModifierPosition(commande: any) {
+    const dialogRef = this.dialog.open(BoiteDialogueModifierPositionComponent, {
+      width: '600px',
+      data: {commande: commande}
     })
   }
 

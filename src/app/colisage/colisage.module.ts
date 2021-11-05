@@ -34,7 +34,7 @@ import { ListerSupportsComponent } from './supports/lister-supports/lister-suppo
 import { ModifierSupportComponent } from './supports/modifier-support/modifier-support.component'
 import { CommandeComponent } from './commande/commande.component';
 import { AjouterCommandeComponent } from './commande/ajouter-commande/ajouter-commande.component';
-import { BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer, BoiteDialogueDetailProduit } from './commande/dialogs/dialogs.component';
+import { BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer, BoiteDialogueDetailProduit, BoiteDialogueModifierPositionComponent } from './commande/dialogs/dialogs.component';
 import { ListerCommandeComponent } from './commande/lister-commande/lister-commande.component';
 
 
@@ -62,7 +62,8 @@ import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-em
     MenuAjouterEmballageComponent,
     AjouterPackComponent,
     AjouterProduitComponent,
-    ListerEmballageComponent
+    ListerEmballageComponent,
+    BoiteDialogueModifierPositionComponent
   ],
   imports: [
     CommonModule,

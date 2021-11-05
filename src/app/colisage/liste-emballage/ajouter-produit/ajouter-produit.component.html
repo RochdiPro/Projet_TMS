@@ -57,11 +57,11 @@
                         <mat-header-cell *matHeaderCellDef>Sous Type</mat-header-cell>
                         <mat-cell *matCellDef="let element" data-label="Sous type">{{element.type2}}</mat-cell>
                     </ng-container>
-                    <mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit"></mat-header-row>
+                    <mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit; sticky: true"></mat-header-row>
                     <mat-row (click)="choisirProduit(row)" [class.demo-row-is-clicked]="produitClique.has(row)"
                         *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></mat-row>
                 </mat-table>
-                <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons></mat-paginator>
             </div>
             <!-- bouton suivant -->
             <div style="float: right;">

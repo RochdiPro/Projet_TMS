@@ -29,7 +29,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
 
   //declaration des variables
-  isLinear = true; //pour activer ou desactiver le deplacement sans validation dans le step
+  isLinear = false; //pour activer ou desactiver le deplacement sans validation dans le step
   premierFormGroup: FormGroup; //formGroup du premier step
   deuxiemeFormGroup: FormGroup; //formGroup du deuxieme step
   troisiemeFormGroup: FormGroup; //formGroup du troisieme step
@@ -80,6 +80,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   volume: any;
   poidsEmballage: any;
   typeEmballage: any;
+  barcodeEmballage = '';
 
   constructor(
     public serviceEmballage: EmballageService,
@@ -98,10 +99,10 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.creerFormGroups();
     this.dataSourceListeEmballage.filterPredicate = (data, filter: string) => {
-      //pour specifier la colonne a filtre avec le filtre frontend
+      //pour specifier la colonne a filtrer avec le filtre frontend
       return data.nomEmballage.toLowerCase().includes(filter);
     };
-    this.chargerListeColisage();
+    this.chargerListeEmballage();
     this.breakpoint = window.innerWidth <= 760 ? 2 : 6;
     this.testTypeSelection();
   }
@@ -113,7 +114,6 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       nomEmballage: ['', Validators.required],
       fragilite: [false],
       codeBarre: ['', Validators.required],
-      codeBarrePack: ['', Validators.required],
       typeSelectionEmballage: ['auto', Validators.required],
       valider: ['', Validators.required],
     });
@@ -126,11 +126,12 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
 
   //charger la liste de colisage
-  chargerListeColisage() {
-    this.serviceEmballage.listeEmballage().subscribe((data) => {
-      this.listePacks = data;
-      this.dataSourceListeEmballage.data = this.listePacks as tableEmballage[];
-    });
+  async chargerListeEmballage() {
+    this.listePacks = await this.serviceEmballage.listeEmballage().toPromise();
+    this.listePacks.sort((embA: any, embB: any) =>
+      embA.id > embB.id ? -1 : 1
+    );
+    this.dataSourceListeEmballage.data = this.listePacks as tableEmballage[];
   }
 
   // charger la liste des supports filtrée par son type
@@ -413,6 +414,25 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.premierFormGroup.get('nomEmballage').setValidators([]);
       this.premierFormGroup.get('nomEmballage').updateValueAndValidity();
     }
+  }
+
+  //fonction pour generer le code pour le code a barre
+  genererCodeBarre() {
+    this.barcodeEmballage = '';
+    let idComposant = 'PROD';
+    let idSupport = 'S' + this.supportSelectionne.id_support;
+    let fragilite = this.premierFormGroup.get('fragilite').value
+      ? 'FRAO'
+      : 'FRAN';
+    let listeQuatites = this.qte.split('/');
+    let quantitees = 'Q';
+    listeQuatites.forEach((quantite: any) => {
+      quantitees += quantite;
+    });
+    this.packSelectionne.forEach((element: any) => {
+      idComposant += element.id;
+    });
+    this.barcodeEmballage += idSupport + fragilite + idComposant + quantitees;
   }
 
   // fonction a exucuter lors de l'appuis sur le bouton valider

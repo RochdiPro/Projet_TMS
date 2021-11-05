@@ -1,7 +1,12 @@
+// style des boutons
 button{
     height: 10em;
     width: 40%;
     margin: 1em;
+    transition: transform 250ms;
+}
+button:hover, button:focus-visible{
+    transform: scale(1.05);
 }
 div{
     text-align: center;

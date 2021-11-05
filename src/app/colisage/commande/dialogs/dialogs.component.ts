@@ -686,6 +686,21 @@ export class BoiteDialogueDetailProduit implements OnInit {
 }
 
 // -------------------------------------------------------------------------------------------------------------
+// *************************************** Boite Dialogue modifier position ************************************
+// -------------------------------------------------------------------------------------------------------------
+
+@Component({
+  selector: 'boite-dialogue-modifier-position',
+  templateUrl: 'boite-dialogue-modifier-position.html',
+  styleUrls: ['boite-dialogue-modifier-position.scss']
+})
+
+export class BoiteDialogueModifierPositionComponent implements OnInit {
+  constructor(private dialogRef: MatDialogRef<BoiteDialogueModifierPositionComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+  ngOnInit() { }
+}
+// -------------------------------------------------------------------------------------------------------------
 //**************************************************** fonctions reutilisable **********************************
 // -------------------------------------------------------------------------------------------------------------
 async function getDetailFacture(detail: any) {
