@@ -1,65 +1,70 @@
-<form [formGroup]="firstFormGroup">
-    <ng-template matStepLabel>Informations du client</ng-template>
-    <h2>Client</h2>
-    <div class="row">
-        <div class="colonne entete">Nom:</div>
-        <div class="colonne">{{data.commande.nomClient}}</div>
-        <div class="colonne entete">Identifiant:</div>
-        <div class="colonne">{{data.commande.idClient}}</div>
-    </div>
-    <div class="row">
-        <div class="colonne entete">Contact:</div>
-        <div class="colonne">{{data.commande.contact}}</div>
-        <div class="colonne entete">Téléphone:</div>
-        <div class="colonne">{{data.commande.telephone}}</div>
-    </div>
-    <div class="row">
-        <div class="colonne entete">Email:</div>
-        <div class="colonne">{{data.commande.email}}</div>
-        <div class="colonne entete">Catégorie client</div>
-        <div class="colonne">{{data.commande.categorieClient}}</div>
-    </div>
-    <div class="row">
-        <div class="colonne entete">Ville:</div>
-        <div class="colonne">{{data.commande.ville}}</div>
-        <div class="colonne entete">Adresse:</div>
-        <div class="colonne">{{data.commande.adresse}}</div>
-    </div>
-    <div class="row">
-        <div class="colonne entete">Type piéce d'identité:</div>
-        <div class="colonne">{{data.commande.typePieceIdentite}}</div>
-        <div class="colonne entete">Numéro piéce d'identité:</div>
-        <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
-    </div>
-    <div class="map">
-        <div id="manupilation-adresse">
-            <mat-form-field appearance="fill">
-                <mat-label>Adresse de livraison</mat-label>
-                <mat-select formControlName="adresse" (selectionChange)="selectionnerAdresse()">
-                    <mat-option *ngFor="let position of positionsClientEnregistree" [value]="position">
-                        {{position.adresse}}
-                    </mat-option>
-                    <mat-option *ngIf="positionsClientEnregistree.length === 0" disabled>
-                        Pas d'adresse
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-            <div id="ajouter-adresse">
-                <input type="text" id="adresse-input" formControlName="nouvelleAdresse">
-                <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
-                    <mat-icon>add_location</mat-icon>
-                </button>
-            </div>
+<h1 mat-dialog-title>Modifier position client</h1>
+<div mat-dialog-content>
+    <form [formGroup]="form">
+        <ng-template matStepLabel>Informations du client</ng-template>
+        <h2>Client</h2>
+        <div class="row">
+            <div class="colonne entete">Nom:</div>
+            <div class="colonne">{{data.commande.nomClient}}</div>
+            <div class="colonne entete">Identifiant:</div>
+            <div class="colonne">{{data.commande.idClient}}</div>
         </div>
-        <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
-            (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
-            <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
-                (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
-                <agm-info-window>{{data.commande.adresse}}</agm-info-window>
-            </agm-marker>
-        </agm-map>
-    </div>
-    <div style="float: right;">
-        <button mat-button matStepperNext>Next</button>
-    </div>
-</form>
+        <div class="row">
+            <div class="colonne entete">Contact:</div>
+            <div class="colonne">{{data.commande.contact}}</div>
+            <div class="colonne entete">Téléphone:</div>
+            <div class="colonne">{{data.commande.telephone}}</div>
+        </div>
+        <div class="row">
+            <div class="colonne entete">Email:</div>
+            <div class="colonne">{{data.commande.email}}</div>
+            <div class="colonne entete">Catégorie client</div>
+            <div class="colonne">{{data.commande.categorieClient}}</div>
+        </div>
+        <div class="row">
+            <div class="colonne entete">Ville:</div>
+            <div class="colonne">{{data.commande.ville}}</div>
+            <div class="colonne entete">Adresse:</div>
+            <div class="colonne">{{data.commande.adresse}}</div>
+        </div>
+        <div class="row">
+            <div class="colonne entete">Type piéce d'identité:</div>
+            <div class="colonne">{{data.commande.typePieceIdentite}}</div>
+            <div class="colonne entete">Numéro piéce d'identité:</div>
+            <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
+        </div>
+        <div class="map">
+            <div id="manupilation-adresse">
+                <mat-form-field appearance="fill">
+                    <mat-label>Adresse de livraison</mat-label>
+                    <mat-select formControlName="adresse" (selectionChange)="selectionnerAdresse()"
+                        [compareWith]="fonctionComparaisonPosition">
+                        <mat-option *ngFor="let position of positionsClientEnregistree" [value]="position">
+                            {{position.adresse}}
+                        </mat-option>
+                        <mat-option *ngIf="positionsClientEnregistree.length === 0" disabled>
+                            Pas d'adresse
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <div id="ajouter-adresse">
+                    <input type="text" id="adresse-input" formControlName="nouvelleAdresse">
+                    <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
+                        <mat-icon>add_location</mat-icon>
+                    </button>
+                </div>
+            </div>
+            <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
+                (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
+                <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
+                    (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
+                    <agm-info-window>{{data.commande.adresse}}</agm-info-window>
+                </agm-marker>
+            </agm-map>
+        </div>
+    </form>
+</div>
+<div mat-dialog-actions style="float: right;">
+    <button mat-button mat-dialog-close>Annuler</button>
+    <button mat-raised-button color="primary" (click)="enregistrerModificationPositionClient()">Enregistrer</button>
+</div>

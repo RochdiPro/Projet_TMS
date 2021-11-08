@@ -130,7 +130,6 @@ export class BoiteDialogueInfo implements OnInit {
       } else {
       }
     }
-    console.log(this.articles);
   }
 
   fermerBoiteDialogue() {
@@ -199,7 +198,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
   }
 
   getTypeDocument() {
-    console.log(this.data.commande);
     this.indicateurTypeCommande = this.data.commande.reference.split('-')[0];
     if (this.indicateurTypeCommande === 'F') this.typeDocument = 'Facture';
     else this.typeDocument = 'Bon Livraison';
@@ -212,8 +210,8 @@ export class BoiteDialogueCreerCommande implements OnInit {
       this.zoom = 5;
       this.positionExiste = false;
     } else {
-      this.lat = this.positionClient.latitude;
-      this.lng = this.positionClient.longitude;
+      this.lat = Number(this.positionClient.latitude);
+      this.lng = Number(this.positionClient.longitude);
       this.latMap = Number(this.positionClient.latitude);
       this.lngMap = Number(this.positionClient.longitude);
       this.zoom = 15;
@@ -225,7 +223,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.positionsClientEnregistree = await this.serviceCommande
       .positionClient(this.data.commande.idClient)
       .toPromise();
-    console.log(this.positionsClientEnregistree);
   }
 
   ajouterAdresse() {
@@ -256,7 +253,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
         .Detail_BL(this.data.commande.id)
         .toPromise();
       this.articles = await getDetailBL(detail);
-      console.log(this.articles);
     }
     for (let i = 0; i < this.articles.length; i++) {
       //pour chaque article
@@ -281,7 +277,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
             //pour chaque emballage d'un produit
             if (j !== 0) {
               //tous les element sauf le premier element
-              // console.log((qteProduitCommande >= Number(this.listeProduitDansListeEmballage[j].qte)) && (differenceQte(j) < differenceQte(j - 1)))
               if (
                 qteProduitCommande >=
                 Number(this.listeProduitDansListeEmballage[j].qte)
@@ -410,6 +405,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
 
   async enregistrer() {
     let commande: any = new FormData();
+    //creation position client s'il n'existe pas
     if (this.positionClient.idClient === undefined) {
       let position: any = new FormData();
       this.positionClient.longitude = this.lng;
@@ -418,8 +414,10 @@ export class BoiteDialogueCreerCommande implements OnInit {
       position.append('adresse', this.positionClient.adresse);
       position.append('longitude', this.positionClient.longitude);
       position.append('latitude', this.positionClient.latitude);
-
       await this.serviceCommande.creerPositionClient(position).toPromise();
+      this.positionClient = await this.serviceCommande
+        .dernierPositionClient()
+        .toPromise();
     } else if (this.positionEstModifie) {
       let position: any = new FormData();
       position.append('id', this.positionClient.id);
@@ -428,7 +426,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       position.append('longitude', this.lng);
       position.append('latitude', this.lat);
 
-      this.serviceCommande.modifierPositionClient(position).toPromise();
+      await this.serviceCommande.modifierPositionClient(position).toPromise();
     }
 
     for (let i = 0; i < this.listeEmballageChoisi.length; i++) {
@@ -449,11 +447,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
         'poidsBrut',
         Number(this.getPoidsPackBrut(emballage))
       );
-      console.log(typeof Number(this.getNombreArticles(emballage)));
-      console.log(typeof Number(emballage.qte));
-      console.log(typeof Number(this.getVolumePack(emballage)));
-      console.log(typeof Number(this.getPoidsPackNet(emballage)));
-      console.log(typeof Number(this.getPoidsPackBrut(emballage)));
       await this.serviceCommande.creerColis(listeColisage).toPromise();
     }
 
@@ -468,8 +461,16 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('typePieceIdentite', this.data.commande.typePieceIdentite);
     commande.append('numPieceIdentite', this.data.commande.numeroPieceIdentite);
     commande.append('dateCreation', this.data.commande.dateCreation);
+    commande.append('idPosition', this.positionClient.id);
 
     await this.serviceCommande.creerCommande(commande).toPromise();
+    Swal.fire({
+      icon: 'success',
+      title: 'Commande bien ajoutée',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    this.dialgRef.close();
   }
 
   get nombrePackTotal() {
@@ -536,7 +537,6 @@ export class BoiteDialogueEmballer implements OnInit {
     await this.getListeEmballages();
     await this.ajouterChampQte();
     this.ajouterQuantiteEmballage();
-    console.log(this.data.produit);
   }
   get qteForm() {
     return this.form.get('qte') as FormArray;
@@ -587,13 +587,13 @@ export class BoiteDialogueEmballer implements OnInit {
     );
   }
   updateMax(i: any) {
+    var qteFormArray = this.form.get('qte') as FormArray;
     for (let j = 0; j < this.listeMax.length; j++) {
-      if (j !== i) {
+      if (j !== i && !qteFormArray.controls[j].disabled) {
         this.listeMax[j] =
           this.quantiteNonEmballee / Number(this.listeEmballages[j].qte) +
           this.form.get('qte').value[j].qte;
         this.listeMax[j] = Math.trunc(this.listeMax[j]);
-        console.log(this.listeMax[j]);
       }
     }
     this.quantiteNonEmballeePrecedente = this.quantiteNonEmballee;
@@ -692,14 +692,312 @@ export class BoiteDialogueDetailProduit implements OnInit {
 @Component({
   selector: 'boite-dialogue-modifier-position',
   templateUrl: 'boite-dialogue-modifier-position.html',
-  styleUrls: ['boite-dialogue-modifier-position.scss']
+  styleUrls: ['boite-dialogue-modifier-position.scss'],
 })
-
 export class BoiteDialogueModifierPositionComponent implements OnInit {
-  constructor(private dialogRef: MatDialogRef<BoiteDialogueModifierPositionComponent>, @Inject(MAT_DIALOG_DATA) public data: any) { }
+  form: FormGroup;
+  latMap: any = 34.74056;
+  lngMap: any = 10.76028;
+  lat: any = 0;
+  lng: any = 0;
+  zoom: number = 5;
+  positionExiste = false;
+  positionClient: any = {
+    latitude: 34.74056,
+    longitude: 10.76028,
+  };
+  positionsClientEnregistree: any = [];
+  positionEstModifie: boolean = false;
+  positionCommande: any;
+  constructor(
+    public dialogRef: MatDialogRef<BoiteDialogueModifierPositionComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private fb: FormBuilder,
+    private serviceCommande: CommandeService
+  ) {}
 
-  ngOnInit() { }
+  async ngOnInit() {
+    this.form = this.fb.group({
+      adresse: ['', Validators.required],
+      nouvelleAdresse: '',
+    });
+    await this.getPositionsEnregistrees();
+  }
+
+  async getPositionsEnregistrees() {
+    this.positionsClientEnregistree = await this.serviceCommande
+      .positionClient(this.data.commande.idClient)
+      .toPromise();
+    await this.getPositionCommande();
+    this.selectionnerAdresse();
+  }
+
+  async getPositionCommande() {
+    this.positionCommande = await this.serviceCommande
+      .getPositionById(this.data.commande.idPosition)
+      .toPromise();
+    this.form.get('adresse').setValue(this.positionCommande);
+  }
+
+  async getPositionClient() {
+    if (this.positionClient.idClient === undefined) {
+      this.latMap = 34.74056;
+      this.lngMap = 10.76028;
+      this.zoom = 5;
+      this.positionExiste = false;
+    } else {
+      this.lat = this.positionClient.latitude;
+      this.lng = this.positionClient.longitude;
+      this.latMap = Number(this.positionClient.latitude);
+      this.lngMap = Number(this.positionClient.longitude);
+      this.zoom = 15;
+      this.positionExiste = true;
+    }
+  }
+
+  ajouterAdresse() {
+    this.positionsClientEnregistree.push({
+      adresse: this.form.get('nouvelleAdresse').value,
+      latitude: '',
+      longitude: '',
+    });
+  }
+
+  fonctionComparaisonPosition(option: any, value: any): boolean {
+    return option.id === value.id;
+  }
+
+  selectionnerAdresse() {
+    this.positionEstModifie = false;
+    this.positionClient = this.form.get('adresse').value;
+    this.getPositionClient();
+  }
+
+  positionerMarquer(event: any) {
+    //pour positionner un marqueur sur le map
+    if (!this.positionExiste) {
+      this.lat = event.coords.lat;
+      this.lng = event.coords.lng;
+      this.positionExiste = true;
+    }
+  }
+  modifierPositionMarquer(event: any) {
+    //pour modifier la position du marqueur existant
+    this.lat = event.coords.lat;
+    this.lng = event.coords.lng;
+    this.positionEstModifie = true;
+  }
+
+  async enregistrerModificationPositionClient() {
+    if (this.positionClient.idClient === undefined) {
+      let position: any = new FormData();
+      this.positionClient.longitude = this.lng;
+      this.positionClient.latitude = this.lat;
+      position.append('idClient', this.data.commande.idClient);
+      position.append('adresse', this.positionClient.adresse);
+      position.append('longitude', this.positionClient.longitude);
+      position.append('latitude', this.positionClient.latitude);
+      await this.serviceCommande.creerPositionClient(position).toPromise();
+      this.positionClient = await this.serviceCommande
+        .dernierPositionClient()
+        .toPromise();
+      let formData: any = new FormData();
+      formData.append('id', this.data.commande.id);
+      formData.append('idPosition', this.positionClient.id);
+      await this.serviceCommande
+        .modifierIdPositionDansTableCommande(formData)
+        .toPromise();
+    } else if (this.positionEstModifie) {
+      let position: any = new FormData();
+      position.append('id', this.positionClient.id);
+      position.append('idClient', this.positionClient.idClient);
+      position.append('adresse', this.positionClient.adresse);
+      position.append('longitude', this.lng);
+      position.append('latitude', this.lat);
+
+      await this.serviceCommande.modifierPositionClient(position).toPromise();
+    } else {
+      let formData: any = new FormData();
+      formData.append('id', this.data.commande.id);
+      formData.append('idPosition', this.positionClient.id);
+      await this.serviceCommande
+        .modifierIdPositionDansTableCommande(formData)
+        .toPromise();
+    }
+    Swal.fire({
+      icon: 'success',
+      title: 'Position bien modifiée',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    this.dialogRef.close();
+  }
 }
+
+// -------------------------------------------------------------------------------------------------------------
+// ***************************************** Boite de dialogue modifier liste colisage *************************
+// -------------------------------------------------------------------------------------------------------------
+@Component({
+  selector: 'boite-dialogue-modifier-colisage',
+  templateUrl: 'boite-dialogue-modifier-colisage.html',
+  styleUrls: ['boite-dialogue-modifier-colisage.scss'],
+})
+export class BoiteDialogueModifierColisage implements OnInit {
+  listeArticlesDetail: any = [];
+  indicateurTypeCommande: String;
+  idDocument: Number;
+  articles: any;
+  listeEmballage: any;
+  listeProduitDansListeEmballage: any;
+  typeDocument: String;
+  firstFormGroup: FormGroup;
+  secondFormGroup: FormGroup;
+  listeEmballageChoisi: any = [];
+
+  constructor(
+    private dialogRef: MatDialogRef<BoiteDialogueModifierColisage>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private serviceCommande: CommandeService,
+    private dialog: MatDialog,
+    private serviceEmballage: EmballageService
+  ) {}
+
+  async ngOnInit() {
+    this.getTypeDocument();
+    await this.getListeEmballage();
+    this.getDetail();
+  }
+
+  getTypeDocument() {
+    this.indicateurTypeCommande =
+      this.data.commande.referenceDocument.split('-')[0];
+    this.idDocument = Number(
+      this.data.commande.referenceDocument.split('-')[1]
+    );
+    if (this.indicateurTypeCommande === 'F') this.typeDocument = 'Facture';
+    else this.typeDocument = 'Bon Livraison';
+  }
+
+  async getListeEmballage() {
+    this.listeEmballage = await this.serviceEmballage
+      .listeEmballage()
+      .toPromise();
+  }
+
+  async getDetail() {
+    if (this.indicateurTypeCommande === 'F') {
+      var detail = await this.serviceCommande
+        .Detail_Facture(this.idDocument)
+        .toPromise();
+      this.articles = await getDetailFacture(detail);
+    } else {
+      var detail = await this.serviceCommande
+        .Detail_BL(this.idDocument)
+        .toPromise();
+      this.articles = await getDetailBL(detail);
+    }
+    for (let i = 0; i < this.articles.length; i++) {
+      //pour chaque article
+      let qteProduitCommande = Number(this.articles[i].qte);
+      let listeEmballageProduit = [];
+      this.listeProduitDansListeEmballage = this.listeEmballage.filter(
+        (emballage: any) => emballage.idProduit === this.articles[i].id
+      );
+      if (this.listeProduitDansListeEmballage.length > 0) {
+        //s'il y a des element dans la listeProduitDansListeEmballage
+        do {
+          let differenceQte = (index: any) => {
+            return (
+              qteProduitCommande -
+              Number(this.listeProduitDansListeEmballage[index].qte)
+            );
+          };
+          let emballage: any;
+          let qteEmballage;
+          let differenceQuantite = 0;
+          for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) {
+            //pour chaque emballage d'un produit
+            if (j !== 0) {
+              //tous les element sauf le premier element
+              if (
+                qteProduitCommande >=
+                Number(this.listeProduitDansListeEmballage[j].qte)
+              ) {
+                //si qte commande > qte emballage
+                if (differenceQte(j) < differenceQuantite) {
+                  differenceQuantite = differenceQte(j);
+                  let difference = differenceQte(j);
+                  qteEmballage = 0;
+                  do {
+                    difference -= Number(
+                      this.listeProduitDansListeEmballage[j].qte
+                    );
+                    qteEmballage++;
+                  } while (difference >= 0);
+                  emballage = this.listeProduitDansListeEmballage[j];
+                }
+              }
+            } else if (j == 0) {
+              //si c'est le premier element du liste
+              if (
+                qteProduitCommande >=
+                Number(this.listeProduitDansListeEmballage[j].qte)
+              ) {
+                differenceQuantite = differenceQte(j);
+                let difference = differenceQte(j);
+                qteEmballage = 0;
+                do {
+                  difference -= Number(
+                    this.listeProduitDansListeEmballage[j].qte
+                  );
+                  qteEmballage++;
+                } while (difference >= 0);
+                emballage = this.listeProduitDansListeEmballage[j];
+              }
+            }
+          }
+          qteProduitCommande -= Number(emballage.qte) * qteEmballage;
+          listeEmballageProduit.push({
+            emballage: emballage,
+            qteEmballage: qteEmballage,
+          });
+        } while (qteProduitCommande > 0);
+        this.listeArticlesDetail.push(
+          new Article(
+            this.articles[i].id,
+            this.articles[i].nom,
+            Number(this.articles[i].qte),
+            Number(this.articles[i].qte),
+            this.articles[i].type,
+            this.articles[i].numSerie,
+            this.articles[i].produit4Gs,
+            this.articles[i].numeroLots,
+            listeEmballageProduit,
+            []
+          )
+        );
+      }
+    }
+  }
+  ouvrirBoiteDialogueEmballer(produit: any) {
+    const dialogRef = this.dialog.open(BoiteDialogueEmballer, {
+      width: '600px',
+      data: { produit: produit },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      produit.qteNonEmballe = result.qteNonEmballe;
+      produit.listeEmballageChoisi = result.listeEmballageChoisi;
+    });
+  }
+  ouvrirBoiteDialogueDetailProduit(article: any) {
+    const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
+      width: '600px',
+      maxHeight: '600px',
+      data: { produit: article },
+    });
+  }
+}
+
 // -------------------------------------------------------------------------------------------------------------
 //**************************************************** fonctions reutilisable **********************************
 // -------------------------------------------------------------------------------------------------------------

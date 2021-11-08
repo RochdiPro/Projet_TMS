@@ -86,6 +86,20 @@ export class CommandeService {
     }).pipe(catchError(this.handleError));
   }
 
+  //get dernier id position client
+  public dernierPositionClient(){
+    return this.httpClient.get(erp + 'dernier-position-client').pipe(catchError(this.handleError));
+  }
+
+  //get position by id
+  public getPositionById(id: any){
+    return this.httpClient.get(erp + 'position-client', {
+      params:{
+        id: id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   //create position client
   public creerPositionClient(formData: any) {
     return this.httpClient.post(erp + 'position-client', formData).pipe(catchError(this.handleError));
@@ -109,5 +123,10 @@ export class CommandeService {
   //get liste commande
   public getListeCommandes(){
     return this.httpClient.get(erp + 'commandes').pipe(catchError(this.handleError))
+  }
+
+  //modifier l'id du position dans le table commande
+  public modifierIdPositionDansTableCommande(formData: any) {
+    return this.httpClient.put(erp + 'modifier-id-position', formData).pipe(catchError(this.handleError));
   }
 }
