@@ -178,16 +178,7 @@ export class AjouterCommandeComponent implements OnInit {
       width: '1000px',
       data: { commande: commande },
     });
-    dialogRef.afterClosed().subscribe(async (result) => {
-      await this.getListeClients();
-      await this.getListeFactures();
-      await this.getListeBLs();
-      this.listeCommandes = this.listeFactures.concat(this.listeBonsLivraison);
-      this.dataSource.data = this.listeCommandes.sort(
-        (commandeA: any, commandeB: any) =>
-          commandeA.dateCreation > commandeB.dateCreation ? 1 : -1
-      ) as TableCommandes[];
-    });
+    
   }
 
   filtrerParId() {

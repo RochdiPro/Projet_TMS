@@ -115,6 +115,24 @@ export class CommandeService {
     return this.httpClient.post(erp + 'creer-colis', formData).pipe(catchError(this.handleError));
   }
 
+  //get liste des colis par reference commande
+  public getListeColisParReference(reference: any){
+    return this.httpClient.get(erp + 'liste-colis-par-reference', {
+      params: {
+        reference: reference
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
+  //delete from liste colisage by reference
+  public deleteColisParReference(reference: any){
+    return this.httpClient.delete(erp + 'supprimer-par-reference',{
+      params: {
+        reference: reference
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   // creer commande
   public creerCommande(formData: any){
     return this.httpClient.post(erp + 'creer-commande', formData).pipe(catchError(this.handleError))

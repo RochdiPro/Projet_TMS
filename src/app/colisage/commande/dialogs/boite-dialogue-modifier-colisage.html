@@ -1,43 +1,91 @@
 <h1 mat-dialog-title>Modifier colisage</h1>
 <div mat-dialog-content>
-    <ng-template matStepLabel>Produits</ng-template>
-    <div class="produits">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">Nom produit</th>
-                    <th scope="col">Quantité</th>
-                    <th scope="col">Type produit</th>
-                    <th scope="col">Détails</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let article of listeArticlesDetail">
-                    <th scope="row">{{article.id}}</th>
-                    <td>{{article.nom}}</td>
-                    <td>{{article.qte}}</td>
-                    <td>{{article.type}}</td>
-                    <td style="justify-content: center;">
-                        <button mat-icon-button (click)="ouvrirBoiteDialogueDetailProduit(article)"
-                            [disabled]="article.type === 'Produit simple'">
-                            <mat-icon>list_alt</mat-icon>
-                        </button>
-                    </td>
-                    <td><button mat-icon-button (click)="ouvrirBoiteDialogueEmballer(article)">
-                            <i class="fas fa-box" style="color: #f7b91e;"
-                                *ngIf="article.qteNonEmballe !== 0 && article.listeEmballageChoisi.length !== 0"
-                                matTooltip="Emballage produit n'est pas terminé"></i>
-                            <i class="fas fa-box-open" style="color: #f7b91e;"
-                                *ngIf="article.qteNonEmballe !== 0 && article.listeEmballageChoisi.length === 0"
-                                matTooltip="Produit n'est pas emballé"></i>
-                            <i class="fas fa-box" style="color: #4caf50;"
-                                *ngIf="article.qteNonEmballe === 0 && article.listeEmballageChoisi.length !== 0"
-                                matTooltip="Produit emballé"></i>
-                        </button></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <mat-vertical-stepper [linear]="false" #stepper>
+        <mat-step>
+            <ng-template matStepLabel>Produits</ng-template>
+            <h2>Liste des produits</h2>
+            <div class="produits">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">id</th>
+                            <th scope="col">Nom produit</th>
+                            <th scope="col">Quantité</th>
+                            <th scope="col">Type produit</th>
+                            <th scope="col">Détails</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let article of listeArticlesDetail" [class]="article.qteNonEmballe !== 0 ? 'pas-complet' : ''">
+                            <th scope="row">{{article.id}}</th>
+                            <td>{{article.nom}}</td>
+                            <td>{{article.qte}}</td>
+                            <td>{{article.type}}</td>
+                            <td style="justify-content: center;">
+                                <button mat-icon-button (click)="ouvrirBoiteDialogueDetailProduit(article)"
+                                    [disabled]="article.type === 'Produit simple'">
+                                    <mat-icon>list_alt</mat-icon>
+                                </button>
+                            </td>
+                            <td>
+                                <button mat-icon-button (click)="ouvrirBoiteDialogueEmballer(article)" color="primary"
+                                    matTooltip="modifier" matTooltipPosition="right" matTooltipShowDelay="1000">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="float: right;">
+                <button mat-button matStepperNext (click)="creerListeEmballageChoisi()">Next</button>
+            </div>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Valider</ng-template>
+            <h2>Liste colisage</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">id</th>
+                        <th scope="col">Produit</th>
+                        <th scope="col">Pack</th>
+                        <th scope="col">Qte</th>
+                        <th scope="col">Nbr. Pack</th>
+                        <th scope="col">LxlxH (cm)</th>
+                        <th scope="col">Volume (m³)</th>
+                        <th scope="col">Poids net (kg)</th>
+                        <th scope="col">Poids brut (kg)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let article of this.listeEmballageChoisi">
+                        <th scope="row">{{article.emballage.idProduit}}</th>
+                        <td>{{article.emballage.nomProduit}}</td>
+                        <td>{{article.emballage.nomEmballage}}</td>
+                        <td>{{getNombreArticles(article)}}</td>
+                        <td>{{article.qte}}</td>
+                        <td>{{getDimensionsPack(article)}}</td>
+                        <td>{{getVolumePack(article)}}</td>
+                        <td>{{getPoidsPackNet(article)}}</td>
+                        <td>{{getPoidsPackBrut(article)}}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" colspan="3"></th>
+                        <td>Total</td>
+                        <td>{{nombrePackTotal}}</td>
+                        <td></td>
+                        <td>{{volumeTotal}}</td>
+                        <td>{{poidsTotalNet}}</td>
+                        <td>{{poidsTotalBrut}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="float: right; margin-bottom: 10px;">
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-raised-button color="primary" (click)="validerModification()">Valider</button>
+            </div>
+        </mat-step>
+    </mat-vertical-stepper>
 </div>

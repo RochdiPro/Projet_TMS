@@ -359,8 +359,11 @@ export class BoiteDialogueCreerCommande implements OnInit {
       data: { produit: produit },
     });
     dialogRef.afterClosed().subscribe((result) => {
-      produit.qteNonEmballe = result.qteNonEmballe;
-      produit.listeEmballageChoisi = result.listeEmballageChoisi;
+      if (result) {
+        produit.qteNonEmballe = result.qteNonEmballe;
+        produit.listeEmballageChoisi = result.listeEmballageChoisi;
+      }
+      this.verifierValiditeListeProduits();
     });
   }
   ouvrirBoiteDialogueDetailProduit(article: any) {
@@ -371,11 +374,22 @@ export class BoiteDialogueCreerCommande implements OnInit {
     });
   }
   creerListeEmballageChoisi() {
+    this.listeEmballageChoisi = [];
     this.listeArticlesDetail.forEach((article: any) => {
       this.listeEmballageChoisi = this.listeEmballageChoisi.concat(
         article.listeEmballageChoisi
       );
     });
+  }
+
+  verifierValiditeListeProduits() {
+    let estValide = true;
+    this.listeArticlesDetail.forEach((element: any) => {
+      element.qteNonEmballe !== 0 ? (estValide = false) : '';
+    });
+    estValide
+      ? this.secondFormGroup.get('secondCtrl').setValue('valide')
+      : this.secondFormGroup.get('secondCtrl').setValue('');
   }
   getNombreArticles(article: any) {
     return article.qte * article.emballage.qte;
@@ -433,11 +447,17 @@ export class BoiteDialogueCreerCommande implements OnInit {
       let listeColisage: any = new FormData();
       let emballage = this.listeEmballageChoisi[i];
       listeColisage.append('reference', this.data.commande.reference);
+      listeColisage.append('idEmballage', emballage.emballage.id);
       listeColisage.append('emballage', emballage.emballage.nomEmballage);
+      listeColisage.append('idProduit', emballage.emballage.idProduit);
       listeColisage.append('produit', emballage.emballage.nomProduit);
       listeColisage.append(
         'quantite',
         Number(this.getNombreArticles(emballage))
+      );
+      listeColisage.append(
+        'quantiteDansEmballage',
+        Number(emballage.emballage.qte)
       );
       listeColisage.append('nombrePack', Number(emballage.qte));
       listeColisage.append('dimensions', this.getDimensionsPack(emballage));
@@ -561,9 +581,15 @@ export class BoiteDialogueEmballer implements OnInit {
           const emb = this.data.produit.listeEmballageChoisi.filter(
             (emb: any) => emb.emballage.id === emballage.id
           );
-          qte = this.fb.group({
-            qte: [emb[0].qte, [Validators.min(0)]],
-          });
+          if (emb.length > 0) {
+            qte = this.fb.group({
+              qte: [emb[0].qte, [Validators.min(0)]],
+            });
+          } else {
+            qte = this.fb.group({
+              qte: [0, [Validators.min(0)]],
+            });
+          }
         } else {
           qte = this.fb.group({
             qte: [0, [Validators.min(0)]],
@@ -843,6 +869,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
   styleUrls: ['boite-dialogue-modifier-colisage.scss'],
 })
 export class BoiteDialogueModifierColisage implements OnInit {
+  listeColis: any;
   listeArticlesDetail: any = [];
   indicateurTypeCommande: String;
   idDocument: Number;
@@ -853,6 +880,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   listeEmballageChoisi: any = [];
+  estValide: boolean = false;
 
   constructor(
     private dialogRef: MatDialogRef<BoiteDialogueModifierColisage>,
@@ -863,9 +891,16 @@ export class BoiteDialogueModifierColisage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.getListeColis();
     this.getTypeDocument();
     await this.getListeEmballage();
     this.getDetail();
+  }
+
+  async getListeColis() {
+    this.listeColis = await this.serviceCommande
+      .getListeColisParReference(this.data.commande.referenceDocument)
+      .toPromise();
   }
 
   getTypeDocument() {
@@ -885,6 +920,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
   }
 
   async getDetail() {
+    let listeEmballageChoisi: any = [];
     if (this.indicateurTypeCommande === 'F') {
       var detail = await this.serviceCommande
         .Detail_Facture(this.idDocument)
@@ -903,6 +939,33 @@ export class BoiteDialogueModifierColisage implements OnInit {
       this.listeProduitDansListeEmballage = this.listeEmballage.filter(
         (emballage: any) => emballage.idProduit === this.articles[i].id
       );
+      let listeEmballageEnregistree = this.listeColis.filter(
+        (element: any) =>
+          Number(element.idProduit) === Number(this.articles[i].id)
+      );
+      listeEmballageChoisi = [];
+      listeEmballageEnregistree.forEach((element: any) => {
+        let dimensions = element.dimensions.split('x');
+        let longueur = dimensions[0];
+        let largeur = dimensions[1];
+        let hauteur = dimensions[2];
+        listeEmballageChoisi.push({
+          emballage: {
+            id: element.idEmballage,
+            nomEmballage: element.emballage,
+            nomProduit: this.articles[i].nom,
+            idProduit: this.articles[i].id,
+            longueur: longueur,
+            largeur: largeur,
+            hauteur: hauteur,
+            poids_emballage_total: element.poidsBrut / element.nombrePack,
+            poids_total_net: element.poidsNet / element.nombrePack,
+            qte: element.quantiteDansEmballage,
+            volume: element.volume / element.nombrePack,
+          },
+          qte: element.nombrePack,
+        });
+      });
       if (this.listeProduitDansListeEmballage.length > 0) {
         //s'il y a des element dans la listeProduitDansListeEmballage
         do {
@@ -967,13 +1030,13 @@ export class BoiteDialogueModifierColisage implements OnInit {
             this.articles[i].id,
             this.articles[i].nom,
             Number(this.articles[i].qte),
-            Number(this.articles[i].qte),
+            0,
             this.articles[i].type,
             this.articles[i].numSerie,
             this.articles[i].produit4Gs,
             this.articles[i].numeroLots,
             listeEmballageProduit,
-            []
+            listeEmballageChoisi
           )
         );
       }
@@ -985,8 +1048,11 @@ export class BoiteDialogueModifierColisage implements OnInit {
       data: { produit: produit },
     });
     dialogRef.afterClosed().subscribe((result) => {
-      produit.qteNonEmballe = result.qteNonEmballe;
-      produit.listeEmballageChoisi = result.listeEmballageChoisi;
+      if (result) {
+        produit.qteNonEmballe = result.qteNonEmballe;
+        produit.listeEmballageChoisi = result.listeEmballageChoisi;
+      }
+      this.verifierValiditeListeProduits();
     });
   }
   ouvrirBoiteDialogueDetailProduit(article: any) {
@@ -995,6 +1061,113 @@ export class BoiteDialogueModifierColisage implements OnInit {
       maxHeight: '600px',
       data: { produit: article },
     });
+  }
+
+  creerListeEmballageChoisi() {
+    this.listeEmballageChoisi = [];
+    this.listeArticlesDetail.forEach((article: any) => {
+      this.listeEmballageChoisi = this.listeEmballageChoisi.concat(
+        article.listeEmballageChoisi
+      );
+    });
+  }
+
+  getNombreArticles(article: any) {
+    return article.qte * article.emballage.qte;
+  }
+
+  getDimensionsPack(article: any) {
+    return (
+      article.emballage.longueur +
+      'x' +
+      article.emballage.largeur +
+      'x' +
+      article.emballage.hauteur
+    );
+  }
+
+  getVolumePack(article: any) {
+    return article.emballage.volume * article.qte;
+  }
+
+  getPoidsPackNet(article: any) {
+    return article.emballage.poids_total_net * article.qte;
+  }
+
+  getPoidsPackBrut(article: any) {
+    return article.emballage.poids_emballage_total * article.qte;
+  }
+
+  get nombrePackTotal() {
+    var nombrePack = 0;
+    this.listeEmballageChoisi.forEach((emballage: any) => {
+      nombrePack += emballage.qte;
+    });
+    return nombrePack;
+  }
+
+  get volumeTotal() {
+    var volumeTotal = 0;
+    this.listeEmballageChoisi.forEach((emballage: any) => {
+      volumeTotal += emballage.emballage.volume;
+    });
+    return volumeTotal.toFixed(2);
+  }
+
+  get poidsTotalNet() {
+    var poidsTotalNet = 0;
+    this.listeEmballageChoisi.forEach((emballage: any) => {
+      poidsTotalNet += this.getPoidsPackNet(emballage);
+    });
+    return poidsTotalNet.toFixed(2);
+  }
+
+  get poidsTotalBrut() {
+    var poidsTotalBrut = 0;
+    this.listeEmballageChoisi.forEach((emballage: any) => {
+      poidsTotalBrut += this.getPoidsPackBrut(emballage);
+    });
+    return poidsTotalBrut.toFixed(2);
+  }
+
+  verifierValiditeListeProduits() {
+    this.estValide = true;
+    this.listeArticlesDetail.forEach((element: any) => {
+      element.qteNonEmballe !== 0 ? (this.estValide = false) : '';
+    });
+  }
+
+  //bouton valider
+  async validerModification() {
+    await this.serviceCommande
+      .deleteColisParReference(this.data.commande.referenceDocument)
+      .toPromise();
+    for (let i = 0; i < this.listeEmballageChoisi.length; i++) {
+      let listeColisage: any = new FormData();
+      let emballage = this.listeEmballageChoisi[i];
+      listeColisage.append('reference', this.data.commande.referenceDocument);
+      listeColisage.append('idEmballage', emballage.emballage.id);
+      listeColisage.append('emballage', emballage.emballage.nomEmballage);
+      listeColisage.append('idProduit', emballage.emballage.idProduit);
+      listeColisage.append('produit', emballage.emballage.nomProduit);
+      listeColisage.append(
+        'quantite',
+        Number(this.getNombreArticles(emballage))
+      );
+      listeColisage.append(
+        'quantiteDansEmballage',
+        Number(emballage.emballage.qte)
+      );
+      listeColisage.append('nombrePack', Number(emballage.qte));
+      listeColisage.append('dimensions', this.getDimensionsPack(emballage));
+      listeColisage.append('volume', Number(this.getVolumePack(emballage)));
+      listeColisage.append('poidsNet', Number(this.getPoidsPackNet(emballage)));
+      listeColisage.append(
+        'poidsBrut',
+        Number(this.getPoidsPackBrut(emballage))
+      );
+      await this.serviceCommande.creerColis(listeColisage).toPromise();
+    }
   }
 }
 
