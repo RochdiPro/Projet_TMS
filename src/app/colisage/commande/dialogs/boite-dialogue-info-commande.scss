@@ -1,5 +1,44 @@
-.pas-complet {
-  background-color: rgba(255, 99, 71, 0.2);
+.colonne {
+  width: 50%;
+}
+.row {
+  margin-left: 10px;
+}
+.entete {
+  font-weight: bold;
+}
+.map {
+  margin-top: 10px;
+}
+agm-map {
+  height: 200px;
+  width: 100%;
+}
+h2 {
+  padding-left: 15px;
+  color: #5f6368;
+}
+h3 {
+  font-weight: 900;
+  font-size: 18px;
+  color: #434343;
+}
+.liste-colisage h2 {
+  padding-top: 15px;
+}
+.localisation h3 {
+  padding-top: 15px;
+}
+@media (min-width: 780px) {
+  .colonne {
+    width: 25%;
+  }
+  .row {
+    margin-left: 10px;
+  }
+  .entete {
+    font-weight: bold;
+  }
 }
 
 @media only screen and (max-width: 760px),
@@ -8,14 +47,13 @@
     font-size: 20px;
   }
   h2{
-    font-size: 18px;
+    font-size: 16px;
   }
-  .mat-button {
-    font-size: 12px;
+  h3{
+    font-size: 16px;
   }
-  .mat-raised-button {
-    font-size: 12px;
-    padding: 0 10px;
+  .liste-colisage h2{
+    padding-left: 0;
   }
   //forcer le tableau pour ne pas s'afficher comme tableau
   table,
@@ -82,50 +120,8 @@
     white-space: nowrap;
   }
 
-  // donner un label pour les données du table des produits
-  .produits th:before {
-    content: "Id";
-    font-weight: normal;
-    text-align: left;
-    margin-left: 10px;
-  }
-
-  // donner un label pour les données
-  .produits td:nth-of-type(1):before {
-    content: "Nom produit";
-    font-weight: bold;
-    text-align: left;
-    margin-left: 10px;
-  }
-  .produits td:nth-of-type(2):before {
-    content: "Quantité";
-    font-weight: bold;
-    text-align: left;
-    margin-left: 10px;
-  }
-  .produits td:nth-of-type(3):before {
-    content: "Type produit";
-    font-weight: bold;
-    text-align: left;
-    margin-left: 10px;
-  }
-  .produits td:nth-of-type(4):before {
-    content: "Détails";
-    font-weight: bold;
-    color: #52595d;
-    text-align: left;
-    margin-left: 10px;
-  }
-  .produits td:nth-of-type(5):before {
-    content: "Actions";
-    font-weight: bold;
-    color: #52595d;
-    text-align: left;
-    margin-left: 10px;
-  }
-
   // donner un label pour les données du table de liste colisage
-  .liste-colisage th:before {
+  th:before {
     content: "Id";
     font-weight: normal;
     text-align: left;
@@ -133,53 +129,53 @@
   }
 
   // donner un label pour les données
-  .liste-colisage td:nth-of-type(1):before {
+  td:nth-of-type(1):before {
     content: "Produit";
     font-weight: bold;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage td:nth-of-type(2):before {
+  td:nth-of-type(2):before {
     content: "Pack";
     font-weight: bold;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage td:nth-of-type(3):before {
+  td:nth-of-type(3):before {
     content: "Qte";
     font-weight: bold;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage td:nth-of-type(4):before {
+  td:nth-of-type(4):before {
     content: "Nbr. Pack";
     font-weight: bold;
     color: #52595d;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage td:nth-of-type(5):before {
+  td:nth-of-type(5):before {
     content: "LxlxH (cm)";
     font-weight: bold;
     color: #52595d;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage td:nth-of-type(6):before {
+  td:nth-of-type(6):before {
     content: "Volume (m³)";
     font-weight: bold;
     color: #52595d;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage td:nth-of-type(7):before {
+  td:nth-of-type(7):before {
     content: "Poids net (kg)";
     font-weight: bold;
     color: #52595d;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage td:nth-of-type(8):before {
+  td:nth-of-type(8):before {
     content: "Poids brut (kg)";
     font-weight: bold;
     color: #52595d;
@@ -188,45 +184,45 @@
   }
 
   // donner un label pour les données du ligne de totals table de liste colisage
-  .liste-colisage tr:last-child {
+  tr:last-child {
     background-color: #f1f4f6;
   }
 
-  .liste-colisage tr:last-child th {
+  tr:last-child th {
     display: none;
   }
 
   // donner un label pour les données
-  .liste-colisage tr:last-child td:nth-of-type(1):before {
+  tr:last-child td:nth-of-type(1):before {
     content: "";
     font-weight: bold;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage tr:last-child td:nth-of-type(2):before {
+  tr:last-child td:nth-of-type(2):before {
     content: "Nbr. Pack";
     font-weight: bold;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage tr:last-child td:nth-of-type(3) {
+  tr:last-child td:nth-of-type(3) {
     display: none;
   }
-  .liste-colisage tr:last-child td:nth-of-type(4):before {
+  tr:last-child td:nth-of-type(4):before {
     content: "Volume (m³)";
     font-weight: bold;
     color: #52595d;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage tr:last-child td:nth-of-type(5):before {
+  tr:last-child td:nth-of-type(5):before {
     content: "Poids net (kg)";
     font-weight: bold;
     color: #52595d;
     text-align: left;
     margin-left: 10px;
   }
-  .liste-colisage tr:last-child td:last-child:nth-of-type(6):before {
+  tr:last-child td:last-child:nth-of-type(6):before {
     content: "Poids brut (kg)";
     font-weight: bold;
     color: #52595d;

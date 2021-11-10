@@ -475,6 +475,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('nomClient', this.data.commande.nomClient);
     commande.append('contact', this.data.commande.contact);
     commande.append('telephone', this.data.commande.telephone);
+    commande.append('email', this.data.commande.email);
     commande.append('categorieClient', this.data.commande.categorieClient);
     commande.append('ville', this.data.commande.ville);
     commande.append('adresse', this.data.commande.adresse);
@@ -1168,6 +1169,100 @@ export class BoiteDialogueModifierColisage implements OnInit {
       );
       await this.serviceCommande.creerColis(listeColisage).toPromise();
     }
+  }
+}
+
+// -------------------------------------------------------------------------------------------------------------
+//********************************************** boite-dialogue-info-commande **********************************
+// -------------------------------------------------------------------------------------------------------------
+@Component({
+  selector: 'boite-dialogue-info-commande',
+  templateUrl: 'boite-dialogue-info-commande.html',
+  styleUrls: ['boite-dialogue-info-commande.scss'],
+})
+export class InformationCommandeComponent implements OnInit {
+  localisationClient: any;
+  longitude: number;
+  latitude: number;
+  listeColisage: any;
+
+  constructor(
+    private dialogRef: MatDialogRef<InformationCommandeComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private serviceCommande: CommandeService,
+    private dialog: MatDialog
+  ) {}
+  ngOnInit() {
+    this.getLocalisationClient();
+    this.getListeColisage();
+  }
+
+  async getLocalisationClient() {
+    this.localisationClient = await this.serviceCommande
+      .getPositionById(this.data.commande.idPosition)
+      .toPromise();
+    this.longitude = Number(this.localisationClient.longitude);
+    this.latitude = Number(this.localisationClient.latitude);
+  }
+
+  async getListeColisage() {
+    this.listeColisage = await this.serviceCommande
+      .getListeColisParReference(this.data.commande.referenceDocument)
+      .toPromise();
+  }
+
+  get nombrePackTotal() {
+    var nombrePack = 0;
+    this.listeColisage.forEach((colis: any) => {
+      nombrePack += colis.nombrePack;
+    });
+    return nombrePack;
+  }
+
+  get volumeTotal() {
+    var volumeTotal = 0;
+    this.listeColisage.forEach((colis: any) => {
+      volumeTotal += colis.volume;
+    });
+    return volumeTotal.toFixed(2);
+  }
+
+  get poidsTotalNet() {
+    var poidsTotalNet = 0;
+    this.listeColisage.forEach((colis: any) => {
+      poidsTotalNet += colis.poidsNet;
+    });
+    return poidsTotalNet.toFixed(2);
+  }
+
+  get poidsTotalBrut() {
+    var poidsTotalBrut = 0;
+    this.listeColisage.forEach((colis: any) => {
+      poidsTotalBrut += colis.poidsBrut;
+    });
+    return poidsTotalBrut.toFixed(2);
+  }
+
+  ouvrirBoiteDialogueModifierPosition(commande: any) {
+    const dialogRef = this.dialog.open(BoiteDialogueModifierPositionComponent, {
+      width: '1000px',
+      data: { commande: commande },
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      this.getLocalisationClient();
+      this.getListeColisage();
+    });
+  }
+
+  ouvrirBoiteDialogueModifierColisage(commande: any) {
+    const dialogRef = this.dialog.open(BoiteDialogueModifierColisage, {
+      width: '1000px',
+      data: { commande: commande },
+    });
+    dialogRef.afterClosed().subscribe(async (result) => {
+      this.getLocalisationClient();
+      this.getListeColisage();
+    });
   }
 }
 

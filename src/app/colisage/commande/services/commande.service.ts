@@ -147,4 +147,13 @@ export class CommandeService {
   public modifierIdPositionDansTableCommande(formData: any) {
     return this.httpClient.put(erp + 'modifier-id-position', formData).pipe(catchError(this.handleError));
   }
+
+  //supprimer commande
+  public supprimerCommande(id: any) {
+    return this.httpClient.delete(erp + 'supprimer-commande', {
+      params: {
+        id: id
+      }
+    }).pipe(catchError(this.handleError));
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
 import {
   MatDialog,
   MatDialogRef,
@@ -7,7 +7,8 @@ import {
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { BoiteDialogueModifierColisage, BoiteDialogueModifierPositionComponent } from '../dialogs/dialogs.component';
+import Swal from 'sweetalert2';
+import { BoiteDialogueModifierColisage, BoiteDialogueModifierPositionComponent, InformationCommandeComponent } from '../dialogs/dialogs.component';
 import { CommandeService } from '../services/commande.service';
 
 @Component({
@@ -15,7 +16,7 @@ import { CommandeService } from '../services/commande.service';
   templateUrl: './lister-commande.component.html',
   styleUrls: ['./lister-commande.component.scss'],
 })
-export class ListerCommandeComponent implements OnInit {
+export class ListerCommandeComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -45,13 +46,13 @@ export class ListerCommandeComponent implements OnInit {
 
   //recuperer la liste des commandes
   async getListeCommandes() {
-    this.dataSource = await this.serviceCommande
+    this.dataSource.data = await this.serviceCommande
       .getListeCommandes()
       .toPromise();
   }
 
-  ouvrirBoiteDialogueModifierPosition(commande: any) {
-    const dialogRef = this.dialog.open(BoiteDialogueModifierPositionComponent, {
+  ouvrirBoiteDialogueInformationCommande(commande: any) {
+    const dialogRef = this.dialog.open(InformationCommandeComponent, {
       width: '1000px',
       data: { commande: commande },
     });
@@ -60,14 +61,17 @@ export class ListerCommandeComponent implements OnInit {
     });
   }
 
-  ouvrirBoiteDialogueModifierColisage(commande: any) {
-    const dialogRef = this.dialog.open(BoiteDialogueModifierColisage, {
-      width: '1000px',
-      data: { commande: commande },
+  //supprime commande et sa liste colisage quand on appuie sur bouton 'annuler'
+  async annulerCommande(commande: any){
+    await this.serviceCommande.supprimerCommande(commande.id).toPromise();
+    await this.serviceCommande.deleteColisParReference(commande.referenceDocument).toPromise();
+    Swal.fire({
+      icon: 'success',
+      title: 'Commande annulée',
+      showConfirmButton: false,
+      timer: 1500,
     });
-    dialogRef.afterClosed().subscribe(async (result) => {
-      await this.getListeCommandes();
-    });
+    this.getListeCommandes();
   }
 }
 

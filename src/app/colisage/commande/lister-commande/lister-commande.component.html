@@ -1,43 +1,40 @@
 <div class="mat-elevation-z8">
-    <mat-table #table [dataSource]="dataSource">
+    <mat-table #table [dataSource]="dataSource" matSort>
         <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="ID"> {{element.id}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="reference">
-            <mat-header-cell *matHeaderCellDef> Reference </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.referenceDocument}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Reference </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Reference"> {{element.referenceDocument}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="nomClient">
-            <mat-header-cell *matHeaderCellDef> Client </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.nomClient}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Client </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Client"> {{element.nomClient}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="ville">
-            <mat-header-cell *matHeaderCellDef> Ville </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.ville}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Ville </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Ville"> {{element.ville}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="adresse">
-            <mat-header-cell *matHeaderCellDef> Adresse </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.adresse}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Adresse </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Adresse"> {{element.adresse}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="date">
-            <mat-header-cell *matHeaderCellDef> Date </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.dateCreation | date: "dd/MM/yyyy"}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Date </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Date"> {{element.dateCreation | date: "dd/MM/yyyy"}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="etat">
-            <mat-header-cell *matHeaderCellDef> Etat </mat-header-cell>
-            <mat-cell *matCellDef="let element"> {{element.dateCreation | date: "dd/MM/yyyy"}} </mat-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Etat </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Etat"> {{element.dateCreation | date: "dd/MM/yyyy"}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button mat-icon-button disableRipple (click)="ouvrirBoiteDialogueModifierColisage(element)"><i
-                        class="fas fa-box-open" style="color: #5f6368;"></i>
-                </button>
-                <button mat-icon-button disableRipple (click)="ouvrirBoiteDialogueModifierPosition(element)">
-                    <mat-icon style="color: #5f6368;">edit_location_alt</mat-icon>
-                </button>
                 <button mat-icon-button disableRipple>
+                    <mat-icon color="primary" (click)="ouvrirBoiteDialogueInformationCommande(element)">info</mat-icon>
+                </button>
+                <button mat-icon-button disableRipple (click)="annulerCommande(element)">
                     <mat-icon color="warn">cancel</mat-icon>
                 </button>
             </mat-cell>

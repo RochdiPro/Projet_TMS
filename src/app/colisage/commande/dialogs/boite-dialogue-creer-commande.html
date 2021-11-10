@@ -65,8 +65,8 @@
                     </agm-map>
                 </div>
                 <div style="float: right;">
-                    <button mat-button mat-dialog-close>Annuler</button>
-                    <button mat-button matStepperNext color="primary">Next</button>
+                    <button mat-button mat-dialog-close color="warn">Annuler</button>
+                    <button mat-button matStepperNext color="primary">Suivant</button>
                 </div>
             </form>
         </mat-step>
@@ -114,9 +114,9 @@
                     </table>
                 </div>
                 <div style="float: right;">
-                    <button mat-button mat-dialog-close>Annuler</button>
-                    <button mat-button matStepperPrevious>Back</button>
-                    <button mat-button matStepperNext (click)="creerListeEmballageChoisi()" color="primary">Next</button>
+                    <button mat-button mat-dialog-close color="warn">Annuler</button>
+                    <button mat-button matStepperPrevious>Précédent</button>
+                    <button mat-button matStepperNext (click)="creerListeEmballageChoisi()" color="primary">Suivant</button>
                 </div>
             </form>
         </mat-step>
@@ -201,8 +201,8 @@
                 </tbody>
             </table>
             <div style="float: right; margin-bottom: 10px;">
-                <button mat-button mat-dialog-close>Annuler</button>
-                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button mat-dialog-close color="warn">Annuler</button>
+                <button mat-button matStepperPrevious>Précédent</button>
                 <button mat-raised-button color= "primary" (click)="enregistrer()">Valider</button>
             </div>
         </mat-step>
