@@ -13,7 +13,7 @@ export class VehiculeService {
 
   //creation du vehicule
   public createvehicule(formData: any) {
-    return this.httpClient.post(erp + 'create-vehicule', formData).pipe(
+    return this.httpClient.post(erp + 'creer-vehicule', formData).pipe(
       catchError(this.handleError)
     );
   }
@@ -25,12 +25,16 @@ export class VehiculeService {
 
   //charger un vehicule specifique
   public vehicule(id: any) {
-    return this.httpClient.get(erp + 'vehicule/' + id);
+    return this.httpClient.get(erp + 'vehicule',{
+      params: {
+        id: id
+      }
+    }).pipe(catchError(this.handleError));
   }
 
   //mettre a jour un vehicule
-  public miseajourvehicule(id: any, formData: any) {
-    return this.httpClient.put(erp + 'update-vehicule/' + id, formData).pipe(
+  public miseajourvehicule(formData: any) {
+    return this.httpClient.put(erp + 'modifier-vehicule', formData).pipe(
       catchError(this.handleError)
     );
   }
@@ -61,7 +65,7 @@ export class VehiculeService {
 
   //supprimer un vehicule
   public supprimerVehicule(id: any) {
-    return this.httpClient.delete(erp + 'delete-vehicule/' + id).pipe(
+    return this.httpClient.delete(erp + 'supprimer-vehicule' + id).pipe(
       catchError(this.handleError)
     );
   }

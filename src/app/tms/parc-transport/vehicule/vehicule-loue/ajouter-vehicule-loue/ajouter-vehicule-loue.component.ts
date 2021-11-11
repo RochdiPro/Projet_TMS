@@ -94,7 +94,7 @@ export class AjouterVehiculeLoueComponent implements OnInit {
 
   //bouton Annuler
   fermerAjouterVehicule(): void { //fermer la boite de dialogue
-    this.router.navigateByUrl('/Menu/TMS/Parc/Vehicules/Vehicules-Loues');
+    this.router.navigateByUrl('/Menu/TMS/Parc/Vehicules/Vehicules-Loues/lister-vehicules');
   }
 
   async enregistrerVehicule() { //enregistrer les données
@@ -135,10 +135,10 @@ export class AjouterVehiculeLoueComponent implements OnInit {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service.creerVehiculeLoue(formData).toPromise();
-        this.router.navigateByUrl('/Menu/TMS/Parc/Vehicules/Vehicules-Loues');
+        this.router.navigateByUrl('/Menu/TMS/Parc/Vehicules/Vehicules-Loues/lister-vehicules');
         Swal.fire('Vehicul enregistré!', '', 'success')
       } else if (result.isDenied) {
-        this.router.navigateByUrl('/Menu/TMS/Parc/Vehicules/Vehicules-Loues');
+        this.router.navigateByUrl('/Menu/TMS/Parc/Vehicules/Vehicules-Loues/lister-vehicules');
       }
     })
 

@@ -54,6 +54,7 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   ouvrirBoiteDialogueInformationCommande(commande: any) {
     const dialogRef = this.dialog.open(InformationCommandeComponent, {
       width: '1000px',
+      maxWidth: '95vw',
       data: { commande: commande },
     });
     dialogRef.afterClosed().subscribe(async (result) => {

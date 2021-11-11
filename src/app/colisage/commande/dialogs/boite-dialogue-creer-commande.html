@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>{{typeDocument}} {{data.commande.id}}</h1>
 <div mat-dialog-content>
-    <mat-vertical-stepper [linear]="true" #stepper>
+    <mat-vertical-stepper [linear]="false" #stepper>
         <!-- Step 1 -->
         <mat-step [stepControl]="firstFormGroup">
             <form [formGroup]="firstFormGroup">
@@ -21,7 +21,7 @@
                 <div class="row">
                     <div class="colonne entete">Email:</div>
                     <div class="colonne">{{data.commande.email}}</div>
-                    <div class="colonne entete">Catégorie client</div>
+                    <div class="colonne entete">Catégorie client:</div>
                     <div class="colonne">{{data.commande.categorieClient}}</div>
                 </div>
                 <div class="row">
@@ -38,7 +38,7 @@
                 </div>
                 <div class="map">
                     <div id="manupilation-adresse">
-                        <mat-form-field appearance="fill">
+                        <mat-form-field appearance="fill" id="select-adresse">
                             <mat-label>Adresse de livraison</mat-label>
                             <mat-select formControlName="adresse" (selectionChange)="selectionnerAdresse()">
                                 <mat-option *ngFor="let position of positionsClientEnregistree" [value]="position">
@@ -162,44 +162,46 @@
                     </agm-marker>
                 </agm-map>
             </div>
-            <h2>Liste colisage</h2>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">id</th>
-                        <th scope="col">Produit</th>
-                        <th scope="col">Pack</th>
-                        <th scope="col">Qte</th>
-                        <th scope="col">Nbr. Pack</th>
-                        <th scope="col">LxlxH (cm)</th>
-                        <th scope="col">Volume (m³)</th>
-                        <th scope="col">Poids net (kg)</th>
-                        <th scope="col">Poids brut (kg)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let article of this.listeEmballageChoisi">
-                        <th scope="row">{{article.emballage.idProduit}}</th>
-                        <td>{{article.emballage.nomProduit}}</td>
-                        <td>{{article.emballage.nomEmballage}}</td>
-                        <td>{{getNombreArticles(article)}}</td>
-                        <td>{{article.qte}}</td>
-                        <td>{{getDimensionsPack(article)}}</td>
-                        <td>{{getVolumePack(article)}}</td>
-                        <td>{{getPoidsPackNet(article)}}</td>
-                        <td>{{getPoidsPackBrut(article)}}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row" colspan="3"></th>
-                        <td>Total</td>
-                        <td>{{nombrePackTotal}}</td>
-                        <td></td>
-                        <td>{{volumeTotal}}</td>
-                        <td>{{poidsTotalNet}}</td>
-                        <td>{{poidsTotalBrut}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2 style="margin-top: 15px;">Liste colisage</h2>
+            <div class="liste-colisage">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">id</th>
+                            <th scope="col">Produit</th>
+                            <th scope="col">Pack</th>
+                            <th scope="col">Qte</th>
+                            <th scope="col">Nbr. Pack</th>
+                            <th scope="col">LxlxH (cm)</th>
+                            <th scope="col">Volume (m³)</th>
+                            <th scope="col">Poids net (kg)</th>
+                            <th scope="col">Poids brut (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let article of this.listeEmballageChoisi">
+                            <th scope="row">{{article.emballage.idProduit}}</th>
+                            <td>{{article.emballage.nomProduit}}</td>
+                            <td>{{article.emballage.nomEmballage}}</td>
+                            <td>{{getNombreArticles(article)}}</td>
+                            <td>{{article.qte}}</td>
+                            <td>{{getDimensionsPack(article)}}</td>
+                            <td>{{getVolumePack(article)}}</td>
+                            <td>{{getPoidsPackNet(article)}}</td>
+                            <td>{{getPoidsPackBrut(article)}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="3"></th>
+                            <td>Total</td>
+                            <td>{{nombrePackTotal}}</td>
+                            <td></td>
+                            <td>{{volumeTotal}}</td>
+                            <td>{{poidsTotalNet}}</td>
+                            <td>{{poidsTotalBrut}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div style="float: right; margin-bottom: 10px;">
                 <button mat-button mat-dialog-close color="warn">Annuler</button>
                 <button mat-button matStepperPrevious>Précédent</button>

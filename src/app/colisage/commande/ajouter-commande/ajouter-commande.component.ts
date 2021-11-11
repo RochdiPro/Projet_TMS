@@ -169,6 +169,7 @@ export class AjouterCommandeComponent implements OnInit {
   ouvrirBoiteDialogueInfo(commande: any) {
     const dialogRef = this.dialogue.open(BoiteDialogueInfo, {
       width: '1000px',
+      maxWidth: '95vw',
       data: { commande: commande },
     });
   }
@@ -176,6 +177,7 @@ export class AjouterCommandeComponent implements OnInit {
   ouvrirBoiteDialogueCreerCommande(commande: any) {
     const dialogRef = this.dialogue.open(BoiteDialogueCreerCommande, {
       width: '1000px',
+      maxWidth: '95vw',
       data: { commande: commande },
     });
     

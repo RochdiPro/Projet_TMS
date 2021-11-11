@@ -63,7 +63,7 @@
              {{vehicule.etatVehicule}}</td>
           <td style="text-align:center;">
              <!-- bouton de notification -->
-             <button class="mb-2  btn " (click)="ouvrirNotifications(vehicule.id, vehicule.sujet, vehicule.description)">
+             <button class="mb-2  btn " (click)="ouvrirNotifications(vehicule.id)">
                 <!-- Badge rouge de notification -->
                 <i class="fas fa-bell" matBadge="&#8288;" matBadgeColor="warn"
                    [matBadgeHidden]="afficherBadgeDeNotification(vehicule)"></i>
@@ -81,12 +81,12 @@
              <!-- fin bouton de detail vehicule -->
  
              <!-- bouton de mise a jour de vehicule -->
-             <button class="mb-2  btn " (click)="ouvrirMiseAJourVehicule(vehicule.id,vehicule.categories)"><i
+             <button class="mb-2  btn " (click)="ouvrirMiseAJourVehicule(vehicule.id)"><i
                    class="fas fa-edit"></i></button>
              <!-- fin bouton de mise a jour de vehicule -->
  
              <!-- bouton de mise a jour du consommation du vehicule -->
-             <button class="mb-2  btn " (click)="ouvrirMiseAJourConsommation(vehicule.id,vehicule.kmactuel)"><i
+             <button class="mb-2  btn " (click)="ouvrirMiseAJourConsommation(vehicule.id)"><i
                    class="fas fa-gas-pump"></i></button>
              <!-- fin bouton de mise a jour du consommation du vehicule -->
  

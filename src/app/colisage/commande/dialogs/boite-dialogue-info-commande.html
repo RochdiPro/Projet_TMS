@@ -1,6 +1,5 @@
 <!-- Bouton Fermer -->
-<button type="button" class="close" aria-label="Close"><span aria-hidden="true"
-    mat-dialog-close>×</span></button>
+<button type="button" class="close" aria-label="Close"><span aria-hidden="true" mat-dialog-close>×</span></button>
 <!-- fin Bouton Fermer -->
 <h1 mat-dialog-title>Information commande</h1>
 <div mat-dialog-content>
@@ -42,11 +41,10 @@
         <div class="localisation">
             <div style="display: flex; align-items: center;">
                 <h3>localisation</h3>
-                <div style="width: 100%;">
-                    <button mat-icon-button style="float: right;" (click)="ouvrirBoiteDialogueModifierPosition(this.data.commande)">
-                        <mat-icon>edit</mat-icon>
-                    </button>
-                </div>
+                <button mat-icon-button style="margin-left: auto;"
+                    (click)="ouvrirBoiteDialogueModifierPosition(this.data.commande)">
+                    <mat-icon>edit</mat-icon>
+                </button>
             </div>
             <div class="map">
                 <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="15" [disableDefaultUI]="false"
@@ -61,11 +59,10 @@
     <div class="liste-colisage">
         <div style="display: flex; align-items: center;">
             <h2>Liste colisage</h2>
-            <div style="width: 80%;">
-                <button mat-icon-button style="float: right;" (click)="ouvrirBoiteDialogueModifierColisage(this.data.commande)">
-                    <mat-icon>edit</mat-icon>
-                </button>
-            </div>
+            <button mat-icon-button style="margin-left: auto;"
+                (click)="ouvrirBoiteDialogueModifierColisage(this.data.commande)">
+                <mat-icon>edit</mat-icon>
+            </button>
         </div>
         <table class="table table-bordered">
             <thead>

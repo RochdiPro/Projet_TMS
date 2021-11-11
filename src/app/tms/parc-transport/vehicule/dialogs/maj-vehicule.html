@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Mise à Jour Véhicule {{vehicule?.matricule}} </h1>
 <!--Titre-->
 <div mat-dialog-content class="scrollbar scrollbar-primary">
-    <form class="form" [formGroup]="form" *ngIf="vehicule">
+    <form class="form" [formGroup]="form" *ngIf="vehicule && carburants">
         <!-- input kilometrage actuel -->
         <div class="position-relative form-group">
             <mat-form-field class="full-width">
@@ -161,14 +161,8 @@
             <mat-form-field class="full-width">
                 <mat-label>Carburant</mat-label>
                 <mat-select formControlName="carburant" name="carburant" id="carburant" required>
-                    <mat-option value="Essence">
-                        Essence
-                    </mat-option>
-                    <mat-option value="Diesel">
-                        Diesel
-                    </mat-option>
-                    <mat-option value="GPL">
-                        GPL
+                    <mat-option *ngFor="let carburant of carburants" [value]="carburant.nom">
+                        {{carburant.nom}}
                     </mat-option>
                 </mat-select>
                 <mat-error *ngIf="form.controls['carburant'].hasError('required')"> Veuillez choisir le carburant
@@ -215,7 +209,7 @@
         </div>
     </form>
 </div>
-<div mat-dialog-actions class="float-right" *ngIf="vehicule">
+<div mat-dialog-actions class="float-right" *ngIf="vehicule && carburants">
     <!-- Bouton Annuler -->
     <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerMiseAJourVehicule()">Annuler</button>
     <!-- fin Bouton Annuler -->

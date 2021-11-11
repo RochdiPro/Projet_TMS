@@ -172,6 +172,8 @@
   .mat-raised-button {
     line-height: 25px;
   }
+}
+@media only screen and (max-width: 480px) {
   ::ng-deep .mat-icon-button {
     width: 10% !important;
   }

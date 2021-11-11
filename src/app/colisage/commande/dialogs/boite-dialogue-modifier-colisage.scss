@@ -4,10 +4,13 @@
 
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {
+  ::ng-deep .mat-vertical-content {
+    padding: 0 10px 24px 10px !important;
+  }
   h1 {
     font-size: 20px;
   }
-  h2{
+  h2 {
     font-size: 18px;
   }
   .mat-button {
@@ -115,6 +118,7 @@
     color: #52595d;
     text-align: left;
     margin-left: 10px;
+    margin-top: 5px;
   }
   .produits td:nth-of-type(5):before {
     content: "Actions";
@@ -122,6 +126,15 @@
     color: #52595d;
     text-align: left;
     margin-left: 10px;
+    margin-top: 5px;
+  }
+  .produits td:nth-of-type(4) {
+    padding: 0;
+    padding-right: 8.8px;
+  }
+  .produits td:last-child {
+    padding: 0;
+    padding-right: 8.8px;
   }
 
   // donner un label pour les données du table de liste colisage

@@ -139,6 +139,7 @@ export class BoiteDialogueInfo implements OnInit {
   ouvrirBoiteDialogueDetailProduit(article: any) {
     const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
       width: '600px',
+      maxWidth: '95vw',
       maxHeight: '600px',
       data: { produit: article },
     });
@@ -226,11 +227,13 @@ export class BoiteDialogueCreerCommande implements OnInit {
   }
 
   ajouterAdresse() {
-    this.positionsClientEnregistree.push({
-      adresse: this.firstFormGroup.get('nouvelleAdresse').value,
-      latitude: '',
-      longitude: '',
-    });
+    if (this.firstFormGroup.get('nouvelleAdresse').value !== '') {
+      this.positionsClientEnregistree.push({
+        adresse: this.firstFormGroup.get('nouvelleAdresse').value,
+        latitude: '',
+        longitude: '',
+      });
+    }
   }
 
   selectionnerAdresse() {
@@ -356,6 +359,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   ouvrirBoiteDialogueEmballer(produit: any) {
     const dialogRef = this.dialog.open(BoiteDialogueEmballer, {
       width: '600px',
+      maxWidth: '95vw',
       data: { produit: produit },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -369,6 +373,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   ouvrirBoiteDialogueDetailProduit(article: any) {
     const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
       width: '600px',
+      maxWidth: '95vw',
       maxHeight: '600px',
       data: { produit: article },
     });
@@ -1046,6 +1051,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
   ouvrirBoiteDialogueEmballer(produit: any) {
     const dialogRef = this.dialog.open(BoiteDialogueEmballer, {
       width: '600px',
+      maxWidth: '95vw',
       data: { produit: produit },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -1059,6 +1065,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
   ouvrirBoiteDialogueDetailProduit(article: any) {
     const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
       width: '600px',
+      maxWidth: '95vw',
       maxHeight: '600px',
       data: { produit: article },
     });
@@ -1246,6 +1253,7 @@ export class InformationCommandeComponent implements OnInit {
   ouvrirBoiteDialogueModifierPosition(commande: any) {
     const dialogRef = this.dialog.open(BoiteDialogueModifierPositionComponent, {
       width: '1000px',
+      maxWidth: '95vw',
       data: { commande: commande },
     });
     dialogRef.afterClosed().subscribe(async (result) => {
@@ -1257,6 +1265,7 @@ export class InformationCommandeComponent implements OnInit {
   ouvrirBoiteDialogueModifierColisage(commande: any) {
     const dialogRef = this.dialog.open(BoiteDialogueModifierColisage, {
       width: '1000px',
+      maxWidth: '95vw',
       data: { commande: commande },
     });
     dialogRef.afterClosed().subscribe(async (result) => {

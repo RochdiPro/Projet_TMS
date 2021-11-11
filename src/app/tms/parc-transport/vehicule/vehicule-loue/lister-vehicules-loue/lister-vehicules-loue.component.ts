@@ -83,11 +83,11 @@ export class ListerVehiculesLoueComponent implements OnInit {
   //bouton de detail vehicule loué
   ouvrirDetailVehiculeLoue(id: any): void {
     //ouvrir la boite de dialogue de détails vehicule loué
-    localStorage.setItem('idV', id);
     const dialogRef = this.dialog.open(DetailVehiculeLoueComponent, {
       width: '450px',
       panelClass: 'custom-dialog',
       autoFocus: false,
+      data: {id: id}
     });
   }
 
