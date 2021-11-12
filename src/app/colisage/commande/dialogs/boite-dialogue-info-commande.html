@@ -2,7 +2,7 @@
 <button type="button" class="close" aria-label="Close"><span aria-hidden="true" mat-dialog-close>×</span></button>
 <!-- fin Bouton Fermer -->
 <h1 mat-dialog-title>Information commande</h1>
-<div mat-dialog-content>
+<div mat-dialog-content *ngIf="listeColisage">
     <div class="client">
         <h2>Client</h2>
         <div class="information-client">

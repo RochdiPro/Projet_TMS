@@ -17,6 +17,15 @@ export class CommandeService {
    public factures(){
     return this.httpClient.get(infonet + 'Factures');
   }
+
+  // get facture par son id
+  public facture(id: any) {
+    return this.httpClient.get(infonet + 'Facture', {
+      params: {
+        Id: id
+      }
+    }).pipe(catchError(this.handleError));
+  }
   
   //Filtre Facture
   public filtreFacture(Champ: any, Valeur: any) {
@@ -40,6 +49,15 @@ export class CommandeService {
   //charger la liste des Bons de livraison
   public bonLivraisons(){
     return this.httpClient.get(infonet + 'Bon_Livraisons');
+  }
+
+  // get Bon Livraison par son id
+  public bonLivraison(id: any) {
+    return this.httpClient.get(infonet + 'Bon_Livraison', {
+      params: {
+        Id: id
+      }
+    }).pipe(catchError(this.handleError));
   }
 
   //charger liste Clients
@@ -155,5 +173,10 @@ export class CommandeService {
         id: id
       }
     }).pipe(catchError(this.handleError));
+  }
+
+  // get les coefficients du score de la commande
+  public getCoefficientsScoreCommande() {
+    return this.httpClient.get(erp + "score-commande").pipe(catchError(this.handleError));
   }
 }

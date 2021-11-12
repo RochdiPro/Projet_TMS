@@ -422,6 +422,61 @@ export class BoiteDialogueCreerCommande implements OnInit {
     return article.emballage.poids_emballage_total * article.qte;
   }
 
+  // calculer le score de la commande
+  async calculerScoreCommande() {
+    // formule: score = prixFacture * coefficientPrixFacture + fraisLivraison * coefficientFraisLivraison + scoreClient * coefficientScoreClient + retard * coefficientRetard
+    // 1- get coefficients
+    // 2- get les valeurs(prixFacture/prixBonLivraison, fraisLivraison, scoreClient, retard) pour les injecter dans la formule de calcul dy score
+    // 3- calculer score
+    let coefficientScoreCommande = await this.serviceCommande
+      .getCoefficientsScoreCommande()
+      .toPromise(); //get les coefficients
+
+    // get prix
+    let prix;
+    if (this.typeDocument === 'Facture') {
+      //si le type est Facture on recupere le prix de la facture
+      let facture = await this.serviceCommande
+        .facture(this.data.commande.id)
+        .toPromise();
+      prix = facture.total_TTC;
+    } else if (this.typeDocument === 'Bon Livraison') {
+      //si le type est Bon Livraison on recupere le prix du bon livraison
+      let bonLivraison = await this.serviceCommande
+        .bonLivraison(this.data.commande.id)
+        .toPromise();
+      prix = bonLivraison.total_TTC;
+    }
+    let fraisLivraison = 7; //frais livraison temporaire jusqu'a avoir la formule
+    // get le score du client
+    let scoreClient = 0;
+    switch (this.data.commande.categorieClient) {
+      case 'Passager':
+        scoreClient = 0.1;
+        break;
+      case 'Fidèle':
+        scoreClient = 0.2;
+        break;
+      case 'SuperFidèle':
+        scoreClient = 0.3;
+        break;
+      case 'Revendeur':
+        scoreClient = 0.4;
+        break;
+
+      default:
+        break;
+    }
+
+    let retard = 0; //provisoirement jusqu'a savoir comment calculer le retard
+    let score: number =
+      prix * coefficientScoreCommande.prixFacture +
+      fraisLivraison * coefficientScoreCommande.fraisLivraison +
+      scoreClient * coefficientScoreCommande.client +
+      retard * coefficientScoreCommande.retard;
+    return score;
+  }
+
   async enregistrer() {
     let commande: any = new FormData();
     //creation position client s'il n'existe pas
@@ -488,6 +543,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('numPieceIdentite', this.data.commande.numeroPieceIdentite);
     commande.append('dateCreation', this.data.commande.dateCreation);
     commande.append('idPosition', this.positionClient.id);
+    commande.append('etat', 'En cours de traitement');
 
     await this.serviceCommande.creerCommande(commande).toPromise();
     Swal.fire({
@@ -1199,9 +1255,9 @@ export class InformationCommandeComponent implements OnInit {
     private serviceCommande: CommandeService,
     private dialog: MatDialog
   ) {}
-  ngOnInit() {
+  async ngOnInit() {
     this.getLocalisationClient();
-    this.getListeColisage();
+    await this.getListeColisage();
   }
 
   async getLocalisationClient() {

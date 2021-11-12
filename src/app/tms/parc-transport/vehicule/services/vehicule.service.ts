@@ -50,15 +50,15 @@ export class VehiculeService {
   }
 
   //ajouter une reclamation pour un vehicule
-  public reclamationvehicule(id: any, formData: any) {
-    return this.httpClient.put(erp + 'reclamation-vehicule/' + id, formData).pipe(
+  public reclamationvehicule(formData: any) {
+    return this.httpClient.put(erp + 'reclamation-vehicule', formData).pipe(
       catchError(this.handleError)
     );
   }
 
   //mettre a jour le kilométrage d'un vehicule
-  public miseajourkm(id: any, formData: any) {
-    return this.httpClient.put(erp + 'mise-a-jour-km/' + id, formData).pipe(
+  public miseajourkm(formData: any) {
+    return this.httpClient.put(erp + 'mise-a-jour-km', formData).pipe(
       catchError(this.handleError)
     );
   }
@@ -118,19 +118,19 @@ export class VehiculeService {
 
   //Ajouter un nouveau vehicule loué
   public creerVehiculeLoue(formData: any) {
-    return this.httpClient.post(erp + 'Creer_Vehicule_Loue', formData).pipe(
+    return this.httpClient.post(erp + 'creer-vehicule-loue', formData).pipe(
       catchError(this.handleError)
     );
   }
 
   //lister les vehicules loués
   public vehiculesLoues() {
-    return this.httpClient.get(erp + 'Vehicules_Loues')
+    return this.httpClient.get(erp + 'vehicules-loues')
   }
 
   //importer les données d'un vehicule loué par ID
   public vehiculeLoue(id: any) {
-    return this.httpClient.get(erp + 'Vehicule_Loue', {
+    return this.httpClient.get(erp + 'vehicule-loue', {
       params: {
         id_vehicule_loue: id
       }, observe: 'body'
@@ -139,7 +139,7 @@ export class VehiculeService {
 
   //supprimer un vehicule loué
   public supprimerVehiculeLoue(id: any) {
-    return this.httpClient.delete(erp + 'Supprimer_Vehicule_Loue', {
+    return this.httpClient.delete(erp + 'supprimer-vehicule-loue', {
       params: {
         id_vehicule_loue: id
       }, observe: 'body'
@@ -148,7 +148,7 @@ export class VehiculeService {
 
   //mise a jour etat vehicule loué
   public majDateLocation(formData: any) {
-    return this.httpClient.put(erp + 'Maj_Date_Location', formData).pipe(
+    return this.httpClient.put(erp + 'mise-a-jour-date-location', formData).pipe(
       catchError(this.handleError)
     );
   }

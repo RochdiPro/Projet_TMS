@@ -816,6 +816,7 @@ export class MiseAJourConsommationComponent implements OnInit {
   async miseAJourConsommation() {
     //Effectuer le mise ajour de consommation
     var formData: any = new FormData();
+    formData.append('id', this.idVehicule);
     formData.append('kmactuel', this.form.get('kmActuel').value);
     formData.append('montantConsomme', this.form.get('montantConsomme').value);
     formData.append(
@@ -829,7 +830,7 @@ export class MiseAJourConsommationComponent implements OnInit {
       cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service.miseajourkm(this.idVehicule, formData).toPromise();
+        await this.service.miseajourkm(formData).toPromise();
         this.fermerMiseAJourConsommation();
         Swal.fire('Consommation enregistrée!', '', 'success');
       }
@@ -903,6 +904,7 @@ export class NotificationComponent implements OnInit {
   async supprimerReclamation() {
     // supprimer la reclamation
     var formData: any = new FormData();
+    formData.append('id', this.idVehicule);
     formData.append('sujet', '');
     formData.append('description', '');
     Swal.fire({
@@ -917,7 +919,7 @@ export class NotificationComponent implements OnInit {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service
-          .reclamationvehicule(this.idVehicule, formData)
+          .reclamationvehicule(formData)
           .toPromise();
         Swal.fire('Supprimé!', 'La réclamation a été supprimée.', 'success');
       }
@@ -1102,6 +1104,7 @@ export class ReclamationComponent implements OnInit {
   async enregistrerReclamation() {
     //enregistre la reclamation
     var formData: any = new FormData();
+    formData.append('id', this.idVehicule);
     formData.append('sujet', this.form.get('sujet').value);
     formData.append('description', this.form.get('description').value);
     Swal.fire({
@@ -1112,7 +1115,7 @@ export class ReclamationComponent implements OnInit {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service
-          .reclamationvehicule(this.idVehicule, formData)
+          .reclamationvehicule(formData)
           .toPromise();
         this.dialogRef.close();
         Swal.fire('Réclamation enregistrée!', '', 'success');

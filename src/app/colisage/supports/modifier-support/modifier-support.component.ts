@@ -7,84 +7,103 @@ import { SupportService } from '../services/support.service';
 @Component({
   selector: 'app-modifier-support',
   templateUrl: './modifier-support.component.html',
-  styleUrls: ['./modifier-support.component.scss']
+  styleUrls: ['./modifier-support.component.scss'],
 })
 export class ModifierSupportComponent implements OnInit {
   form: FormGroup;
-  support: any
-  constructor(private formBuilder : FormBuilder, private serviceSupport : SupportService, public _router: Router) { }
+  constructor(
+    private formBuilder: FormBuilder,
+    private serviceSupport: SupportService,
+    public _router: Router
+  ) {}
 
-  async ngOnInit() { 
-    this.support = await this.serviceSupport.supp;
+  async ngOnInit() {
+    // construction du formGroup form
     this.form = this.formBuilder.group({
-      nom_Support: [this.support.nom_support, Validators.required],
-      type_Support: [this.support.type_support, Validators.required],
-      poids_Emballage: [this.support.poids_emballage, Validators.required],
+      nom_Support: [this.support.nomSupport, Validators.required],
+      type_Support: [this.support.typeSupport, Validators.required],
+      poids_Emballage: [this.support.poidsEmballage, Validators.required],
       longueur: [this.support.longueur, Validators.required],
       largeur: [this.support.largeur, Validators.required],
       hauteur: [this.support.hauteur, Validators.required],
       volume: [this.support.volume, Validators.required],
-      code_Barre: [this.support.code_barre, Validators.required],
-    })
+      code_Barre: [this.support.codeBarre, Validators.required],
+    });
     this.testType();
   }
-  calculVolume() { //calculer le volume de l'emballage
-    if (this.form.get('hauteur').value !== "" && this.form.get('longueur').value !== "" && this.form.get('largeur').value !== "") {
-      let volume = Number(this.form.get('hauteur').value) * Number(this.form.get('longueur').value) * Number(this.form.get('largeur').value) * 0.000001;
+
+  get support() {
+    return this.serviceSupport.supp;
+  }
+
+  //calculer le volume de l'emballage
+  calculVolume() {
+    let dimensionsSontNull =
+      this.form.get('hauteur').value === '' ||
+      this.form.get('longueur').value === '' ||
+      this.form.get('largeur').value === '';
+    if (!dimensionsSontNull) {
+      let volume =
+        Number(this.form.get('hauteur').value) *
+        Number(this.form.get('longueur').value) *
+        Number(this.form.get('largeur').value) *
+        0.000001; //pour convertir du cm3 vers le m3
       this.form.get('volume').setValue(volume);
     }
   }
-  async modifierSupport(){
+  async modifierSupport() {
     var formData = new FormData();
-    formData.append("id", this.support.id_support);
-    formData.append("nom_support", this.form.get('nom_Support').value);
-    formData.append("type_support", this.form.get('type_Support').value);
-    formData.append("poids_emballage", this.form.get('poids_Emballage').value);
-    formData.append("longueur", this.form.get('longueur').value);
-    formData.append("largeur", this.form.get('largeur').value);
-    formData.append("hauteur", this.form.get('hauteur').value);
-    formData.append("volume", this.form.get('volume').value);
-    formData.append( "code_barre", this.form.get('code_Barre').value);
+    formData.append('id', this.support.id);
+    formData.append('nomSupport', this.form.get('nom_Support').value);
+    formData.append('typeSupport', this.form.get('type_Support').value);
+    formData.append('poidsEmballage', this.form.get('poids_Emballage').value);
+    formData.append('longueur', this.form.get('longueur').value);
+    formData.append('largeur', this.form.get('largeur').value);
+    formData.append('hauteur', this.form.get('hauteur').value);
+    formData.append('volume', this.form.get('volume').value);
+    formData.append('codeBarre', this.form.get('code_Barre').value);
     await this.serviceSupport.modifierSupport(formData).toPromise();
-    await this._router.navigate(['/Menu/Menu_Colisage/Supports/Liste_Support'])
+    await this._router.navigate(['/Menu/Menu_Colisage/Supports/Liste_Support']); //naviguer vers liste des supports aprés enregistrement
     Swal.fire({
       icon: 'success',
       title: 'Produit bien ajouté',
       showConfirmButton: false,
-      timer: 1500
-    })
+      timer: 1500,
+    });
   }
 
-  annuler(){
+  //bouton annuler
+  annuler() {
     Swal.fire({
       title: 'Êtes vous sûr?',
-      text: "Les modifications ne seront pas enregistrées!",
+      text: 'Les modifications ne seront pas enregistrées!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Oui',
-      cancelButtonText: 'Non'
+      cancelButtonText: 'Non',
     }).then((result) => {
       if (result.isConfirmed) {
-        this._router.navigate(['/Menu/Menu_Colisage/Supports/Liste_Support'])
+        this._router.navigate(['/Menu/Menu_Colisage/Supports/Liste_Support']);
       }
-    })
-    
+    });
   }
 
-  testType(){
-    if(this.form.get("type_Support").value === "Carton" || this.form.get("type_Support").value === "Palette"){
-      this.form.get("volume").disable();
-      this.form.get("longueur").enable();
-      this.form.get("largeur").enable();
-      this.form.get("hauteur").enable();
+  //teste du type de support pour savaoir activer les champs de dimensions ou le champ du volume
+  testType() {
+    let typeEstCarton = this.form.get('type_Support').value === 'Carton';
+    let typeEstPalette = this.form.get('type_Support').value === 'Palette';
+    if (typeEstCarton || typeEstPalette) {
+      this.form.get('volume').disable();
+      this.form.get('longueur').enable();
+      this.form.get('largeur').enable();
+      this.form.get('hauteur').enable();
     } else {
-      this.form.get("volume").enable();
-      this.form.get("longueur").disable();
-      this.form.get("largeur").disable();
-      this.form.get("hauteur").disable();
+      this.form.get('volume').enable();
+      this.form.get('longueur').disable();
+      this.form.get('largeur').disable();
+      this.form.get('hauteur').disable();
     }
   }
-
 }
