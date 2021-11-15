@@ -29,7 +29,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   @ViewChildren(MatSort) sort = new QueryList<MatSort>();
 
   //declaration des variables
-  isLinear = false; //pour activer ou desactiver le deplacement sans validation dans le step
+  isLinear = true; //pour activer ou desactiver le deplacement sans validation dans le step
   premierFormGroup: FormGroup; //formGroup du premier step
   deuxiemeFormGroup: FormGroup; //formGroup du deuxieme step
   troisiemeFormGroup: FormGroup; //formGroup du troisieme step
@@ -82,12 +82,28 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   typeEmballage: any;
   barcodeEmballage = '';
 
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  wms: any;
+
   constructor(
     public serviceEmballage: EmballageService,
     public serviceSupport: SupportService,
     private formBuilder: FormBuilder,
     public _router: Router
-  ) {}
+  ) {
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1000200');
+
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.wms = Number(arrayOfDigits[4]);
+  }
 
   ngAfterViewInit() {
     this.dataSourceListeEmballage.paginator = this.paginator.toArray()[0];
@@ -278,7 +294,11 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.packSelectionne.push(p);
     }
 
-    this.deuxiemeFormGroup.get('validateur').setValue('valide'); //pour valider le deuxieme matStep
+    if (this.packSelectionne.length === 0) {
+      this.deuxiemeFormGroup.get('validateur').setValue('');
+    } else {
+      this.deuxiemeFormGroup.get('validateur').setValue('valide'); //pour valider le deuxieme matStep
+    }
   }
 
   // fonction pour la selection du pack manuellement
@@ -294,12 +314,19 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.packClique.add(p);
       this.packSelectionne.push(p);
     }
-
-    this.deuxiemeFormGroup.get('validateur').setValue('valide'); //pour valider le deuxieme matStep
+    if (this.packSelectionne.length === 0) {
+      this.deuxiemeFormGroup.get('validateur').setValue('');
+    } else {
+      this.deuxiemeFormGroup.get('validateur').setValue('valide'); //pour valider le deuxieme matStep
+    }
   }
 
   pack(): FormArray {
     //get le FormArray 'pack' pour ajouter a lui les formControls d'une facon dynamique
+    return this.troisiemeFormGroup.get('pack') as FormArray;
+  }
+
+  get packControl() {
     return this.troisiemeFormGroup.get('pack') as FormArray;
   }
 
@@ -322,12 +349,23 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
 
   deuxiemeSuivant() {
-    //pour chaque produit séléctionné on ajoute un formControl
-    this.packSelectionne.forEach((element: any) => {
-      this.ajouterPack(element.typeEmballage);
-    });
-    this.dataSourcePackSelectionne.data = this
-      .packSelectionne as tableEmballage[];
+    // si l'utilisateur n'a pas choisi un pack on affiche une alerte
+    // on teste si l'utilisateur a choisi un pack a l'aide du formControl 'validateur'
+    let packEstChoisi =
+      this.deuxiemeFormGroup.get('validateur').value === 'valide';
+    if (!packEstChoisi) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Pas de pack choisi!',
+      });
+    } else {
+      //pour chaque produit séléctionné on ajoute un formControl
+      this.packSelectionne.forEach((element: any) => {
+        this.ajouterPack(element.typeEmballage);
+      });
+      this.dataSourcePackSelectionne.data = this
+        .packSelectionne as tableEmballage[];
+    }
   }
   // supprimer le pack si on clique sur precedent pour eviter les problemes
   deuxiemePrecedent() {

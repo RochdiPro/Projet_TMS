@@ -31,10 +31,27 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
     'actions',
   ];
   dataSource = new MatTableDataSource();
+
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  wms: any;
   constructor(
     public serviceCommande: CommandeService,
     public dialog: MatDialog
-  ) {}
+  ) {
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1000400");
+
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.wms = Number( arrayOfDigits[4])
+  }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -76,17 +93,3 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   }
 }
 
-//************************************************* Boite de dialogue modifier *******************************
-
-@Component({
-  selector: 'modifier-commande',
-  templateUrl: 'modifier-position-client.html',
-})
-export class ModifierCommande implements OnInit {
-  constructor(
-    public dialgRef: MatDialogRef<ModifierCommande>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
-
-  async ngOnInit() {}
-}

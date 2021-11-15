@@ -166,7 +166,7 @@
             <div class="app-sidebar__inner">
                <ul class="vertical-nav-menu">
                   <!-- Partie menu Colisage -->
-                  <li>
+                  <li *ngIf="wms >= 1">
                      <a href="#">
                         <i class="metismenu-icon pe-7s-diamond"></i>
                         Colisage
@@ -199,7 +199,7 @@
                   <!-- Partie menu TMS -->
 
 
-                  <li>
+                  <li *ngIf="tms >= 1">
                      <a routerLink="/Menu/TMS/home">
                         <i class="metismenu-icon pe-7s-diamond"></i>
                         Gestion De Transport
@@ -220,7 +220,7 @@
                                     Vehicules
                                  </a>
                               </li>
-                              <li>
+                              <li *ngIf="tms >= 2">
                                  <a routerLink="/Menu/TMS/Parc/Chauffeurs/liste-chauffeur">
                                     <i class="metismenu-icon"></i>
                                     Chauffeurs

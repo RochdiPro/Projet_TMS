@@ -22,8 +22,25 @@ export class ListerVehiculesComponent implements OnInit {
   vehicule: any;
   form = new FormGroup({ carb: new FormControl(), prix: new FormControl() });
 
+  //variables de droits d'accés
+  nom: any;
+  acces: any;
+  tms: any;
+
   //constructeur
-  constructor(private dialog: MatDialog, public service: VehiculeService, public _router: Router) { }
+  constructor(private dialog: MatDialog, public service: VehiculeService, public _router: Router) {
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1002000");
+
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.tms = Number( arrayOfDigits[3])
+   }
 
   ngOnInit(): void {
     this.form.get('carb').setValidators([Validators.required]);

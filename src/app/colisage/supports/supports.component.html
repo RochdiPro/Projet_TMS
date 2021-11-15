@@ -21,7 +21,7 @@
                    </a>
                 </li>
                 <!-- bouton ajouter -->
-                <li class="nav-item">
+                <li class="nav-item" *ngIf="wms >= 2">
                    <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Supports/Ajouter_Support" (click)="activerAjouter()" [ngClass]="{'active': ajouterEstActive}">
                       <span>Ajouter</span>
                    </a>

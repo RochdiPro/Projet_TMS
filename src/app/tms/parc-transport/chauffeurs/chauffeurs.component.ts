@@ -10,7 +10,7 @@ import { ChauffeurService } from './services/chauffeur.service';
 @Component({
   selector: 'app-chauffeurs',
   templateUrl: './chauffeurs.component.html',
-  styleUrls: ['./chauffeurs.component.scss']
+  styleUrls: ['./chauffeurs.component.scss'],
 })
 export class ChauffeursComponent implements OnInit {
   dataSource = new MatTableDataSource<tableChauffeur>();
@@ -18,63 +18,116 @@ export class ChauffeursComponent implements OnInit {
   employes: any;
   displayedColumns: string[] = ['id', 'nom'];
   panelOpenState = false;
-  form = new FormGroup({ nom: new FormControl(''), categorie: new FormControl('') });
+  form = new FormGroup({
+    nom: new FormControl(''),
+    categorie: new FormControl(''),
+  });
   url: any;
 
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  tms: any;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-  constructor(public service: ChauffeurService, public datepipe: DatePipe, public sanitizer: DomSanitizer) {
-    this.service.employes().subscribe((data) => {
-      this.employes = data;
-      this.chauffeurs = this.employes.filter((x: any) => x.role == "chauffeur");
-      this.dataSource.data = this.chauffeurs as tableChauffeur[];
+  constructor(
+    public service: ChauffeurService,
+    public datepipe: DatePipe,
+    public sanitizer: DomSanitizer
+  ) {
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1002000');
 
-    });
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
   }
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
   ngOnInit(): void {
+    this.service.employes().subscribe((data) => {
+      this.employes = data;
+      this.chauffeurs = this.employes.filter((x: any) => x.role == 'chauffeur');
+      this.dataSource.data = this.chauffeurs as tableChauffeur[];
+    });
   }
 
-  filtrer() { //filtrer les chauffeur par nom ou catégorie
-    if (this.form.get('nom').value === '' && this.form.get('categorie').value === '') { //si on n'a pas de filtrage
+  filtrer() {
+    //filtrer les chauffeur par nom ou catégorie
+    if (
+      this.form.get('nom').value === '' &&
+      this.form.get('categorie').value === ''
+    ) {
+      //si on n'a pas de filtrage
       this.service.employes().subscribe((data) => {
         this.employes = data;
-        this.chauffeurs = this.employes.filter((x: any) => x.role == "chauffeur");
+        this.chauffeurs = this.employes.filter(
+          (x: any) => x.role == 'chauffeur'
+        );
         this.dataSource.data = this.chauffeurs as tableChauffeur[];
       });
-    } else if (this.form.get('nom').value !== '' && this.form.get('categorie').value === '') { //si on a filtrage par nom
-      this.service.filtrerChauffeur("nom", this.form.get('nom').value).subscribe((res) => {
-        this.employes = res;
-        this.chauffeurs = this.employes.filter((x: any) => x.role == "chauffeur");
-        this.dataSource.data = this.chauffeurs as tableChauffeur[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else if (this.form.get('nom').value === '' && this.form.get('categorie').value !== '') { //si on a filtrage par catégorie de permis
-      this.service.filtrerChauffeur("categorie_Permis", this.form.get('categorie').value).subscribe((res) => {
-        this.employes = res;
-        this.chauffeurs = this.employes.filter((x: any) => x.role == "chauffeur");
-        this.dataSource.data = this.chauffeurs as tableChauffeur[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
-    } else { //si on a filtrage par nom et catégorie de permis
-      this.service.filtrerChauffeur("nom", this.form.get('nom').value).subscribe((data) => {
-        this.employes = data;
-        this.chauffeurs = this.employes.filter((x: any) => x.role == "chauffeur");
-        this.chauffeurs = this.employes.filter((x: any) => x.categorie_Permis == this.form.get('categorie').value);
-        this.dataSource.data = this.chauffeurs as tableChauffeur[];
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      });
+    } else if (
+      this.form.get('nom').value !== '' &&
+      this.form.get('categorie').value === ''
+    ) {
+      //si on a filtrage par nom
+      this.service
+        .filtrerChauffeur('nom', this.form.get('nom').value)
+        .subscribe((res) => {
+          this.employes = res;
+          this.chauffeurs = this.employes.filter(
+            (x: any) => x.role == 'chauffeur'
+          );
+          this.dataSource.data = this.chauffeurs as tableChauffeur[];
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+        });
+    } else if (
+      this.form.get('nom').value === '' &&
+      this.form.get('categorie').value !== ''
+    ) {
+      //si on a filtrage par catégorie de permis
+      this.service
+        .filtrerChauffeur('categorie_Permis', this.form.get('categorie').value)
+        .subscribe((res) => {
+          this.employes = res;
+          this.chauffeurs = this.employes.filter(
+            (x: any) => x.role == 'chauffeur'
+          );
+          this.dataSource.data = this.chauffeurs as tableChauffeur[];
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+        });
+    } else {
+      //si on a filtrage par nom et catégorie de permis
+      this.service
+        .filtrerChauffeur('nom', this.form.get('nom').value)
+        .subscribe((data) => {
+          this.employes = data;
+          this.chauffeurs = this.employes.filter(
+            (x: any) => x.role == 'chauffeur'
+          );
+          this.chauffeurs = this.employes.filter(
+            (x: any) => x.categorie_Permis == this.form.get('categorie').value
+          );
+          this.dataSource.data = this.chauffeurs as tableChauffeur[];
+          this.dataSource.sort = this.sort;
+          this.dataSource.paginator = this.paginator;
+        });
     }
   }
-  getUrl(url: any){ // pour avoir la photo du chauffeur 
-    this.url=this.sanitizer.bypassSecurityTrustUrl('data:image/png;base64,' + url); //pour pouvoir afficher la photo sans des problémes de sécurité
+  getUrl(url: any) {
+    // pour avoir la photo du chauffeur
+    this.url = this.sanitizer.bypassSecurityTrustUrl(
+      'data:image/png;base64,' + url
+    ); //pour pouvoir afficher la photo sans des problémes de sécurité
   }
 }
 export interface tableChauffeur {
@@ -88,5 +141,4 @@ export interface tableChauffeur {
   categoriePermis: String;
   numPermis: number;
   datePermis: Date;
-
 }

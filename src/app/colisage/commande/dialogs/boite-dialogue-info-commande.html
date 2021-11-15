@@ -42,7 +42,7 @@
             <div style="display: flex; align-items: center;">
                 <h3>localisation</h3>
                 <button mat-icon-button style="margin-left: auto;"
-                    (click)="ouvrirBoiteDialogueModifierPosition(this.data.commande)">
+                    (click)="ouvrirBoiteDialogueModifierPosition(this.data.commande)" *ngIf="wms >= 3">
                     <mat-icon>edit</mat-icon>
                 </button>
             </div>
@@ -60,7 +60,7 @@
         <div style="display: flex; align-items: center;">
             <h2>Liste colisage</h2>
             <button mat-icon-button style="margin-left: auto;"
-                (click)="ouvrirBoiteDialogueModifierColisage(this.data.commande)">
+                (click)="ouvrirBoiteDialogueModifierColisage(this.data.commande)" *ngIf="wms >= 3">
                 <mat-icon>edit</mat-icon>
             </button>
         </div>

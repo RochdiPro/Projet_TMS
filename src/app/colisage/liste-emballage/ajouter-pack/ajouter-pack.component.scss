@@ -12,6 +12,11 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #888;
 }
+
+.ajout-pack ::ng-deep .mat-vertical-stepper-header{
+  pointer-events: none !important;
+}
+
 .filtre {
   margin-right: 10px;
 }

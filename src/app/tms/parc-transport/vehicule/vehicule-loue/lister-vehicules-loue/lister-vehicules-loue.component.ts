@@ -17,13 +17,30 @@ export class ListerVehiculesLoueComponent implements OnInit {
   disponibility: any;
   minDate = new Date(); //desactiver les dates passées
   form: FormGroup;
+
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  tms: any;
   constructor(
     public service: VehiculeService,
     private dialog: MatDialog,
     public _router: Router,
     public _location: Location,
     public fb: FormBuilder
-  ) {}
+  ) {
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1002000");
+
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.tms = Number( arrayOfDigits[3])
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({

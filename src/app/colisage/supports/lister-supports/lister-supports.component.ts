@@ -9,7 +9,23 @@ import { SupportService } from '../services/support.service';
 })
 export class ListerSupportsComponent implements OnInit {
   listeSupports: any;
-  constructor(private serviceSupport: SupportService, public router: Router) {}
+   // variables de droits d'accés
+   nom: any;
+   acces: any;
+   wms: any;
+  constructor(private serviceSupport: SupportService, public router: Router) {
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1000300");
+
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.wms = Number( arrayOfDigits[4])
+  }
 
   ngOnInit(): void {
     this.chargerListeSupports();

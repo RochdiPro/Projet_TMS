@@ -12,22 +12,22 @@ export class ChauffeurService {
   
   //lister les employes
   public employes() {
-    return this.httpClient.get(infonet + 'Employes');
+    return this.httpClient.get(infonet + 'Employees');
   }
 
   //charger un employe par ID
   public employe(id: any) {
-    return this.httpClient.get(infonet + 'Employe' + "?Id=" + id);
+    return this.httpClient.get(infonet + 'Employee' + "?Id=" + id);
   }
 
   //filtrer liste chauffeur
   public filtrerChauffeur(champ: any, valeur: any) {
-    return this.httpClient.get(infonet + 'Filtre_Employe' + '?Champ=' + champ + '&Valeur=' + valeur);
+    return this.httpClient.get(infonet + 'Filtre_Employee' + '?Champ=' + champ + '&Valeur=' + valeur);
   }
 
   //charger image employe
   public imageEmploye(id: any) {
-    return this.httpClient.get(infonet + 'Image_Employe' + '?Id=' + id);
+    return this.httpClient.get(infonet + 'Image_Employee' + '?Id=' + id);
 
   }
 

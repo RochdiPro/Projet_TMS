@@ -13,6 +13,10 @@
   background: #888;
 }
 
+.ajout-produit ::ng-deep .mat-vertical-stepper-header{
+  pointer-events: none !important;
+}
+
 .mat-table {
   margin-top: 10px;
   max-height: 45vh;

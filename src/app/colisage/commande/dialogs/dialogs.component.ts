@@ -1249,12 +1249,26 @@ export class InformationCommandeComponent implements OnInit {
   latitude: number;
   listeColisage: any;
 
+   // variables de droits d'accés
+   nom: any;
+   acces: any;
+   wms: any;
+
   constructor(
     private dialogRef: MatDialogRef<InformationCommandeComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private serviceCommande: CommandeService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.wms = Number( arrayOfDigits[4])
+  }
   async ngOnInit() {
     this.getLocalisationClient();
     await this.getListeColisage();

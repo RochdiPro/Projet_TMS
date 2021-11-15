@@ -1,16 +1,19 @@
 <!-- Bouton Fermer -->
-<button type="button" class="close" aria-label="Close"><span aria-hidden="true"
-        (click)="fermerNotification()">×</span></button>
+<button type="button" class="close" aria-label="Close">
+    <span aria-hidden="true" (click)="fermerNotification()">×</span>
+</button>
 <!-- fin Bouton Fermer -->
 
 <h1 mat-dialog-title>Notifications</h1>
 <div mat-dialog-content>
     <div class="card-body" *ngIf="vehicule && carburants">
-        <div class="alert alert-light fade show" role="alert" *ngIf="testePresenceNotification()">Pas De Notifications</div>
+        <div class="alert alert-light fade show" role="alert" *ngIf="testePresenceNotification()">Pas De Notifications
+        </div>
         <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="reclamationExiste">
             <!-- bouton supprimer reclamation -->
-            <button type="button" class="close" aria-label="Close" (click)="supprimerReclamation()"><span
-                    aria-hidden="true">×</span></button>
+            <button type="button" class="close" aria-label="Close" (click)="supprimerReclamation()" *ngIf="tms >= 4">
+                <span aria-hidden="true">×</span>
+            </button>
             <!-- fin bouton supprimer reclamation -->
             <!-- afficher sujet du reclamation -->
             <div>
@@ -25,7 +28,8 @@
         </div>
         <!-- notification d'entretien -->
         <div *ngIf="testExistanceEntretien()">
-            <div class="alert alert-warning fade show alerte" role="alert" *ngFor="let entretien of this.listeEntretien">
+            <div class="alert alert-warning fade show alerte" role="alert"
+                *ngFor="let entretien of this.listeEntretien">
                 <i class="fas fa-exclamation-triangle"></i> {{entretien.type}} dans:
                 {{entretien.kilometrage-vehicule.kmactuel}} km
             </div>
@@ -36,7 +40,8 @@
         </div>
         <!-- notification expiration assurance -->
         <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExpirationAssurance()">
-            <i class="fas fa-exclamation-triangle"></i> Expiration De L'Assurance Du Vehicule Le: {{vehicule.dateassurance |
+            <i class="fas fa-exclamation-triangle"></i> Expiration De L'Assurance Du Vehicule Le:
+            {{vehicule.dateassurance |
             date:'dd-MM-y'}}
         </div>
         <!-- notification expiration taxes -->
@@ -51,5 +56,3 @@
         </div>
     </div>
 </div>
-
-

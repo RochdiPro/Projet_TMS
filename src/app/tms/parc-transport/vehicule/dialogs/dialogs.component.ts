@@ -862,13 +862,28 @@ export class NotificationComponent implements OnInit {
   carburantConsomme: any;
   consommationActuelle: any;
   listeEntretien: any = [];
+
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  tms: any;
+  
   //consructeur
   constructor(
     public dialogRef: MatDialogRef<NotificationComponent>,
     public service: VehiculeService,
     public _router: Router,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.tms = Number( arrayOfDigits[3])
+  }
   async ngOnInit() {
     this.idVehicule = this.data.id; //charger id vehicule
     await this.chargerVehicule();

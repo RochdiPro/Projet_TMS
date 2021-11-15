@@ -1,27 +1,229 @@
-<mat-vertical-stepper [linear]="isLinear" #stepper>
-    <mat-step [stepControl]="deuxiemeFormGroup" label="Sélection Des Produits à Emballer">
-        <!-- deuxieme step -->
-        <form [formGroup]="deuxiemeFormGroup">
-            <!-- champ de filtrage par nom produit -->
-            <div class="position-relative custom-control">
-                <section>
-                    <mat-form-field class="custom-width" [formGroup]="formFiltreProduit">
-                        <mat-label>Produit</mat-label>
-                        <input matInput placeholder="Nom" formControlName="nom_Produit"
-                            (keyup)="appliquerFiltre($event)" id="nom">
-                        <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
-                    </mat-form-field>
-                    <mat-form-field class="custom-width" [formGroup]="formCodeBarre" id="barcode">
-                        <mat-label>Code à barre</mat-label>
-                        <input matInput placeholder="Code à barre" formControlName="code_Barre"
-                            (keydown)="scannerCodeBarre($event)" autofocus>
+<div *ngIf="wms >= 2" class="ajout-produit">
+    <mat-vertical-stepper [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="deuxiemeFormGroup" label="Sélection Des Produits à Emballer">
+            <!-- deuxieme step -->
+            <form [formGroup]="deuxiemeFormGroup">
+                <!-- champ de filtrage par nom produit -->
+                <div class="position-relative custom-control">
+                    <section>
+                        <mat-form-field class="custom-width" [formGroup]="formFiltreProduit">
+                            <mat-label>Produit</mat-label>
+                            <input matInput placeholder="Nom" formControlName="nom_Produit"
+                                (keyup)="appliquerFiltre($event)" id="nom">
+                            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+                        </mat-form-field>
+                        <mat-form-field class="custom-width" [formGroup]="formCodeBarre" id="barcode">
+                            <mat-label>Code à barre</mat-label>
+                            <input matInput placeholder="Code à barre" formControlName="code_Barre"
+                                (keydown)="scannerCodeBarre($event)" autofocus>
                             <mat-icon matSuffix>qr_code_scanner</mat-icon>
+                        </mat-form-field>
+                    </section>
+                </div>
+                <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
+                    <mat-table [dataSource]="dataSourceProduits" class=" table1">
+                        <!-- tableau fiche produit -->
+                        <!-- Colonne Id Produit -->
+                        <ng-container matColumnDef="id_Produit">
+                            <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
+                            <mat-cell *matCellDef="let element" data-label="ID">{{element.id_Produit}}</mat-cell>
+                        </ng-container>
+                        <!-- Colonne Nom Produit -->
+                        <ng-container matColumnDef="nom_Produit">
+                            <mat-header-cell *matHeaderCellDef>Produit</mat-header-cell>
+                            <mat-cell *matCellDef="let element" data-label="Nom Produit">{{element.nom_Produit}}
+                            </mat-cell>
+                        </ng-container>
+                        <!-- Colonne marque -->
+                        <ng-container matColumnDef="marque">
+                            <mat-header-cell *matHeaderCellDef>Marque</mat-header-cell>
+                            <mat-cell *matCellDef="let element" data-label="Marque">{{element.marque}}</mat-cell>
+                        </ng-container>
+                        <!-- Colonne Valeur Unite -->
+                        <ng-container matColumnDef="valeur_Unite">
+                            <mat-header-cell *matHeaderCellDef>Quantité</mat-header-cell>
+                            <mat-cell *matCellDef="let element" data-label="Quantité">{{element.valeur_Unite}}
+                            </mat-cell>
+                        </ng-container>
+                        <!-- Colonne Unite -->
+                        <ng-container matColumnDef="unite">
+                            <mat-header-cell *matHeaderCellDef>Unite</mat-header-cell>
+                            <mat-cell *matCellDef="let element" data-label="Unité">{{element.unite}}</mat-cell>
+                        </ng-container>
+                        <!-- Colonne Type produit -->
+                        <ng-container matColumnDef="typeProduit">
+                            <mat-header-cell *matHeaderCellDef>Type Produit</mat-header-cell>
+                            <mat-cell *matCellDef="let element" data-label="Type">{{element.type1}}</mat-cell>
+                        </ng-container>
+                        <!-- Colonne sous type -->
+                        <ng-container matColumnDef="sousType">
+                            <mat-header-cell *matHeaderCellDef>Sous Type</mat-header-cell>
+                            <mat-cell *matCellDef="let element" data-label="Sous type">{{element.type2}}</mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit; sticky: true">
+                        </mat-header-row>
+                        <mat-row (click)="choisirProduit(row)" [class.demo-row-is-clicked]="produitClique.has(row)"
+                            *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></mat-row>
+                    </mat-table>
+                    <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons></mat-paginator>
+                </div>
+                <!-- bouton suivant -->
+                <div style="float: right;">
+                    <button type="button" mat-button matStepperNext color="primary"
+                        (click)="premierSuivant()">Suivant</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="premierFormGroup" label="Saisir information d'emballage">
+            <!-- premier step -->
+            <form [formGroup]="premierFormGroup">
+                Informations
+                <div class="input-inline">
+                    <!-- input Nom emballage -->
+                    <mat-form-field appearance="fill" class="premier-input">
+                        <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
+                        <input matInput formControlName="nom" required>
+                        <mat-error *ngIf="premierFormGroup.controls['nom'].hasError('required')">
+                            Ce champ est obligatoire
+                        </mat-error>
                     </mat-form-field>
-                </section>
-            </div>
+                    <!-- input poids emballage -->
+                    <mat-form-field appearance="fill" class="deuxieme-input">
+                        <mat-label>Poids d'emballage (Kg)</mat-label>
+                        <input matInput formControlName="poidsEmballage" required type="number"
+                            pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$" onkeyup="if(this.value<0)this.value=0" min="0">
+                        <mat-error *ngIf="premierFormGroup.controls['poidsEmballage'].hasError('required')">
+                            Ce champ est obligatoire
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- input type emballage -->
+                    <mat-form-field appearance="fill" class="troisieme-input">
+                        <mat-label>Type d'emballage</mat-label>
+                        <mat-select formControlName="type" required (selectionChange)="testType()">
+                            <mat-option value="Carton">Carton</mat-option>
+                            <mat-option value="Palette">Palette</mat-option>
+                            <mat-option value="Vrac">Vrac</mat-option>
+                            <mat-option value="Sac">Sac</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="premierFormGroup.controls['type'].hasError('required')">
+                            Ce champ est obligatoire
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="input-inline">
+                    <!-- input poids emballage -->
+                    <mat-form-field appearance="fill" class="premier-input">
+                        <mat-label>Code à barre</mat-label>
+                        <input matInput formControlName="codeBarre" required type="text">
+                        <mat-icon matSuffix>qr_code_scanner</mat-icon>
+                        <mat-error *ngIf="premierFormGroup.controls['codeBarre'].hasError('required')">
+                            Ce champ est obligatoire
+                        </mat-error>
+                    </mat-form-field>
+                    <!-- toggle du fragilité -->
+                    <mat-slide-toggle formControlName="fragilite" color="primary">Fragile</mat-slide-toggle>
+                </div>
+                <!-- les inputs de dimensions -->
+                Dimensions
+                <div class="input-inline">
+                    <mat-form-field appearance="fill" class="premier-input">
+                        <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
+                        <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number"
+                            pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$" onkeyup="if(this.value<0)this.value=0" min="0">
+                        <mat-error *ngIf="premierFormGroup.controls['longueur'].hasError('required')">
+                            Ce champ est obligatoire
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" class="deuxieme-input">
+                        <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
+                        <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number"
+                            pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$" onkeyup="if(this.value<0)this.value=0" min="0">
+                        <mat-error *ngIf="premierFormGroup.controls['largeur'].hasError('required')">
+                            Ce champ est obligatoire
+                        </mat-error>
+                    </mat-form-field>
+                    <mat-form-field appearance="fill" class="troisieme-input">
+                        <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
+                        <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number"
+                            pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$" onkeyup="if(this.value<0)this.value=0" min="0">
+                        <mat-error *ngIf="premierFormGroup.controls['hauteur'].hasError('required')">
+                            Ce champ est obligatoire
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- les inputs de volume -->
+                Volume
+                <div class="input-inline">
+                    <mat-form-field appearance="fill" class="premier-input">
+                        <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
+                        <input matInput formControlName="volume" required type="number" onkeyup="if(this.value<0)this.value=0" min="0">
+                        <mat-error *ngIf="premierFormGroup.controls['volume'].hasError('required')">
+                            Ce champ est obligatoire
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- boutons de navigation entre les steps -->
+                <div style="float: right;">
+                    <button type="button" mat-button matStepperPrevious color="primary"
+                        (click)="premierPrecedent()">Précédent</button>
+                    <button type="button" mat-button matStepperNext (click)="deuxiemeSuivant()"
+                        color="primary">Suivant</button>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [stepControl]="troisiemeFormGroup" label="Saisir les données du produit">
+            <!-- troisieme step -->
+            <form [formGroup]="troisiemeFormGroup" *ngIf="produitSelectionne[0]">
+                <div>
+                    Produit: {{produitSelectionne[0].nom_Produit}}
+                    <!-- afficher nom produit-->
+                    <div class="input-inline">
+                        <!-- champs poids unitaire -->
+                        <mat-form-field appearance="fill" class="premier-input">
+                            <mat-label style="text-transform: capitalize;">Poids unitaire (Kg)</mat-label>
+                            <input matInput formControlName="poids" required type="number"
+                                pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$" onkeyup="if(this.value<0)this.value=0" min="0">
+                                <mat-error *ngIf="troisiemeFormGroup.controls['poids'].hasError('required')">
+                                    Ce champ est obligatoire
+                                </mat-error>
+                        </mat-form-field>
+                        <!-- champ de quantité dans l'emballage -->
+                        <mat-form-field appearance="fill" class="deuxieme-input">
+                            <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
+                            <input matInput formControlName="qte" required type="number"
+                                pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$" onkeyup="if(this.value<0)this.value=0" min="0">
+                                <mat-error *ngIf="troisiemeFormGroup.controls['qte'].hasError('required')">
+                                    Ce champ est obligatoire
+                                </mat-error>
+                        </mat-form-field>
+                        <!-- Select de l'unité -->
+                        <mat-form-field appearance="fill" class="troisieme-input">
+                            <mat-label>Unite</mat-label>
+                            <mat-select formControlName="unite">
+                                <mat-option value="Piece">Piece</mat-option>
+                                <mat-option value="Kg">Kg</mat-option>
+                                <mat-option value="m">m</mat-option>
+                                <mat-option value="l">l</mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="troisiemeFormGroup.controls['unite'].hasError('required')">
+                                Ce champ est obligatoire
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- Boutons de navigation entre les steps -->
+                    <div style="float: right;">
+                        <button mat-button matStepperPrevious color="primary">Précédent</button>
+                        <button mat-button matStepperNext (click)="troisiemeSuivant()" color="primary">Suivant</button>
+                    </div>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step>
+            <!-- quatrieme step -->
+            <ng-template matStepLabel>Valider</ng-template>
             <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
-                <mat-table [dataSource]="dataSourceProduits" class=" table1">
-                    <!-- tableau fiche produit -->
+                <mat-table [dataSource]="dataSourceProduit" class="table2">
                     <!-- Colonne Id Produit -->
                     <ng-container matColumnDef="id_Produit">
                         <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
@@ -30,7 +232,7 @@
                     <!-- Colonne Nom Produit -->
                     <ng-container matColumnDef="nom_Produit">
                         <mat-header-cell *matHeaderCellDef>Produit</mat-header-cell>
-                        <mat-cell *matCellDef="let element" data-label="Nom Produit">{{element.nom_Produit}}</mat-cell>
+                        <mat-cell *matCellDef="let element" data-label="Produit">{{element.nom_Produit}}</mat-cell>
                     </ng-container>
                     <!-- Colonne marque -->
                     <ng-container matColumnDef="marque">
@@ -40,257 +242,97 @@
                     <!-- Colonne Valeur Unite -->
                     <ng-container matColumnDef="valeur_Unite">
                         <mat-header-cell *matHeaderCellDef>Quantité</mat-header-cell>
-                        <mat-cell *matCellDef="let element" data-label="Quantité">{{element.valeur_Unite}}</mat-cell>
+                        <mat-cell *matCellDef="let element" data-label="Quantité">
+                            {{this.troisiemeFormGroup.get('qte').value }}
+                        </mat-cell>
                     </ng-container>
                     <!-- Colonne Unite -->
                     <ng-container matColumnDef="unite">
                         <mat-header-cell *matHeaderCellDef>Unite</mat-header-cell>
-                        <mat-cell *matCellDef="let element" data-label="Unité">{{element.unite}}</mat-cell>
+                        <mat-cell *matCellDef="let element" data-label="Unité">
+                            {{this.troisiemeFormGroup.get('unite').value}}
+                        </mat-cell>
                     </ng-container>
                     <!-- Colonne Type produit -->
                     <ng-container matColumnDef="typeProduit">
-                        <mat-header-cell *matHeaderCellDef>Type Produit</mat-header-cell>
-                        <mat-cell *matCellDef="let element" data-label="Type">{{element.type1}}</mat-cell>
+                        <mat-header-cell *matHeaderCellDef>Poids U.Net</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="Poids U.Net">
+                            {{this.troisiemeFormGroup.get('poids').value }}
+                        </mat-cell>
                     </ng-container>
                     <!-- Colonne sous type -->
                     <ng-container matColumnDef="sousType">
-                        <mat-header-cell *matHeaderCellDef>Sous Type</mat-header-cell>
-                        <mat-cell *matCellDef="let element" data-label="Sous type">{{element.type2}}</mat-cell>
+                        <mat-header-cell *matHeaderCellDef>Poids T.Net</mat-header-cell>
+                        <mat-cell *matCellDef="let element" data-label="Poids T.Net">
+                            {{calculerPoidsProduitNet(this.troisiemeFormGroup.get('poids').value,this.troisiemeFormGroup.get('qte').value)}}
+                        </mat-cell>
                     </ng-container>
-                    <mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit; sticky: true"></mat-header-row>
-                    <mat-row (click)="choisirProduit(row)" [class.demo-row-is-clicked]="produitClique.has(row)"
-                        *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></mat-row>
+                    <mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></mat-row>
                 </mat-table>
-                <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons></mat-paginator>
             </div>
-            <!-- bouton suivant -->
+            <!-- afficher l'information d'emballage -->
+            <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)"
+                style="margin-left: 2.5%;" *ngIf="produitSelectionne[0] && troisiemeStepEstRemplit">
+                <mat-grid-tile>
+                    <div class="w-100 titre">Nom D'emballage:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100">{{this.premierFormGroup.get('nom').value}}</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Type D'emballage:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100">Standard</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Catégorie:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100">{{this.produitSelectionne[0] ? this.produitSelectionne[0].type2 : ''}}</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Fragilité:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100">{{this.premierFormGroup.get('fragilite').value ? 'Oui' : 'Non'}}</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Poids Total:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100">{{poidsToltal}} Kg
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Dimensions LxlxH:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100">
+                        {{this.premierFormGroup.get('longueur').value}}x{{this.premierFormGroup.get('largeur').value}}x{{this.premierFormGroup.get('hauteur').value}}
+                    </div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Volume:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100">{{this.premierFormGroup.get('volume').value}} m3</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100 titre">Code à barre:</div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="w-100">{{this.premierFormGroup.get('codeBarre').value}}</div>
+                </mat-grid-tile>
+            </mat-grid-list>
+            <!-- bouton de navigation entre steps et bouton valider -->
             <div style="float: right;">
-                <button type="button" mat-button matStepperNext color="primary" (click)="premierSuivant()">Suivant</button>
+                <button mat-button (click)="stepper.reset(); reinitialiserStepper();"
+                    color="warn">Réinitialiser</button>
+                <button mat-button matStepperPrevious color="primary" (click)="quatriemePrecedent()">Précédent</button>
+                <button mat-raised-button color="primary" (click)="valider();">Valider</button>
             </div>
-        </form>
-    </mat-step>
-    <mat-step [stepControl]="premierFormGroup" label="Saisir information d'emballage">
-        <!-- premier step -->
-        <form [formGroup]="premierFormGroup">
-            Informations
-            <div class="input-inline">
-                <!-- input Nom emballage -->
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
-                    <input matInput formControlName="nom" required>
-                </mat-form-field>
-                <!-- input poids emballage -->
-                <mat-form-field appearance="fill" class="deuxieme-input">
-                    <mat-label>Poids d'emballage (Kg)</mat-label>
-                    <input matInput formControlName="poidsEmballage" required type="number"
-                        pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                </mat-form-field>
-                <!-- input type emballage -->
-                <mat-form-field appearance="fill" class="troisieme-input">
-                    <mat-label>Type d'emballage</mat-label>
-                    <mat-select formControlName="type" required>
-                        <mat-option value="Carton">Carton</mat-option>
-                        <mat-option value="Palette">Palette</mat-option>
-                        <mat-option value="Vrac">Vrac</mat-option>
-                        <mat-option value="Sac">Sac</mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-
-            <div class="input-inline">
-                <!-- input poids emballage -->
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label>Code à barre</mat-label>
-                    <input matInput formControlName="codeBarre" required type="text">
-                    <mat-icon matSuffix>qr_code_scanner</mat-icon>
-                </mat-form-field>
-                <!-- toggle du fragilité -->
-                <mat-slide-toggle formControlName="fragilite" color="primary">Fragile</mat-slide-toggle>
-            </div>
-            <!-- les inputs de dimensions -->
-            Dimensions
-            <div class="input-inline">
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
-                    <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number"
-                        pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                </mat-form-field>
-                <mat-form-field appearance="fill" class="deuxieme-input">
-                    <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
-                    <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number"
-                        pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                </mat-form-field>
-                <mat-form-field appearance="fill" class="troisieme-input">
-                    <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
-                    <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number"
-                        pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                </mat-form-field>
-            </div>
-            <!-- les inputs de volume -->
-            Volume
-            <div class="input-inline">
-                <mat-form-field appearance="fill" class="premier-input">
-                    <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
-                    <input matInput formControlName="volume" required type="number">
-                </mat-form-field>
-            </div>
-            <!-- boutons de navigation entre les steps -->
-            <div style="float: right;">
-                <button type="button" mat-button matStepperPrevious color="primary" (click)="premierPrecedent()">Précédent</button>
-                <button type="button" mat-button matStepperNext (click)="deuxiemeSuivant()" color="primary">Suivant</button>
-            </div>
-        </form>
-    </mat-step>
-    <mat-step [stepControl]="troisiemeFormGroup" label="Saisir les données du produit">
-        <!-- troisieme step -->
-        <form [formGroup]="troisiemeFormGroup" *ngIf="produitSelectionne[0]">
-            <div>
-                Produit: {{produitSelectionne[0].nom_Produit}}
-                <!-- afficher nom produit-->
-                <div class="input-inline">
-                    <!-- champs poids unitaire -->
-                    <mat-form-field appearance="fill" class="premier-input">
-                        <mat-label style="text-transform: capitalize;">Poids unitaire (Kg)</mat-label>
-                        <input matInput formControlName="poids" required type="number"
-                            pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                    </mat-form-field>
-                    <!-- champ de quantité dans l'emballage -->
-                    <mat-form-field appearance="fill" class="deuxieme-input">
-                        <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
-                        <input matInput formControlName="qte" required type="number"
-                            pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
-                    </mat-form-field>
-                    <!-- Select de l'unité -->
-                    <mat-form-field appearance="fill" class="troisieme-input">
-                        <mat-label>Unite</mat-label>
-                        <mat-select formControlName="unite">
-                            <mat-option value="Piece">Piece</mat-option>
-                            <mat-option value="Kg">Kg</mat-option>
-                            <mat-option value="m">m</mat-option>
-                            <mat-option value="l">l</mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                </div>
-                <!-- Boutons de navigation entre les steps -->
-                <div style="float: right;">
-                    <button mat-button matStepperPrevious color="primary">Précédent</button>
-                    <button mat-button matStepperNext (click)="troisiemeSuivant()" color="primary">Suivant</button>
-                </div>
-            </div>
-        </form>
-    </mat-step>
-    <mat-step>
-        <!-- quatrieme step -->
-        <ng-template matStepLabel>Valider</ng-template>
-        <div class="mat-elevation-z8" style="margin-bottom: 1.5em;">
-            <mat-table [dataSource]="dataSourceProduit" class="table2">
-                <!-- Colonne Id Produit -->
-                <ng-container matColumnDef="id_Produit">
-                    <mat-header-cell *matHeaderCellDef>ID</mat-header-cell>
-                    <mat-cell *matCellDef="let element" data-label="ID">{{element.id_Produit}}</mat-cell>
-                </ng-container>
-                <!-- Colonne Nom Produit -->
-                <ng-container matColumnDef="nom_Produit">
-                    <mat-header-cell *matHeaderCellDef>Produit</mat-header-cell>
-                    <mat-cell *matCellDef="let element" data-label="Produit">{{element.nom_Produit}}</mat-cell>
-                </ng-container>
-                <!-- Colonne marque -->
-                <ng-container matColumnDef="marque">
-                    <mat-header-cell *matHeaderCellDef>Marque</mat-header-cell>
-                    <mat-cell *matCellDef="let element" data-label="Marque">{{element.marque}}</mat-cell>
-                </ng-container>
-                <!-- Colonne Valeur Unite -->
-                <ng-container matColumnDef="valeur_Unite">
-                    <mat-header-cell *matHeaderCellDef>Quantité</mat-header-cell>
-                    <mat-cell *matCellDef="let element" data-label="Quantité">
-                        {{this.troisiemeFormGroup.get('qte').value }}
-                    </mat-cell>
-                </ng-container>
-                <!-- Colonne Unite -->
-                <ng-container matColumnDef="unite">
-                    <mat-header-cell *matHeaderCellDef>Unite</mat-header-cell>
-                    <mat-cell *matCellDef="let element" data-label="Unité">
-                        {{this.troisiemeFormGroup.get('unite').value}}
-                    </mat-cell>
-                </ng-container>
-                <!-- Colonne Type produit -->
-                <ng-container matColumnDef="typeProduit">
-                    <mat-header-cell *matHeaderCellDef>Poids U.Net</mat-header-cell>
-                    <mat-cell *matCellDef="let element" data-label="Poids U.Net">
-                        {{this.troisiemeFormGroup.get('poids').value }}
-                    </mat-cell>
-                </ng-container>
-                <!-- Colonne sous type -->
-                <ng-container matColumnDef="sousType">
-                    <mat-header-cell *matHeaderCellDef>Poids T.Net</mat-header-cell>
-                    <mat-cell *matCellDef="let element" data-label="Poids T.Net">
-                        {{calculerPoidsProduitNet(this.troisiemeFormGroup.get('poids').value,this.troisiemeFormGroup.get('qte').value)}}
-                    </mat-cell>
-                </ng-container>
-                <mat-header-row *matHeaderRowDef="colonneAfficheDuTableFicheProduit"></mat-header-row>
-                <mat-row *matRowDef="let row; columns: colonneAfficheDuTableFicheProduit;"></mat-row>
-            </mat-table>
-        </div>
-        <!-- afficher l'information d'emballage -->
-        <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)" style="margin-left: 2.5%;"
-            *ngIf="produitSelectionne[0] && troisiemeStepEstRemplit">
-            <mat-grid-tile>
-                <div class="w-100 titre">Nom D'emballage:</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100">{{this.premierFormGroup.get('nom').value}}</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100 titre">Type D'emballage:</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100">Standard</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100 titre">Catégorie:</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100">{{this.produitSelectionne[0] ? this.produitSelectionne[0].type2 : ''}}</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100 titre">Fragilité:</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100">{{this.premierFormGroup.get('fragilite').value ? 'Oui' : 'Non'}}</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100 titre">Poids Total:</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100">{{poidsToltal}} Kg
-                </div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100 titre">Dimensions LxlxH:</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100">
-                    {{this.premierFormGroup.get('longueur').value}}x{{this.premierFormGroup.get('largeur').value}}x{{this.premierFormGroup.get('hauteur').value}}
-                </div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100 titre">Volume:</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100">{{this.premierFormGroup.get('volume').value}} m3</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100 titre">Code à barre:</div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-                <div class="w-100">{{this.premierFormGroup.get('codeBarre').value}}</div>
-            </mat-grid-tile>
-        </mat-grid-list>
-        <!-- bouton de navigation entre steps et bouton valider -->
-        <div style="float: right;">
-            <button mat-button (click)="stepper.reset(); reinitialiserStepper();" color="warn">Réinitialiser</button>
-            <button mat-button matStepperPrevious color="primary">Précédent</button>
-            <button mat-raised-button color="primary" (click)="valider();">Valider</button>
-        </div>
-    </mat-step>
-</mat-vertical-stepper>
+        </mat-step>
+    </mat-vertical-stepper>
+</div>

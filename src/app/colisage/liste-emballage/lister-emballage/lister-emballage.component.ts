@@ -42,12 +42,28 @@ export class ListerEmballageComponent implements OnInit {
   ];
   dataSource = new MatTableDataSource<tableEmballage>();
 
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  wms: any;
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
-  constructor(public service: EmballageService) {}
+  constructor(public service: EmballageService) {
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1000200');
+
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.wms = Number(arrayOfDigits[4]);
+  }
   async ngOnInit() {
     await this.getListeColisage();
   }
@@ -66,7 +82,7 @@ export class ListerEmballageComponent implements OnInit {
         this.form.get('quantite').value,
         this.form.get('unite').value,
         this.form.get('poids').value,
-        this.form.get('volume').value,
+        this.form.get('volume').value
       )
       .subscribe((data) => {
         this.dataSource.data = data as tableEmballage[];

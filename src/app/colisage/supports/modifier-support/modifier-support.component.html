@@ -1,4 +1,4 @@
-<div *ngIf="support">
+<div *ngIf="support && wms >= 3">
     <h1>Modifier support {{support.id_support}}</h1>
     <form [formGroup]="form">
         <div class="input-inline">

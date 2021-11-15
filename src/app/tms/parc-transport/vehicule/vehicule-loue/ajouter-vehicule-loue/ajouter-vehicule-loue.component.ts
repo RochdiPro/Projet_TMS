@@ -29,7 +29,23 @@ export class AjouterVehiculeLoueComponent implements OnInit {
   categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
   minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
 
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  tms: any;
+
   constructor(public fb: FormBuilder, public service: VehiculeService, public router: Router, public _location: Location) {
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1002000");
+
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.tms = Number( arrayOfDigits[3])
   }
 
   ngOnInit(): void {

@@ -11,11 +11,27 @@ import { SupportService } from '../services/support.service';
 })
 export class AjouterSupportComponent implements OnInit {
   form: FormGroup;
+
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  wms: any;
   constructor(
     private formBuilder: FormBuilder,
     private serviceSupport: SupportService,
     public _router: Router
-  ) {}
+  ) {
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1000200');
+
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.wms = Number(arrayOfDigits[4]);
+  }
 
   ngOnInit() {
     //construction du formGroup form
