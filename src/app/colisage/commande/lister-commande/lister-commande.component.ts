@@ -1,14 +1,12 @@
-import { AfterViewInit, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
+  MatDialog
 } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import Swal from 'sweetalert2';
-import { BoiteDialogueModifierColisage, BoiteDialogueModifierPositionComponent, InformationCommandeComponent } from '../dialogs/dialogs.component';
+import { InformationCommandeComponent } from '../dialogs/dialogs.component';
 import { CommandeService } from '../services/commande.service';
 
 @Component({
@@ -27,6 +25,7 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
     'ville',
     'adresse',
     'date',
+    'score',
     'etat',
     'actions',
   ];

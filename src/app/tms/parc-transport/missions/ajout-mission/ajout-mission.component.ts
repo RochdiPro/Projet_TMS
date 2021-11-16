@@ -8,18 +8,28 @@ import { VehiculeService } from '../../vehicule/services/vehicule.service';
 @Component({
   selector: 'app-ajout-mission',
   templateUrl: './ajout-mission.component.html',
-  styleUrls: ['./ajout-mission.component.scss']
+  styleUrls: ['./ajout-mission.component.scss'],
 })
 export class AjoutMissionComponent implements OnInit {
-
   regions: any = [
-    { nom: "Nord-Est", ville: ["Bizerte", "Tunis", "Ariana", "Manouba", "Ben_Arous", "Zaghouan", "Nabeul"] },
-    { nom: "Nord-Ouest", ville: ["Jendouba", "Beja", "Kef", "Siliana"] },
-    { nom: "Centre-Est", ville: ["Sousse", "Monastir", "Mahdia"] },
-    { nom: "Centre-Ouest", ville: ["Kairouan", "Kasserine", "Sidi_Bouzid"] },
-    { nom: "Sud-Est", ville: ["Sfax", "Gabes", "Mednine", "Tataouine"] },
-    { nom: "Sud-Ouest", ville: ["Gafsa", "Tozeur", "Kebili"] },
-  ]
+    {
+      nom: 'Nord-Est',
+      ville: [
+        'Bizerte',
+        'Tunis',
+        'Ariana',
+        'Manouba',
+        'Ben_Arous',
+        'Zaghouan',
+        'Nabeul',
+      ],
+    },
+    { nom: 'Nord-Ouest', ville: ['Jendouba', 'Beja', 'Kef', 'Siliana'] },
+    { nom: 'Centre-Est', ville: ['Sousse', 'Monastir', 'Mahdia'] },
+    { nom: 'Centre-Ouest', ville: ['Kairouan', 'Kasserine', 'Sidi_Bouzid'] },
+    { nom: 'Sud-Est', ville: ['Sfax', 'Gabes', 'Mednine', 'Tataouine'] },
+    { nom: 'Sud-Ouest', ville: ['Gafsa', 'Tozeur', 'Kebili'] },
+  ];
   commandesNonAffecteSelectionne: String[];
   listeFactures: any;
   listeBLs: any;
@@ -38,12 +48,21 @@ export class AjoutMissionComponent implements OnInit {
   new_obj: any;
   articles: any = [];
   articlesBl: any = [];
-  form = new FormGroup({ nombreVoyages: new FormControl(1), multiVehicule: new FormControl(false) });
+  form = new FormGroup({
+    nombreVoyages: new FormControl(1),
+    multiVehicule: new FormControl(false),
+  });
   listeVehicules: any;
   listeVehiculesLoues: any;
   listeColisage: any;
 
-  constructor(public fb: FormBuilder, private serviceCommande: CommandeService, private serviceEmballage: EmballageService, public serviceVehicule: VehiculeService, public datepipe: DatePipe) { }
+  constructor(
+    public fb: FormBuilder,
+    private serviceCommande: CommandeService,
+    private serviceEmballage: EmballageService,
+    public serviceVehicule: VehiculeService,
+    public datepipe: DatePipe
+  ) {}
 
   async ngOnInit() {
     await this.getListeFactures();
@@ -61,30 +80,42 @@ export class AjoutMissionComponent implements OnInit {
   }
 
   async getListeFactures() {
-    this.listeFactures = await this.serviceCommande.filtreFacture("etat", "Validée").toPromise();
+    this.listeFactures = await this.serviceCommande
+      .filtreFacture('etat', 'Validée')
+      .toPromise();
   }
 
   async getListeBLs() {
-    this.listeBLs = await this.serviceCommande.filtreBonLivraison("etat", "Validée").toPromise();
+    this.listeBLs = await this.serviceCommande
+      .filtreBonLivraison('etat', 'Validée')
+      .toPromise();
   }
 
   async getClient() {
     for (let i = 0; i < this.listeFactures.length; i++) {
-      this.client = await this.serviceCommande.client(this.listeFactures[i].id_Clt).toPromise();
+      this.client = await this.serviceCommande
+        .client(this.listeFactures[i].id_Clt)
+        .toPromise();
       this.listeClients.push(this.client);
     }
     for (let j = 0; j < this.listeBLs.length; j++) {
-      this.client = await this.serviceCommande.client(this.listeBLs[j].id_Clt).toPromise();
+      this.client = await this.serviceCommande
+        .client(this.listeBLs[j].id_Clt)
+        .toPromise();
       this.listeClients.push(this.client);
     }
   }
 
   async getVehiculeDisponibles() {
-    this.listeVehicules = await this.serviceVehicule.filtrerVehicule("etat_vehicule", "Disponible").toPromise();
+    this.listeVehicules = await this.serviceVehicule
+      .filtrerVehicule('etat_vehicule', 'Disponible')
+      .toPromise();
   }
 
   async getVehiculeLoueDisponibles() {
-    this.listeVehiculesLoues = await this.serviceVehicule.filtrerVehiculeLoues("etat_vehicule", "Disponible").toPromise();
+    this.listeVehiculesLoues = await this.serviceVehicule
+      .filtrerVehiculeLoues('etat_vehicule', 'Disponible')
+      .toPromise();
   }
 
   async preparerListeCommande() {
@@ -104,18 +135,20 @@ export class AjoutMissionComponent implements OnInit {
         var qteArticleRestante = this.articles[k].qte[0];
         var differenceQte = 0;
         var packConvenable: any;
-        var listePacks = await this.listeColisage.filter((pack: any) => pack.idProduit === this.articles[k].id[0]);
+        var listePacks = await this.listeColisage.filter(
+          (pack: any) => pack.idProduit === this.articles[k].id[0]
+        );
         if (listePacks.length > 0) {
           differenceQte = qteArticleRestante - listePacks[0].qte;
           do {
             packConvenable = listePacks[0];
             for (const pack of listePacks) {
-              if ((qteArticleRestante - pack.qte) < differenceQte) {
+              if (qteArticleRestante - pack.qte < differenceQte) {
                 differenceQte = qteArticleRestante - pack.qte;
                 packConvenable = pack;
               }
             }
-            qteArticleRestante = qteArticleRestante - packConvenable.qte
+            qteArticleRestante = qteArticleRestante - packConvenable.qte;
             packsArray.push(packConvenable);
           } while (qteArticleRestante > 0);
           for (let index = 0; index < packsArray.length; index++) {
@@ -131,8 +164,8 @@ export class AjoutMissionComponent implements OnInit {
         region: region,
         ville: this.listeClients[i].ville,
         date_Creation: this.listeFactures[j].date_Creation,
-        type: "Facture",
-        poids: poidsCommande
+        type: 'Facture',
+        poids: poidsCommande,
       };
       this.listeCommandes.push(commande);
       i++;
@@ -140,7 +173,7 @@ export class AjoutMissionComponent implements OnInit {
     for (let j = 0; j < this.listeBLs.length; j++) {
       var packsArray = [];
       var poidsCommande = 0;
-      await this.getDetailBL(this.listeBLs[j].id_Bl)
+      await this.getDetailBL(this.listeBLs[j].id_Bl);
       for (const reg of this.regions) {
         if (reg.ville.includes(this.listeClients[i].ville)) {
           region = reg.nom;
@@ -150,32 +183,35 @@ export class AjoutMissionComponent implements OnInit {
         var qteArticleRestante = this.articlesBl[k].qte[0];
         var differenceQte = 0;
         var packConvenable: any;
-        var listePacks = await this.listeColisage.filter((pack: any) => pack.idProduit === this.articlesBl[k].id[0]);
-        listePacks = await listePacks.filter((pack: any) => this.articlesBl[k].qte[0] >= Number(pack.qte));
-        console.log(listePacks)
+        var listePacks = await this.listeColisage.filter(
+          (pack: any) => pack.idProduit === this.articlesBl[k].id[0]
+        );
+        listePacks = await listePacks.filter(
+          (pack: any) => this.articlesBl[k].qte[0] >= Number(pack.qte)
+        );
+        console.log(listePacks);
         if (listePacks.length > 0) {
           differenceQte = qteArticleRestante - listePacks[0].qte;
           do {
             packConvenable = listePacks[0];
             for (const pack of listePacks) {
-              if ((qteArticleRestante - pack.qte) < differenceQte) {
+              if (qteArticleRestante - pack.qte < differenceQte) {
                 differenceQte = qteArticleRestante - pack.qte;
                 packConvenable = pack;
               }
             }
 
-            console.log(this.listeBLs[j].id_Bl)
-            console.log(qteArticleRestante)
-            console.log(packConvenable)
-            qteArticleRestante = qteArticleRestante - packConvenable.qte
+            console.log(this.listeBLs[j].id_Bl);
+            console.log(qteArticleRestante);
+            console.log(packConvenable);
+            qteArticleRestante = qteArticleRestante - packConvenable.qte;
             packsArray.push(packConvenable);
           } while (qteArticleRestante > 0);
           for (let index = 0; index < packsArray.length; index++) {
             poidsCommande += packsArray[index].poids_emballage_total;
           }
-          poidsCommande = Number(poidsCommande.toFixed(3))
+          poidsCommande = Number(poidsCommande.toFixed(3));
         }
-
       }
       var commandebl = {
         id: i,
@@ -185,85 +221,117 @@ export class AjoutMissionComponent implements OnInit {
         region: region,
         ville: this.listeClients[i].ville,
         date_Creation: this.listeBLs[j].date_Creation,
-        type: "BL",
-        poids: poidsCommande
+        type: 'BL',
+        poids: poidsCommande,
       };
       this.listeCommandes.push(commandebl);
       i++;
-
     }
-    this.listeCommandes = this.listeCommandes.filter((commande: any) => commande.poids > 0)
+    this.listeCommandes = this.listeCommandes.filter(
+      (commande: any) => commande.poids > 0
+    );
   }
 
   getCommandesNordEst() {
-    this.commandesNordEst = this.listeCommandes.filter((commande: any) => commande.region === "Nord-Est");
+    this.commandesNordEst = this.listeCommandes.filter(
+      (commande: any) => commande.region === 'Nord-Est'
+    );
   }
   getCommandesNordOuest() {
-    this.commandesNordOuest = this.listeCommandes.filter((commande: any) => commande.region === "Nord-Ouest");
+    this.commandesNordOuest = this.listeCommandes.filter(
+      (commande: any) => commande.region === 'Nord-Ouest'
+    );
   }
   getCommandesCentreEst() {
-    this.commandesCentreEst = this.listeCommandes.filter((commande: any) => commande.region === "Centre-Est");
+    this.commandesCentreEst = this.listeCommandes.filter(
+      (commande: any) => commande.region === 'Centre-Est'
+    );
   }
   getCommandesCentreOuest() {
-    this.commandesCentreOuest = this.listeCommandes.filter((commande: any) => commande.region === "Centre-Ouest");
+    this.commandesCentreOuest = this.listeCommandes.filter(
+      (commande: any) => commande.region === 'Centre-Ouest'
+    );
   }
   getCommandesSudEst() {
-    this.commandesSudEst = this.listeCommandes.filter((commande: any) => commande.region === "Sud-Est");
+    this.commandesSudEst = this.listeCommandes.filter(
+      (commande: any) => commande.region === 'Sud-Est'
+    );
   }
   getCommandesSudOuest() {
-    this.commandesSudOuest = this.listeCommandes.filter((commande: any) => commande.region === "Sud-Ouest");
+    this.commandesSudOuest = this.listeCommandes.filter(
+      (commande: any) => commande.region === 'Sud-Ouest'
+    );
   }
   async getListeColisage() {
-    this.listeColisage = await this.serviceEmballage.listeEmballage().toPromise();
+    this.listeColisage = await this.serviceEmballage
+      .listeEmballage()
+      .toPromise();
   }
-  async getDetailFacture(id: any) { //pour avoir les ids et les qtes des produits dans une facture
+  async getDetailFacture(id: any) {
+    //pour avoir les ids et les qtes des produits dans une facture
     var detail = await this.serviceCommande.Detail_Facture(id).toPromise();
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
       reader.onloadend = async () => {
         try {
-
           this.articles = [];
           this.facture = reader.result;
           var parseString = require('xml2js').parseString;
           let data1;
-          parseString(atob(this.facture.substr(28)), function (err: any, result: any) {
-            data1 = result.Facture;
-
-          })
-          this.xmldata = data1
+          parseString(
+            atob(this.facture.substr(28)),
+            function (err: any, result: any) {
+              data1 = result.Facture;
+            }
+          );
+          this.xmldata = data1;
           if (this.xmldata.Produits[0].Produits_Simples[0].Produit) {
-            for (let i = 0; i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
+            for (
+              let i = 0;
+              i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length;
+              i++
+            ) {
+              this.new_obj = {};
+              this.new_obj.id =
+                this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
+              this.new_obj.qte =
+                this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
 
-              this.new_obj = {}
-              this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-              this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
-
-              this.articles.push(this.new_obj)
+              this.articles.push(this.new_obj);
             }
           }
           if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
-            for (let i = 0; i < this.xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
+            for (
+              let i = 0;
+              i < this.xmldata.Produits[0].Produits_Series[0].Produit.length;
+              i++
+            ) {
+              this.new_obj = {};
+              this.new_obj.id =
+                this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
+              this.new_obj.qte =
+                this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
 
-              this.new_obj = {}
-              this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-              this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
-
-              this.articles.push(this.new_obj)
+              this.articles.push(this.new_obj);
             }
           }
           if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
-            for (let i = 0; i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
+            for (
+              let i = 0;
+              i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length;
+              i++
+            ) {
+              this.new_obj = {};
+              this.new_obj.id =
+                this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
+              this.new_obj.qte =
+                this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
 
-              this.new_obj = {}
-              this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-              this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
-
-              this.articles.push(this.new_obj)
+              this.articles.push(this.new_obj);
             }
           }
-          resolve(this.articles)
+          resolve(this.articles);
         } catch (err) {
           reject(err);
         }
@@ -271,7 +339,8 @@ export class AjoutMissionComponent implements OnInit {
       reader.readAsDataURL(detail);
     });
   }
-  async getDetailBL(id: any) {  //pour avoir les ids et les qtes des produits dans un bon livraison
+  async getDetailBL(id: any) {
+    //pour avoir les ids et les qtes des produits dans un bon livraison
     var detail = await this.serviceCommande.Detail_BL(id).toPromise();
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -282,50 +351,64 @@ export class AjoutMissionComponent implements OnInit {
           this.BL = reader.result;
           var parseString = require('xml2js').parseString;
           let data1;
-          parseString(atob(this.BL.substr(28)), function (err: any, result: any) {
-            data1 = result.Bon_Livraison;
-
-          })
-          this.xmldata = data1
+          parseString(
+            atob(this.BL.substr(28)),
+            function (err: any, result: any) {
+              data1 = result.Bon_Livraison;
+            }
+          );
+          this.xmldata = data1;
           if (this.xmldata.Produits[0].Produits_Simples[0].Produit) {
-            for (let i = 0; i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length; i++) {
+            for (
+              let i = 0;
+              i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length;
+              i++
+            ) {
+              this.new_obj = {};
+              this.new_obj.id =
+                this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
+              this.new_obj.qte =
+                this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
 
-              this.new_obj = {}
-              this.new_obj.id = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-              this.new_obj.qte = this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
-
-              this.articlesBl.push(this.new_obj)
+              this.articlesBl.push(this.new_obj);
             }
           }
           if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
-            for (let i = 0; i < this.xmldata.Produits[0].Produits_Series[0].Produit.length; i++) {
+            for (
+              let i = 0;
+              i < this.xmldata.Produits[0].Produits_Series[0].Produit.length;
+              i++
+            ) {
+              this.new_obj = {};
+              this.new_obj.id =
+                this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
+              this.new_obj.qte =
+                this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
 
-              this.new_obj = {}
-              this.new_obj.id = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-              this.new_obj.qte = this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
-
-              this.articlesBl.push(this.new_obj)
+              this.articlesBl.push(this.new_obj);
             }
           }
           if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
-            for (let i = 0; i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length; i++) {
+            for (
+              let i = 0;
+              i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length;
+              i++
+            ) {
+              this.new_obj = {};
+              this.new_obj.id =
+                this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
+              this.new_obj.qte =
+                this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
 
-              this.new_obj = {}
-              this.new_obj.id = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-              this.new_obj.qte = this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
-
-              this.articlesBl.push(this.new_obj)
+              this.articlesBl.push(this.new_obj);
             }
           }
-          resolve(this.articlesBl)
+          resolve(this.articlesBl);
         } catch (err) {
           reject(err);
         }
       };
       reader.readAsDataURL(detail);
-    }
-    )
+    });
   }
-
-
 }

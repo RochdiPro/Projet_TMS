@@ -175,6 +175,34 @@ export class BoiteDialogueCreerCommande implements OnInit {
   };
   positionsClientEnregistree: any = [];
   positionEstModifie: boolean = false;
+  score: Number;
+  villes: String[] = [
+    'Bizerte',
+    'Tunis',
+    'Ariana',
+    'Manouba',
+    'Ben_Arous',
+    'Zaghouan',
+    'Nabeul',
+    'Jendouba',
+    'Beja',
+    'Kef',
+    'Siliana',
+    'Sousse',
+    'Monastir',
+    'Mahdia',
+    'Kairouan',
+    'Kasserine',
+    'Sidi_Bouzid',
+    'Sfax',
+    'Gabes',
+    'Mednine',
+    'Tataouine',
+    'Gafsa',
+    'Tozeur',
+    'Kebili',
+  ];
+  estNouvelleAdresse = false;
   constructor(
     private fb: FormBuilder,
     public dialgRef: MatDialogRef<BoiteDialogueCreerCommande>,
@@ -185,8 +213,10 @@ export class BoiteDialogueCreerCommande implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.villes.sort((a: any,b: any) => a > b ? 1 : -1)
     this.firstFormGroup = this.fb.group({
       adresse: ['', Validators.required],
+      nouvelleVille: '',
       nouvelleAdresse: '',
     });
     this.secondFormGroup = this.fb.group({
@@ -227,17 +257,26 @@ export class BoiteDialogueCreerCommande implements OnInit {
   }
 
   ajouterAdresse() {
-    if (this.firstFormGroup.get('nouvelleAdresse').value !== '') {
+    if (!this.estNouvelleAdresse) {
+      this.estNouvelleAdresse = true;
+    } else if (this.firstFormGroup.get('nouvelleAdresse').value !== '' && this.firstFormGroup.get('nouvelleVille').value !== '') {
       this.positionsClientEnregistree.push({
         adresse: this.firstFormGroup.get('nouvelleAdresse').value,
+        ville: this.firstFormGroup.get('nouvelleVille').value,
         latitude: '',
         longitude: '',
       });
+      this.firstFormGroup.get('nouvelleAdresse').setValue('');
+      this.firstFormGroup.get('nouvelleVille').setValue('');
+      this.firstFormGroup.get('adresse').setValue(this.positionsClientEnregistree.length-1);
+      this.positionClient = this.positionsClientEnregistree[this.positionsClientEnregistree.length-1];
+      this.estNouvelleAdresse = false;
     }
   }
 
   selectionnerAdresse() {
-    this.positionClient = this.firstFormGroup.get('adresse').value;
+    this.positionClient = this.positionsClientEnregistree[this.firstFormGroup.get('adresse').value];
+    console.log(this.positionClient)
     this.getPositionClient();
   }
   async getListeEmballage() {
@@ -367,7 +406,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
         produit.qteNonEmballe = result.qteNonEmballe;
         produit.listeEmballageChoisi = result.listeEmballageChoisi;
       }
-      this.verifierValiditeListeProduits();
+      this.setValiditeListeProduits();
     });
   }
   ouvrirBoiteDialogueDetailProduit(article: any) {
@@ -387,14 +426,23 @@ export class BoiteDialogueCreerCommande implements OnInit {
     });
   }
 
-  verifierValiditeListeProduits() {
-    let estValide = true;
+  setValiditeListeProduits() {
+    let deuxiemeStepEstValide = true;
     this.listeArticlesDetail.forEach((element: any) => {
-      element.qteNonEmballe !== 0 ? (estValide = false) : '';
+      element.qteNonEmballe !== 0 ? (deuxiemeStepEstValide = false) : '';
     });
-    estValide
+    deuxiemeStepEstValide
       ? this.secondFormGroup.get('secondCtrl').setValue('valide')
       : this.secondFormGroup.get('secondCtrl').setValue('');
+  }
+
+  verifierValiditeDeuxiemeStep() {
+    if (this.secondFormGroup.get('secondCtrl').value === '') {
+      Swal.fire({
+        icon: 'error',
+        text: "Il y'a des produits qui ne sont pas encore emballés!",
+      });
+    }
   }
   getNombreArticles(article: any) {
     return article.qte * article.emballage.qte;
@@ -469,15 +517,15 @@ export class BoiteDialogueCreerCommande implements OnInit {
     }
 
     let retard = 0; //provisoirement jusqu'a savoir comment calculer le retard
-    let score: number =
+    this.score =
       prix * coefficientScoreCommande.prixFacture +
       fraisLivraison * coefficientScoreCommande.fraisLivraison +
       scoreClient * coefficientScoreCommande.client +
       retard * coefficientScoreCommande.retard;
-    return score;
   }
 
   async enregistrer() {
+    await this.calculerScoreCommande();
     let commande: any = new FormData();
     //creation position client s'il n'existe pas
     if (this.positionClient.idClient === undefined) {
@@ -485,6 +533,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       this.positionClient.longitude = this.lng;
       this.positionClient.latitude = this.lat;
       position.append('idClient', this.data.commande.idClient);
+      position.append('ville', this.positionClient.ville)
       position.append('adresse', this.positionClient.adresse);
       position.append('longitude', this.positionClient.longitude);
       position.append('latitude', this.positionClient.latitude);
@@ -496,6 +545,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       let position: any = new FormData();
       position.append('id', this.positionClient.id);
       position.append('idClient', this.positionClient.idClient);
+      position.append('ville', this.positionClient.ville)
       position.append('adresse', this.positionClient.adresse);
       position.append('longitude', this.lng);
       position.append('latitude', this.lat);
@@ -537,13 +587,14 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('telephone', this.data.commande.telephone);
     commande.append('email', this.data.commande.email);
     commande.append('categorieClient', this.data.commande.categorieClient);
-    commande.append('ville', this.data.commande.ville);
-    commande.append('adresse', this.data.commande.adresse);
+    commande.append('ville', this.positionClient.ville);
+    commande.append('adresse', this.positionClient.adresse);
     commande.append('typePieceIdentite', this.data.commande.typePieceIdentite);
     commande.append('numPieceIdentite', this.data.commande.numeroPieceIdentite);
     commande.append('dateCreation', this.data.commande.dateCreation);
     commande.append('idPosition', this.positionClient.id);
     commande.append('etat', 'En cours de traitement');
+    commande.append('score', this.score);
 
     await this.serviceCommande.creerCommande(commande).toPromise();
     Swal.fire({
@@ -645,16 +696,16 @@ export class BoiteDialogueEmballer implements OnInit {
           );
           if (emb.length > 0) {
             qte = this.fb.group({
-              qte: [emb[0].qte, [Validators.min(0)]],
+              qte: [emb[0].qte, [Validators.min(0), Validators.required]],
             });
           } else {
             qte = this.fb.group({
-              qte: [0, [Validators.min(0)]],
+              qte: [0, [Validators.min(0)], Validators.required],
             });
           }
         } else {
           qte = this.fb.group({
-            qte: [0, [Validators.min(0)]],
+            qte: [0, [Validators.min(0), Validators.required]],
           });
         }
       }
@@ -904,14 +955,16 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
       position.append('latitude', this.lat);
 
       await this.serviceCommande.modifierPositionClient(position).toPromise();
-    } else {
-      let formData: any = new FormData();
-      formData.append('id', this.data.commande.id);
-      formData.append('idPosition', this.positionClient.id);
-      await this.serviceCommande
-        .modifierIdPositionDansTableCommande(formData)
-        .toPromise();
     }
+    this.data.commande.idPosition = this.positionClient.id;
+    let formData: any = new FormData();
+    formData.append('id', this.data.commande.id);
+    formData.append('idPosition', this.positionClient.id);
+    formData.append('adresse', this.positionClient.adresse);
+    await this.serviceCommande
+      .modifierIdPositionDansTableCommande(formData)
+      .toPromise();
+
     Swal.fire({
       icon: 'success',
       title: 'Position bien modifiée',
@@ -1231,6 +1284,13 @@ export class BoiteDialogueModifierColisage implements OnInit {
         Number(this.getPoidsPackBrut(emballage))
       );
       await this.serviceCommande.creerColis(listeColisage).toPromise();
+      Swal.fire({
+        icon: 'success',
+        title: 'Liste colisage est bien modifiée',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      this.dialogRef.close();
     }
   }
 }
@@ -1248,11 +1308,12 @@ export class InformationCommandeComponent implements OnInit {
   longitude: number;
   latitude: number;
   listeColisage: any;
+  adresse: string;
 
-   // variables de droits d'accés
-   nom: any;
-   acces: any;
-   wms: any;
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  wms: any;
 
   constructor(
     private dialogRef: MatDialogRef<InformationCommandeComponent>,
@@ -1260,17 +1321,16 @@ export class InformationCommandeComponent implements OnInit {
     private serviceCommande: CommandeService,
     private dialog: MatDialog
   ) {
-    this.nom = sessionStorage.getItem('Utilisateur'); 
-    this.acces = sessionStorage.getItem('Acces'); 
-
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
     const numToSeparate = this.acces;
-    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
-  
-    this.wms = Number( arrayOfDigits[4])
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.wms = Number(arrayOfDigits[4]);
   }
   async ngOnInit() {
-    this.getLocalisationClient();
+    await this.getLocalisationClient();
     await this.getListeColisage();
   }
 
@@ -1280,6 +1340,7 @@ export class InformationCommandeComponent implements OnInit {
       .toPromise();
     this.longitude = Number(this.localisationClient.longitude);
     this.latitude = Number(this.localisationClient.latitude);
+    this.adresse = this.localisationClient.adresse;
   }
 
   async getListeColisage() {
@@ -1327,7 +1388,7 @@ export class InformationCommandeComponent implements OnInit {
       data: { commande: commande },
     });
     dialogRef.afterClosed().subscribe(async (result) => {
-      this.getLocalisationClient();
+      await this.getLocalisationClient();
       this.getListeColisage();
     });
   }

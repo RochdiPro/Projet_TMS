@@ -29,10 +29,14 @@
                         <td>
                             <mat-form-field appearance="fill" style="width: 100px;">
                                 <mat-label>Quantité</mat-label>
-                                <input matInput type="number" formControlName="qte" [max]="listeMax[i]"
-                                    [min]="minInput" onkeyup="if(this.value<0)this.value=0"
-                                    (change)="ajouterQuantiteEmballage(); updateMax(i)" (keyup)="ajouterQuantiteEmballage(); updateMax(i)">
-                                </mat-form-field>
+                                <input matInput type="number" formControlName="qte" [max]="listeMax[i]" [min]="minInput"
+                                    onkeyup="if(this.value<0)this.value=0" required
+                                    (change)="ajouterQuantiteEmballage(); updateMax(i)"
+                                    (keyup)="ajouterQuantiteEmballage(); updateMax(i)">
+                                <mat-error *ngIf="qteForm.controls[i].get('qte').hasError('required')">
+                                    Veuillez insérer une quantitée!
+                                </mat-error>
+                            </mat-form-field>
                         </td>
                     </tr>
                 </tbody>

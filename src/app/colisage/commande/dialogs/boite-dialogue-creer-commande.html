@@ -1,6 +1,6 @@
 <h1 mat-dialog-title>{{typeDocument}} {{data.commande.id}}</h1>
 <div mat-dialog-content>
-    <mat-vertical-stepper [linear]="false" #stepper>
+    <mat-vertical-stepper [linear]="true" #stepper>
         <!-- Step 1 -->
         <mat-step [stepControl]="firstFormGroup">
             <form [formGroup]="firstFormGroup">
@@ -41,20 +41,33 @@
                         <mat-form-field appearance="fill" id="select-adresse">
                             <mat-label>Adresse de livraison</mat-label>
                             <mat-select formControlName="adresse" (selectionChange)="selectionnerAdresse()">
-                                <mat-option *ngFor="let position of positionsClientEnregistree" [value]="position">
-                                    {{position.adresse}}
+                                <mat-option *ngFor="let position of positionsClientEnregistree; let i=index" [value]="i">
+                                    {{position.ville}}: {{position.adresse}} 
                                 </mat-option>
                                 <mat-option *ngIf="positionsClientEnregistree.length === 0" disabled>
                                     Pas d'adresse
                                 </mat-option>
                             </mat-select>
+                            <mat-error *ngIf="firstFormGroup.controls['adresse'].hasError('required')">
+                                Veuillez choisir une afresse
+                            </mat-error>
                         </mat-form-field>
-                        <div id="ajouter-adresse">
-                            <input type="text" id="adresse-input" formControlName="nouvelleAdresse">
-                            <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
-                                <mat-icon>add_location</mat-icon>
-                            </button>
+                        <div class="ajouter-adresse" *ngIf="estNouvelleAdresse">
+                            <mat-form-field appearance="fill" id="select-adresse">
+                                <mat-label>Ville</mat-label>
+                                <mat-select formControlName="nouvelleVille">
+                                    <mat-option *ngFor="let ville of villes" [value]="ville">
+                                        {{ville}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <mat-form-field appearance="fill">
+                                <input matInput placeholder="Adresse" formControlName="nouvelleAdresse">
+                            </mat-form-field>
                         </div>
+                        <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
+                            <mat-icon>add_location</mat-icon>
+                        </button>
                     </div>
                     <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
                         (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
@@ -116,7 +129,9 @@
                 <div style="float: right;">
                     <button mat-button mat-dialog-close color="warn">Annuler</button>
                     <button mat-button matStepperPrevious>Précédent</button>
-                    <button mat-button matStepperNext (click)="creerListeEmballageChoisi()" color="primary">Suivant</button>
+                    <button mat-button matStepperNext
+                        (click)="verifierValiditeDeuxiemeStep(); creerListeEmballageChoisi()"
+                        color="primary">Suivant</button>
                 </div>
             </form>
         </mat-step>
@@ -144,9 +159,9 @@
             </div>
             <div class="row">
                 <div class="colonne entete">Ville:</div>
-                <div class="colonne">{{data.commande.ville}}</div>
+                <div class="colonne">{{positionClient.ville}}</div>
                 <div class="colonne entete">Adresse:</div>
-                <div class="colonne">{{data.commande.adresse}}</div>
+                <div class="colonne">{{positionClient.adresse}}</div>
             </div>
             <div class="row">
                 <div class="colonne entete">Type piéce d'identité:</div>
@@ -205,7 +220,7 @@
             <div style="float: right; margin-bottom: 10px;">
                 <button mat-button mat-dialog-close color="warn">Annuler</button>
                 <button mat-button matStepperPrevious>Précédent</button>
-                <button mat-raised-button color= "primary" (click)="enregistrer()">Valider</button>
+                <button mat-raised-button color="primary" (click)="enregistrer()">Valider</button>
             </div>
         </mat-step>
     </mat-vertical-stepper>
