@@ -595,7 +595,9 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('idPosition', this.positionClient.id);
     commande.append('etat', 'En cours de traitement');
     commande.append('score', this.score);
-
+    commande.append('poids', this.poidsTotalBrut);
+    commande.append('volume', this.volumeTotal);
+    
     await this.serviceCommande.creerCommande(commande).toPromise();
     Swal.fire({
       icon: 'success',
@@ -617,9 +619,9 @@ export class BoiteDialogueCreerCommande implements OnInit {
   get volumeTotal() {
     var volumeTotal = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
-      volumeTotal += emballage.emballage.volume;
+      volumeTotal += this.getVolumePack(emballage);
     });
-    return volumeTotal.toFixed(2);
+    return volumeTotal.toFixed(3);
   }
 
   get poidsTotalNet() {
@@ -627,7 +629,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.listeEmballageChoisi.forEach((emballage: any) => {
       poidsTotalNet += this.getPoidsPackNet(emballage);
     });
-    return poidsTotalNet.toFixed(2);
+    return poidsTotalNet.toFixed(3);
   }
 
   get poidsTotalBrut() {
@@ -635,7 +637,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.listeEmballageChoisi.forEach((emballage: any) => {
       poidsTotalBrut += this.getPoidsPackBrut(emballage);
     });
-    return poidsTotalBrut.toFixed(2);
+    return poidsTotalBrut.toFixed(3);
   }
 }
 
@@ -1362,7 +1364,7 @@ export class InformationCommandeComponent implements OnInit {
     this.listeColisage.forEach((colis: any) => {
       volumeTotal += colis.volume;
     });
-    return volumeTotal.toFixed(2);
+    return volumeTotal.toFixed(3);
   }
 
   get poidsTotalNet() {
@@ -1370,7 +1372,7 @@ export class InformationCommandeComponent implements OnInit {
     this.listeColisage.forEach((colis: any) => {
       poidsTotalNet += colis.poidsNet;
     });
-    return poidsTotalNet.toFixed(2);
+    return poidsTotalNet.toFixed(3);
   }
 
   get poidsTotalBrut() {
@@ -1378,7 +1380,7 @@ export class InformationCommandeComponent implements OnInit {
     this.listeColisage.forEach((colis: any) => {
       poidsTotalBrut += colis.poidsBrut;
     });
-    return poidsTotalBrut.toFixed(2);
+    return poidsTotalBrut.toFixed(3);
   }
 
   ouvrirBoiteDialogueModifierPosition(commande: any) {

@@ -1,9 +1,8 @@
-import { DatePipe, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
-import { EmballageService } from 'src/app/colisage/liste-emballage/services/emballage.service';
 import { VehiculeService } from '../../vehicule/services/vehicule.service';
+import { MissionsService } from '../services/missions.service';
 
 @Component({
   selector: 'app-ajout-mission',
@@ -34,41 +33,32 @@ export class AjoutMissionComponent implements OnInit {
   listeFactures: any;
   listeBLs: any;
   client: any;
+  commandes: any;
   listeCommandes: Object[] = [];
-  listeClients: any = [];
   commandesNordEst: any;
   commandesNordOuest: any;
   commandesCentreEst: any;
   commandesCentreOuest: any;
   commandesSudEst: any;
   commandesSudOuest: any;
-  facture: any;
-  BL: any;
-  xmldata: any;
-  new_obj: any;
-  articles: any = [];
-  articlesBl: any = [];
   form = new FormGroup({
     nombreVoyages: new FormControl(1),
     multiVehicule: new FormControl(false),
   });
   listeVehicules: any;
   listeVehiculesLoues: any;
-  listeColisage: any;
+  mission: any[] = [];
 
   constructor(
     public fb: FormBuilder,
-    private serviceCommande: CommandeService,
-    private serviceEmballage: EmballageService,
+    public serviceMission: MissionsService,
     public serviceVehicule: VehiculeService,
     public datepipe: DatePipe
   ) {}
 
   async ngOnInit() {
-    await this.getListeFactures();
-    await this.getListeBLs();
-    await this.getListeColisage();
-    await this.preparerListeCommande();
+    await this.getListeCommande();
+    this.preparerListeCommande();
     this.getCommandesNordEst();
     this.getCommandesNordOuest();
     this.getCommandesCentreEst();
@@ -79,31 +69,10 @@ export class AjoutMissionComponent implements OnInit {
     this.getVehiculeLoueDisponibles();
   }
 
-  async getListeFactures() {
-    this.listeFactures = await this.serviceCommande
-      .filtreFacture('etat', 'Validée')
+  async getListeCommande() {
+    this.commandes = await this.serviceMission
+      .getCommandesParEtat('En cours de traitement')
       .toPromise();
-  }
-
-  async getListeBLs() {
-    this.listeBLs = await this.serviceCommande
-      .filtreBonLivraison('etat', 'Validée')
-      .toPromise();
-  }
-
-  async getClient() {
-    for (let i = 0; i < this.listeFactures.length; i++) {
-      this.client = await this.serviceCommande
-        .client(this.listeFactures[i].id_Clt)
-        .toPromise();
-      this.listeClients.push(this.client);
-    }
-    for (let j = 0; j < this.listeBLs.length; j++) {
-      this.client = await this.serviceCommande
-        .client(this.listeBLs[j].id_Clt)
-        .toPromise();
-      this.listeClients.push(this.client);
-    }
   }
 
   async getVehiculeDisponibles() {
@@ -118,297 +87,201 @@ export class AjoutMissionComponent implements OnInit {
       .toPromise();
   }
 
-  async preparerListeCommande() {
-    await this.getClient();
-    let i = 0;
-    var region: String;
-    for (let j = 0; j < this.listeFactures.length; j++) {
-      var packsArray = [];
-      var poidsCommande = 0;
-      await this.getDetailFacture(this.listeFactures[j].id_Facture);
+  preparerListeCommande() {
+    this.commandes.forEach((commande: any) => {
       for (const reg of this.regions) {
-        if (reg.ville.includes(this.listeClients[i].ville)) {
-          region = reg.nom;
+        if (reg.ville.includes(commande.ville)) {
+          commande.region = reg.nom;
         }
       }
-      for (let k = 0; k < this.articles.length; k++) {
-        var qteArticleRestante = this.articles[k].qte[0];
-        var differenceQte = 0;
-        var packConvenable: any;
-        var listePacks = await this.listeColisage.filter(
-          (pack: any) => pack.idProduit === this.articles[k].id[0]
-        );
-        if (listePacks.length > 0) {
-          differenceQte = qteArticleRestante - listePacks[0].qte;
-          do {
-            packConvenable = listePacks[0];
-            for (const pack of listePacks) {
-              if (qteArticleRestante - pack.qte < differenceQte) {
-                differenceQte = qteArticleRestante - pack.qte;
-                packConvenable = pack;
-              }
-            }
-            qteArticleRestante = qteArticleRestante - packConvenable.qte;
-            packsArray.push(packConvenable);
-          } while (qteArticleRestante > 0);
-          for (let index = 0; index < packsArray.length; index++) {
-            poidsCommande += packsArray[index].poids_emballage_total;
-          }
-        }
-      }
-      var commande = {
-        id: i,
-        id_Facture: this.listeFactures[j].id_Facture,
-        id_Clt: this.listeClients[i].id_Clt,
-        nom_Clt: this.listeClients[i].nom_Client,
-        region: region,
-        ville: this.listeClients[i].ville,
-        date_Creation: this.listeFactures[j].date_Creation,
-        type: 'Facture',
-        poids: poidsCommande,
-      };
-      this.listeCommandes.push(commande);
-      i++;
-    }
-    for (let j = 0; j < this.listeBLs.length; j++) {
-      var packsArray = [];
-      var poidsCommande = 0;
-      await this.getDetailBL(this.listeBLs[j].id_Bl);
-      for (const reg of this.regions) {
-        if (reg.ville.includes(this.listeClients[i].ville)) {
-          region = reg.nom;
-        }
-      }
-      for (let k = 0; k < this.articlesBl.length; k++) {
-        var qteArticleRestante = this.articlesBl[k].qte[0];
-        var differenceQte = 0;
-        var packConvenable: any;
-        var listePacks = await this.listeColisage.filter(
-          (pack: any) => pack.idProduit === this.articlesBl[k].id[0]
-        );
-        listePacks = await listePacks.filter(
-          (pack: any) => this.articlesBl[k].qte[0] >= Number(pack.qte)
-        );
-        console.log(listePacks);
-        if (listePacks.length > 0) {
-          differenceQte = qteArticleRestante - listePacks[0].qte;
-          do {
-            packConvenable = listePacks[0];
-            for (const pack of listePacks) {
-              if (qteArticleRestante - pack.qte < differenceQte) {
-                differenceQte = qteArticleRestante - pack.qte;
-                packConvenable = pack;
-              }
-            }
-
-            console.log(this.listeBLs[j].id_Bl);
-            console.log(qteArticleRestante);
-            console.log(packConvenable);
-            qteArticleRestante = qteArticleRestante - packConvenable.qte;
-            packsArray.push(packConvenable);
-          } while (qteArticleRestante > 0);
-          for (let index = 0; index < packsArray.length; index++) {
-            poidsCommande += packsArray[index].poids_emballage_total;
-          }
-          poidsCommande = Number(poidsCommande.toFixed(3));
-        }
-      }
-      var commandebl = {
-        id: i,
-        id_BL: this.listeBLs[j].id_Bl,
-        id_Clt: this.listeClients[i].id_Clt,
-        nom_Clt: this.listeClients[i].nom_Client,
-        region: region,
-        ville: this.listeClients[i].ville,
-        date_Creation: this.listeBLs[j].date_Creation,
-        type: 'BL',
-        poids: poidsCommande,
-      };
-      this.listeCommandes.push(commandebl);
-      i++;
-    }
-    this.listeCommandes = this.listeCommandes.filter(
-      (commande: any) => commande.poids > 0
-    );
+    });
   }
 
   getCommandesNordEst() {
-    this.commandesNordEst = this.listeCommandes.filter(
+    this.commandesNordEst = this.commandes.filter(
       (commande: any) => commande.region === 'Nord-Est'
+    );
+    this.commandesNordEst.sort((a: any, b: any) =>
+      a.score > b.score ? -1 : 1
     );
   }
   getCommandesNordOuest() {
-    this.commandesNordOuest = this.listeCommandes.filter(
+    this.commandesNordOuest = this.commandes.filter(
       (commande: any) => commande.region === 'Nord-Ouest'
+    );
+    this.commandesNordOuest.sort((a: any, b: any) =>
+      a.score > b.score ? -1 : 1
     );
   }
   getCommandesCentreEst() {
-    this.commandesCentreEst = this.listeCommandes.filter(
+    this.commandesCentreEst = this.commandes.filter(
       (commande: any) => commande.region === 'Centre-Est'
+    );
+    this.commandesCentreEst.sort((a: any, b: any) =>
+      a.score > b.score ? -1 : 1
     );
   }
   getCommandesCentreOuest() {
-    this.commandesCentreOuest = this.listeCommandes.filter(
+    this.commandesCentreOuest = this.commandes.filter(
       (commande: any) => commande.region === 'Centre-Ouest'
+    );
+    this.commandesCentreOuest.sort((a: any, b: any) =>
+      a.score > b.score ? -1 : 1
     );
   }
   getCommandesSudEst() {
-    this.commandesSudEst = this.listeCommandes.filter(
+    this.commandesSudEst = this.commandes.filter(
       (commande: any) => commande.region === 'Sud-Est'
     );
+    this.commandesSudEst.sort((a: any, b: any) => (a.score > b.score ? -1 : 1));
   }
   getCommandesSudOuest() {
-    this.commandesSudOuest = this.listeCommandes.filter(
+    this.commandesSudOuest = this.commandes.filter(
       (commande: any) => commande.region === 'Sud-Ouest'
     );
+    this.commandesSudOuest.sort((a: any, b: any) =>
+      a.score > b.score ? -1 : 1
+    );
   }
-  async getListeColisage() {
-    this.listeColisage = await this.serviceEmballage
-      .listeEmballage()
-      .toPromise();
+  calculerPoidsCommandesParRegion(commandesParRegion: any) {
+    let poidsTotal = 0;
+    if (commandesParRegion) {
+      commandesParRegion.forEach((commande: any) => {
+        poidsTotal += commande.poids;
+      });
+    }
+    return Number(poidsTotal.toFixed(4));
   }
-  async getDetailFacture(id: any) {
-    //pour avoir les ids et les qtes des produits dans une facture
-    var detail = await this.serviceCommande.Detail_Facture(id).toPromise();
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onloadend = async () => {
-        try {
-          this.articles = [];
-          this.facture = reader.result;
-          var parseString = require('xml2js').parseString;
-          let data1;
-          parseString(
-            atob(this.facture.substr(28)),
-            function (err: any, result: any) {
-              data1 = result.Facture;
-            }
-          );
-          this.xmldata = data1;
-          if (this.xmldata.Produits[0].Produits_Simples[0].Produit) {
-            for (
-              let i = 0;
-              i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length;
-              i++
-            ) {
-              this.new_obj = {};
-              this.new_obj.id =
-                this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-              this.new_obj.qte =
-                this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
-
-              this.articles.push(this.new_obj);
-            }
-          }
-          if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
-            for (
-              let i = 0;
-              i < this.xmldata.Produits[0].Produits_Series[0].Produit.length;
-              i++
-            ) {
-              this.new_obj = {};
-              this.new_obj.id =
-                this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-              this.new_obj.qte =
-                this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
-
-              this.articles.push(this.new_obj);
-            }
-          }
-          if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
-            for (
-              let i = 0;
-              i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length;
-              i++
-            ) {
-              this.new_obj = {};
-              this.new_obj.id =
-                this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-              this.new_obj.qte =
-                this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
-
-              this.articles.push(this.new_obj);
-            }
-          }
-          resolve(this.articles);
-        } catch (err) {
-          reject(err);
-        }
-      };
-      reader.readAsDataURL(detail);
+  calculerVolumeCommandeParRegion(commandesParRegion: any) {
+    let volumeTotal = 0;
+    if (commandesParRegion) {
+      commandesParRegion.forEach((commande: any) => {
+        volumeTotal += commande.volume;
+      });
+    }
+    return Number(volumeTotal.toFixed(4));
+  }
+  calculerScoreCommandeParRegion(commandesParRegion: any) {
+    let scoreTotal = 0;
+    if (commandesParRegion) {
+      commandesParRegion.forEach((commande: any) => {
+        scoreTotal += commande.score;
+      });
+    }
+    return Number(scoreTotal.toFixed(4));
+  }
+  calculerPoidsMission() {
+    let poidsTotal = 0;
+    this.mission.forEach((commande: any) => {
+      poidsTotal += commande.poids;
     });
+    return Number(poidsTotal.toFixed(4));
   }
-  async getDetailBL(id: any) {
-    //pour avoir les ids et les qtes des produits dans un bon livraison
-    var detail = await this.serviceCommande.Detail_BL(id).toPromise();
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.onloadend = async () => {
-        try {
-          this.articlesBl = [];
-          this.BL = reader.result;
-          var parseString = require('xml2js').parseString;
-          let data1;
-          parseString(
-            atob(this.BL.substr(28)),
-            function (err: any, result: any) {
-              data1 = result.Bon_Livraison;
-            }
-          );
-          this.xmldata = data1;
-          if (this.xmldata.Produits[0].Produits_Simples[0].Produit) {
-            for (
-              let i = 0;
-              i < this.xmldata.Produits[0].Produits_Simples[0].Produit.length;
-              i++
-            ) {
-              this.new_obj = {};
-              this.new_obj.id =
-                this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Id;
-              this.new_obj.qte =
-                this.xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte;
-
-              this.articlesBl.push(this.new_obj);
-            }
-          }
-          if (this.xmldata.Produits[0].Produits_Series[0].Produit) {
-            for (
-              let i = 0;
-              i < this.xmldata.Produits[0].Produits_Series[0].Produit.length;
-              i++
-            ) {
-              this.new_obj = {};
-              this.new_obj.id =
-                this.xmldata.Produits[0].Produits_Series[0].Produit[i].Id;
-              this.new_obj.qte =
-                this.xmldata.Produits[0].Produits_Series[0].Produit[i].Qte;
-
-              this.articlesBl.push(this.new_obj);
-            }
-          }
-          if (this.xmldata.Produits[0].Produits_4Gs[0].Produit) {
-            for (
-              let i = 0;
-              i < this.xmldata.Produits[0].Produits_4Gs[0].Produit.length;
-              i++
-            ) {
-              this.new_obj = {};
-              this.new_obj.id =
-                this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id;
-              this.new_obj.qte =
-                this.xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte;
-
-              this.articlesBl.push(this.new_obj);
-            }
-          }
-          resolve(this.articlesBl);
-        } catch (err) {
-          reject(err);
-        }
-      };
-      reader.readAsDataURL(detail);
+  calculerVolumeMission() {
+    let volumeTotal = 0;
+    this.mission.forEach((commande: any) => {
+      volumeTotal += commande.volume;
     });
+    return Number(volumeTotal.toFixed(4));
+  }
+  ajouterCommandeDansMission(i: number, commandesParRegion: any) {
+    this.mission.push(commandesParRegion.splice(i, 1)[0]);
+    console.log(this.mission);
+  }
+  ajouterToutesCommandesParRegionDansMission(commandesParRegion: any) {
+    Array.prototype.push.apply(
+      this.mission,
+      commandesParRegion.splice(0, commandesParRegion.length)
+    );
+  }
+  annulerAjoutCommandeDansMission(i: number) {
+    switch (this.mission[i].region) {
+      case 'Nord-Est':
+        this.commandesNordEst.push(this.mission.splice(i, 1)[0]);
+        this.commandesNordEst.sort((a: any, b: any) =>
+          a.score > b.score ? -1 : 1
+        );
+        break;
+      case 'Nord-Ouest':
+        this.commandesNordOuest.push(this.mission.splice(i, 1)[0]);
+        this.commandesNordOuest.sort((a: any, b: any) =>
+          a.score > b.score ? -1 : 1
+        );
+        break;
+      case 'Centre-Est':
+        this.commandesCentreEst.push(this.mission.splice(i, 1)[0]);
+        this.commandesCentreEst.sort((a: any, b: any) =>
+          a.score > b.score ? -1 : 1
+        );
+        break;
+      case 'Centre-Ouest':
+        this.commandesCentreOuest.push(this.mission.splice(i, 1)[0]);
+        this.commandesCentreOuest.sort((a: any, b: any) =>
+          a.score > b.score ? -1 : 1
+        );
+        break;
+      case 'Sud-Est':
+        this.commandesSudEst.push(this.mission.splice(i, 1)[0]);
+        this.commandesSudEst.sort((a: any, b: any) =>
+          a.score > b.score ? -1 : 1
+        );
+        break;
+      case 'Sud-Est':
+        this.commandesSudOuest.push(this.mission.splice(i, 1)[0]);
+        this.commandesSudOuest.sort((a: any, b: any) =>
+          a.score > b.score ? -1 : 1
+        );
+        break;
+
+      default:
+        break;
+    }
+  }
+  annulerAjoutTousCommandeDansMission() {
+    console.log(this.mission);
+    for (let i = 0; i < this.mission.length; i++) {
+      switch (this.mission[i].region) {
+        case 'Nord-Est':
+          this.commandesNordEst.push(this.mission[i]);
+          this.commandesNordEst.sort((a: any, b: any) =>
+            a.score > b.score ? -1 : 1
+          );
+          break;
+        case 'Nord-Ouest':
+          this.commandesNordOuest.push(this.mission[i]);
+          this.commandesNordOuest.sort((a: any, b: any) =>
+            a.score > b.score ? -1 : 1
+          );
+          break;
+        case 'Centre-Est':
+          this.commandesCentreEst.push(this.mission[i]);
+          this.commandesCentreEst.sort((a: any, b: any) =>
+            a.score > b.score ? -1 : 1
+          );
+          break;
+        case 'Centre-Ouest':
+          this.commandesCentreOuest.push(this.mission[i]);
+          this.commandesCentreOuest.sort((a: any, b: any) =>
+            a.score > b.score ? -1 : 1
+          );
+          break;
+        case 'Sud-Est':
+          this.commandesSudEst.push(this.mission[i]);
+          this.commandesSudEst.sort((a: any, b: any) =>
+            a.score > b.score ? -1 : 1
+          );
+          break;
+        case 'Sud-Est':
+          this.commandesSudOuest.push(this.mission[i]);
+          this.commandesSudOuest.sort((a: any, b: any) =>
+            a.score > b.score ? -1 : 1
+          );
+          break;
+
+        default:
+          break;
+      }
+    }
+    this.mission = [];
   }
 }
