@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>Affecter des chauffeurs</h1>
+<div mat-dialog-content>
+    <table>
+        <thead>
+            <tr>
+                <th>Vehicule</th>
+                <th>Chauffeur</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let vehicule of vehicules">
+                <td scope="row">{{vehicule.matricule}}</td>
+                <td>
+                    <mat-select placeholder="Chauffeur" [(ngModel)]="selectedValue" name="chauffeur">
+                        <mat-option *ngFor="let chauffeur of chauffeursCompatibles" [value]="chauffeur">
+                            {{chauffeur.nom}}
+                        </mat-option>
+                    </mat-select>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div mat-dialog-actions style="float: right;">
+  <button mat-button mat-dialog-close color="warn">Annuler</button>
+  <button mat-raised-button color="primary" cdkFocusInitial>Ok</button>
+</div>

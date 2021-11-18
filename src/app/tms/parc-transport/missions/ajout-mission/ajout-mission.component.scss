@@ -24,9 +24,10 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
-.table th, .table td{
-    padding-top: 0;
-    padding-bottom: 0;
+.table th,
+.table td {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 h3 {
@@ -162,15 +163,35 @@ td:first-child {
 }
 
 .mission th {
-    position: sticky;
-    top: 40px;
-    background: white;
-    z-index: 100;
+  position: sticky;
+  top: 40px;
+  background: white;
+  z-index: 100;
 }
-.mission .entete{
-    padding: 0;
+.mission .entete {
+  padding: 0;
 }
 
+.vehicule th {
+  position: sticky;
+  top: 34px;
+  background: white;
+  z-index: 100;
+}
+
+.commandes th {
+  position: sticky;
+  top: 29px;
+  background: white;
+  z-index: 100;
+}
+.vehicule .entete {
+  padding-bottom: 5px;
+}
+.alerte {
+  color: tomato;
+  font-weight: bold;
+}
 @media only screen and (max-width: 1400px) {
   .col-perso {
     width: 100%;

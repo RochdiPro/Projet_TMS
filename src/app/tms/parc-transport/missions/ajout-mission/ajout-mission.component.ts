@@ -1,7 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { VehiculeService } from '../../vehicule/services/vehicule.service';
+import { AffecterChauffeur } from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
 @Component({
@@ -35,28 +37,30 @@ export class AjoutMissionComponent implements OnInit {
   client: any;
   commandes: any;
   listeCommandes: Object[] = [];
-  commandesNordEst: any;
-  commandesNordOuest: any;
-  commandesCentreEst: any;
-  commandesCentreOuest: any;
-  commandesSudEst: any;
-  commandesSudOuest: any;
-  form = new FormGroup({
-    nombreVoyages: new FormControl(1),
-    multiVehicule: new FormControl(false),
-  });
+  commandesNordEst: any = [];
+  commandesNordOuest: any = [];
+  commandesCentreEst: any = [];
+  commandesCentreOuest: any = [];
+  commandesSudEst: any = [];
+  commandesSudOuest: any = [];
+  form: FormGroup;
   listeVehicules: any;
   listeVehiculesLoues: any;
   mission: any[] = [];
+  checkBoxVehicules: any[] = [];
+  checkBoxVehiculesLoues: any[] = [];
+  vehiculesSelectionnes: any[] = [];
 
   constructor(
-    public fb: FormBuilder,
-    public serviceMission: MissionsService,
-    public serviceVehicule: VehiculeService,
-    public datepipe: DatePipe
+    private fb: FormBuilder,
+    private serviceMission: MissionsService,
+    private serviceVehicule: VehiculeService,
+    private datepipe: DatePipe,
+    private dialog: MatDialog
   ) {}
 
   async ngOnInit() {
+    this.creerForm();
     await this.getListeCommande();
     this.preparerListeCommande();
     this.getCommandesNordEst();
@@ -65,8 +69,133 @@ export class AjoutMissionComponent implements OnInit {
     this.getCommandesCentreOuest();
     this.getCommandesSudEst();
     this.getCommandesSudOuest();
-    this.getVehiculeDisponibles();
-    this.getVehiculeLoueDisponibles();
+    await this.getVehiculeDisponibles();
+    await this.getVehiculeLoueDisponibles();
+    this.creerCheckBoxsVehicules();
+    this.creerCheckBoxsVehiculesLoues();
+  }
+
+  // creation des formControls
+  creerForm() {
+    this.form = this.fb.group({
+      nombreVoyages: 1,
+      multiVehicule: false,
+    });
+  }
+
+  // creation de la liste qui contient les valeur des ngModels du checkBoxs vehicules
+  async creerCheckBoxsVehicules() {
+    this.listeVehicules.forEach(() => {
+      this.checkBoxVehicules.push({ value: false, diasable: false });
+    });
+  }
+
+  // creation de la liste qui contient les valeur des ngModels du checkBoxs vehiculesLoues
+  async creerCheckBoxsVehiculesLoues() {
+    this.listeVehiculesLoues.forEach(() => {
+      this.checkBoxVehiculesLoues.push({ value: false, diasable: false });
+    });
+  }
+
+  selectionnerVehicule(i: number, type: string, vehicule: any) {
+    switch (type) {
+      case 'privé':
+        if (this.checkBoxVehicules[i].value) {
+          this.vehiculesSelectionnes.push(vehicule);
+          if (!this.form.get('multiVehicule').value) {
+            this.checkBoxVehicules.forEach((checkBox) => {
+              if (!checkBox.value) {
+                checkBox.disable = true;
+              }
+            });
+            this.checkBoxVehiculesLoues.forEach((checkBox) => {
+              if (!checkBox.value) {
+                checkBox.disable = true;
+              }
+            });
+          }
+        } else {
+          let index = this.vehiculesSelectionnes.findIndex(v => v.id === vehicule.id);
+          this.vehiculesSelectionnes.splice(index, 1);
+          this.checkBoxVehicules.forEach((checkBox) => {
+            checkBox.disable = false;
+          });
+          this.checkBoxVehiculesLoues.forEach((checkBox) => {
+            checkBox.disable = false;
+          });
+        }
+        break;
+
+      case 'loue':
+        if (this.checkBoxVehiculesLoues[i].value) {
+          this.vehiculesSelectionnes.push(vehicule);
+          if (!this.form.get('multiVehicule').value) {
+            this.checkBoxVehicules.forEach((checkBox) => {
+              if (!checkBox.value) {
+                checkBox.disable = true;
+              }
+            });
+            this.checkBoxVehiculesLoues.forEach((checkBox) => {
+              if (!checkBox.value) {
+                checkBox.disable = true;
+              }
+            });
+          }
+        } else {
+          let index = this.vehiculesSelectionnes.findIndex(v => v.id_Vehicule_Loue === vehicule.id_Vehicule_Loue);
+          this.vehiculesSelectionnes.splice(index, 1);
+          this.checkBoxVehicules.forEach((checkBox) => {
+            checkBox.disable = false;
+          });
+          this.checkBoxVehiculesLoues.forEach((checkBox) => {
+            checkBox.disable = false;
+          });
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  // fonction qui s'execute on changeant l'etat du checkbox multiVehicules
+  clickerMultiVehiculesCheckBox(){
+    if (this.form.get("multiVehicule").value) {
+      this.checkBoxVehicules.forEach((checkBox) => {
+        checkBox.disable = false;
+      });
+      this.checkBoxVehiculesLoues.forEach((checkBox) => {
+        checkBox.disable = false;
+      });
+    } else {
+      this.checkBoxVehicules.forEach((checkBox) => {
+        checkBox.value = false;
+      });
+      this.checkBoxVehiculesLoues.forEach((checkBox) => {
+        checkBox.value = false;
+      });
+      this.vehiculesSelectionnes = []
+    }
+  }
+
+  get chargeUtileVehicule() {
+    let chargeUtile = 0
+    this.vehiculesSelectionnes.forEach((vehicule) => {
+      chargeUtile += vehicule.charge_utile;
+    });
+    chargeUtile *= this.form.get('nombreVoyages').value;
+    return chargeUtile;
+  }
+
+  get volumeUtileVehicule() {
+    let volumeUtile = 0
+    this.vehiculesSelectionnes.forEach((vehicule) => {
+      volumeUtile += (vehicule.longueur * vehicule.largeur * vehicule.hauteur);
+    });
+    volumeUtile *= this.form.get('nombreVoyages').value;
+    // convertir de cm³ vers m³
+    volumeUtile *= 0.000001;
+    return Number(volumeUtile.toFixed(3));
   }
 
   async getListeCommande() {
@@ -186,7 +315,6 @@ export class AjoutMissionComponent implements OnInit {
   }
   ajouterCommandeDansMission(i: number, commandesParRegion: any) {
     this.mission.push(commandesParRegion.splice(i, 1)[0]);
-    console.log(this.mission);
   }
   ajouterToutesCommandesParRegionDansMission(commandesParRegion: any) {
     Array.prototype.push.apply(
@@ -238,7 +366,6 @@ export class AjoutMissionComponent implements OnInit {
     }
   }
   annulerAjoutTousCommandeDansMission() {
-    console.log(this.mission);
     for (let i = 0; i < this.mission.length; i++) {
       switch (this.mission[i].region) {
         case 'Nord-Est':
@@ -283,5 +410,11 @@ export class AjoutMissionComponent implements OnInit {
       }
     }
     this.mission = [];
+  }
+
+  ouvrierBoiteDialogueAffecterChauffeur() {
+    const dialogRef = this.dialog.open(AffecterChauffeur,{
+      width: '400px'
+    })
   }
 }
