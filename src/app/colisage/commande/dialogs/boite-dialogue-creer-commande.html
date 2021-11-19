@@ -41,8 +41,9 @@
                         <mat-form-field appearance="fill" id="select-adresse">
                             <mat-label>Adresse de livraison</mat-label>
                             <mat-select formControlName="adresse" (selectionChange)="selectionnerAdresse()">
-                                <mat-option *ngFor="let position of positionsClientEnregistree; let i=index" [value]="i">
-                                    {{position.ville}}: {{position.adresse}} 
+                                <mat-option *ngFor="let position of positionsClientEnregistree; let i=index"
+                                    [value]="i">
+                                    {{position.ville}}: {{position.adresse}}
                                 </mat-option>
                                 <mat-option *ngIf="positionsClientEnregistree.length === 0" disabled>
                                     Pas d'adresse
@@ -70,7 +71,8 @@
                         </button>
                     </div>
                     <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
-                        (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
+                        (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true"
+                        [restriction]="countryRestriction">
                         <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
                             (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
                             <agm-info-window>{{data.commande.adresse}}</agm-info-window>

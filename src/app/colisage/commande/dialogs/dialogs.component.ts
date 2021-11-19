@@ -176,25 +176,157 @@ export class BoiteDialogueCreerCommande implements OnInit {
   positionsClientEnregistree: any = [];
   positionEstModifie: boolean = false;
   score: Number;
-  villes: String[] = [
-    'Bizerte',
-    'Tunis',
-    'Ariana',
-    'Manouba',
-    'Ben_Arous',
-    'Zaghouan',
-    'Nabeul',
-    'Jendouba',
-    'Beja',
-    'Kef',
-    'Siliana',
+  villes: any[] = [
+    {
+      nom: 'Bizerte',
+      restriction: {
+        latLngBounds: {
+          east: 10.281852848894673,
+          north: 37.34829803653758,
+          south: 36.73985364691916,
+          west: 9.078166160370051,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Tunis',
+      restriction: {
+        latLngBounds: {
+          east: 10.369407,
+          north: 36.944782,
+          south: 36.692089,
+          west: 10.002771,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Ariana',
+      restriction: {
+        latLngBounds: {
+          east: 10.369407,
+          north: 37.115684,
+          south: 36.822141,
+          west: 9.964339,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Manouba',
+      restriction: {
+        latLngBounds: {
+          east: 10.120446,
+          north: 36.971596,
+          south: 36.586412,
+          west: 9.566758,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Ben_Arous',
+      restriction: {
+        latLngBounds: {
+          east: 10.409405,
+          north: 36.808078,
+          south: 36.455402,
+          west: 10.036292,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Zaghouan',
+      restriction: {
+        latLngBounds: {
+          east: 10.391918,
+          north: 36.665134,
+          south: 36.001048,
+          west: 9.589744,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Nabeul',
+      restriction: {
+        latLngBounds: {
+          east: 11.158589,
+          north: 37.147098,
+          south: 36.352522,
+          west: 10.331798,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Jendouba',
+      restriction: {
+        latLngBounds: {
+          east: 9.079501,
+          north: 37.010252,
+          south: 36.351258,
+          west: 8.151019,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Beja',
+      restriction: {
+        latLngBounds: {
+          east: 9.391172,
+          north: 37.158356,
+          south: 36.336546,
+          west: 8.9106,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Kef',
+      restriction: {
+        latLngBounds: {
+          east: 9.167497,
+          north: 36.454129,
+          south: 35.611709,
+          west: 8.253016,
+        },
+        strictBounds: true,
+      },
+    },
+    {
+      nom: 'Siliana',
+      restriction: {
+        latLngBounds: {
+          east: 9.773190,
+          north: 36.478602,
+          south: 35.476400,
+          west: 8.926576,
+        },
+        strictBounds: true,
+      },
+    },
     'Sousse',
     'Monastir',
     'Mahdia',
     'Kairouan',
     'Kasserine',
     'Sidi_Bouzid',
-    'Sfax',
+    {
+      nom: 'Sfax',
+      restriction: {
+        latLngBounds: {
+          east: 11.392654,
+          north: 78.40460200688153,
+          south: 34.171222,
+          west: 9.686976,
+        },
+        strictBounds: true,
+      },
+    },
     'Gabes',
     'Mednine',
     'Tataouine',
@@ -202,6 +334,16 @@ export class BoiteDialogueCreerCommande implements OnInit {
     'Tozeur',
     'Kebili',
   ];
+  //view port restrictions
+  countryRestriction = {
+    latLngBounds: {
+      east: -149.73088535701655,
+      north: 37.44246759017879,
+      south: -35.95190678813464,
+      west: -127.05509132479719,
+    },
+    strictBounds: true,
+  };
   estNouvelleAdresse = false;
   constructor(
     private fb: FormBuilder,
@@ -213,7 +355,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.villes.sort((a: any,b: any) => a > b ? 1 : -1)
+    this.villes.sort((a: any, b: any) => (a > b ? 1 : -1));
     this.firstFormGroup = this.fb.group({
       adresse: ['', Validators.required],
       nouvelleVille: '',
@@ -259,7 +401,10 @@ export class BoiteDialogueCreerCommande implements OnInit {
   ajouterAdresse() {
     if (!this.estNouvelleAdresse) {
       this.estNouvelleAdresse = true;
-    } else if (this.firstFormGroup.get('nouvelleAdresse').value !== '' && this.firstFormGroup.get('nouvelleVille').value !== '') {
+    } else if (
+      this.firstFormGroup.get('nouvelleAdresse').value !== '' &&
+      this.firstFormGroup.get('nouvelleVille').value !== ''
+    ) {
       this.positionsClientEnregistree.push({
         adresse: this.firstFormGroup.get('nouvelleAdresse').value,
         ville: this.firstFormGroup.get('nouvelleVille').value,
@@ -268,15 +413,21 @@ export class BoiteDialogueCreerCommande implements OnInit {
       });
       this.firstFormGroup.get('nouvelleAdresse').setValue('');
       this.firstFormGroup.get('nouvelleVille').setValue('');
-      this.firstFormGroup.get('adresse').setValue(this.positionsClientEnregistree.length-1);
-      this.positionClient = this.positionsClientEnregistree[this.positionsClientEnregistree.length-1];
+      this.firstFormGroup
+        .get('adresse')
+        .setValue(this.positionsClientEnregistree.length - 1);
+      this.positionClient =
+        this.positionsClientEnregistree[
+          this.positionsClientEnregistree.length - 1
+        ];
       this.estNouvelleAdresse = false;
     }
   }
 
   selectionnerAdresse() {
-    this.positionClient = this.positionsClientEnregistree[this.firstFormGroup.get('adresse').value];
-    console.log(this.positionClient)
+    this.positionClient =
+      this.positionsClientEnregistree[this.firstFormGroup.get('adresse').value];
+    console.log(this.positionClient);
     this.getPositionClient();
   }
   async getListeEmballage() {
@@ -533,7 +684,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       this.positionClient.longitude = this.lng;
       this.positionClient.latitude = this.lat;
       position.append('idClient', this.data.commande.idClient);
-      position.append('ville', this.positionClient.ville)
+      position.append('ville', this.positionClient.ville);
       position.append('adresse', this.positionClient.adresse);
       position.append('longitude', this.positionClient.longitude);
       position.append('latitude', this.positionClient.latitude);
@@ -545,7 +696,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       let position: any = new FormData();
       position.append('id', this.positionClient.id);
       position.append('idClient', this.positionClient.idClient);
-      position.append('ville', this.positionClient.ville)
+      position.append('ville', this.positionClient.ville);
       position.append('adresse', this.positionClient.adresse);
       position.append('longitude', this.lng);
       position.append('latitude', this.lat);
@@ -597,7 +748,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('score', this.score);
     commande.append('poids', this.poidsTotalBrut);
     commande.append('volume', this.volumeTotal);
-    
+
     await this.serviceCommande.creerCommande(commande).toPromise();
     Swal.fire({
       icon: 'success',

@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { catchError } from 'rxjs/operators';
 const erp = "/ERP/";
 const infonet = "/INFONET/";
 @Injectable({
   providedIn: 'root'
 })
 export class ChauffeurService {
+  handleError: any;
 
   constructor(private httpClient: HttpClient) { }
 
@@ -29,6 +31,16 @@ export class ChauffeurService {
   public imageEmploye(id: any) {
     return this.httpClient.get(infonet + 'Image_Employee' + '?Id=' + id);
 
+  }
+
+  //get liste des chauffeurs
+  public getChauffeurs() {
+    return this.httpClient.get(infonet + 'Filtre_Employee', {
+      params: {
+        Champ: 'role',
+        Valeur: 'chauffeur'
+      }
+    }).pipe(catchError(this.handleError));
   }
 
 }

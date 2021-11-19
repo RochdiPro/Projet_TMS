@@ -9,7 +9,8 @@
                     <span><b>Poids Total:</b> {{calculerPoidsMission()}}kg </span>
                     <span><b>Volume Total:</b> {{calculerVolumeMission()}}m³</span>
                     <span style="width: 60px;">
-                        <button mat-icon-button color="primary" disabled="false" (click)=" ouvrierBoiteDialogueAffecterChauffeur()">
+                        <button mat-icon-button color="primary" disabled="false"
+                            (click)=" ouvrierBoiteDialogueAffecterChauffeur()">
                             <mat-icon>add_circle</mat-icon>
                         </button>
                     </span>
@@ -27,7 +28,8 @@
                                 <th>Score</th>
                                 <th>
                                     <button mat-icon-button color="warn" matTooltip="Ajouter tous"
-                                        matTooltipPosition="above" (click)="annulerAjoutTousCommandeDansMission()"
+                                        matTooltipPosition="above"
+                                        (click)="annulerAjoutTousCommandeDansMission();"
                                         [disabled]="mission.length === 0">
                                         <mat-icon>indeterminate_check_box</mat-icon>
                                     </button>
@@ -75,8 +77,10 @@
                         <mat-checkbox class="example-margin" id="multiple-vehicules" color="primary"
                             formControlName="multiVehicule" (change)="clickerMultiVehiculesCheckBox()"></mat-checkbox>
                     </span>
-                    <span><b>Poids:</b><span [ngClass]="{'alerte': chargeUtileVehicule < calculerPoidsMission()}">{{chargeUtileVehicule}}kg</span></span>
-                    <span><b>Volume:</b><span [ngClass]="{'alerte': volumeUtileVehicule < calculerVolumeMission()}">{{volumeUtileVehicule}}m³</span></span>
+                    <span><b>Poids:</b><span
+                            [ngClass]="{'alerte': chargeUtileVehicule < calculerPoidsMission()}">{{chargeUtileVehicule}}kg</span></span>
+                    <span><b>Volume:</b><span
+                            [ngClass]="{'alerte': volumeUtileVehicule < calculerVolumeMission()}">{{volumeUtileVehicule}}m³</span></span>
                 </div>
                 <div class="contenu-list">
                     <table class="table">
@@ -94,12 +98,15 @@
                                     style="text-align: center; height: 40px; background: hsla(230,48%,95%,100%); font-weight: bold; font-size: 12px;">
                                     Véhicules possédées</td>
                             </tr>
-                            <tr *ngFor="let vehicule of listeVehicules; let i=index;">
-                                <td scope="row">{{vehicule.matricule}}</td>
+                            <tr *ngFor="let vehicule of listeVehiculesAffiches; let i=index;">
+                                <td scope="row">{{vehicule.vehicule.matricule}}</td>
                                 <td></td>
                                 <td></td>
                                 <td style="height: 41px; text-align: center;">
-                                    <mat-checkbox *ngIf="checkBoxVehicules[i]" color="primary" [(ngModel)]="checkBoxVehicules[i].value" [disabled]="checkBoxVehicules[i].disable" (change)="selectionnerVehicule(i, 'privé', vehicule)"></mat-checkbox>
+                                    <mat-checkbox *ngIf="checkBoxVehicules[i]" color="primary"
+                                        [(ngModel)]="checkBoxVehicules[i].value"
+                                        [disabled]="checkBoxVehicules[i].disable"
+                                        (change)="selectionnerVehicule(i, 'privé', vehicule.vehicule)"></mat-checkbox>
                                 </td>
                             </tr>
                             <tr>
@@ -112,22 +119,14 @@
                                 <td></td>
                                 <td></td>
                                 <td style="height: 41px; text-align: center;">
-                                    <mat-checkbox color="primary" [(ngModel)]="checkBoxVehiculesLoues[i].value" [disabled]="checkBoxVehiculesLoues[i].disable" (change)="selectionnerVehicule(i, 'loue', vehiculeLoue)">
+                                    <mat-checkbox color="primary" [(ngModel)]="checkBoxVehiculesLoues[i].value"
+                                        [disabled]="checkBoxVehiculesLoues[i].disable"
+                                        (change)="selectionnerVehicule(i, 'loue', vehiculeLoue)">
                                     </mat-checkbox>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
-                    <!-- <mat-selection-list #Vehicules>
-                        <div id="separation" *ngIf="listeVehicules"><span>véhicules possédées</span></div>
-                        <mat-list-option *ngFor="let vehicule of listeVehicules">
-                            {{vehicule.matricule}}
-                        </mat-list-option>
-                        <div id="separation" *ngIf="listeVehiculesLoues"><span>véhicules loués</span></div>
-                        <mat-list-option *ngFor="let vehiculeLoue of listeVehiculesLoues">
-                            {{vehiculeLoue.matricule}}
-                        </mat-list-option>
-                    </mat-selection-list> -->
                 </div>
             </div>
         </div>
@@ -383,7 +382,7 @@
                                 <th>
                                     <button mat-icon-button color="primary" matTooltip="Ajouter tous"
                                         matTooltipPosition="above"
-                                        (click)="ajouterToutesCommandesParRegionDansMission(commandesSudEst)"
+                                        (click)="ajouterToutesCommandesParRegionDansMission(commandesSudEst);"
                                         [disabled]="commandesSudEst.length === 0">
                                         <mat-icon>add_box</mat-icon>
                                     </button>
