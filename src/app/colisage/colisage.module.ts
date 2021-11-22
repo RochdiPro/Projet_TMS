@@ -92,7 +92,8 @@ import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-em
     MatButtonModule,
     MatCheckboxModule,
     AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8'
+      apiKey: 'AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8',
+      libraries: ['places']
     }),
   ],
   providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],

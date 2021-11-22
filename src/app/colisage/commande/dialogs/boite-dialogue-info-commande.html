@@ -2,7 +2,7 @@
 <button type="button" class="close" aria-label="Close"><span aria-hidden="true" mat-dialog-close>×</span></button>
 <!-- fin Bouton Fermer -->
 <h1 mat-dialog-title>Information commande</h1>
-<div mat-dialog-content *ngIf="listeColisage">
+<div *ngIf="listeColisage">
     <div class="client">
         <h2>Client</h2>
         <div class="information-client">
@@ -27,7 +27,7 @@
             </div>
             <div class="row">
                 <div class="colonne entete">Ville:</div>
-                <div class="colonne">{{data.commande.ville}}</div>
+                <div class="colonne">{{ville}}</div>
                 <div class="colonne entete">Adresse:</div>
                 <div class="colonne">{{adresse}}</div>
             </div>

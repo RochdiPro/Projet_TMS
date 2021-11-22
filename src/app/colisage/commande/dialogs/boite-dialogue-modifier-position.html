@@ -1,6 +1,7 @@
 <h1 mat-dialog-title>Modifier position client</h1>
-<div mat-dialog-content>
+<div>
     <form [formGroup]="form">
+        <!-- partie informations client -->
         <ng-template matStepLabel>Informations du client</ng-template>
         <h2>Client</h2>
         <div class="row">
@@ -33,32 +34,53 @@
             <div class="colonne entete">Numéro piéce d'identité:</div>
             <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
         </div>
+        <!-- partie adresse -->
         <div class="map">
             <div id="manupilation-adresse">
+                <!-- selection adresse enregistrée -->
                 <mat-form-field appearance="fill">
                     <mat-label>Adresse de livraison</mat-label>
                     <mat-select formControlName="adresse" (selectionChange)="selectionnerAdresse()"
-                        [compareWith]="fonctionComparaisonPosition">
-                        <mat-option *ngFor="let position of positionsClientEnregistree" [value]="position">
-                            {{position.adresse}}
+                        >
+                        <mat-option *ngFor="let position of positionsClientEnregistree; let i=index" [value]="i">
+                            {{position.ville}}: {{position.adresse}}
                         </mat-option>
                         <mat-option *ngIf="positionsClientEnregistree.length === 0" disabled>
                             Pas d'adresse
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-                <div id="ajouter-adresse">
-                    <input type="text" id="adresse-input" formControlName="nouvelleAdresse">
-                    <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
-                        <mat-icon>add_location</mat-icon>
-                    </button>
+                <!-- partie ajouter adresse -->
+                <div id="ajouter-adresse" *ngIf="estNouvelleAdresse">
+                    <!-- selectionner ville -->
+                    <mat-form-field appearance="fill" id="select-adresse">
+                        <mat-label>Ville</mat-label>
+                        <mat-select formControlName="nouvelleVille" (selectionChange)="selectionnerVille()">
+                            <mat-option *ngFor="let ville of villes" [value]="ville">
+                                {{ville.nom}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <!-- champ adresse -->
+                    <mat-form-field appearance="fill">
+                        <input matInput placeholder="Adresse" formControlName="nouvelleAdresse" type="text"
+                            (keydown.enter)="$event.preventDefault()" autocorrect="off" autocapitalize="off"
+                            spellcheck="off" type="text" #search>
+
+                    </mat-form-field>
                 </div>
+                <!-- bouton afficher et ajouter nouvelle adresse -->
+                <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
+                    <mat-icon>add_location</mat-icon>
+                </button>
             </div>
+            <!-- partie map pour modifier position -->
             <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
-                (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
+                (mapDblClick)="modifierPositionMarquer($event)" [disableDoubleClickZoom]="true"
+                [restriction]="countryRestriction">
                 <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
                     (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
-                    <agm-info-window>{{data.commande.adresse}}</agm-info-window>
+                    <agm-info-window>{{infoMarqueur}}</agm-info-window>
                 </agm-marker>
             </agm-map>
         </div>

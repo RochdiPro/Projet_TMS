@@ -194,6 +194,7 @@ export class AjouterCommandeComponent implements OnInit {
     const dialogRef = this.dialogue.open(BoiteDialogueCreerCommande, {
       width: '1000px',
       maxWidth: '95vw',
+      maxHeight: '95vh',
       data: { commande: commande },
     });
   }
