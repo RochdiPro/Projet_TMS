@@ -20,11 +20,11 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [
     'id',
-    'reference',
+    'referenceDocument',
     'nomClient',
     'ville',
     'adresse',
-    'date',
+    'dateCreation',
     'score',
     'etat',
     'actions',
@@ -64,7 +64,8 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   async getListeCommandes() {
     this.dataSource.data = await this.serviceCommande
       .getListeCommandes()
-      .toPromise();
+      .toPromise()
+
   }
 
   ouvrirBoiteDialogueInformationCommande(commande: any) {
@@ -92,4 +93,3 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
     this.getListeCommandes();
   }
 }
-

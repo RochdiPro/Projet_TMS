@@ -53,6 +53,9 @@ export class AjoutMissionComponent implements OnInit {
   checkBoxVehiculesLoues: any[] = [];
   vehiculesSelectionnes: any[] = [];
   listeChauffeurs: any;
+  vehiculeEstSelectionne = false;
+  vehiculesPriveSelectionnes: any = [];
+  missions: any = [];
 
   constructor(
     private fb: FormBuilder,
@@ -105,6 +108,7 @@ export class AjoutMissionComponent implements OnInit {
       case 'privé':
         if (this.checkBoxVehicules[i].value) {
           this.vehiculesSelectionnes.push(vehicule);
+          this.vehiculesPriveSelectionnes.push(vehicule);
           if (!this.form.get('multiVehicule').value) {
             this.checkBoxVehicules.forEach((checkBox) => {
               if (!checkBox.value) {
@@ -122,6 +126,10 @@ export class AjoutMissionComponent implements OnInit {
             (v) => v.id === vehicule.id
           );
           this.vehiculesSelectionnes.splice(index, 1);
+          let i = this.vehiculesPriveSelectionnes.findIndex(
+            (v: any) => v.id === vehicule.id
+          );
+          this.vehiculesPriveSelectionnes.splice(i, 1);
           this.checkBoxVehicules.forEach((checkBox) => {
             checkBox.disable = false;
           });
@@ -165,6 +173,18 @@ export class AjoutMissionComponent implements OnInit {
     }
   }
 
+  get pasDeVehiculeSelectionne() {
+    this.vehiculesSelectionnes.length > 0
+      ? (this.vehiculeEstSelectionne = true)
+      : (this.vehiculeEstSelectionne = false);
+    return !this.vehiculeEstSelectionne;
+  }
+
+  get missionVide() {
+    let vide = false;
+    this.mission.length > 0 ? (vide = false) : (vide = true);
+    return vide;
+  }
   // fonction qui s'execute on changeant l'etat du checkbox multiVehicules
   clickerMultiVehiculesCheckBox() {
     if (this.form.get('multiVehicule').value) {
@@ -374,6 +394,14 @@ export class AjoutMissionComponent implements OnInit {
     }
     return Number(scoreTotal.toFixed(4));
   }
+  convertirScoreEnPourcentageParRapportScoreRegion(
+    scoreCommande: any,
+    commandesParRegion: any
+  ) {
+    let scoreRegion = this.calculerScoreCommandeParRegion(commandesParRegion);
+    let pourcentageScore = (100 / scoreRegion) * scoreCommande;
+    return Number(pourcentageScore.toFixed(3));
+  }
   calculerPoidsMission() {
     let poidsTotal = 0;
     this.mission.forEach((commande: any) => {
@@ -387,6 +415,18 @@ export class AjoutMissionComponent implements OnInit {
       volumeTotal += commande.volume;
     });
     return Number(volumeTotal.toFixed(4));
+  }
+  calculerScoreMission() {
+    let scoreTotal = 0;
+    this.mission.forEach((commande: any) => {
+      scoreTotal += commande.score;
+    });
+    return Number(scoreTotal.toFixed(3));
+  }
+  convertirScoreEnPourcentageParRapportMission(scoreCommande: any) {
+    let scoreMission = this.calculerScoreMission();
+    let pourcentageScore = (100 / scoreMission) * scoreCommande;
+    return Number(pourcentageScore.toFixed(3));
   }
   ajouterCommandeDansMission(i: number, commandesParRegion: any) {
     this.mission.push(commandesParRegion.splice(i, 1)[0]);
@@ -404,37 +444,37 @@ export class AjoutMissionComponent implements OnInit {
       case 'Nord-Est':
         this.commandesNordEst.push(this.mission.splice(i, 1)[0]);
         this.commandesNordEst.sort((a: any, b: any) =>
-          a.score > b.score ? -1 : 1
+          a.dateCreation > b.dateCreation ? 1 : -1
         );
         break;
       case 'Nord-Ouest':
         this.commandesNordOuest.push(this.mission.splice(i, 1)[0]);
         this.commandesNordOuest.sort((a: any, b: any) =>
-          a.score > b.score ? -1 : 1
+          a.dateCreation > b.dateCreation ? 1 : -1
         );
         break;
       case 'Centre-Est':
         this.commandesCentreEst.push(this.mission.splice(i, 1)[0]);
         this.commandesCentreEst.sort((a: any, b: any) =>
-          a.score > b.score ? -1 : 1
+          a.dateCreation > b.dateCreation ? 1 : -1
         );
         break;
       case 'Centre-Ouest':
         this.commandesCentreOuest.push(this.mission.splice(i, 1)[0]);
         this.commandesCentreOuest.sort((a: any, b: any) =>
-          a.score > b.score ? -1 : 1
+          a.dateCreation > b.dateCreation ? 1 : -1
         );
         break;
       case 'Sud-Est':
         this.commandesSudEst.push(this.mission.splice(i, 1)[0]);
         this.commandesSudEst.sort((a: any, b: any) =>
-          a.score > b.score ? -1 : 1
+          a.dateCreation > b.dateCreation ? 1 : -1
         );
         break;
       case 'Sud-Est':
         this.commandesSudOuest.push(this.mission.splice(i, 1)[0]);
         this.commandesSudOuest.sort((a: any, b: any) =>
-          a.score > b.score ? -1 : 1
+          a.dateCreation > b.dateCreation ? 1 : -1
         );
         break;
 
@@ -449,37 +489,37 @@ export class AjoutMissionComponent implements OnInit {
         case 'Nord-Est':
           this.commandesNordEst.push(this.mission[i]);
           this.commandesNordEst.sort((a: any, b: any) =>
-            a.score > b.score ? -1 : 1
+            a.dateCreation > b.dateCreation ? 1 : -1
           );
           break;
         case 'Nord-Ouest':
           this.commandesNordOuest.push(this.mission[i]);
           this.commandesNordOuest.sort((a: any, b: any) =>
-            a.score > b.score ? -1 : 1
+            a.dateCreation > b.dateCreation ? 1 : -1
           );
           break;
         case 'Centre-Est':
           this.commandesCentreEst.push(this.mission[i]);
           this.commandesCentreEst.sort((a: any, b: any) =>
-            a.score > b.score ? -1 : 1
+            a.dateCreation > b.dateCreation ? 1 : -1
           );
           break;
         case 'Centre-Ouest':
           this.commandesCentreOuest.push(this.mission[i]);
           this.commandesCentreOuest.sort((a: any, b: any) =>
-            a.score > b.score ? -1 : 1
+            a.dateCreation > b.dateCreation ? 1 : -1
           );
           break;
         case 'Sud-Est':
           this.commandesSudEst.push(this.mission[i]);
           this.commandesSudEst.sort((a: any, b: any) =>
-            a.score > b.score ? -1 : 1
+            a.dateCreation > b.dateCreation ? 1 : -1
           );
           break;
         case 'Sud-Est':
           this.commandesSudOuest.push(this.mission[i]);
           this.commandesSudOuest.sort((a: any, b: any) =>
-            a.score > b.score ? -1 : 1
+            a.dateCreation > b.dateCreation ? 1 : -1
           );
           break;
 
@@ -492,8 +532,22 @@ export class AjoutMissionComponent implements OnInit {
   }
 
   ouvrierBoiteDialogueAffecterChauffeur() {
+    if (this.vehiculesPriveSelectionnes.length === 0) return;
     const dialogRef = this.dialog.open(AffecterChauffeur, {
       width: '400px',
+      data: {
+        vehicules: this.vehiculesPriveSelectionnes,
+      },
     });
+    dialogRef.afterClosed().subscribe(result => {
+      let vehicules: any = []
+      let chauffeurs: any = []
+      result.forEach((element: any) => {
+        vehicules.push(element.vehicule)
+        chauffeurs.push(element.chauffeur)
+      });
+      this.missions.push({commandes: this.mission, vehicule: vehicules, chauffeur: chauffeurs})
+      console.log(this.missions)
+    })
   }
 }

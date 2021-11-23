@@ -9,7 +9,7 @@
                     <span><b>Poids Total:</b> {{calculerPoidsMission()}}kg </span>
                     <span><b>Volume Total:</b> {{calculerVolumeMission()}}m³</span>
                     <span style="width: 60px;">
-                        <button mat-icon-button color="primary" disabled="false"
+                        <button mat-icon-button color="primary" [disabled]="pasDeVehiculeSelectionne || missionVide"
                             (click)=" ouvrierBoiteDialogueAffecterChauffeur()">
                             <mat-icon>add_circle</mat-icon>
                         </button>
@@ -28,8 +28,7 @@
                                 <th>Score</th>
                                 <th>
                                     <button mat-icon-button color="warn" matTooltip="Ajouter tous"
-                                        matTooltipPosition="above"
-                                        (click)="annulerAjoutTousCommandeDansMission();"
+                                        matTooltipPosition="above" (click)="annulerAjoutTousCommandeDansMission();"
                                         [disabled]="mission.length === 0">
                                         <mat-icon>indeterminate_check_box</mat-icon>
                                     </button>
@@ -49,7 +48,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{commande.score}}</td>
+                                <td>{{convertirScoreEnPourcentageParRapportMission(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button color="warn" (click)="annulerAjoutCommandeDansMission(i)">
@@ -174,7 +173,8 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{commande.score}}</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesNordEst)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button style="color: #2cbb42;"
@@ -230,7 +230,8 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{commande.score}}</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesNordOuest)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button style="color: #2cbb42;"
@@ -288,7 +289,8 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{commande.score}}</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesCentreEst)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button style="color: #2cbb42;"
@@ -344,7 +346,8 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{commande.score}}</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesCentreOuest)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button style="color: #2cbb42;"
@@ -402,7 +405,8 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{commande.score}}</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesSudEst)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button style="color: #2cbb42;"
@@ -458,7 +462,8 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{commande.score}}</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesSudOuest)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button style="color: #2cbb42;"
@@ -491,6 +496,76 @@
                     </div>
                 </div>
                 <div class="contenu-list">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Région</th>
+                                <th>Vehicule</th>
+                                <th>Chauffeur</th>
+                                <th>Sc/G</th>
+                                <th>Volume V</th>
+                                <th>Volume</th>
+                                <th>Poids V</th>
+                                <th>Poids</th>
+                                <th>
+                                    <button mat-icon-button color="primary" matTooltip="Ajouter tous"
+                                        matTooltipPosition="above">
+                                        <mat-icon>add_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let mis of missions;">
+                                <!-- colonne region -->
+                                <td scope="row">1</td>
+                                <!-- colonne vehicule -->
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let vehicule of mis.vehicule">
+                                            {{vehicule.matricule}}
+                                        </li>
+                                    </ul>
+                                </td>
+                                <!-- colonne chauffeur -->
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let chauffeur of mis.chauffeur">
+                                            {{chauffeur.nom}}
+                                        </li>
+                                    </ul>
+                                </td>
+                                <!-- colonne score -->
+                                <td>{{""}}</td>
+                                <!-- colonne volume vehicule -->
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let vehicule of mis.vehicule">
+                                            {{vehicule.longueur * vehicule.largeur * vehicule.hauteur}}
+                                        </li>
+                                    </ul>
+                                </td>
+                                <!-- colonne volume mission -->
+                                <td>{{""}}</td>
+                                <!-- colonne poids vehicule -->
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let vehicule of mis.vehicule">
+                                            {{vehicule.charge_utile}}
+                                        </li>
+                                    </ul>
+                                </td>
+                                <!-- colonne poids mission -->
+                                <td>{{""}}</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button style="color: #2cbb42;">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
