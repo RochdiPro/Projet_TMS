@@ -193,6 +193,11 @@ td:first-child {
   color: tomato;
   font-weight: bold;
 }
+ul{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 @media only screen and (max-width: 1400px) {
   .col-perso {
     width: 100%;

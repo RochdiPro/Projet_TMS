@@ -12,7 +12,7 @@
                 <th scope="row">{{couple.vehicule.matricule}}</th>
                 <td>
                     <mat-form-field appearance="fill">
-                        <mat-select placeholder="Chauffeur" name="chauffeur" formControlName="chauffeur">
+                        <mat-select placeholder="Chauffeur" name="chauffeur" formControlName="chauffeur" (selectionChange)="rafraichirListeChauffeur(i)">
                             <mat-option *ngFor="let chauffeur of couple.chauffeurs" [value]="chauffeur">
                                 {{chauffeur.nom}}
                             </mat-option>

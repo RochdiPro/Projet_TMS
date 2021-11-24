@@ -70,6 +70,18 @@ export class AffecterChauffeur implements OnInit {
     });
   }
 
+  // si un chauffeur est disponible pour plusieurs vehicules et on selectionne se chauffeur dans un vehicule on l'enleve pour les autres
+  rafraichirListeChauffeur(i: any){
+    for (let j = 0; j < this.couplesVehiculeChauffeurs.length; j++) {
+      this.couplesVehiculeChauffeurs[j].chauffeurs.forEach((chauffeurLoop: any) => {
+        if(j !== i && this.chauffeursForms.controls[i].get('chauffeur').value === chauffeurLoop) {
+          this.couplesVehiculeChauffeurs[j].chauffeurs.splice(j,1);
+        }
+      });
+      
+    }
+  }
+
   //   bouton ok
   valider() {
     let couplesVehiculeChauffeur = [];

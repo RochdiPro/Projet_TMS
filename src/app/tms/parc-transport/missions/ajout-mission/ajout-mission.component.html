@@ -9,8 +9,9 @@
                     <span><b>Poids Total:</b> {{calculerPoidsMission()}}kg </span>
                     <span><b>Volume Total:</b> {{calculerVolumeMission()}}m³</span>
                     <span style="width: 60px;">
-                        <button mat-icon-button color="primary" [disabled]="pasDeVehiculeSelectionne || missionVide"
-                            (click)=" ouvrierBoiteDialogueAffecterChauffeur()">
+                        <button mat-icon-button name="ajouter-mission" color="primary"
+                            [disabled]="pasDeVehiculeSelectionne || missionVide || poidsVehiculeInferieurPoidsCommande || volumeVehiculeInferieurVolumeCommande"
+                            (click)=" ajouterMissionFileAttente()">
                             <mat-icon>add_circle</mat-icon>
                         </button>
                     </span>
@@ -27,7 +28,7 @@
                                 <th>Volume</th>
                                 <th>Score</th>
                                 <th>
-                                    <button mat-icon-button color="warn" matTooltip="Ajouter tous"
+                                    <button mat-icon-button name="enlever-tous-commandes" color="warn" matTooltip="Annuler tous"
                                         matTooltipPosition="above" (click)="annulerAjoutTousCommandeDansMission();"
                                         [disabled]="mission.length === 0">
                                         <mat-icon>indeterminate_check_box</mat-icon>
@@ -51,7 +52,7 @@
                                 <td>{{convertirScoreEnPourcentageParRapportMission(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button color="warn" (click)="annulerAjoutCommandeDansMission(i)">
+                                    <button mat-icon-button name="enlever-commande" color="warn" (click)="annulerAjoutCommandeDansMission(i)">
                                         <mat-icon>remove</mat-icon>
                                     </button>
                                 </td>
@@ -77,9 +78,9 @@
                             formControlName="multiVehicule" (change)="clickerMultiVehiculesCheckBox()"></mat-checkbox>
                     </span>
                     <span><b>Poids:</b><span
-                            [ngClass]="{'alerte': chargeUtileVehicule < calculerPoidsMission()}">{{chargeUtileVehicule}}kg</span></span>
+                            [ngClass]="{'alerte': poidsVehiculeInferieurPoidsCommande}">{{chargeUtileVehiculesSelectionnes}}kg</span></span>
                     <span><b>Volume:</b><span
-                            [ngClass]="{'alerte': volumeUtileVehicule < calculerVolumeMission()}">{{volumeUtileVehicule}}m³</span></span>
+                            [ngClass]="{'alerte': volumeVehiculeInferieurVolumeCommande}">{{volumeUtileVehiculesSelectionnes}}m³</span></span>
                 </div>
                 <div class="contenu-list">
                     <table class="table">
@@ -105,7 +106,7 @@
                                     <mat-checkbox *ngIf="checkBoxVehicules[i]" color="primary"
                                         [(ngModel)]="checkBoxVehicules[i].value"
                                         [disabled]="checkBoxVehicules[i].disable"
-                                        (change)="selectionnerVehicule(i, 'privé', vehicule.vehicule)"></mat-checkbox>
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'privé', vehicule.vehicule)"></mat-checkbox>
                                 </td>
                             </tr>
                             <tr>
@@ -120,7 +121,7 @@
                                 <td style="height: 41px; text-align: center;">
                                     <mat-checkbox color="primary" [(ngModel)]="checkBoxVehiculesLoues[i].value"
                                         [disabled]="checkBoxVehiculesLoues[i].disable"
-                                        (change)="selectionnerVehicule(i, 'loue', vehiculeLoue)">
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'loue', vehiculeLoue)">
                                     </mat-checkbox>
                                 </td>
                             </tr>
@@ -177,7 +178,7 @@
                                     commandesNordEst)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button style="color: #2cbb42;"
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
                                         (click)="ajouterCommandeDansMission(i, commandesNordEst)">
                                         <mat-icon>add</mat-icon>
                                     </button>
@@ -234,7 +235,7 @@
                                     commandesNordOuest)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button style="color: #2cbb42;"
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
                                         (click)="ajouterCommandeDansMission(i, commandesNordOuest)">
                                         <mat-icon>add</mat-icon>
                                     </button>
@@ -293,7 +294,7 @@
                                     commandesCentreEst)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button style="color: #2cbb42;"
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
                                         (click)="ajouterCommandeDansMission(i, commandesCentreEst)">
                                         <mat-icon>add</mat-icon>
                                     </button>
@@ -350,7 +351,7 @@
                                     commandesCentreOuest)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button style="color: #2cbb42;"
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
                                         (click)="ajouterCommandeDansMission(i, commandesCentreOuest)">
                                         <mat-icon>add</mat-icon>
                                     </button>
@@ -409,7 +410,7 @@
                                     commandesSudEst)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button style="color: #2cbb42;"
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
                                         (click)="ajouterCommandeDansMission(i, commandesSudEst)">
                                         <mat-icon>add</mat-icon>
                                     </button>
@@ -466,7 +467,7 @@
                                     commandesSudOuest)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button style="color: #2cbb42;"
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
                                         (click)="ajouterCommandeDansMission(i, commandesSudOuest)">
                                         <mat-icon>add</mat-icon>
                                     </button>
@@ -483,18 +484,6 @@
         <div class="col-perso">
             <h3>File d'attente</h3>
             <div class="cadre2">
-                <div class="entete-file-attente">
-                    <div class="row">
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Région</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Vehicule</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Sc/G</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Volume V</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Poids V</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;"></span></div>
-                    </div>
-                </div>
                 <div class="contenu-list">
                     <table class="table">
                         <thead>
@@ -508,15 +497,15 @@
                                 <th>Poids V</th>
                                 <th>Poids</th>
                                 <th>
-                                    <button mat-icon-button color="primary" matTooltip="Ajouter tous"
-                                        matTooltipPosition="above">
-                                        <mat-icon>add_box</mat-icon>
+                                    <button mat-icon-button color="warn" matTooltip="Annuler tous"
+                                        matTooltipPosition="above" (click)="annulerAjoutTousMissionsDansFileAttente()" [disabled]="fileAttenteEstVide">
+                                        <mat-icon>indeterminate_check_box</mat-icon>
                                     </button>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let mis of missions;">
+                            <tr *ngFor="let mis of missions; let i=index;">
                                 <!-- colonne region -->
                                 <td scope="row">1</td>
                                 <!-- colonne vehicule -->
@@ -536,31 +525,31 @@
                                     </ul>
                                 </td>
                                 <!-- colonne score -->
-                                <td>{{""}}</td>
+                                <td>{{mis.score}}</td>
                                 <!-- colonne volume vehicule -->
                                 <td>
                                     <ul>
                                         <li *ngFor="let vehicule of mis.vehicule">
-                                            {{vehicule.longueur * vehicule.largeur * vehicule.hauteur}}
+                                            {{calculerVolumeVehicule(vehicule)}}m³
                                         </li>
                                     </ul>
                                 </td>
                                 <!-- colonne volume mission -->
-                                <td>{{""}}</td>
+                                <td>{{mis.volume}}m³</td>
                                 <!-- colonne poids vehicule -->
                                 <td>
                                     <ul>
                                         <li *ngFor="let vehicule of mis.vehicule">
-                                            {{vehicule.charge_utile}}
+                                            {{vehicule.charge_utile}}kg
                                         </li>
                                     </ul>
                                 </td>
                                 <!-- colonne poids mission -->
-                                <td>{{""}}</td>
+                                <td>{{mis.poids}}kg</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button style="color: #2cbb42;">
-                                        <mat-icon>add</mat-icon>
+                                    <button mat-icon-button color="warn" (click)="annulerAjoutMissionDansFileAttente(i)">
+                                        <mat-icon>remove</mat-icon>
                                     </button>
                                 </td>
                             </tr>

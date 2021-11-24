@@ -68,13 +68,13 @@ export class AjoutMissionComponent implements OnInit {
   async ngOnInit() {
     this.creerForm();
     await this.getListeCommande();
-    this.preparerListeCommande();
-    this.getCommandesNordEst();
-    this.getCommandesNordOuest();
-    this.getCommandesCentreEst();
-    this.getCommandesCentreOuest();
-    this.getCommandesSudEst();
-    this.getCommandesSudOuest();
+    this.affecterCommandeAuRegion();
+    this.setCommandesNordEst();
+    this.setCommandesNordOuest();
+    this.setCommandesCentreEst();
+    this.setCommandesCentreOuest();
+    this.setCommandesSudEst();
+    this.setCommandesSudOuest();
     await this.getVehiculesChauffeurs();
     await this.getVehiculeLoueDisponibles();
     this.creerCheckBoxsVehicules();
@@ -103,68 +103,22 @@ export class AjoutMissionComponent implements OnInit {
     });
   }
 
-  selectionnerVehicule(i: number, type: string, vehicule: any) {
+  // fonction qui s'appelle quand on change l'etat du checkbox des vehicules
+  selectionnerDeselectionnerVehicule(i: number, type: string, vehicule: any) {
     switch (type) {
       case 'privé':
         if (this.checkBoxVehicules[i].value) {
-          this.vehiculesSelectionnes.push(vehicule);
-          this.vehiculesPriveSelectionnes.push(vehicule);
-          if (!this.form.get('multiVehicule').value) {
-            this.checkBoxVehicules.forEach((checkBox) => {
-              if (!checkBox.value) {
-                checkBox.disable = true;
-              }
-            });
-            this.checkBoxVehiculesLoues.forEach((checkBox) => {
-              if (!checkBox.value) {
-                checkBox.disable = true;
-              }
-            });
-          }
+          this.selectionnerVehiculePrive(vehicule);
         } else {
-          let index = this.vehiculesSelectionnes.findIndex(
-            (v) => v.id === vehicule.id
-          );
-          this.vehiculesSelectionnes.splice(index, 1);
-          let i = this.vehiculesPriveSelectionnes.findIndex(
-            (v: any) => v.id === vehicule.id
-          );
-          this.vehiculesPriveSelectionnes.splice(i, 1);
-          this.checkBoxVehicules.forEach((checkBox) => {
-            checkBox.disable = false;
-          });
-          this.checkBoxVehiculesLoues.forEach((checkBox) => {
-            checkBox.disable = false;
-          });
+          this.deselectionnerVehiculePrive(vehicule);
         }
         break;
 
       case 'loue':
         if (this.checkBoxVehiculesLoues[i].value) {
-          this.vehiculesSelectionnes.push(vehicule);
-          if (!this.form.get('multiVehicule').value) {
-            this.checkBoxVehicules.forEach((checkBox) => {
-              if (!checkBox.value) {
-                checkBox.disable = true;
-              }
-            });
-            this.checkBoxVehiculesLoues.forEach((checkBox) => {
-              if (!checkBox.value) {
-                checkBox.disable = true;
-              }
-            });
-          }
+          this.selectionnerVehiculeLoue(vehicule);
         } else {
-          let index = this.vehiculesSelectionnes.findIndex(
-            (v) => v.id_Vehicule_Loue === vehicule.id_Vehicule_Loue
-          );
-          this.vehiculesSelectionnes.splice(index, 1);
-          this.checkBoxVehicules.forEach((checkBox) => {
-            checkBox.disable = false;
-          });
-          this.checkBoxVehiculesLoues.forEach((checkBox) => {
-            checkBox.disable = false;
-          });
+          this.deselectionnerVehiculeloue(vehicule);
         }
         break;
 
@@ -173,6 +127,73 @@ export class AjoutMissionComponent implements OnInit {
     }
   }
 
+  // ajouter vehicule privé a la liste vehiculeSelectionne
+  selectionnerVehiculePrive(vehicule: any) {
+    this.vehiculesSelectionnes.push(vehicule);
+    this.vehiculesPriveSelectionnes.push(vehicule);
+    if (!this.form.get('multiVehicule').value) {
+      this.checkBoxVehicules.forEach((checkBox) => {
+        if (!checkBox.value) {
+          checkBox.disable = true;
+        }
+      });
+      this.checkBoxVehiculesLoues.forEach((checkBox) => {
+        if (!checkBox.value) {
+          checkBox.disable = true;
+        }
+      });
+    }
+  }
+
+  // supprimer vehicule privé de la liste vehiculesSelectionne
+  deselectionnerVehiculePrive(vehicule: any) {
+    let index = this.vehiculesSelectionnes.findIndex(
+      (v) => v.id === vehicule.id
+    );
+    this.vehiculesSelectionnes.splice(index, 1);
+    let i = this.vehiculesPriveSelectionnes.findIndex(
+      (v: any) => v.id === vehicule.id
+    );
+    this.vehiculesPriveSelectionnes.splice(i, 1);
+    this.checkBoxVehicules.forEach((checkBox) => {
+      checkBox.disable = false;
+    });
+    this.checkBoxVehiculesLoues.forEach((checkBox) => {
+      checkBox.disable = false;
+    });
+  }
+  // ajouter vehicule loué a la liste vehiculeSelectionne
+  selectionnerVehiculeLoue(vehicule: any) {
+    this.vehiculesSelectionnes.push(vehicule);
+    if (!this.form.get('multiVehicule').value) {
+      this.checkBoxVehicules.forEach((checkBox) => {
+        if (!checkBox.value) {
+          checkBox.disable = true;
+        }
+      });
+      this.checkBoxVehiculesLoues.forEach((checkBox) => {
+        if (!checkBox.value) {
+          checkBox.disable = true;
+        }
+      });
+    }
+  }
+
+  // supprimer vehicule loué de la liste vehiculesSelectionne
+  deselectionnerVehiculeloue(vehicule: any) {
+    let index = this.vehiculesSelectionnes.findIndex(
+      (v) => v.id_Vehicule_Loue === vehicule.id_Vehicule_Loue
+    );
+    this.vehiculesSelectionnes.splice(index, 1);
+    this.checkBoxVehicules.forEach((checkBox) => {
+      checkBox.disable = false;
+    });
+    this.checkBoxVehiculesLoues.forEach((checkBox) => {
+      checkBox.disable = false;
+    });
+  }
+
+  // teste si il ya aucune vehicule selectionné
   get pasDeVehiculeSelectionne() {
     this.vehiculesSelectionnes.length > 0
       ? (this.vehiculeEstSelectionne = true)
@@ -180,14 +201,27 @@ export class AjoutMissionComponent implements OnInit {
     return !this.vehiculeEstSelectionne;
   }
 
+  // teste si il'y a acune commande selectionnée
   get missionVide() {
     let vide = false;
     this.mission.length > 0 ? (vide = false) : (vide = true);
     return vide;
   }
+
+  // teste si le poids de vehicule inferieur a poids des commandes selectionnées
+  get poidsVehiculeInferieurPoidsCommande() {
+    return this.chargeUtileVehiculesSelectionnes < this.calculerPoidsMission();
+  }
+
+  // tester si le volume de vehicule inferieur a volume commandes selectionnées
+  get volumeVehiculeInferieurVolumeCommande() {
+    return this.volumeUtileVehiculesSelectionnes < this.calculerVolumeMission();
+  }
+
   // fonction qui s'execute on changeant l'etat du checkbox multiVehicules
   clickerMultiVehiculesCheckBox() {
     if (this.form.get('multiVehicule').value) {
+      // si multiVehicule is checked on active tous les checkboxs
       this.checkBoxVehicules.forEach((checkBox) => {
         checkBox.disable = false;
       });
@@ -195,6 +229,7 @@ export class AjoutMissionComponent implements OnInit {
         checkBox.disable = false;
       });
     } else {
+      // si multiVehicule is unchecked on uncheck tous les checkboxs et on supprime touts les vehicules de la liste vehiculesSelectionnes
       this.checkBoxVehicules.forEach((checkBox) => {
         checkBox.value = false;
       });
@@ -206,7 +241,8 @@ export class AjoutMissionComponent implements OnInit {
     }
   }
 
-  get chargeUtileVehicule() {
+  // retourne la charge utile des vehicules selectionnées
+  get chargeUtileVehiculesSelectionnes() {
     let chargeUtile = 0;
     this.vehiculesSelectionnes.forEach((vehicule) => {
       chargeUtile += vehicule.charge_utile;
@@ -215,7 +251,8 @@ export class AjoutMissionComponent implements OnInit {
     return chargeUtile;
   }
 
-  get volumeUtileVehicule() {
+  // retourne le volume utile des vehicules selectionnés
+  get volumeUtileVehiculesSelectionnes() {
     let volumeUtile = 0;
     this.vehiculesSelectionnes.forEach((vehicule) => {
       volumeUtile += vehicule.longueur * vehicule.largeur * vehicule.hauteur;
@@ -226,29 +263,38 @@ export class AjoutMissionComponent implements OnInit {
     return Number(volumeUtile.toFixed(3));
   }
 
+  // charger la liste des commandes
   async getListeCommande() {
     this.commandes = await this.serviceMission
       .getCommandesParEtat('En cours de traitement')
       .toPromise();
   }
 
+  // get tous les vehicules avec l'état disponible
   async getVehiculeDisponibles() {
-    // get tous les vehicules avec l'état disponible
     this.listeVehicules = await this.serviceVehicule
       .filtrerVehicule('etat_vehicule', 'Disponible')
       .toPromise();
   }
 
+  // get la liste des vehicules loués
+  async getVehiculeLoueDisponibles() {
+    this.listeVehiculesLoues = await this.serviceVehicule
+      .filtrerVehiculeLoues('etat_vehicule', 'Disponible')
+      .toPromise();
+  }
+
+  // get liste des chauffeurs
   async getChauffeurs() {
     this.listeChauffeurs = await this.serviceChauffeur
       .getChauffeurs()
       .toPromise();
   }
 
+  // get les vehicules qui ont au moins un chauffeur qui peut la conduire
   async getVehiculesChauffeurs() {
     await this.getVehiculeDisponibles();
     await this.getChauffeurs();
-    // get les vehicules qui ont au moins un chauffeur qui peut la conduire
     this.listeVehicules.forEach((vehicule: any) => {
       var chauffeurs: any = [];
       var categories = vehicule.categories.split('/');
@@ -268,6 +314,7 @@ export class AjoutMissionComponent implements OnInit {
     });
   }
 
+  // disable checkbox vehicule si le poids ou le volume est inverieur au poids ou volume de la liste des commandes selectionnées
   disableCheckBoxsVehiculePoidsVolumeInferieur() {
     if (!this.form.get('multiVehicule').value) {
       for (let i = 0; i < this.listeVehiculesAffiches.length; i++) {
@@ -303,13 +350,8 @@ export class AjoutMissionComponent implements OnInit {
     }
   }
 
-  async getVehiculeLoueDisponibles() {
-    this.listeVehiculesLoues = await this.serviceVehicule
-      .filtrerVehiculeLoues('etat_vehicule', 'Disponible')
-      .toPromise();
-  }
-
-  preparerListeCommande() {
+  //affecter chaque commande a une region selon sa ville
+  affecterCommandeAuRegion() {
     this.commandes.forEach((commande: any) => {
       for (const reg of this.regions) {
         if (reg.ville.includes(commande.ville)) {
@@ -319,7 +361,8 @@ export class AjoutMissionComponent implements OnInit {
     });
   }
 
-  getCommandesNordEst() {
+  // on affecte les commandes qui on la region Nord-Est dans la liste commandesNordEst
+  setCommandesNordEst() {
     this.commandesNordEst = this.commandes.filter(
       (commande: any) => commande.region === 'Nord-Est'
     );
@@ -327,7 +370,8 @@ export class AjoutMissionComponent implements OnInit {
       a.dateCreation > b.dateCreation ? 1 : -1
     );
   }
-  getCommandesNordOuest() {
+  // on affecte les commandes qui on la region Nord-Ouest dans la liste commandesNordOuest
+  setCommandesNordOuest() {
     this.commandesNordOuest = this.commandes.filter(
       (commande: any) => commande.region === 'Nord-Ouest'
     );
@@ -335,7 +379,8 @@ export class AjoutMissionComponent implements OnInit {
       a.dateCreation > b.dateCreation ? 1 : -1
     );
   }
-  getCommandesCentreEst() {
+  // on affecte les commandes qui on la region Centre-Est dans la liste commandesCentreEst
+  setCommandesCentreEst() {
     this.commandesCentreEst = this.commandes.filter(
       (commande: any) => commande.region === 'Centre-Est'
     );
@@ -343,7 +388,8 @@ export class AjoutMissionComponent implements OnInit {
       a.dateCreation > b.dateCreation ? 1 : -1
     );
   }
-  getCommandesCentreOuest() {
+  // on affecte les commandes qui on la region centre-Ouest dans la liste commandesCentreOuest
+  setCommandesCentreOuest() {
     this.commandesCentreOuest = this.commandes.filter(
       (commande: any) => commande.region === 'Centre-Ouest'
     );
@@ -351,7 +397,8 @@ export class AjoutMissionComponent implements OnInit {
       a.dateCreation > b.dateCreation ? 1 : -1
     );
   }
-  getCommandesSudEst() {
+  // on affecte les commandes qui on la region sud-Est dans la liste commandesSudEst
+  setCommandesSudEst() {
     this.commandesSudEst = this.commandes.filter(
       (commande: any) => commande.region === 'Sud-Est'
     );
@@ -359,7 +406,8 @@ export class AjoutMissionComponent implements OnInit {
       a.dateCreation > b.dateCreation ? 1 : -1
     );
   }
-  getCommandesSudOuest() {
+  // on affecte les commandes qui on la region Sud-Ouest dans la liste commandesSudOuest
+  setCommandesSudOuest() {
     this.commandesSudOuest = this.commandes.filter(
       (commande: any) => commande.region === 'Sud-Ouest'
     );
@@ -367,6 +415,7 @@ export class AjoutMissionComponent implements OnInit {
       a.dateCreation > b.dateCreation ? 1 : -1
     );
   }
+  // calculer le poids des commandes dans une region
   calculerPoidsCommandesParRegion(commandesParRegion: any) {
     let poidsTotal = 0;
     if (commandesParRegion) {
@@ -376,6 +425,7 @@ export class AjoutMissionComponent implements OnInit {
     }
     return Number(poidsTotal.toFixed(4));
   }
+  // calculer le volume des commandes dans uneregion
   calculerVolumeCommandeParRegion(commandesParRegion: any) {
     let volumeTotal = 0;
     if (commandesParRegion) {
@@ -385,6 +435,7 @@ export class AjoutMissionComponent implements OnInit {
     }
     return Number(volumeTotal.toFixed(4));
   }
+  // calculer le score des commandes dans une region
   calculerScoreCommandeParRegion(commandesParRegion: any) {
     let scoreTotal = 0;
     if (commandesParRegion) {
@@ -394,6 +445,7 @@ export class AjoutMissionComponent implements OnInit {
     }
     return Number(scoreTotal.toFixed(4));
   }
+  // permet de calculer le pourcentage score d'une commande par rapport au score total de la region
   convertirScoreEnPourcentageParRapportScoreRegion(
     scoreCommande: any,
     commandesParRegion: any
@@ -402,6 +454,7 @@ export class AjoutMissionComponent implements OnInit {
     let pourcentageScore = (100 / scoreRegion) * scoreCommande;
     return Number(pourcentageScore.toFixed(3));
   }
+  // calculer le poids des commandes selectionnées et affectées dans un mission
   calculerPoidsMission() {
     let poidsTotal = 0;
     this.mission.forEach((commande: any) => {
@@ -409,6 +462,7 @@ export class AjoutMissionComponent implements OnInit {
     });
     return Number(poidsTotal.toFixed(4));
   }
+  // calculer le volume des commandes selectionnées et affectées dans un mission
   calculerVolumeMission() {
     let volumeTotal = 0;
     this.mission.forEach((commande: any) => {
@@ -416,6 +470,7 @@ export class AjoutMissionComponent implements OnInit {
     });
     return Number(volumeTotal.toFixed(4));
   }
+  // calculer le score des commandes selectionnées et affectées dans un mission
   calculerScoreMission() {
     let scoreTotal = 0;
     this.mission.forEach((commande: any) => {
@@ -423,15 +478,20 @@ export class AjoutMissionComponent implements OnInit {
     });
     return Number(scoreTotal.toFixed(3));
   }
+  // calculer pourcentage d'une commande par rapport au score total du mission
   convertirScoreEnPourcentageParRapportMission(scoreCommande: any) {
     let scoreMission = this.calculerScoreMission();
     let pourcentageScore = (100 / scoreMission) * scoreCommande;
     return Number(pourcentageScore.toFixed(3));
   }
+  // utilisé dans les boutons des commandes
+  // si on selectionne une commande on l'ajoute a la lite des commandes dans une mission et on la supprime de la lise des commande par region
   ajouterCommandeDansMission(i: number, commandesParRegion: any) {
     this.mission.push(commandesParRegion.splice(i, 1)[0]);
     this.disableCheckBoxsVehiculePoidsVolumeInferieur();
   }
+  // si on clique sur les boutons selectionner-tous on ajoute toutes les commandes dans la region qui contient se bouton dans
+  // la liste des commandes dans mission et on vide la liste des commandes par cette region
   ajouterToutesCommandesParRegionDansMission(commandesParRegion: any) {
     Array.prototype.push.apply(
       this.mission,
@@ -439,6 +499,9 @@ export class AjoutMissionComponent implements OnInit {
     );
     this.disableCheckBoxsVehiculePoidsVolumeInferieur();
   }
+
+  //si on clique sur le bouton enlever-commande en supprime la commande qu'on désire l'enlever de la liste des commandes par mission "mission"
+  //et on la rajoute dans la liste des commandes dans la region compatible
   annulerAjoutCommandeDansMission(i: number) {
     switch (this.mission[i].region) {
       case 'Nord-Est':
@@ -483,6 +546,8 @@ export class AjoutMissionComponent implements OnInit {
     }
     this.disableCheckBoxsVehiculePoidsVolumeInferieur();
   }
+  // si on clique le bouton enlever-tous-commandes en supprime toutes les commandes de la liste des commandes par mission "mission"
+  //et on les rajoutes dans la liste des commandes dans les regions compatibles
   annulerAjoutTousCommandeDansMission() {
     for (let i = 0; i < this.mission.length; i++) {
       switch (this.mission[i].region) {
@@ -530,24 +595,201 @@ export class AjoutMissionComponent implements OnInit {
     this.mission = [];
     this.disableCheckBoxsVehiculePoidsVolumeInferieur();
   }
-
-  ouvrierBoiteDialogueAffecterChauffeur() {
-    if (this.vehiculesPriveSelectionnes.length === 0) return;
-    const dialogRef = this.dialog.open(AffecterChauffeur, {
-      width: '400px',
-      data: {
-        vehicules: this.vehiculesPriveSelectionnes,
-      },
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      let vehicules: any = []
-      let chauffeurs: any = []
-      result.forEach((element: any) => {
-        vehicules.push(element.vehicule)
-        chauffeurs.push(element.chauffeur)
+  // si on clique sur le bouton ajouter-mission on ajoute cette mission a la liste de la file d'attente
+  async ajouterMissionFileAttente() {
+    let vehicules: any = [];
+    let chauffeurs: any = [];
+    var vehiculesLoues = [...this.vehiculesSelectionnes];
+    console.log(this.vehiculesSelectionnes);
+    if (this.vehiculesPriveSelectionnes.length > 0) {
+      // ouvrir boite dialogue affecter-chauffeur
+      const dialogRef = this.dialog.open(AffecterChauffeur, {
+        width: '400px',
+        data: {
+          vehicules: this.vehiculesPriveSelectionnes,
+        },
       });
-      this.missions.push({commandes: this.mission, vehicule: vehicules, chauffeur: chauffeurs})
-      console.log(this.missions)
-    })
+      dialogRef.afterClosed().subscribe((result) => {
+        result.forEach((element: any) => {
+          vehicules.push(element.vehicule);
+          chauffeurs.push(element.chauffeur);
+        });
+        this.vehiculesPriveSelectionnes.forEach((vehicule: any) => {
+          let index = vehiculesLoues.findIndex((v) => v.id === vehicule.id);
+          vehiculesLoues.splice(index, 1);
+        });
+        vehicules = vehicules.concat(vehiculesLoues);
+        vehiculesLoues.forEach(() => {
+          chauffeurs.push({ nom: 'Chauffeur Loué' });
+        });
+        this.missions.push({
+          commandes: this.mission,
+          vehicule: vehicules,
+          chauffeur: chauffeurs,
+          score: this.calculerScoreMission(),
+          volume: this.calculerVolumeMission(),
+          poids: this.calculerPoidsMission(),
+        });
+        console.log(this.missions);
+        this.mission = [];
+        console.log(vehiculesLoues);
+        console.log(this.vehiculesSelectionnes);
+
+        this.checkBoxVehicules.forEach((checkBox) => {
+          checkBox.value = false;
+        });
+        this.checkBoxVehiculesLoues.forEach((checkBox) => {
+          checkBox.value = false;
+        });
+        this.vehiculesSelectionnes = [];
+        this.vehiculesPriveSelectionnes = [];
+        this.form.get('multiVehicule').setValue(false);
+        this.disableCheckBoxsVehiculePoidsVolumeInferieur();
+      });
+    } else {
+      this.vehiculesPriveSelectionnes.forEach((vehicule: any) => {
+        let index = vehiculesLoues.findIndex((v) => v.id === vehicule.id);
+        vehiculesLoues.splice(index, 1);
+      });
+      vehicules = vehicules.concat(vehiculesLoues);
+      vehiculesLoues.forEach(() => {
+        chauffeurs.push({ nom: 'Chauffeur Loué' });
+      });
+      this.missions.push({
+        commandes: this.mission,
+        vehicule: vehicules,
+        chauffeur: chauffeurs,
+        score: this.calculerScoreMission(),
+        volume: this.calculerVolumeMission(),
+        poids: this.calculerPoidsMission(),
+      });
+      console.log(this.missions);
+      this.mission = [];
+      console.log(vehiculesLoues);
+      console.log(this.vehiculesSelectionnes);
+
+      this.checkBoxVehicules.forEach((checkBox) => {
+        checkBox.value = false;
+      });
+      this.checkBoxVehiculesLoues.forEach((checkBox) => {
+        checkBox.value = false;
+      });
+      this.vehiculesSelectionnes = [];
+      this.vehiculesPriveSelectionnes = [];
+      this.form.get('multiVehicule').setValue(false);
+      this.disableCheckBoxsVehiculePoidsVolumeInferieur();
+    }
+  }
+  //calculer le volume de chaque vehicul dans une misssion
+  calculerVolumeVehicule(vehicule: any) {
+    let volume =
+      vehicule.longueur * vehicule.largeur * vehicule.hauteur * 0.000001;
+    return Number(volume.toFixed(4));
+  }
+
+  //si on clique sur le bouton enlever-mission en supprime la mission qu'on désire l'enlever de la file d'attente
+  //et on rajoute ses commandes dans la liste des commandes dans la region compatible
+  annulerAjoutMissionDansFileAttente(i: number) {
+    this.missions[i].commandes.forEach((commande: any) => {
+      switch (commande.region) {
+        case 'Nord-Est':
+          this.commandesNordEst.push(commande);
+          this.commandesNordEst.sort((a: any, b: any) =>
+            a.dateCreation > b.dateCreation ? 1 : -1
+          );
+          break;
+        case 'Nord-Ouest':
+          this.commandesNordOuest.push(commande);
+          this.commandesNordOuest.sort((a: any, b: any) =>
+            a.dateCreation > b.dateCreation ? 1 : -1
+          );
+          break;
+        case 'Centre-Est':
+          this.commandesCentreEst.push(commande);
+          this.commandesCentreEst.sort((a: any, b: any) =>
+            a.dateCreation > b.dateCreation ? 1 : -1
+          );
+          break;
+        case 'Centre-Ouest':
+          this.commandesCentreOuest.push(commande);
+          this.commandesCentreOuest.sort((a: any, b: any) =>
+            a.dateCreation > b.dateCreation ? 1 : -1
+          );
+          break;
+        case 'Sud-Est':
+          this.commandesSudEst.push(commande);
+          this.commandesSudEst.sort((a: any, b: any) =>
+            a.dateCreation > b.dateCreation ? 1 : -1
+          );
+          break;
+        case 'Sud-Est':
+          this.commandesSudOuest.push(commande);
+          this.commandesSudOuest.sort((a: any, b: any) =>
+            a.dateCreation > b.dateCreation ? 1 : -1
+          );
+          break;
+
+        default:
+          break;
+      }
+      this.disableCheckBoxsVehiculePoidsVolumeInferieur();
+    });
+    this.missions.splice(i, 1);
+  }
+
+  // si on clique le bouton enlever-tous-missions en supprime toutes les missions de la file d'attente
+  //et on rajoute ses commandes dans la liste des commandes dans les regions compatibles
+  annulerAjoutTousMissionsDansFileAttente() {
+    this.missions.forEach((mission: any) => {
+      mission.commandes.forEach((commande: any) => {
+        switch (commande.region) {
+          case 'Nord-Est':
+            this.commandesNordEst.push(commande);
+            this.commandesNordEst.sort((a: any, b: any) =>
+              a.dateCreation > b.dateCreation ? 1 : -1
+            );
+            break;
+          case 'Nord-Ouest':
+            this.commandesNordOuest.push(commande);
+            this.commandesNordOuest.sort((a: any, b: any) =>
+              a.dateCreation > b.dateCreation ? 1 : -1
+            );
+            break;
+          case 'Centre-Est':
+            this.commandesCentreEst.push(commande);
+            this.commandesCentreEst.sort((a: any, b: any) =>
+              a.dateCreation > b.dateCreation ? 1 : -1
+            );
+            break;
+          case 'Centre-Ouest':
+            this.commandesCentreOuest.push(commande);
+            this.commandesCentreOuest.sort((a: any, b: any) =>
+              a.dateCreation > b.dateCreation ? 1 : -1
+            );
+            break;
+          case 'Sud-Est':
+            this.commandesSudEst.push(commande);
+            this.commandesSudEst.sort((a: any, b: any) =>
+              a.dateCreation > b.dateCreation ? 1 : -1
+            );
+            break;
+          case 'Sud-Est':
+            this.commandesSudOuest.push(commande);
+            this.commandesSudOuest.sort((a: any, b: any) =>
+              a.dateCreation > b.dateCreation ? 1 : -1
+            );
+            break;
+  
+          default:
+            break;
+        }
+        this.disableCheckBoxsVehiculePoidsVolumeInferieur();
+      });
+    });
+    this.missions = [];
+  }
+
+  get fileAttenteEstVide() {
+    return this.missions.length <= 0;
   }
 }
