@@ -45,16 +45,15 @@ export class AjoutMissionComponent implements OnInit {
   commandesSudEst: any = [];
   commandesSudOuest: any = [];
   form: FormGroup;
-  listeVehicules: any;
   listeVehiculesAffiches: any = [];
   listeVehiculesLoues: any;
   mission: any[] = [];
   checkBoxVehicules: any[] = [];
   checkBoxVehiculesLoues: any[] = [];
   vehiculesSelectionnes: any[] = [];
-  listeChauffeurs: any;
   vehiculeEstSelectionne = false;
   vehiculesPriveSelectionnes: any = [];
+  vehiculesPriveAvecChauffeurSupprime: any = [];
   missions: any = [];
 
   constructor(
@@ -129,7 +128,7 @@ export class AjoutMissionComponent implements OnInit {
 
   // ajouter vehicule privé a la liste vehiculeSelectionne
   selectionnerVehiculePrive(vehicule: any) {
-    this.vehiculesSelectionnes.push(vehicule);
+    this.vehiculesSelectionnes.push(vehicule.vehicule);
     this.vehiculesPriveSelectionnes.push(vehicule);
     if (!this.form.get('multiVehicule').value) {
       this.checkBoxVehicules.forEach((checkBox) => {
@@ -143,6 +142,10 @@ export class AjoutMissionComponent implements OnInit {
         }
       });
     }
+    this.testerPossibiliteAffectationChauffeur(
+      vehicule,
+      this.listeVehiculesAffiches
+    );
   }
 
   // supprimer vehicule privé de la liste vehiculesSelectionne
@@ -152,7 +155,7 @@ export class AjoutMissionComponent implements OnInit {
     );
     this.vehiculesSelectionnes.splice(index, 1);
     let i = this.vehiculesPriveSelectionnes.findIndex(
-      (v: any) => v.id === vehicule.id
+      (v: any) => v.vehicule.id === vehicule.id
     );
     this.vehiculesPriveSelectionnes.splice(i, 1);
     this.checkBoxVehicules.forEach((checkBox) => {
@@ -161,6 +164,7 @@ export class AjoutMissionComponent implements OnInit {
     this.checkBoxVehiculesLoues.forEach((checkBox) => {
       checkBox.disable = false;
     });
+    this.rajouterChauffeurAuVehicule(vehicule)
   }
   // ajouter vehicule loué a la liste vehiculeSelectionne
   selectionnerVehiculeLoue(vehicule: any) {
@@ -272,9 +276,10 @@ export class AjoutMissionComponent implements OnInit {
 
   // get tous les vehicules avec l'état disponible
   async getVehiculeDisponibles() {
-    this.listeVehicules = await this.serviceVehicule
+    let listeVehicules = await this.serviceVehicule
       .filtrerVehicule('etat_vehicule', 'Disponible')
       .toPromise();
+    return listeVehicules;
   }
 
   // get la liste des vehicules loués
@@ -286,20 +291,21 @@ export class AjoutMissionComponent implements OnInit {
 
   // get liste des chauffeurs
   async getChauffeurs() {
-    this.listeChauffeurs = await this.serviceChauffeur
+    let listeChauffeurs = await this.serviceChauffeur
       .getChauffeurs()
       .toPromise();
+    return listeChauffeurs;
   }
 
   // get les vehicules qui ont au moins un chauffeur qui peut la conduire
   async getVehiculesChauffeurs() {
-    await this.getVehiculeDisponibles();
-    await this.getChauffeurs();
-    this.listeVehicules.forEach((vehicule: any) => {
+    let listeVehicules = await this.getVehiculeDisponibles();
+    let listeChauffeurs = await this.getChauffeurs();
+    listeVehicules.forEach((vehicule: any) => {
       var chauffeurs: any = [];
       var categories = vehicule.categories.split('/');
       categories.forEach((categorie: any) => {
-        this.listeChauffeurs.forEach((chauffeur: any) => {
+        listeChauffeurs.forEach((chauffeur: any) => {
           if (categorie == chauffeur.categorie_Permis) {
             chauffeurs.push(chauffeur);
           }
@@ -312,6 +318,102 @@ export class AjoutMissionComponent implements OnInit {
           })
         : '';
     });
+  }
+
+  // tester si on selectionne une vehicule qui a un chauffeur qu'on ne peut pas l'utiliser aprés la selection de cette vehicule
+  testerPossibiliteAffectationChauffeur(
+    vehicule: any,
+    listeVehiculePrive: any
+  ) {
+    var copieVehiculesPrive = [...listeVehiculePrive];
+    for (let i = 0; i < copieVehiculesPrive.length; i++) {
+      copieVehiculesPrive[i].chauffeurs = [...listeVehiculePrive[i].chauffeurs];
+    }
+    if (vehicule.chauffeurs.length === 1) {
+      // chercher l'index du vehicule selectionné dans la liste des vehicules privés
+      let index = copieVehiculesPrive.findIndex(
+        (v: any) => v.vehicule.id === vehicule.vehicule.id
+      );
+      console.log(index);
+      // pour chaque vehicule si il s'agit d'un vehicule different du vehicule selectionné en supprime le chauffeur du vehicule
+      // selectionné de la liste des chauffeurs de cet vehicule
+      for (let i = 0; i < copieVehiculesPrive.length; i++) {
+        if (i !== index) {
+          for (let j = 0; j < copieVehiculesPrive[i].chauffeurs.length; j++) {
+            if (
+              copieVehiculesPrive[i].chauffeurs[j] === vehicule.chauffeurs[0]
+            ) {
+              // enlever le chauffeur de la liste des vehicules non selectionnées
+              console.log(this.listeVehiculesAffiches);
+              let index = this.vehiculesPriveAvecChauffeurSupprime.findIndex(
+                (v: any) => copieVehiculesPrive[i].vehicule === v.vehicule
+              );
+              if (index >= 0) {
+                console.log(true)
+                this.vehiculesPriveAvecChauffeurSupprime[index].chauffeurs.push(
+                  copieVehiculesPrive[i].chauffeurs.splice(j, 1)
+                );
+              } else {
+                this.vehiculesPriveAvecChauffeurSupprime.push(
+                  copieVehiculesPrive[i]
+                );
+                copieVehiculesPrive[i].chauffeurs.splice(j, 1);
+              }
+              console.log(this.listeVehiculesAffiches);
+            }
+          }
+        }
+      }
+    } else {
+      this.vehiculesPriveSelectionnes.forEach((v: any) => {
+        if (vehicule.chauffeurs === v.chauffeurs) {
+          vehicule.chauffeurs.forEach((chauffeur: any) => {
+            copieVehiculesPrive.forEach((ve: any) => {
+              let k = ve.chauffeurs.findIndex(chauffeur);
+              if (k > -1) {
+                ve.chauffeurs.splice(k, 1);
+              }
+            });
+          });
+        }
+      });
+    }
+    this.disableVehiculePrive(copieVehiculesPrive);
+  }
+
+  // disable le checkBpx des vehicules privés qu'on ne peut pas affecter leurs chauffeurs qui peuvent la conduire
+  disableVehiculePrive(copieVehiculesPrive: any) {
+    for (let i = 0; i < copieVehiculesPrive.length; i++) {
+      if (copieVehiculesPrive[i].chauffeurs.length === 0) {
+        this.checkBoxVehicules[i].disable = true;
+      }
+    }
+  }
+
+  // rajouter le chauffeur du vehicule deselectionné dans las vehicules convenables
+  rajouterChauffeurAuVehicule(vehicule: any) {
+    console.log(this.vehiculesPriveAvecChauffeurSupprime)
+    vehicule.chauffeurs.forEach((ch: any) => {
+      for (
+        let i = 0;
+        i < this.vehiculesPriveAvecChauffeurSupprime.length;
+        i++
+      ) {
+        let indexVehiculeAvecChauffeurSupprime =
+          this.listeVehiculesAffiches.findIndex(
+            (v: any) =>
+              this.vehiculesPriveAvecChauffeurSupprime[i].vehicule ===
+              v.vehicule
+          );
+        if (indexVehiculeAvecChauffeurSupprime >= 0) {
+          console.log(ch)
+          this.listeVehiculesAffiches[
+            indexVehiculeAvecChauffeurSupprime
+          ].chauffeurs.push(ch);
+        }
+      }
+    });
+    // this.vehiculesPriveAvecChauffeurSupprime = []
   }
 
   // disable checkbox vehicule si le poids ou le volume est inverieur au poids ou volume de la liste des commandes selectionnées
@@ -615,7 +717,9 @@ export class AjoutMissionComponent implements OnInit {
           chauffeurs.push(element.chauffeur);
         });
         this.vehiculesPriveSelectionnes.forEach((vehicule: any) => {
-          let index = vehiculesLoues.findIndex((v) => v.id === vehicule.id);
+          let index = vehiculesLoues.findIndex(
+            (v) => v.id === vehicule.vehicule.id
+          );
           vehiculesLoues.splice(index, 1);
         });
         vehicules = vehicules.concat(vehiculesLoues);
@@ -648,7 +752,9 @@ export class AjoutMissionComponent implements OnInit {
       });
     } else {
       this.vehiculesPriveSelectionnes.forEach((vehicule: any) => {
-        let index = vehiculesLoues.findIndex((v) => v.id === vehicule.id);
+        let index = vehiculesLoues.findIndex(
+          (v) => v.id === vehicule.vehicule.id
+        );
         vehiculesLoues.splice(index, 1);
       });
       vehicules = vehicules.concat(vehiculesLoues);
@@ -779,7 +885,7 @@ export class AjoutMissionComponent implements OnInit {
               a.dateCreation > b.dateCreation ? 1 : -1
             );
             break;
-  
+
           default:
             break;
         }

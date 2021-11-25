@@ -54,7 +54,7 @@ export class AffecterChauffeur implements OnInit {
 
   verifierCompatibiliteChauffeur() {
     this.vehicules.forEach((vehicule: any) => {
-      let categorie = vehicule.categories.split('/');
+      let categorie = vehicule.vehicule.categories.split('/');
       let chauffeurs: any = [];
       categorie.forEach((value: any) => {
         this.chauffeurs.forEach((chauffeur: any) => {
@@ -64,7 +64,7 @@ export class AffecterChauffeur implements OnInit {
         });
       });
       this.couplesVehiculeChauffeurs.push({
-        vehicule: vehicule,
+        vehicule: vehicule.vehicule,
         chauffeurs: chauffeurs,
       });
     });
@@ -75,7 +75,9 @@ export class AffecterChauffeur implements OnInit {
     for (let j = 0; j < this.couplesVehiculeChauffeurs.length; j++) {
       this.couplesVehiculeChauffeurs[j].chauffeurs.forEach((chauffeurLoop: any) => {
         if(j !== i && this.chauffeursForms.controls[i].get('chauffeur').value === chauffeurLoop) {
-          this.couplesVehiculeChauffeurs[j].chauffeurs.splice(j,1);
+          let index = this.couplesVehiculeChauffeurs[j].chauffeurs.findIndex((chauffeur: any) => this.chauffeursForms.controls[i].get('chauffeur').value.id === chauffeur.id);
+          this.couplesVehiculeChauffeurs[j].chauffeurs.splice(index,1);
+          console.log(this.couplesVehiculeChauffeurs[j].chauffeurs)
         }
       });
       
