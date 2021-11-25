@@ -9,6 +9,7 @@ img {
   padding-top: -10%;
   border-radius: 10%;
   box-shadow: 15px 15px 15px grey;
+  background-color: white;
 }
 .menu-parc {
   position: relative;
@@ -29,7 +30,7 @@ a:hover {
 }
 a:hover,
 a:focus-visible {
-  transform: scale(1.2);
+  transform: scale(1.05);
 }
 a {
   transition: transform 250ms;

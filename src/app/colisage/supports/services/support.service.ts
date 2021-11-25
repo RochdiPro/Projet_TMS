@@ -9,7 +9,7 @@ const infonet = "/INFONET/";
 })
 export class SupportService {
   handleError: any;
-  supp: any
+  supp: any; //variable supp pour passer l'objet support du component ListeSupport vers ModifierSupport
 
 
   constructor(private httpClient: HttpClient) { }

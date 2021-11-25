@@ -1,39 +1,39 @@
-<table class="mb-0 table">
-    <thead>
-       <tr>
-          <th style="text-align:center">ID</th>
-          <th style="text-align:center">Nom</th>
-          <th style="text-align:center">Type</th>
-          <th style="text-align:center">Poids</th>
-          <th style="text-align:center">Dimensions</th>
-          <th style="text-align:center">Volume</th>
-          <th style="text-align:center"></th>
- 
-       </tr>
-    </thead>
-    <tbody>
-       <tr *ngFor="let support of listeSupports">
-          <th scope="row" style="text-align:center">{{support.id_support}}</th>
-          <td style="text-align:center">{{support.nom_support}}</td>
-          <td style="text-align:center">{{support.type_support}}</td>
-          <td style="text-align:center">{{support.poids_emballage}}</td>
-          <td style="text-align:center">{{support.longueur + "x" + support.largeur + "x" + support.hauteur}}</td>
-          <td style="text-align:center">{{support.volume}}</td>
-          <td style="text-align:center; width: 120px;">
-             <!-- Bouton modifier vehicule -->
-             <button class="mb-2  btn " (click)="modifierSupport(support)">
-                <mat-icon aria-hidden="false" aria-label="modifier">edit</mat-icon>
-             </button>
-             <!-- fin Bouton modifier vehicule -->
-             <!-- Bouton supprimer vehicule -->
-             <button class="mb-2  btn " (click)="supprimerSupport(support)">
-                <mat-icon aria-hidden="false" aria-label="Supprimer" style="color: #ff0000;">delete_outline</mat-icon>
-             </button>
-             <!-- fin Bouton supprimer vehicule -->
-          </td>
- 
- 
-       </tr>
- 
-    </tbody>
- </table>
+<table class="mb-0 table" *ngIf="wms >= 1">
+   <thead>
+      <tr>
+         <th style="text-align:center">ID</th>
+         <th style="text-align:center">Nom</th>
+         <th style="text-align:center">Type</th>
+         <th style="text-align:center">Poids</th>
+         <th style="text-align:center">Dimensions</th>
+         <th style="text-align:center">Volume</th>
+         <th style="text-align:center"></th>
+
+      </tr>
+   </thead>
+   <tbody>
+      <tr *ngFor="let support of listeSupports">
+         <th scope="row" style="text-align:center">{{support.id}}</th>
+         <td style="text-align:center">{{support.nomSupport}}</td>
+         <td style="text-align:center">{{support.typeSupport}}</td>
+         <td style="text-align:center">{{support.poidsEmballage}}</td>
+         <td style="text-align:center">{{support.longueur + "x" + support.largeur + "x" + support.hauteur}}</td>
+         <td style="text-align:center">{{support.volume}}</td>
+         <td style="text-align:center; width: 120px;" *ngIf="wms >= 3">
+            <!-- Bouton modifier vehicule -->
+            <button class="mb-2  btn " (click)="modifierSupport(support)" *ngIf="wms >= 3">
+               <mat-icon aria-hidden="false" aria-label="modifier">edit</mat-icon>
+            </button>
+            <!-- fin Bouton modifier vehicule -->
+            <!-- Bouton supprimer vehicule -->
+            <button class="mb-2  btn " (click)="supprimerSupport(support)" *ngIf="wms >= 4">
+               <mat-icon aria-hidden="false" aria-label="Supprimer" style="color: #ff0000;">delete_outline</mat-icon>
+            </button>
+            <!-- fin Bouton supprimer vehicule -->
+         </td>
+
+
+      </tr>
+
+   </tbody>
+</table>

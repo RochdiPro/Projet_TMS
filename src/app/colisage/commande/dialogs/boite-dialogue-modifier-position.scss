@@ -1,0 +1,65 @@
+.colonne {
+  width: 25%;
+}
+.row {
+  margin-left: 10px;
+}
+.entete {
+  font-weight: bold;
+}
+
+.mat-form-field {
+  margin-top: 16px;
+}
+
+.map {
+  margin-top: 10px;
+}
+agm-map {
+  height: 400px;
+  width: 100%;
+}
+#manupilation-adresse {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+#adresse-input {
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: 0;
+  background: #f5f5f5;
+  border-radius: 50px;
+  transition: width 600ms, height 600ms;
+}
+#adresse-input:focus {
+  outline: none;
+}
+#ajouter-adresse {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+#ajouter-adresse:hover #adresse-input,
+#adresse-input:focus {
+  width: 201px;
+  height: 40px;
+  padding: 0 20px;
+}
+
+@media (min-width: 780px) {
+  .colonne {
+    width: 25%;
+  }
+  .row {
+    margin-left: 10px;
+  }
+  .entete {
+    font-weight: bold;
+  }
+}

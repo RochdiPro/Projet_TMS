@@ -1,0 +1,105 @@
+<!-- Bouton Fermer -->
+<button type="button" class="close" aria-label="Close"><span aria-hidden="true" mat-dialog-close>×</span></button>
+<!-- fin Bouton Fermer -->
+<h1 mat-dialog-title>Information commande</h1>
+<div *ngIf="listeColisage">
+    <div class="client">
+        <h2>Client</h2>
+        <div class="information-client">
+            <h3>Information client</h3>
+            <div class="row">
+                <div class="colonne entete">Nom:</div>
+                <div class="colonne">{{data.commande.nomClient}}</div>
+                <div class="colonne entete">Identifiant:</div>
+                <div class="colonne">{{data.commande.idClient}}</div>
+            </div>
+            <div class="row">
+                <div class="colonne entete">Contact:</div>
+                <div class="colonne">{{data.commande.contact}}</div>
+                <div class="colonne entete">Téléphone:</div>
+                <div class="colonne">{{data.commande.telephone}}</div>
+            </div>
+            <div class="row">
+                <div class="colonne entete">Email:</div>
+                <div class="colonne">{{data.commande.email}}</div>
+                <div class="colonne entete">Catégorie client</div>
+                <div class="colonne">{{data.commande.categorieClient}}</div>
+            </div>
+            <div class="row">
+                <div class="colonne entete">Ville:</div>
+                <div class="colonne">{{ville}}</div>
+                <div class="colonne entete">Adresse:</div>
+                <div class="colonne">{{adresse}}</div>
+            </div>
+            <div class="row">
+                <div class="colonne entete">Type piéce d'identité:</div>
+                <div class="colonne">{{data.commande.typePieceIdentite}}</div>
+                <div class="colonne entete">Numéro piéce d'identité:</div>
+                <div class="colonne">{{data.commande.numPieceIdentite}}</div>
+            </div>
+        </div>
+        <div class="localisation">
+            <div style="display: flex; align-items: center;">
+                <h3>localisation</h3>
+                <button mat-icon-button style="margin-left: auto;"
+                    (click)="ouvrirBoiteDialogueModifierPosition(this.data.commande)" *ngIf="wms >= 3">
+                    <mat-icon>edit</mat-icon>
+                </button>
+            </div>
+            <div class="map">
+                <agm-map [latitude]="latitude" [longitude]="longitude" [zoom]="15" [disableDefaultUI]="false"
+                    [disableDoubleClickZoom]="true">
+                    <agm-marker [latitude]="latitude" [longitude]="longitude" animation='DROP'>
+                        <agm-info-window>{{data.commande.adresse}}</agm-info-window>
+                    </agm-marker>
+                </agm-map>
+            </div>
+        </div>
+    </div>
+    <div class="liste-colisage">
+        <div style="display: flex; align-items: center;">
+            <h2>Liste colisage</h2>
+            <button mat-icon-button style="margin-left: auto;"
+                (click)="ouvrirBoiteDialogueModifierColisage(this.data.commande)" *ngIf="wms >= 3">
+                <mat-icon>edit</mat-icon>
+            </button>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Produit</th>
+                    <th scope="col">Pack</th>
+                    <th scope="col">Qte</th>
+                    <th scope="col">Nbr. Pack</th>
+                    <th scope="col">LxlxH (cm)</th>
+                    <th scope="col">Volume (m³)</th>
+                    <th scope="col">Poids net (kg)</th>
+                    <th scope="col">Poids brut (kg)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let colis of this.listeColisage">
+                    <th scope="row">{{colis.idProduit}}</th>
+                    <td>{{colis.produit}}</td>
+                    <td>{{colis.emballage}}</td>
+                    <td>{{colis.nombrePack}}</td>
+                    <td>{{colis.quantite}}</td>
+                    <td>{{colis.dimensions}}</td>
+                    <td>{{colis.volume}}</td>
+                    <td>{{colis.poidsNet}}</td>
+                    <td>{{colis.poidsBrut}}</td>
+                </tr>
+                <tr>
+                    <th scope="row" colspan="3"></th>
+                    <td>Total</td>
+                    <td>{{nombrePackTotal}}</td>
+                    <td></td>
+                    <td>{{volumeTotal}}</td>
+                    <td>{{poidsTotalNet}}</td>
+                    <td>{{poidsTotalBrut}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

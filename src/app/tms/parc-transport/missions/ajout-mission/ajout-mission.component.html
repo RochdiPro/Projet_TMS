@@ -1,68 +1,70 @@
 <div class="container">
     <div class="row">
-        <div class="col-perso">
+        <!-- liste des Commandes pretes a construire un Mission -->
+        <div class="col-perso mission">
             <h3>Mission</h3>
             <div class="cadre">
                 <div class="entete">
                     <span><b>Durée: </b>480min</span>
-                    <span><b>Volume: </b>123</span>
-                    <span><b>Poids: </b>123</span>
-                    <div class="header">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row" style="padding: 0;">
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
-                                </div>
-                            </div>
-                            <div style="width: 60px;">
-                                <button mat-mini-fab color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <span><b>Poids Total:</b> {{calculerPoidsMission()}}kg </span>
+                    <span><b>Volume Total:</b> {{calculerVolumeMission()}}m³</span>
+                    <span style="width: 60px;">
+                        <button mat-icon-button name="ajouter-mission" color="primary"
+                            [disabled]="pasDeVehiculeSelectionne || missionVide || poidsVehiculeInferieurPoidsCommande || volumeVehiculeInferieurVolumeCommande"
+                            (click)=" ajouterMissionFileAttente()">
+                            <mat-icon>add_circle</mat-icon>
+                        </button>
+                    </span>
                 </div>
 
                 <div class="contenu-list">
-                    <mat-selection-list #commandesNonAffecte color="primary"
-                        [(ngModel)]="commandesNonAffecteSelectionne">
-                        <mat-list-option value="C1">
-                            C1
-                        </mat-list-option>
-                        <mat-list-option value="C2">
-                            C2
-                        </mat-list-option>
-                        <mat-list-option value="C3">
-                            C3
-                        </mat-list-option>
-                        <mat-list-option value="C4">
-                            C4
-                        </mat-list-option>
-                        <mat-list-option value="C5">
-                            C5
-                        </mat-list-option>
-                        <mat-list-option value="C6">
-                            C6
-                        </mat-list-option>
-                        <mat-list-option value="C7">
-                            C7
-                        </mat-list-option>
-                        <mat-list-option value="C8">
-                            C8
-                        </mat-list-option>
-                        <mat-list-option value="C9">
-                            C9
-                        </mat-list-option>
-                    </mat-selection-list>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Réf</th>
+                                <th>Client</th>
+                                <th>Ville</th>
+                                <th>Poids</th>
+                                <th>Volume</th>
+                                <th>Score</th>
+                                <th>
+                                    <button mat-icon-button name="enlever-tous-commandes" color="warn" matTooltip="Annuler tous"
+                                        matTooltipPosition="above" (click)="annulerAjoutTousCommandeDansMission();"
+                                        [disabled]="mission.length === 0">
+                                        <mat-icon>indeterminate_check_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let commande of mission; let i=index;">
+                                <!-- colonne reference -->
+                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <!-- colonne nom client -->
+                                <td>{{commande.nomClient}}</td>
+                                <!-- colonne ville -->
+                                <td>{{commande.ville}}</td>
+                                <!-- colonne poids -->
+                                <td>{{commande.poids}}</td>
+                                <!-- colonne volume -->
+                                <td>{{commande.volume}}</td>
+                                <!-- colonne score -->
+                                <td>{{convertirScoreEnPourcentageParRapportMission(commande.score)}}%</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button name="enlever-commande" color="warn" (click)="annulerAjoutCommandeDansMission(i)">
+                                        <mat-icon>remove</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
                 </div>
             </div>
         </div>
-        <div class="col-perso">
+        <!-- liste des vehicules disponibles -->
+        <div class="col-perso vehicule">
             <h3>Vehicules</h3>
             <div class="cadre">
                 <div class="entete" [formGroup]="form">
@@ -73,339 +75,486 @@
                     <span>
                         <label for="multiple-vehicules">Multi véhicules</label>
                         <mat-checkbox class="example-margin" id="multiple-vehicules" color="primary"
-                            formControlName="multiVehicule"></mat-checkbox>
+                            formControlName="multiVehicule" (change)="clickerMultiVehiculesCheckBox()"></mat-checkbox>
                     </span>
-                    <span><b>Poids:</b>123</span>
-                    <span><b>Volume:</b>123</span>
-                    <div class="header">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row" style="padding: 0;">
-                                    <div class="col-4"><span style="font-weight: bold; margin: 0;">Vehicule</span></div>
-                                    <div class="col-4"><span style="font-weight: bold; margin: 0;">Temps dispo</span>
-                                    </div>
-                                    <div class="col-4"><span style="font-weight: bold; margin: 0;">Nv temps dispo</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="width: 60px;">
-                                <button mat-mini-fab color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <span><b>Poids:</b><span
+                            [ngClass]="{'alerte': poidsVehiculeInferieurPoidsCommande}">{{chargeUtileVehiculesSelectionnes}}kg</span></span>
+                    <span><b>Volume:</b><span
+                            [ngClass]="{'alerte': volumeVehiculeInferieurVolumeCommande}">{{volumeUtileVehiculesSelectionnes}}m³</span></span>
                 </div>
                 <div class="contenu-list">
-                    <mat-selection-list #Vehicules>
-                        <div id="separation" *ngIf="listeVehicules"><span>véhicules possédées</span></div>
-                        <mat-list-option *ngFor="let vehicule of listeVehicules">
-                            {{vehicule.matricule}}
-                        </mat-list-option>
-                        <div id="separation" *ngIf="listeVehiculesLoues"><span>véhicules loués</span></div>
-                        <mat-list-option *ngFor="let vehiculeLoue of listeVehiculesLoues">
-                            {{vehiculeLoue.matricule}}
-                        </mat-list-option>
-                    </mat-selection-list>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Vehicule</th>
+                                <th>Heure de disponibilité</th>
+                                <th>Nv heure de disponibilité</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4"
+                                    style="text-align: center; height: 40px; background: hsla(230,48%,95%,100%); font-weight: bold; font-size: 12px;">
+                                    Véhicules possédées</td>
+                            </tr>
+                            <tr *ngFor="let vehicule of listeVehiculesAffiches; let i=index;">
+                                <td scope="row">{{vehicule.vehicule.matricule}}</td>
+                                <td></td>
+                                <td></td>
+                                <td style="height: 41px; text-align: center;">
+                                    <mat-checkbox *ngIf="checkBoxVehicules[i]" color="primary"
+                                        [(ngModel)]="checkBoxVehicules[i].value"
+                                        [disabled]="checkBoxVehicules[i].disable"
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'privé', vehicule)"></mat-checkbox>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4"
+                                    style="text-align: center; height: 40px; background: hsla(230,48%,95%,100%); font-weight: bold; font-size: 12px;">
+                                    Véhicules loués</td>
+                            </tr>
+                            <tr *ngFor="let vehiculeLoue of listeVehiculesLoues; let i=index;">
+                                <td scope="row">{{vehiculeLoue.matricule}}</td>
+                                <td></td>
+                                <td></td>
+                                <td style="height: 41px; text-align: center;">
+                                    <mat-checkbox color="primary" [(ngModel)]="checkBoxVehiculesLoues[i].value"
+                                        [disabled]="checkBoxVehiculesLoues[i].disable"
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'loue', vehiculeLoue)">
+                                    </mat-checkbox>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-perso ">
+        <!-- liste des commandes dans le Nord-Est -->
+        <div class="col-perso commandes">
             <h3>Nord-Est</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>Poids Total:</b>123</span>
-                    <span><b>Volume Total:</b>123</span>
-                    <span><b>score:</b>123</span>
-                    <div class="header">
-
-                        <div class="row">
-                            <div class="col">
-                                <div class="row" style="padding: 0;">
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
-                                </div>
-                            </div>
-                            <div style="width: 60px;">
-                                <button mat-mini-fab color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-
-
-                    </div>
+                    <span><b>Poids Total:</b> {{calculerPoidsCommandesParRegion(commandesNordEst)}}kg </span>
+                    <span><b>Volume Total:</b> {{calculerVolumeCommandeParRegion(commandesNordEst)}}m³</span>
+                    <span><b>score:</b> {{calculerScoreCommandeParRegion(commandesNordEst)}}</span>
                 </div>
                 <div class="contenu-list">
-                    <mat-selection-list #commandes color="primary">
-                        <mat-list-option *ngFor="let commande of commandesNordEst" [value]="commande">
-                            <div class="row" style="width: 100%;">
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" + commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.poids}}</div>
-                                <div class="col-2 contenu">0</div>
-                                <div class="col-2 contenu">0</div>
-                            </div>
-                        </mat-list-option>
-                    </mat-selection-list>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Réf</th>
+                                <th>Client</th>
+                                <th>Ville</th>
+                                <th>Poids</th>
+                                <th>Volume</th>
+                                <th>Score</th>
+                                <th>
+                                    <button mat-icon-button color="primary" matTooltip="Ajouter tous"
+                                        matTooltipPosition="above"
+                                        (click)="ajouterToutesCommandesParRegionDansMission(commandesNordEst)"
+                                        [disabled]="commandesNordEst.length === 0">
+                                        <mat-icon>add_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let commande of commandesNordEst; let i=index">
+                                <!-- colonne reference -->
+                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <!-- colonne nom client -->
+                                <td>{{commande.nomClient}}</td>
+                                <!-- colonne ville -->
+                                <td>{{commande.ville}}</td>
+                                <!-- colonne poids -->
+                                <td>{{commande.poids}}</td>
+                                <!-- colonne volume -->
+                                <td>{{commande.volume}}</td>
+                                <!-- colonne score -->
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesNordEst)}}%</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
+                                        (click)="ajouterCommandeDansMission(i, commandesNordEst)">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <div class="col-perso">
+        <!-- liste des commandes dans le Nord-Ouest -->
+        <div class="col-perso commandes">
             <h3>Nord-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>Poids Total:</b>123</span>
-                    <span><b>Volume Total:</b>123</span>
-                    <span><b>score:</b>123</span>
-                    <div class="header">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row" style="padding: 0;">
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
-                                </div>
-                            </div>
-                            <div style="width: 60px;">
-                                <button mat-mini-fab color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <span><b>Poids Total:</b> {{calculerPoidsCommandesParRegion(commandesNordOuest)}}kg </span>
+                    <span><b>Volume Total:</b> {{calculerVolumeCommandeParRegion(commandesNordOuest)}}m³</span>
+                    <span><b>score:</b> {{calculerScoreCommandeParRegion(commandesNordOuest)}}</span>
                 </div>
                 <div class="contenu-list">
-                    <mat-selection-list #commandes color="primary">
-                        <mat-list-option *ngFor="let commande of commandesNordOuest" [value]="commande">
-                            <div class="row" style="width: 100%;">
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.poids}}</div>
-                                <div class="col-2 contenu">{{0}}</div>
-                                <div class="col-2 contenu">{{0}}</div>
-                            </div>
-                        </mat-list-option>
-                    </mat-selection-list>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Réf</th>
+                                <th>Client</th>
+                                <th>Ville</th>
+                                <th>Poids</th>
+                                <th>Volume</th>
+                                <th>Score</th>
+                                <th>
+                                    <button mat-icon-button color="primary" matTooltip="Ajouter tous"
+                                        matTooltipPosition="above"
+                                        (click)="ajouterToutesCommandesParRegionDansMission(commandesNordOuest)"
+                                        [disabled]="commandesNordOuest.length === 0">
+                                        <mat-icon>add_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let commande of commandesNordOuest; let i=index">
+                                <!-- colonne reference -->
+                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <!-- colonne nom client -->
+                                <td>{{commande.nomClient}}</td>
+                                <!-- colonne ville -->
+                                <td>{{commande.ville}}</td>
+                                <!-- colonne poids -->
+                                <td>{{commande.poids}}</td>
+                                <!-- colonne volume -->
+                                <td>{{commande.volume}}</td>
+                                <!-- colonne score -->
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesNordOuest)}}%</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
+                                        (click)="ajouterCommandeDansMission(i, commandesNordOuest)">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-perso" id="col-perso">
+        <!-- liste des commandes dans le Centre-Est -->
+        <div class="col-perso commandes" id="col-perso">
             <h3>Centre-Est</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>Poids Total:</b>123</span>
-                    <span><b>Volume Total:</b>123</span>
-                    <span><b>score:</b>123</span>
-                    <div class="header">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row" style="padding: 0;">
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
-                                </div>
-                            </div>
-                            <div style="width: 60px;">
-                                <button mat-mini-fab color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <span><b>Poids Total:</b> {{calculerPoidsCommandesParRegion(commandesCentreEst)}}kg </span>
+                    <span><b>Volume Total:</b> {{calculerVolumeCommandeParRegion(commandesCentreEst)}}m³</span>
+                    <span><b>score:</b> {{calculerScoreCommandeParRegion(commandesCentreEst)}}</span>
                 </div>
                 <div class="contenu-list">
-                    <mat-selection-list #commandes color="primary">
-                        <mat-list-option *ngFor="let commande of commandesCentreEst" [value]="commande">
-                            <div class="row" style="width: 100%;">
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.poids}}</div>
-                                <div class="col-2 contenu">{{0}}</div>
-                                <div class="col-2 contenu">{{0}}</div>
-                            </div>
-                        </mat-list-option>
-                    </mat-selection-list>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Réf</th>
+                                <th>Client</th>
+                                <th>Ville</th>
+                                <th>Poids</th>
+                                <th>Volume</th>
+                                <th>Score</th>
+                                <th>
+                                    <button mat-icon-button color="primary" matTooltip="Ajouter tous"
+                                        matTooltipPosition="above"
+                                        (click)="ajouterToutesCommandesParRegionDansMission(commandesCentreEst)"
+                                        [disabled]="commandesCentreEst.length === 0">
+                                        <mat-icon>add_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let commande of commandesCentreEst; let i=index">
+                                <!-- colonne reference -->
+                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <!-- colonne nom client -->
+                                <td>{{commande.nomClient}}</td>
+                                <!-- colonne ville -->
+                                <td>{{commande.ville}}</td>
+                                <!-- colonne poids -->
+                                <td>{{commande.poids}}</td>
+                                <!-- colonne volume -->
+                                <td>{{commande.volume}}</td>
+                                <!-- colonne score -->
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesCentreEst)}}%</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
+                                        (click)="ajouterCommandeDansMission(i, commandesCentreEst)">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <div class="col-perso">
+        <!-- liste des commandes dans le Centre-Ouest -->
+        <div class="col-perso commandes">
             <h3>Centre-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>Poids Total:</b>123</span>
-                    <span><b>Volume Total:</b>123</span>
-                    <span><b>score:</b>123</span>
-                    <div class="header">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row" style="padding: 0;">
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
-                                </div>
-                            </div>
-                            <div style="width: 60px;">
-                                <button mat-mini-fab color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <span><b>Poids Total:</b> {{calculerPoidsCommandesParRegion(commandesCentreOuest)}}kg </span>
+                    <span><b>Volume Total:</b> {{calculerVolumeCommandeParRegion(commandesCentreOuest)}}m³</span>
+                    <span><b>score:</b> {{calculerScoreCommandeParRegion(commandesCentreOuest)}}</span>
                 </div>
                 <div class="contenu-list">
-                    <mat-selection-list #commandes color="primary">
-                        <mat-list-option *ngFor="let commande of commandesCentreOuest" [value]="commande">
-                            <div class="row" style="width: 100%;">
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.poids}}</div>
-                                <div class="col-2 contenu">{{0}}</div>
-                                <div class="col-2 contenu">{{0}}</div>
-                            </div>
-                        </mat-list-option>
-                    </mat-selection-list>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Réf</th>
+                                <th>Client</th>
+                                <th>Ville</th>
+                                <th>Poids</th>
+                                <th>Volume</th>
+                                <th>Score</th>
+                                <th>
+                                    <button mat-icon-button color="primary" matTooltip="Ajouter tous"
+                                        matTooltipPosition="above"
+                                        (click)="ajouterToutesCommandesParRegionDansMission(commandesCentreOuest)"
+                                        [disabled]="commandesCentreOuest.length === 0">
+                                        <mat-icon>add_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let commande of commandesCentreOuest; let i=index;">
+                                <!-- colonne reference -->
+                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <!-- colonne nom client -->
+                                <td>{{commande.nomClient}}</td>
+                                <!-- colonne ville -->
+                                <td>{{commande.ville}}</td>
+                                <!-- colonne poids -->
+                                <td>{{commande.poids}}</td>
+                                <!-- colonne volume -->
+                                <td>{{commande.volume}}</td>
+                                <!-- colonne score -->
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesCentreOuest)}}%</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
+                                        (click)="ajouterCommandeDansMission(i, commandesCentreOuest)">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-perso">
+        <!-- liste des commandes dans le Sud-Est -->
+        <div class="col-perso commandes">
             <h3>Sud-Est</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>Poids Total:</b>123</span>
-                    <span><b>Volume Total:</b>123</span>
-                    <span><b>score:</b>123</span>
-                    <div class="header">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row" style="padding: 0;">
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
-                                </div>
-                            </div>
-                            <div style="width: 60px;">
-                                <button mat-mini-fab color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <span><b>Poids Total:</b> {{calculerPoidsCommandesParRegion(commandesSudEst)}}kg </span>
+                    <span><b>Volume Total:</b> {{calculerVolumeCommandeParRegion(commandesSudEst)}}m³</span>
+                    <span><b>score:</b> {{calculerScoreCommandeParRegion(commandesSudEst)}}</span>
                 </div>
                 <div class="contenu-list">
-                    <mat-selection-list #commandes color="primary">
-                        <mat-list-option *ngFor="let commande of commandesSudEst" [value]="commande">
-                            <div class="row" style="width: 100%;">
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.poids}}</div>
-                                <div class="col-2 contenu">{{0}}</div>
-                                <div class="col-2 contenu">{{0}}</div>
-                            </div>
-                        </mat-list-option>
-                    </mat-selection-list>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Réf</th>
+                                <th>Client</th>
+                                <th>Ville</th>
+                                <th>Poids</th>
+                                <th>Volume</th>
+                                <th>Score</th>
+                                <th>
+                                    <button mat-icon-button color="primary" matTooltip="Ajouter tous"
+                                        matTooltipPosition="above"
+                                        (click)="ajouterToutesCommandesParRegionDansMission(commandesSudEst);"
+                                        [disabled]="commandesSudEst.length === 0">
+                                        <mat-icon>add_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let commande of commandesSudEst; let i=index">
+                                <!-- colonne reference -->
+                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <!-- colonne nom client -->
+                                <td>{{commande.nomClient}}</td>
+                                <!-- colonne ville -->
+                                <td>{{commande.ville}}</td>
+                                <!-- colonne poids -->
+                                <td>{{commande.poids}}</td>
+                                <!-- colonne volume -->
+                                <td>{{commande.volume}}</td>
+                                <!-- colonne score -->
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesSudEst)}}%</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
+                                        (click)="ajouterCommandeDansMission(i, commandesSudEst)">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-        <div class="col-perso" id="col-perso">
+        <div class="col-perso commandes" id="col-perso">
+            <!-- liste des commandes dans le Sud-Ouest -->
             <h3>Sud-Ouest</h3>
             <div class="cadre2">
                 <div class="entete">
-                    <span><b>Poids Total:</b>123</span>
-                    <span><b>Volume Total:</b>123</span>
-                    <span><b>score:</b>123</span>
-                    <div class="header">
-                        <div class="row">
-                            <div class="col">
-                                <div class="row" style="padding: 0;">
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Réf</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Client</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Ville</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                                    <div class="col-2"><span style="font-weight: bold; margin: 0;">Score</span></div>
-                                </div>
-                            </div>
-                            <div style="width: 60px;">
-                                <button mat-mini-fab color="primary">
-                                    <mat-icon>add</mat-icon>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <span><b>Poids Total:</b> {{calculerPoidsCommandesParRegion(commandesSudOuest)}}kg </span>
+                    <span><b>Volume Total:</b> {{calculerVolumeCommandeParRegion(commandesSudOuest)}}m³</span>
+                    <span><b>score:</b> {{calculerScoreCommandeParRegion(commandesSudOuest)}}</span>
                 </div>
                 <div class="contenu-list">
-                    <mat-selection-list #commandes color="primary">
-                        <mat-list-option *ngFor="let commande of commandesSudOuest" [value]="commande">
-                            <div class="row" style="width: 100%;">
-                                <div class="col-2 contenu">{{commande.type === "Facture" ? "F-" + commande.id_Facture :
-                                    "BL-" +
-                                    commande.id_BL}}</div>
-                                <div class="col-2 contenu">{{commande.nom_Clt}}</div>
-                                <div class="col-2 contenu">{{commande.ville}}</div>
-                                <div class="col-2 contenu">{{commande.poids}}</div>
-                                <div class="col-2 contenu">0</div>
-                                <div class="col-2 contenu">0</div>
-                            </div>
-                        </mat-list-option>
-                    </mat-selection-list>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Réf</th>
+                                <th>Client</th>
+                                <th>Ville</th>
+                                <th>Poids</th>
+                                <th>Volume</th>
+                                <th>Score</th>
+                                <th>
+                                    <button mat-icon-button color="primary" matTooltip="Ajouter tous"
+                                        matTooltipPosition="above"
+                                        (click)="ajouterToutesCommandesParRegionDansMission(commandesSudOuest)"
+                                        [disabled]="commandesSudOuest.length === 0">
+                                        <mat-icon>add_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let commande of commandesSudOuest; let i=index">
+                                <!-- colonne reference -->
+                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <!-- colonne nom client -->
+                                <td>{{commande.nomClient}}</td>
+                                <!-- colonne ville -->
+                                <td>{{commande.ville}}</td>
+                                <!-- colonne poids -->
+                                <td>{{commande.poids}}</td>
+                                <!-- colonne volume -->
+                                <td>{{commande.volume}}</td>
+                                <!-- colonne score -->
+                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
+                                    commandesSudOuest)}}%</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
+                                        (click)="ajouterCommandeDansMission(i, commandesSudOuest)">
+                                        <mat-icon>add</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
     <div class="row" id="file-attente">
+        <!-- liste des commandes dans la file d'attente -->
         <div class="col-perso">
             <h3>File d'attente</h3>
             <div class="cadre2">
-                <div class="entete-file-attente">
-                    <div class="row">
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Région</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Vehicule</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Sc/G</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Volume V</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Volume</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Poids V</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;">Poids</span></div>
-                        <div class="col-file-attente"><span style="font-weight: bold; margin: 0;"></span></div>
-                    </div>
-                </div>
                 <div class="contenu-list">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Région</th>
+                                <th>Vehicule</th>
+                                <th>Chauffeur</th>
+                                <th>Sc/G</th>
+                                <th>Volume V</th>
+                                <th>Volume</th>
+                                <th>Poids V</th>
+                                <th>Poids</th>
+                                <th>
+                                    <button mat-icon-button color="warn" matTooltip="Annuler tous"
+                                        matTooltipPosition="above" (click)="annulerAjoutTousMissionsDansFileAttente()" [disabled]="fileAttenteEstVide">
+                                        <mat-icon>indeterminate_check_box</mat-icon>
+                                    </button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let mis of missions; let i=index;">
+                                <!-- colonne region -->
+                                <td scope="row">1</td>
+                                <!-- colonne vehicule -->
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let vehicule of mis.vehicule">
+                                            {{vehicule.matricule}}
+                                        </li>
+                                    </ul>
+                                </td>
+                                <!-- colonne chauffeur -->
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let chauffeur of mis.chauffeur">
+                                            {{chauffeur.nom}}
+                                        </li>
+                                    </ul>
+                                </td>
+                                <!-- colonne score -->
+                                <td>{{mis.score}}</td>
+                                <!-- colonne volume vehicule -->
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let vehicule of mis.vehicule">
+                                            {{calculerVolumeVehicule(vehicule)}}m³
+                                        </li>
+                                    </ul>
+                                </td>
+                                <!-- colonne volume mission -->
+                                <td>{{mis.volume}}m³</td>
+                                <!-- colonne poids vehicule -->
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let vehicule of mis.vehicule">
+                                            {{vehicule.charge_utile}}kg
+                                        </li>
+                                    </ul>
+                                </td>
+                                <!-- colonne poids mission -->
+                                <td>{{mis.poids}}kg</td>
+                                <!-- bouton ajouter -->
+                                <td>
+                                    <button mat-icon-button color="warn" (click)="annulerAjoutMissionDansFileAttente(i)">
+                                        <mat-icon>remove</mat-icon>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

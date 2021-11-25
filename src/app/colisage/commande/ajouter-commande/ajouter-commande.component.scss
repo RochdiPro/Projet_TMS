@@ -1,24 +1,130 @@
 .filtres {
-    padding-left: 20px;
-    display: flex;
-    flex-direction: row;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: row;
 }
 .selection-filter {
-    font-size: 10.5px;
+  font-size: 10.5px;
 }
 .filtre-id {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
-.filtre-ville{
-    padding-left: 10px;
-    font-size: 13.6px;
+.filtre-ville {
+  padding-left: 10px;
+  font-size: 13.6px;
+}
 
+#type-id {
+  width: 70px;
+  text-align: center;
 }
-.trie{
-    padding-left: 10px;
-    font-size: 13.6px; 
+
+#champs-filtre-id {
+  width: 130px;
 }
-.trie ::ng-deep .mat-select-arrow {
-    border: none !important;
+
+#champs-filtre-id {
+  width: 200px;
+}
+.mat-table {
+  max-height: 45vh;
+  overflow-y: auto;
+}
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  .filtres {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filtre-id {
+    width: 100%;
+  }
+
+  .filtre-ville {
+    width: 100%;
+    padding: 0;
+  }
+
+  #champs-filtre-ville {
+    width: 100%;
+  }
+  
+  #champs-filtre-id {
+    width: 74%;
+  }
+
+  .mat-table {
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  .mat-table {
+    border: 0;
+    vertical-align: middle;
+  }
+
+  .mat-table caption {
+    font-size: 1em;
+  }
+
+  .mat-table .mat-row {
+    border-bottom: 5px solid #ddd;
+    display: block;
+    min-height: auto;
+  }
+
+  .mat-table .mat-cell {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: 1em;
+    text-align: right;
+    font-weight: bold;
+    height: auto;
+    margin-bottom: 4%;
+    padding-right: 5%;
+    padding-bottom: 4%;
+  }
+  .mat-table .mat-cell:before {
+    content: attr(data-label);
+    float: left;
+    text-transform: uppercase;
+    font-weight: normal;
+    margin-left: 5%;
+
+    font-size: 0.85em;
+  }
+  .mat-table .mat-cell:last-child {
+    border-bottom: 0;
+  }
+  .mat-table .mat-cell:first-child {
+    margin-top: 4%;
+  }
+  .mat-table .mat-cell:last-of-type {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    height: 40px;
+  }
+  .mat-icon,
+  .mat-button {
+    transform: scale(1.1);
+  }
+  .mat-table .mat-cell:first-of-type {
+    padding-left: 0;
+  }
+  .mat-table .mat-header-cell {
+    border: 10px solid;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  .mat-header-row {
+    min-height: 0;
+  }
 }

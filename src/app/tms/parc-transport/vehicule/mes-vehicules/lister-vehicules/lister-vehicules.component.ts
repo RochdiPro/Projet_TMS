@@ -22,8 +22,25 @@ export class ListerVehiculesComponent implements OnInit {
   vehicule: any;
   form = new FormGroup({ carb: new FormControl(), prix: new FormControl() });
 
+  //variables de droits d'accés
+  nom: any;
+  acces: any;
+  tms: any;
+
   //constructeur
-  constructor(private dialog: MatDialog, public service: VehiculeService, public _router: Router) { }
+  constructor(private dialog: MatDialog, public service: VehiculeService, public _router: Router) {
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1004000");
+
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.tms = Number( arrayOfDigits[3])
+   }
 
   ngOnInit(): void {
     this.form.get('carb').setValidators([Validators.required]);
@@ -91,22 +108,21 @@ export class ListerVehiculesComponent implements OnInit {
 
   //bouton de detail vehicule
   ouvrirDetailVehicule(id: any): void { //ouvrir la boite de dialogue de détails vehicule
-    localStorage.setItem('idV', id);
     const dialogRef = this.dialog.open(DetailVehiculeComponent, {
       width: '450px',
       panelClass: "custom-dialog",
       autoFocus: false,
+      data: {id: id}
     });
   }
 
   // bouton de mise a jour de vehicule
-  ouvrirMiseAJourVehicule(id: any, categories: any): void { //ouvrir la boite de dialogue de mise a jour vehicule
-    localStorage.setItem('idV', id);
-    localStorage.setItem('categorie', categories);
+  ouvrirMiseAJourVehicule(id: any): void { //ouvrir la boite de dialogue de mise a jour vehicule
     const dialogRef = this.dialog.open(MajVehiculeComponent, {
       width: '450px',
       panelClass: "custom-dialog",
       autoFocus: false,
+      data: {id: id}
     });
     dialogRef.afterClosed().subscribe(result => {
       this.chargerVehicules();
@@ -114,12 +130,11 @@ export class ListerVehiculesComponent implements OnInit {
   }
 
   //bouton de mise a jour du consommation du vehicule
-  ouvrirMiseAJourConsommation(id: any, kmactuel: any): void { //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
-    localStorage.setItem('idV', id);
-    localStorage.setItem('kmactuelV', kmactuel);
+  ouvrirMiseAJourConsommation(id: any): void { //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
     const dialogRef = this.dialog.open(MiseAJourConsommationComponent, {
       width: '600px',
       autoFocus: false,
+      data: { id: id }
     });
     dialogRef.afterClosed().subscribe(res => {
       this.chargerVehicules();
@@ -128,10 +143,10 @@ export class ListerVehiculesComponent implements OnInit {
 
   // bouton de reclamation
   ouvrirReclamation(id: any): void { //ouvrir la boite de dialogue de reclamation
-    localStorage.setItem('idV', id);
     const dialogRef = this.dialog.open(ReclamationComponent, {
       width: '500px',
       autoFocus: false,
+      data: {id: id}
     });
     dialogRef.afterClosed().subscribe(res => {
       this.chargerVehicules();
@@ -144,15 +159,12 @@ export class ListerVehiculesComponent implements OnInit {
   }
 
   // bouton de notification
-  ouvrirNotifications(id: any, sujet: any, description: any): void { //ouvrir la boite de dialogue de notification
-    localStorage.setItem('idV', id);
-    localStorage.setItem('sujetR', sujet);
-    localStorage.setItem('descriptionR', description);
+  ouvrirNotifications(id: any): void { //ouvrir la boite de dialogue de notification
     this.chargerVehicule(id);
-    localStorage.setItem("vehicule", JSON.stringify(this.vehicule));
     const dialogRef = this.dialog.open(NotificationComponent, {
       width: '600px',
       autoFocus: false,
+      data: {id: id }
     });
     dialogRef.afterClosed().subscribe(res => {
       this.chargerVehicules();
@@ -226,7 +238,6 @@ export class ListerVehiculesComponent implements OnInit {
   ouvrirAjouterCarburant() { //ouvrir la boite de dialogue ajouter carburant
     const dialogRef = this.dialog.open(AjouterCarburantComponent, {
       width: '400px',
-      panelClass: "custom-dialog",
       autoFocus: false,
     });
     dialogRef.afterClosed().subscribe(result => {

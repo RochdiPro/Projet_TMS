@@ -29,15 +29,17 @@ export class EmballageService {
 
 
   //filtrer emballages
-  public fltreListeproduit(champ1 : any, valeur1 : any, champ2 : any, valeur2 : any, champ3 : any, valeur3 : any){
-    return this.httpClient.get(erp + 'filtre-emballage', {
+  public fltreListeEmballagePlusieursChammps(id : any, nomEmballage : any, typeEmballage : any, nomProduit : any, qte : any, unite : any, poids: any, volume: any){
+    return this.httpClient.get(erp + 'filtre-plusieurs-champs-emballage', {
       params: {
-        champ1: champ1,
-        valeur1: valeur1,
-        champ2: champ2,
-        valeur2: valeur2,
-        champ3: champ3,
-        valeur3: valeur3
+        id: id,
+        nomEmballage: nomEmballage,
+        type: typeEmballage,
+        nomProduit: nomProduit,
+        quantite: qte,
+        unite: unite,
+        poids: poids,
+        volume: volume
       }, observe: 'body'
     }).pipe(catchError(this.handleError));
   }

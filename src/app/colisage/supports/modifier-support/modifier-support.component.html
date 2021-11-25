@@ -1,4 +1,4 @@
-<div *ngIf="support">
+<div *ngIf="support && wms >= 3">
     <h1>Modifier support {{support.id_support}}</h1>
     <form [formGroup]="form">
         <div class="input-inline">
@@ -6,6 +6,9 @@
             <mat-form-field appearance="fill" class="premier-input">
                 <mat-label style="text-transform: capitalize;">Nom d'emballage</mat-label>
                 <input matInput formControlName="nom_Support" required>
+                <mat-error *ngIf="form.controls['nom_Support'].hasError('required')">
+                    Ce champ est obligatoire
+                </mat-error>
             </mat-form-field>
             <!-- input type emballage -->
             <mat-form-field appearance="fill" class="deuxieme-input">
@@ -16,12 +19,18 @@
                     <mat-option value="Vrac">Vrac</mat-option>
                     <mat-option value="Sac">Sac</mat-option>
                 </mat-select>
+                <mat-error *ngIf="form.controls['type_Support'].hasError('required')">
+                    Ce champ est obligatoire
+                </mat-error>
             </mat-form-field>
             <!-- input code a barre -->
             <mat-form-field appearance="fill" class="troisieme-input">
                 <mat-label>Code à barre</mat-label>
                 <input matInput formControlName="code_Barre" required type="text">
                 <mat-icon matSuffix>qr_code_scanner</mat-icon>
+                <mat-error *ngIf="form.controls['code_Barre'].hasError('required')">
+                    Ce champ est obligatoire
+                </mat-error>
             </mat-form-field>
     
         </div>
@@ -32,16 +41,25 @@
                 <mat-label style="text-transform: capitalize;">Longueur (cm)</mat-label>
                 <input matInput formControlName="longueur" required (keyup)="calculVolume()" type="number"
                     pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                    <mat-error *ngIf="form.controls['longueur'].hasError('required')">
+                        Ce champ est obligatoire
+                    </mat-error>
             </mat-form-field>
             <mat-form-field appearance="fill" class="deuxieme-input">
                 <mat-label style="text-transform: capitalize;">Largeur (cm)</mat-label>
                 <input matInput formControlName="largeur" required (keyup)="calculVolume()" type="number"
                     pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                    <mat-error *ngIf="form.controls['largeur'].hasError('required')">
+                        Ce champ est obligatoire
+                    </mat-error>
             </mat-form-field>
             <mat-form-field appearance="fill" class="troisieme-input">
                 <mat-label style="text-transform: capitalize;">Hauteur (cm)</mat-label>
                 <input matInput formControlName="hauteur" required (keyup)="calculVolume()" type="number"
                     pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                    <mat-error *ngIf="form.controls['hauteur'].hasError('required')">
+                        Ce champ est obligatoire
+                    </mat-error>
             </mat-form-field>
         </div>
         <!-- les inputs du volume -->
@@ -50,10 +68,16 @@
             <mat-form-field appearance="fill" class="premier-input">
                 <mat-label style="text-transform: capitalize;">Volume (m3)</mat-label>
                 <input matInput formControlName="volume" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                <mat-error *ngIf="form.controls['volume'].hasError('required')">
+                    Ce champ est obligatoire
+                </mat-error>
             </mat-form-field>
             <mat-form-field appearance="fill" class="premier-input">
                 <mat-label style="text-transform: capitalize;">Poids</mat-label>
                 <input matInput formControlName="poids_Emballage" required type="number" pattern="^(?:[1-9]\d*|0)?(?:\.\d+)?$">
+                <mat-error *ngIf="form.controls['poids_Emballage'].hasError('required')">
+                    Ce champ est obligatoire
+                </mat-error>
             </mat-form-field>
         </div>
     </form>

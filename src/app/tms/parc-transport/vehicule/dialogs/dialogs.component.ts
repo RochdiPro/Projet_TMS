@@ -97,11 +97,12 @@ export class DetailVehiculeComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<DetailVehiculeComponent>,
     public service: VehiculeService,
-    public datepipe: DatePipe
+    public datepipe: DatePipe,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   async ngOnInit() {
-    this.idVehicule = localStorage.getItem('idV'); // ID du vehicule selectionné
+    this.idVehicule = this.data.id; // ID du vehicule selectionné
     await this.chargerVehicule(this.idVehicule);
     this.testerTypeMatricule();
     this.chargerCarburant();
@@ -189,6 +190,7 @@ export class DetailVehiculeComponent implements OnInit {
     var carosserie = this.carosserie.filter(
       (element) => element.value === this.vehicule.categories
     );
+    var nomCarosserie = carosserie[0].name.split(" ")
     return {
       pageSize: 'A4',
       pageMargins: [40, 95, 40, 60],
@@ -269,7 +271,7 @@ export class DetailVehiculeComponent implements OnInit {
               width: 'auto',
             },
             {
-              text: carosserie[0].name,
+              text: nomCarosserie[0] + "\n" + nomCarosserie[1],
               bold: true,
               fontSize: 9,
               margin: [91, 18.5, 0, 0],
@@ -602,18 +604,21 @@ export class MajVehiculeComponent implements OnInit {
   form: FormGroup;
   vehicule: any;
   idVehicule: any;
+  carburants: any;
 
   //constructeur
   constructor(
     public dialogRef: MatDialogRef<MajVehiculeComponent>,
     public fb: FormBuilder,
     public service: VehiculeService,
-    public _router: Router
+    public _router: Router,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   async ngOnInit() {
-    this.idVehicule = localStorage.getItem('idV'); //charger l'id du vehicule à mettre a jour
+    this.idVehicule = this.data.id; //charger l'id du vehicule à mettre a jour
     await this.chargerVehicule(this.idVehicule);
+    await this.getCarburant();
     this.form = this.fb.group({
       kmactuel: [
         this.vehicule.kmactuel,
@@ -673,6 +678,10 @@ export class MajVehiculeComponent implements OnInit {
     this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
   }
 
+  async getCarburant(){
+    this.carburants= await this.service.carburants().toPromise()
+  }
+
   // Bouton Annuler
   fermerMiseAJourVehicule(): void {
     // fermer boite de dialogue
@@ -683,6 +692,7 @@ export class MajVehiculeComponent implements OnInit {
   async miseAJourVehicule() {
     //Effectuer le mise a jour
     var formData: any = new FormData();
+    formData.append('id', this.idVehicule);
     formData.append('kmactuel', this.form.get('kmactuel').value);
     formData.append(
       'kilometrageProchainVidangeHuileMoteur',
@@ -740,7 +750,7 @@ export class MajVehiculeComponent implements OnInit {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service
-          .miseajourvehicule(this.idVehicule, formData)
+          .miseajourvehicule(formData)
           .toPromise();
         this.fermerMiseAJourVehicule();
         Swal.fire('Modifications enregistrées!', '', 'success');
@@ -766,10 +776,11 @@ export class MiseAJourConsommationComponent implements OnInit {
     public dialogRef: MatDialogRef<MiseAJourConsommationComponent>,
     public fb: FormBuilder,
     public service: VehiculeService,
-    public _router: Router
+    public _router: Router,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
   async ngOnInit() {
-    this.idVehicule = localStorage.getItem('idV'); //pour charger l'id du vehicule a modifier sa consommation
+    this.idVehicule = this.data.id; //pour charger l'id du vehicule a modifier sa consommation
     await this.chargerVehicule(this.idVehicule);
     this.form = this.fb.group({
       kmActuel: [
@@ -805,6 +816,7 @@ export class MiseAJourConsommationComponent implements OnInit {
   async miseAJourConsommation() {
     //Effectuer le mise ajour de consommation
     var formData: any = new FormData();
+    formData.append('id', this.idVehicule);
     formData.append('kmactuel', this.form.get('kmActuel').value);
     formData.append('montantConsomme', this.form.get('montantConsomme').value);
     formData.append(
@@ -818,7 +830,7 @@ export class MiseAJourConsommationComponent implements OnInit {
       cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service.miseajourkm(this.idVehicule, formData).toPromise();
+        await this.service.miseajourkm(formData).toPromise();
         this.fermerMiseAJourConsommation();
         Swal.fire('Consommation enregistrée!', '', 'success');
       }
@@ -850,14 +862,30 @@ export class NotificationComponent implements OnInit {
   carburantConsomme: any;
   consommationActuelle: any;
   listeEntretien: any = [];
+
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  tms: any;
+  
   //consructeur
   constructor(
     public dialogRef: MatDialogRef<NotificationComponent>,
     public service: VehiculeService,
-    public _router: Router
-  ) {}
+    public _router: Router,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.tms = Number( arrayOfDigits[3])
+  }
   async ngOnInit() {
-    this.idVehicule = localStorage.getItem('idV'); //charger id vehicule
+    this.idVehicule = this.data.id; //charger id vehicule
     await this.chargerVehicule();
     this.testerExistanceReclamation();
     this.chargerCarburants();
@@ -891,6 +919,7 @@ export class NotificationComponent implements OnInit {
   async supprimerReclamation() {
     // supprimer la reclamation
     var formData: any = new FormData();
+    formData.append('id', this.idVehicule);
     formData.append('sujet', '');
     formData.append('description', '');
     Swal.fire({
@@ -905,7 +934,7 @@ export class NotificationComponent implements OnInit {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service
-          .reclamationvehicule(this.idVehicule, formData)
+          .reclamationvehicule(formData)
           .toPromise();
         Swal.fire('Supprimé!', 'La réclamation a été supprimée.', 'success');
       }
@@ -1063,7 +1092,8 @@ export class ReclamationComponent implements OnInit {
     public dialogRef: MatDialogRef<ReclamationComponent>,
     public fb: FormBuilder,
     public service: VehiculeService,
-    public _router: Router
+    public _router: Router,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   ngOnInit(): void {
@@ -1071,7 +1101,7 @@ export class ReclamationComponent implements OnInit {
       sujet: ['', Validators.required],
       description: ['', Validators.required],
     });
-    this.idVehicule = localStorage.getItem('idV');
+    this.idVehicule = this.data.id;
     this.chargerVehicule();
   }
 
@@ -1089,6 +1119,7 @@ export class ReclamationComponent implements OnInit {
   async enregistrerReclamation() {
     //enregistre la reclamation
     var formData: any = new FormData();
+    formData.append('id', this.idVehicule);
     formData.append('sujet', this.form.get('sujet').value);
     formData.append('description', this.form.get('description').value);
     Swal.fire({
@@ -1099,7 +1130,7 @@ export class ReclamationComponent implements OnInit {
     }).then(async (result) => {
       if (result.isConfirmed) {
         await this.service
-          .reclamationvehicule(this.idVehicule, formData)
+          .reclamationvehicule(formData)
           .toPromise();
         this.dialogRef.close();
         Swal.fire('Réclamation enregistrée!', '', 'success');
@@ -1383,11 +1414,12 @@ export class DetailVehiculeLoueComponent implements OnInit {
   matricule: String;
   constructor(
     public dialogRef: MatDialogRef<DetailVehiculeLoueComponent>,
-    public service: VehiculeService
+    public service: VehiculeService,
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
   async ngOnInit() {
-    this.idVehicule = Number(localStorage.getItem('idV')); // ID du vehicule selectionné
+    this.idVehicule = Number(this.data.id); // ID du vehicule selectionné
     await this.chargerVehiculeLoue();
     this.testerTypeMatricule();
   }

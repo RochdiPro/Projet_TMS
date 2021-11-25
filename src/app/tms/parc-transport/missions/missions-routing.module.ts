@@ -4,8 +4,8 @@ import { AjoutMissionComponent } from './ajout-mission/ajout-mission.component';
 import { ListerMissionsComponent } from './missions.component';
 
 const routes: Routes = [
-  { path: 'Liste_Missions', component: ListerMissionsComponent },
-  { path: 'Ajouter_Missions', component: AjoutMissionComponent }
+  { path: 'liste-missions', component: ListerMissionsComponent },
+  { path: 'ajouter-missions', component: AjoutMissionComponent }
 ];
 
 @NgModule({

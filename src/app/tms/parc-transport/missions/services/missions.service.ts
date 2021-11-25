@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { catchError } from 'rxjs/operators';
 const erp = "/ERP/";
 const infonet = "/INFONET/";
 @Injectable({
   providedIn: 'root'
 })
 export class MissionsService {
+  handleError: any;
 
   constructor(private httpClient: HttpClient) { }
 
@@ -37,17 +39,32 @@ export class MissionsService {
     return this.httpClient.get(erp + 'filtrerMissionsVehiculeChauffeur' + '?vehicule=' + vehicule + '&chauffeur=' + chauffeur);
   }
 
+   // get liste des commandes
+   public commandes() {
+    return this.httpClient.get(erp + 'commandes');
+  }
+  // get commande par son id
+  public commande(id: any) {
+    return this.httpClient.get(erp + 'commande', {
+      params: {
+        id: id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+  // get commandes par son etat
+  public getCommandesParEtat(etat: any) {
+    return this.httpClient.get(erp + 'commandes-etat', {
+      params:{
+        etat: etat
+      },observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   public majEtat(id: any, formData: any) {
     this.httpClient.put(erp + 'miseajouretat/' + id, formData).subscribe(
       (response) => console.log(response),
       (error) => console.log(error)
     )
-  }
-  public commandes() {
-    return this.httpClient.get(erp + 'commandes');
-  }
-  public commande(id: any) {
-    return this.httpClient.get(erp + 'commande/' + id);
   }
   public creerCommande(formData: any) {
     this.httpClient.post(erp + 'createCommande', formData).subscribe(

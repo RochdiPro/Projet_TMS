@@ -1,0 +1,29 @@
+<h1 mat-dialog-title>Affecter des chauffeurs</h1>
+<div mat-dialog-content>
+    <table [formGroup]="form">
+        <thead>
+            <tr>
+                <th>Vehicule</th>
+                <th>Chauffeur</th>
+            </tr>
+        </thead>
+        <tbody formArrayName="chauffeurs">
+            <tr *ngFor="let couple of couplesVehiculeChauffeurs; let i=index" [formGroupName]="i">
+                <th scope="row">{{couple.vehicule.matricule}}</th>
+                <td>
+                    <mat-form-field appearance="fill">
+                        <mat-select placeholder="Chauffeur" name="chauffeur" formControlName="chauffeur" (selectionChange)="rafraichirListeChauffeur(i)">
+                            <mat-option *ngFor="let chauffeur of couple.chauffeurs" [value]="chauffeur">
+                                {{chauffeur.nom}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div mat-dialog-actions style="float: right;">
+    <button mat-button mat-dialog-close color="warn">Annuler</button>
+    <button mat-raised-button color="primary" cdkFocusInitial (click)="valider()">Ok</button>
+</div>

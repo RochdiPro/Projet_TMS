@@ -1,18 +1,31 @@
-button{
-    height: 10em;
-    width: 40%;
-    margin: 1em;
+// style des boutons
+button {
+  height: 10em;
+  width: 40%;
+  margin: 1em;
+  transition: transform 250ms;
 }
-div{
-    text-align: center;
+button:hover,
+button:focus-visible {
+  transform: scale(1.05);
+}
+div {
+  text-align: center;
+}
+.card-hover {
+    cursor: pointer;
+  transition: transform 250ms;
+}
+.card-hover:hover {
+  transform: scale(1.02);
 }
 //pour mobile
-@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
-    button{
-        height: 10em;
-        width: 100%;
-        margin: 0;
-        margin-top: 1em;
-    }
-    
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  button {
+    height: 10em;
+    width: 100%;
+    margin: 0;
+    margin-top: 1em;
+  }
 }

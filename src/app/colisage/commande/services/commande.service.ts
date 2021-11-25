@@ -17,6 +17,15 @@ export class CommandeService {
    public factures(){
     return this.httpClient.get(infonet + 'Factures');
   }
+
+  // get facture par son id
+  public facture(id: any) {
+    return this.httpClient.get(infonet + 'Facture', {
+      params: {
+        Id: id
+      }
+    }).pipe(catchError(this.handleError));
+  }
   
   //Filtre Facture
   public filtreFacture(Champ: any, Valeur: any) {
@@ -40,6 +49,15 @@ export class CommandeService {
   //charger la liste des Bons de livraison
   public bonLivraisons(){
     return this.httpClient.get(infonet + 'Bon_Livraisons');
+  }
+
+  // get Bon Livraison par son id
+  public bonLivraison(id: any) {
+    return this.httpClient.get(infonet + 'Bon_Livraison', {
+      params: {
+        Id: id
+      }
+    }).pipe(catchError(this.handleError));
   }
 
   //charger liste Clients
@@ -86,6 +104,20 @@ export class CommandeService {
     }).pipe(catchError(this.handleError));
   }
 
+  //get dernier id position client
+  public dernierPositionClient(){
+    return this.httpClient.get(erp + 'dernier-position-client').pipe(catchError(this.handleError));
+  }
+
+  //get position by id
+  public getPositionById(id: any){
+    return this.httpClient.get(erp + 'position-client', {
+      params:{
+        id: id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   //create position client
   public creerPositionClient(formData: any) {
     return this.httpClient.post(erp + 'position-client', formData).pipe(catchError(this.handleError));
@@ -101,6 +133,24 @@ export class CommandeService {
     return this.httpClient.post(erp + 'creer-colis', formData).pipe(catchError(this.handleError));
   }
 
+  //get liste des colis par reference commande
+  public getListeColisParReference(reference: any){
+    return this.httpClient.get(erp + 'liste-colis-par-reference', {
+      params: {
+        reference: reference
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
+  //delete from liste colisage by reference
+  public deleteColisParReference(reference: any){
+    return this.httpClient.delete(erp + 'supprimer-par-reference',{
+      params: {
+        reference: reference
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
   // creer commande
   public creerCommande(formData: any){
     return this.httpClient.post(erp + 'creer-commande', formData).pipe(catchError(this.handleError))
@@ -109,5 +159,24 @@ export class CommandeService {
   //get liste commande
   public getListeCommandes(){
     return this.httpClient.get(erp + 'commandes').pipe(catchError(this.handleError))
+  }
+
+  //modifier l'id du position dans le table commande
+  public modifierIdPositionDansTableCommande(formData: any) {
+    return this.httpClient.put(erp + 'modifier-id-position', formData).pipe(catchError(this.handleError));
+  }
+
+  //supprimer commande
+  public supprimerCommande(id: any) {
+    return this.httpClient.delete(erp + 'supprimer-commande', {
+      params: {
+        id: id
+      }
+    }).pipe(catchError(this.handleError));
+  }
+
+  // get les coefficients du score de la commande
+  public getCoefficientsScoreCommande() {
+    return this.httpClient.get(erp + "score-commande").pipe(catchError(this.handleError));
   }
 }

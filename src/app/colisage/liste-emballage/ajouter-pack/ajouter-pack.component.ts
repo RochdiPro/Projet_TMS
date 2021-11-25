@@ -80,13 +80,30 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   volume: any;
   poidsEmballage: any;
   typeEmballage: any;
+  barcodeEmballage = '';
+
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  wms: any;
 
   constructor(
     public serviceEmballage: EmballageService,
     public serviceSupport: SupportService,
     private formBuilder: FormBuilder,
     public _router: Router
-  ) {}
+  ) {
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1000200');
+
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.wms = Number(arrayOfDigits[4]);
+  }
 
   ngAfterViewInit() {
     this.dataSourceListeEmballage.paginator = this.paginator.toArray()[0];
@@ -98,10 +115,10 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.creerFormGroups();
     this.dataSourceListeEmballage.filterPredicate = (data, filter: string) => {
-      //pour specifier la colonne a filtre avec le filtre frontend
+      //pour specifier la colonne a filtrer avec le filtre frontend
       return data.nomEmballage.toLowerCase().includes(filter);
     };
-    this.chargerListeColisage();
+    this.chargerListeEmballage();
     this.breakpoint = window.innerWidth <= 760 ? 2 : 6;
     this.testTypeSelection();
   }
@@ -113,7 +130,6 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       nomEmballage: ['', Validators.required],
       fragilite: [false],
       codeBarre: ['', Validators.required],
-      codeBarrePack: ['', Validators.required],
       typeSelectionEmballage: ['auto', Validators.required],
       valider: ['', Validators.required],
     });
@@ -126,11 +142,12 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
 
   //charger la liste de colisage
-  chargerListeColisage() {
-    this.serviceEmballage.listeEmballage().subscribe((data) => {
-      this.listePacks = data;
-      this.dataSourceListeEmballage.data = this.listePacks as tableEmballage[];
-    });
+  async chargerListeEmballage() {
+    this.listePacks = await this.serviceEmballage.listeEmballage().toPromise();
+    this.listePacks.sort((embA: any, embB: any) =>
+      embA.id > embB.id ? -1 : 1
+    );
+    this.dataSourceListeEmballage.data = this.listePacks as tableEmballage[];
   }
 
   // charger la liste des supports filtrée par son type
@@ -277,7 +294,11 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.packSelectionne.push(p);
     }
 
-    this.deuxiemeFormGroup.get('validateur').setValue('valide'); //pour valider le deuxieme matStep
+    if (this.packSelectionne.length === 0) {
+      this.deuxiemeFormGroup.get('validateur').setValue('');
+    } else {
+      this.deuxiemeFormGroup.get('validateur').setValue('valide'); //pour valider le deuxieme matStep
+    }
   }
 
   // fonction pour la selection du pack manuellement
@@ -293,12 +314,19 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.packClique.add(p);
       this.packSelectionne.push(p);
     }
-
-    this.deuxiemeFormGroup.get('validateur').setValue('valide'); //pour valider le deuxieme matStep
+    if (this.packSelectionne.length === 0) {
+      this.deuxiemeFormGroup.get('validateur').setValue('');
+    } else {
+      this.deuxiemeFormGroup.get('validateur').setValue('valide'); //pour valider le deuxieme matStep
+    }
   }
 
   pack(): FormArray {
     //get le FormArray 'pack' pour ajouter a lui les formControls d'une facon dynamique
+    return this.troisiemeFormGroup.get('pack') as FormArray;
+  }
+
+  get packControl() {
     return this.troisiemeFormGroup.get('pack') as FormArray;
   }
 
@@ -321,12 +349,23 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
 
   deuxiemeSuivant() {
-    //pour chaque produit séléctionné on ajoute un formControl
-    this.packSelectionne.forEach((element: any) => {
-      this.ajouterPack(element.typeEmballage);
-    });
-    this.dataSourcePackSelectionne.data = this
-      .packSelectionne as tableEmballage[];
+    // si l'utilisateur n'a pas choisi un pack on affiche une alerte
+    // on teste si l'utilisateur a choisi un pack a l'aide du formControl 'validateur'
+    let packEstChoisi =
+      this.deuxiemeFormGroup.get('validateur').value === 'valide';
+    if (!packEstChoisi) {
+      Swal.fire({
+        icon: 'error',
+        text: 'Pas de pack choisi!',
+      });
+    } else {
+      //pour chaque produit séléctionné on ajoute un formControl
+      this.packSelectionne.forEach((element: any) => {
+        this.ajouterPack(element.typeEmballage);
+      });
+      this.dataSourcePackSelectionne.data = this
+        .packSelectionne as tableEmballage[];
+    }
   }
   // supprimer le pack si on clique sur precedent pour eviter les problemes
   deuxiemePrecedent() {
@@ -413,6 +452,25 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.premierFormGroup.get('nomEmballage').setValidators([]);
       this.premierFormGroup.get('nomEmballage').updateValueAndValidity();
     }
+  }
+
+  //fonction pour generer le code pour le code a barre
+  genererCodeBarre() {
+    this.barcodeEmballage = '';
+    let idComposant = 'PROD';
+    let idSupport = 'S' + this.supportSelectionne.id_support;
+    let fragilite = this.premierFormGroup.get('fragilite').value
+      ? 'FRAO'
+      : 'FRAN';
+    let listeQuatites = this.qte.split('/');
+    let quantitees = 'Q';
+    listeQuatites.forEach((quantite: any) => {
+      quantitees += quantite;
+    });
+    this.packSelectionne.forEach((element: any) => {
+      idComposant += element.id;
+    });
+    this.barcodeEmballage += idSupport + fragilite + idComposant + quantitees;
   }
 
   // fonction a exucuter lors de l'appuis sur le bouton valider

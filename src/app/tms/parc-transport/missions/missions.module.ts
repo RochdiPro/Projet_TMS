@@ -1,35 +1,33 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { AgmCoreModule } from '@agm/core';
-import { DirectionsMapDirective } from '../../../directions-map.directive';
-import { SafePipeModule } from 'safe-pipe';
-import { QRCodeModule } from 'angular2-qrcode';
-import { MatDialogModule } from '@angular/material/dialog';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
-import { MatSelectModule } from '@angular/material/select';
-import { DatePipe } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { FormsModule } from '@angular/forms';
+import { CommonModule, DatePipe } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
-
-
-
-
-import { MissionsComponent, ListerMissionsComponent, DetailComponent,MapsComponent, AffecterCommande, QrCodeComponent } from './missions.component';
-import { AjoutMissionComponent} from './ajout-mission/ajout-mission.component';
-
-
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { QRCodeModule } from 'angular2-qrcode';
+import { SafePipeModule } from 'safe-pipe';
+import { DirectionsMapDirective } from '../../../directions-map.directive';
+import { AjoutMissionComponent } from './ajout-mission/ajout-mission.component';
 import { MissionsRoutingModule } from './missions-routing.module';
+import { AffecterCommande, DetailComponent, ListerMissionsComponent, MapsComponent, MissionsComponent, QrCodeComponent } from './missions.component';
+import { AffecterChauffeur } from './dialogs/dialogs.component';
+
+
+
+
+
 
 
 @NgModule({
@@ -42,6 +40,7 @@ import { MissionsRoutingModule } from './missions-routing.module';
     QrCodeComponent,
     DirectionsMapDirective,
     AjoutMissionComponent,
+    AffecterChauffeur
 
   ],
   imports: [

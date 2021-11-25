@@ -1,22 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
 
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
+.transparent .mat-dialog-container {
+  box-shadow: none;
+  background-color: rgba(0, 0, 0, 0);
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.custom-dialog {
+  mat-dialog-container {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
+}
 
-  
-    .transparent .mat-dialog-container{
-      box-shadow: none;
-      background-color:rgba(0, 0, 0, 0);
-    }
-
-    .custom-dialog {
-      mat-dialog-container {
-        padding-right: 0px;
-        padding-left: 0px;
-      }
-    }
+//changement style scroll bar
+::-webkit-scrollbar {
+  width: 3px;
+}
+::-webkit-scrollbar-track {
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}

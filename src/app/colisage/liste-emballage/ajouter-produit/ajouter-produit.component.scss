@@ -1,5 +1,26 @@
+//changement style scroll bar
+::-webkit-scrollbar {
+  width: 2.5px;
+}
+::-webkit-scrollbar-track {
+  background: white;
+}
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+.ajout-produit ::ng-deep .mat-vertical-stepper-header{
+  pointer-events: none !important;
+}
+
 .mat-table {
-    margin-top: 10px;
+  margin-top: 10px;
+  max-height: 45vh;
+  overflow-y: auto;
 }
 
 .mat-column-id_Produit,
@@ -9,155 +30,159 @@
 .mat-column-unite,
 .mat-column-typeProduit,
 .mat-column-sousType {
-    width: auto;
-    text-align: center;
+  width: auto;
+  text-align: center;
 }
 :host ::ng-deep .mat-sort-header-container {
-    justify-content: center;
-    padding-left: 1.5em;
+  justify-content: center;
+  padding-left: 1.5em;
 }
 
 .table1 .mat-row .mat-cell {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .table1 .mat-row:hover .mat-cell {
-    background-color: rgba($color: #000, $alpha: 0.04);
+  background-color: rgba($color: #000, $alpha: 0.04);
 }
 
 .demo-row-is-clicked {
-    font-weight: bold;
-    background-color: rgba($color: #000, $alpha: 0.04);
+  font-weight: bold;
+  background-color: rgba($color: #000, $alpha: 0.04);
 }
 .titre {
-    font-weight: bold;
+  font-weight: bold;
 }
 .input-inline {
-    display: inline-block;
-    width: 100%;
+  display: inline-block;
+  width: 100%;
 }
 .premier-input {
-    width: 32%;
-    margin-right: 2%;
+  width: 32%;
+  margin-right: 2%;
 }
 .deuxieme-input {
-    width: 32%;
-    margin-right: 2%;
+  width: 32%;
+  margin-right: 2%;
 }
 .troisieme-input {
-    width: 32%;
+  width: 32%;
 }
-#barcode{
-    margin-left: 2%;
+#barcode {
+  margin-left: 2%;
 }
 //pour mobile
-@media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
-    *{
-        font-size: 12px;
-    }
-    #barcode{
-        margin-left: 0;
-    }
-    .premier-input {
-        width: 95%;
-        margin-right: 0%;
-    }
-    .deuxieme-input {
-        width: 95%;
-        margin-right: 0%;
-    }
-    .troisieme-input {
-        width: 95%;
-    }
-    .custom-width {
-        width: 92%;
-        margin: 0;
-    }
-    .mat-column-id {
-        width: auto;
-        text-align: center;
-    }
-    ul {
-        padding-top: 0%;
-    }
-    .mat-table {
-        border: 0;
-        vertical-align: middle;
-    }
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  * {
+    font-size: 12px;
+  }
+  #barcode {
+    margin-left: 0;
+  }
+  .premier-input {
+    width: 95%;
+    margin-right: 0%;
+  }
+  .deuxieme-input {
+    width: 95%;
+    margin-right: 0%;
+  }
+  .troisieme-input {
+    width: 95%;
+  }
+  .custom-width {
+    width: 92%;
+    margin: 0;
+  }
+  .mat-column-id {
+    width: auto;
+    text-align: center;
+  }
+  ul {
+    padding-top: 0%;
+  }
+  .mat-table {
+    border: 0;
+    vertical-align: middle;
+  }
 
-    .mat-table caption {
-        font-size: 1em;
-    }
+  .mat-table caption {
+    font-size: 1em;
+  }
 
-    .mat-table .mat-row {
-        border-bottom: 5px solid #ddd;
-        display: block;
-        min-height: auto;
-    }
+  .mat-table .mat-row {
+    border-bottom: 5px solid #ddd;
+    display: block;
+    min-height: auto;
+  }
 
-    .mat-table .mat-cell {
-        border-bottom: 1px solid #ddd;
-        display: block;
-        font-size: 1em;
-        text-align: right;
-        font-weight: bold;
-        height: auto;
-        margin-bottom: 4%;
-        padding-right: 5%;
-        padding-bottom: 4%;
-    }
-    .mat-table .mat-cell:before {
-        content: attr(data-label);
-        float: left;
-        text-transform: uppercase;
-        font-weight: normal;
-        margin-left: 5%;
+  .mat-table .mat-cell {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: 1em;
+    text-align: right;
+    font-weight: bold;
+    height: auto;
+    margin-bottom: 4%;
+    padding-right: 5%;
+    padding-bottom: 4%;
+  }
+  .mat-table .mat-cell:before {
+    content: attr(data-label);
+    float: left;
+    text-transform: uppercase;
+    font-weight: normal;
+    margin-left: 5%;
 
-        font-size: 0.85em;
-    }
-    .mat-table .mat-cell:last-child {
-        border-bottom: 0;
-    }
-    .mat-table .mat-cell:first-child {
-        padding-top: 4%;
-    }
-    .mat-table .mat-cell:last-of-type {
-        padding-right: 5%;
-    }
-    .mat-table .mat-cell:first-of-type {
-        padding-left: 0;
-    }
-    .mat-table .mat-header-cell {
-        border: 10px solid;
-        clip: rect(0 0 0 0);
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        position: absolute;
-        width: 1px;
-    }
-    .mat-header-row {
-        min-height: 0;
-    }
-    .table1 .mat-row:hover .mat-cell {
-        background-color: rgba($color: #000, $alpha: 0);
-    }
-    .table2 .mat-row {
-        border-bottom: 0px solid #ddd;
-    }
-    .mat-button, .mat-raised-button{
-        font-size: 12px;
-        min-width: 0;
-        padding: 0 5px;
-    }
-    .mat-raised-button{
-        line-height: 25px;
-    }
-    ::ng-deep .mat-icon-button {
-        width: 10% !important;
-    }
+    font-size: 0.85em;
+  }
+  .mat-table .mat-cell:last-child {
+    border-bottom: 0;
+  }
+  .mat-table .mat-cell:first-child {
+    padding-top: 4%;
+  }
+  .mat-table .mat-cell:last-of-type {
+    padding-right: 5%;
+  }
+  .mat-table .mat-cell:first-of-type {
+    padding-left: 0;
+  }
+  .mat-table .mat-header-cell {
+    border: 10px solid;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  .mat-header-row {
+    min-height: 0;
+  }
+  .table1 .mat-row:hover .mat-cell {
+    background-color: rgba($color: #000, $alpha: 0);
+  }
+  .table2 .mat-row {
+    border-bottom: 0px solid #ddd;
+  }
+  .mat-button,
+  .mat-raised-button {
+    font-size: 12px;
+    min-width: 0;
+    padding: 0 5px;
+  }
+  .mat-raised-button {
+    line-height: 25px;
+  }
+}
+@media only screen and (max-width: 480px) {
+  ::ng-deep .mat-icon-button {
+    width: 10% !important;
+  }
 
-    ::ng-deep .mat-paginator-icon {
-        width: 100% !important;
-    }
+  ::ng-deep .mat-paginator-icon {
+    width: 100% !important;
+  }
 }

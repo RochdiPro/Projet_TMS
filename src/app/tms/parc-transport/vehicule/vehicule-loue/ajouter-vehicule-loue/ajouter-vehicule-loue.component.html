@@ -1,196 +1,198 @@
-<!-- Titre du biote dialogue -->
-<h1>Ajouter Un Véhicule Loué </h1>
-<div>
-    <form [formGroup]="form" novalidate>
-
-        <!-- Champ d'ajot matricule -->
-        <div>
-            <label for="matricule" class="">Matricule Du Vehicule</label>
-            <div class="grid-matricule">
-                <!-- choix type matricule -->
-                <div class="type-matricule">
-                    <mat-form-field id="type-matricule">
-                        <mat-label>Choisir un type de matricule</mat-label>
-                        <mat-select formControlName="typematricule" name="typematricule" id="typematricule"
-                            (selectionChange)="testTypeMatricule()" [(value)]="typeMatriculeSelectionne" required>
-                            <mat-option *ngFor="let typematricule of typematricules" [value]="typematricule.value">
-                                {{ typematricule.value }}
-                            </mat-option>
-                        </mat-select>
-                        <mat-error *ngIf="form.controls['typematricule'].hasError('required')"> Veuillez choisir un type
-                            de
-                            matricule </mat-error>
+<div *ngIf="tms >= 2">
+    <!-- Titre du biote dialogue -->
+    <h1>Ajouter Un Véhicule Loué </h1>
+    <div>
+        <form [formGroup]="form" novalidate>
+    
+            <!-- Champ d'ajot matricule -->
+            <div>
+                <label for="matricule" class="">Matricule Du Vehicule</label>
+                <div class="grid-matricule">
+                    <!-- choix type matricule -->
+                    <div class="type-matricule">
+                        <mat-form-field id="type-matricule">
+                            <mat-label>Choisir un type de matricule</mat-label>
+                            <mat-select formControlName="typematricule" name="typematricule" id="typematricule"
+                                (selectionChange)="testTypeMatricule()" [(value)]="typeMatriculeSelectionne" required>
+                                <mat-option *ngFor="let typematricule of typematricules" [value]="typematricule.value">
+                                    {{ typematricule.value }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-error *ngIf="form.controls['typematricule'].hasError('required')"> Veuillez choisir un type
+                                de
+                                matricule </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <!-- Affichage input matricule TUN si le type est tun -->
+                    <div *ngIf="inputMatriculeTunEstAffiche" class="matricule">
+                        <div class="row matriculetun">
+                            <input placeholder="* * *" class="form-control no-spin" id="numSerie"
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                type="number" maxlength="3" formControlName="matriculetun1">
+                            <input placeholder="* * * *" class="form-control no-spin" id="numCar"
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                type="number" maxlength="4" formControlName="matriculetun2">
+                        </div>
+                    </div>
+                    <!-- Affichage input RS si type matricule est rs -->
+                    <div *ngIf="inputMatriculeRsEstAffiche" class="matricule">
+                        <div class="row matriculers">
+                            <input maxlength="6" placeholder="* * * * * *" class="form-control" id="numRS"
+                                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
+                                type="number" maxlength="6" formControlName="matriculers">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-caracteristiques">
+                <!-- input filed marque -->
+                <div class="marque">
+                    <mat-form-field class="full-width">
+                        <mat-label>Marque</mat-label>
+                        <input matInput formControlName="marque" name="marque" id="marque" type="text"
+                            style="text-transform:capitalize;" required>
+                        <mat-error *ngIf="form.controls['marque'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
                     </mat-form-field>
                 </div>
-                <!-- Affichage input matricule TUN si le type est tun -->
-                <div *ngIf="inputMatriculeTunEstAffiche" class="matricule">
-                    <div class="row matriculetun">
-                        <input placeholder="* * *" class="form-control no-spin" id="numSerie"
-                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                            type="number" maxlength="3" formControlName="matriculetun1">
-                        <input placeholder="* * * *" class="form-control no-spin" id="numCar"
-                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                            type="number" maxlength="4" formControlName="matriculetun2">
-                    </div>
+                <!-- input field modele -->
+                <div class="modele">
+                    <mat-form-field class="full-width">
+                        <mat-label>Modele</mat-label>
+                        <input matInput formControlName="modele" name="modele" id="modele" type="text"
+                            style="text-transform:capitalize;" required>
+                        <mat-error *ngIf="form.controls['modele'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                    </mat-form-field>
                 </div>
-                <!-- Affichage input RS si type matricule est rs -->
-                <div *ngIf="inputMatriculeRsEstAffiche" class="matricule">
-                    <div class="row matriculers">
-                        <input maxlength="6" placeholder="* * * * * *" class="form-control" id="numRS"
-                            oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                            type="number" maxlength="6" formControlName="matriculers">
-                    </div>
+                <!-- input field couleur -->
+                <div class="couleur">
+                    <mat-form-field class="full-width">
+                        <mat-label>Couleur</mat-label>
+                        <input matInput formControlName="couleur" name="couleur" id="couleur" type="text"
+                            style="text-transform:capitalize;" required>
+                        <mat-error *ngIf="form.controls['couleur'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- Select de type carosserie -->
+                <div class="categorie" id="categories">
+                    <mat-form-field class="full-width">
+                        <mat-label>Categorie du Vehicule</mat-label>
+                        <mat-select formControlName="carosserie" name="carosserie" id="carosserie" [(value)]="categorie"
+                            required>
+                            <mat-option *ngFor="let carosseries of carosserie" [value]="carosseries.value">
+                                {{ carosseries.name }}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="form.controls['carosserie'].hasError('required')"> Veuillez choisir une catégorie
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- input field proprietaire -->
+                <div class="proprietaire">
+                    <mat-form-field class="full-width">
+                        <mat-label>Proprietaire</mat-label>
+                        <input matInput placeholder="Ex. 100000" formControlName="proprietaire" name="proprietaire"
+                            id="proprietaire" type="text" required>
+                        <mat-error *ngIf="form.controls['proprietaire'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- input field num tel proprietaire -->
+                <div class="tel">
+                    <mat-form-field class="full-width">
+                        <mat-label>Tél. Proprietaire</mat-label>
+                        <input matInput formControlName="telephone" name="telephone" id="telephone" type="tel"
+                            pattern="[0-9]{8}" maxlength="8" required>
+                        <mat-error *ngIf="form.controls['telephone'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['telephone'].hasError('pattern')">
+                            Verifier que le numéro se compose de <strong>8 chiffres</strong>
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- input Field charge utile -->
+                <div class="charge">
+                    <mat-form-field class="full-width">
+                        <mat-label>Charge Utile Maximale En Kg</mat-label>
+                        <input matInput placeholder="Ex. 600" formControlName="chargeUtile" name="chargeUtile" id="chargeUtile"
+                            type="number" required>
+                        <mat-error *ngIf="form.controls['chargeUtile'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['chargeUtile'].hasError('pattern')">
+                            Seuls les <strong>chiffres</strong> sont autorisés
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- input field Longueur -->
+                <div class="longueur">
+                    <mat-form-field class="full-width">
+                        <mat-label>Longueur en cm</mat-label>
+                        <input matInput formControlName="longueur" name="longueur" id="longueur" type="number" required>
+                        <mat-error *ngIf="form.controls['longueur'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['longueur'].hasError('pattern')">
+                            Seuls les <strong>chiffres</strong> sont autorisés
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- input field largeur -->
+                <div class="largeur">
+                    <mat-form-field class="full-width">
+                        <mat-label>Largeur en cm</mat-label>
+                        <input matInput formControlName="largeur" name="largeur" id="largeur" type="number" required>
+                        <mat-error *ngIf="form.controls['largeur'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['largeur'].hasError('pattern')">
+                            Seuls les <strong>chiffres</strong> sont autorisés
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- input field hauteur -->
+                <div class="hauteur">
+                    <mat-form-field class="full-width">
+                        <mat-label>Hauteur en cm</mat-label>
+                        <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="number" required>
+                        <mat-error *ngIf="form.controls['hauteur'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['hauteur'].hasError('pattern')">
+                            Seuls les <strong>chiffres</strong> sont autorisés
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- periode de Location -->
+                <div class="periode">
+                    <mat-form-field class="full-width">
+                        <mat-label>Période De Location</mat-label>
+                        <mat-date-range-input [rangePicker]="picker" [min]="minDate">
+                            <input matStartDate formControlName="dateDebut" placeholder="Date de debut" required>
+                            <input matEndDate formControlName="dateFin" placeholder="Date de fin" required>
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker></mat-date-range-picker>
+                    </mat-form-field>
                 </div>
             </div>
-        </div>
-        <div class="grid-caracteristiques">
-            <!-- input filed marque -->
-            <div class="marque">
-                <mat-form-field class="full-width">
-                    <mat-label>Marque</mat-label>
-                    <input matInput formControlName="marque" name="marque" id="marque" type="text"
-                        style="text-transform:capitalize;" required>
-                    <mat-error *ngIf="form.controls['marque'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- input field modele -->
-            <div class="modele">
-                <mat-form-field class="full-width">
-                    <mat-label>Modele</mat-label>
-                    <input matInput formControlName="modele" name="modele" id="modele" type="text"
-                        style="text-transform:capitalize;" required>
-                    <mat-error *ngIf="form.controls['modele'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- input field couleur -->
-            <div class="couleur">
-                <mat-form-field class="full-width">
-                    <mat-label>Couleur</mat-label>
-                    <input matInput formControlName="couleur" name="couleur" id="couleur" type="text"
-                        style="text-transform:capitalize;" required>
-                    <mat-error *ngIf="form.controls['couleur'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- Select de type carosserie -->
-            <div class="categorie" id="categories">
-                <mat-form-field class="full-width">
-                    <mat-label>Categorie du Vehicule</mat-label>
-                    <mat-select formControlName="carosserie" name="carosserie" id="carosserie" [(value)]="categorie"
-                        required>
-                        <mat-option *ngFor="let carosseries of carosserie" [value]="carosseries.value">
-                            {{ carosseries.name }}
-                        </mat-option>
-                    </mat-select>
-                    <mat-error *ngIf="form.controls['carosserie'].hasError('required')"> Veuillez choisir une catégorie
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- input field proprietaire -->
-            <div class="proprietaire">
-                <mat-form-field class="full-width">
-                    <mat-label>Proprietaire</mat-label>
-                    <input matInput placeholder="Ex. 100000" formControlName="proprietaire" name="proprietaire"
-                        id="proprietaire" type="text" required>
-                    <mat-error *ngIf="form.controls['proprietaire'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- input field num tel proprietaire -->
-            <div class="tel">
-                <mat-form-field class="full-width">
-                    <mat-label>Tél. Proprietaire</mat-label>
-                    <input matInput formControlName="telephone" name="telephone" id="telephone" type="tel"
-                        pattern="[0-9]{8}" maxlength="8" required>
-                    <mat-error *ngIf="form.controls['telephone'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                    <mat-error *ngIf="form.controls['telephone'].hasError('pattern')">
-                        Verifier que le numéro se compose de <strong>8 chiffres</strong>
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- input Field charge utile -->
-            <div class="charge">
-                <mat-form-field class="full-width">
-                    <mat-label>Charge Utile Maximale En Kg</mat-label>
-                    <input matInput placeholder="Ex. 600" formControlName="chargeUtile" name="chargeUtile" id="chargeUtile"
-                        type="number" required>
-                    <mat-error *ngIf="form.controls['chargeUtile'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                    <mat-error *ngIf="form.controls['chargeUtile'].hasError('pattern')">
-                        Seuls les <strong>chiffres</strong> sont autorisés
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- input field Longueur -->
-            <div class="longueur">
-                <mat-form-field class="full-width">
-                    <mat-label>Longueur en cm</mat-label>
-                    <input matInput formControlName="longueur" name="longueur" id="longueur" type="number" required>
-                    <mat-error *ngIf="form.controls['longueur'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                    <mat-error *ngIf="form.controls['longueur'].hasError('pattern')">
-                        Seuls les <strong>chiffres</strong> sont autorisés
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- input field largeur -->
-            <div class="largeur">
-                <mat-form-field class="full-width">
-                    <mat-label>Largeur en cm</mat-label>
-                    <input matInput formControlName="largeur" name="largeur" id="largeur" type="number" required>
-                    <mat-error *ngIf="form.controls['largeur'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                    <mat-error *ngIf="form.controls['largeur'].hasError('pattern')">
-                        Seuls les <strong>chiffres</strong> sont autorisés
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- input field hauteur -->
-            <div class="hauteur">
-                <mat-form-field class="full-width">
-                    <mat-label>Hauteur en cm</mat-label>
-                    <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="number" required>
-                    <mat-error *ngIf="form.controls['hauteur'].hasError('required')">
-                        Champ <strong>Obligatoire</strong>
-                    </mat-error>
-                    <mat-error *ngIf="form.controls['hauteur'].hasError('pattern')">
-                        Seuls les <strong>chiffres</strong> sont autorisés
-                    </mat-error>
-                </mat-form-field>
-            </div>
-            <!-- periode de Location -->
-            <div class="periode">
-                <mat-form-field class="full-width">
-                    <mat-label>Période De Location</mat-label>
-                    <mat-date-range-input [rangePicker]="picker" [min]="minDate">
-                        <input matStartDate formControlName="dateDebut" placeholder="Date de debut" required>
-                        <input matEndDate formControlName="dateFin" placeholder="Date de fin" required>
-                    </mat-date-range-input>
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-date-range-picker #picker></mat-date-range-picker>
-                </mat-form-field>
-            </div>
-        </div>
-    </form>
-</div>
-<div mat-dialog-actions class="float-right form-group">
-    <!-- bouton Annuler -->
-    <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterVehicule()">Annuler</button>
-    <!-- fin bouton Annuler -->
-
-    <!-- Bouton Enregistrer -->
-    <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid"
-        (click)="enregistrerVehicule()">Enregistrer</button>
-    <!-- fin Bouton Enregistrer -->
+        </form>
+    </div>
+    <div mat-dialog-actions class="float-right form-group">
+        <!-- bouton Annuler -->
+        <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterVehicule()">Annuler</button>
+        <!-- fin bouton Annuler -->
+    
+        <!-- Bouton Enregistrer -->
+        <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid"
+            (click)="enregistrerVehicule()">Enregistrer</button>
+        <!-- fin Bouton Enregistrer -->
+    </div>
 </div>

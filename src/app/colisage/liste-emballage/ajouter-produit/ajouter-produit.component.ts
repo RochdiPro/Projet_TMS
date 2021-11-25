@@ -1,9 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormControl,
@@ -27,11 +22,11 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
 
   //declaration des variables
-  isLinear = false; //pour l'activation et desactivation le passage entre les steps sans validation
-  premierFormGroup: FormGroup;  //formGroup du premier step
+  isLinear = true; //pour l'activation et desactivation le passage entre les steps sans validation
+  premierFormGroup: FormGroup; //formGroup du premier step
   deuxiemeFormGroup: FormGroup; //formGroup du deuxieme step
   troisiemeFormGroup: FormGroup; //formGroup du troisieme step
-  formFiltreProduit = new FormGroup({ nom_Produit: new FormControl('') });  
+  formFiltreProduit = new FormGroup({ nom_Produit: new FormControl('') });
   formCodeBarre = new FormGroup({ code_Barre: new FormControl('') });
   colonneAfficheDuTableFicheProduit: string[] = [
     'id_Produit',
@@ -46,7 +41,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   dataSourceProduit = new MatTableDataSource<tableProduits>(); //dataSource pour afficher le produit selectionné
   produitClique = new Set<tableProduits>(); //pour avoir le produit clique
   listeProduits: any;
-  produitsAffiche: any = [];  //liste des produits a afficher dans le tableau
+  produitsAffiche: any = []; //liste des produits a afficher dans le tableau
   produitSelectionne: any = []; //liste des produits selectionne
   poidsToltal: number = 0;
   poidsTotUnProduit: number;
@@ -56,6 +51,11 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   breakpoint: number;
   barcode = '';
   interval: any;
+
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  wms: any;
   ngAfterViewInit() {
     this.dataSourceProduits.paginator = this.paginator;
     this.dataSourceProduits.sort = this.sort;
@@ -67,7 +67,18 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     public service: EmballageService,
     private formBuilder: FormBuilder,
     public _router: Router
-  ) {}
+  ) {
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1000200');
+
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.wms = Number(arrayOfDigits[4]);
+  }
 
   ngOnInit() {
     this.chargerFicheProduit();
@@ -82,14 +93,16 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   async chargerFicheProduit() {
     //charger la liste de fiche produits
     this.listeProduits = await this.service.listeProduits().toPromise();
-    let listeColisage = await this.chargerListeColisage();
+    let listeEmballage = await this.getListeEmballage();
     this.produitsAffiche = [];
     this.listeProduits.forEach((element: any) => {
       //verifier si un produit existe deja dans la liste colisage
-      listeColisage.forEach((prodColis: any) => {
-        let idP = prodColis.idProduit.split();
-        let id = 'FP-' + element.id_Produit;
-        let idProduitExiste = id === idP[0] || idP.length !== 1;
+      listeEmballage.forEach((prodEmballe: any) => {
+        let idProduitEmballe = prodEmballe.idProduit.split('/');
+        let idProduit = element.id_Produit;
+        let idProduitExiste =
+          idProduit === Number(idProduitEmballe[0]) &&
+          idProduitEmballe.length === 1;
         if (idProduitExiste) {
           this.produitExiste = true;
         }
@@ -111,7 +124,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     );
   }
 
-  chargerListeColisage(): any {
+  getListeEmballage(): any {
     return this.service.listeEmballage().toPromise();
   }
 
@@ -203,17 +216,46 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
         this.produitSelectionne.push(prod);
       }
     }
-
-    this.deuxiemeFormGroup.get('validateur').setValue('validé');
+    let produitEstSelectionne = this.produitSelectionne.length > 0;
+    if(produitEstSelectionne) {
+      this.deuxiemeFormGroup.get('validateur').setValue('validé');
+    } else {
+      this.deuxiemeFormGroup.get('validateur').setValue('');
+    }
   }
   premierSuivant() {
     this.dataSourceProduit.data = this.produitSelectionne as tableProduits[];
-    this.premierFormGroup
-      .get('nom')
-      .setValue(this.produitSelectionne[0].nom_Produit);
-    this.premierFormGroup
-      .get('codeBarre')
-      .setValue(this.produitSelectionne[0].code_Barre);
+    let produitEstSelectionne = this.produitSelectionne.length > 0;
+    if(produitEstSelectionne) {
+      this.premierFormGroup
+        .get('nom')
+        .setValue(this.produitSelectionne[0].nom_Produit);
+      this.premierFormGroup
+        .get('codeBarre')
+        .setValue(this.produitSelectionne[0].code_Barre);
+    } else {
+      Swal.fire({
+        icon: 'error',
+        text: 'Pas de produit selectionné!',
+      });
+    }
+  }
+
+  //teste du type de support pour savaoir activer les champs de dimensions ou le champ du volume
+  testType() {
+    let typeEstCarton = this.premierFormGroup.get('type').value === 'Carton';
+    let typeEstPalette = this.premierFormGroup.get('type').value === 'Palette';
+    if (typeEstCarton || typeEstPalette) {
+      this.premierFormGroup.get('volume').disable();
+      this.premierFormGroup.get('longueur').enable();
+      this.premierFormGroup.get('largeur').enable();
+      this.premierFormGroup.get('hauteur').enable();
+    } else {
+      this.premierFormGroup.get('volume').enable();
+      this.premierFormGroup.get('longueur').disable();
+      this.premierFormGroup.get('largeur').disable();
+      this.premierFormGroup.get('hauteur').disable();
+    }
   }
   premierPrecedent() {
     this.dataSourceProduits.data = this.produitsAffiche as tableProduits[];
@@ -221,6 +263,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       a.id_Produit > b.id_Produit ? -1 : 1
     );
   }
+  
   deuxiemeSuivant() {
     //pour le deuxieme bouton suivant
     this.troisiemeFormGroup
@@ -232,7 +275,15 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
   troisiemeSuivant() {
     //pour le troisieme bouton suivant
-    this.troisiemeStepEstRemplit = true;
+    if(this.troisiemeFormGroup.status === "VALID") {
+      this.troisiemeStepEstRemplit = true;
+    } else {
+      this.troisiemeStepEstRemplit = false;
+    }
+    
+  }
+  quatriemePrecedent(){
+    this.troisiemeStepEstRemplit = false;
   }
   reinitialiserStepper() {
     //reinitialisation du stepper

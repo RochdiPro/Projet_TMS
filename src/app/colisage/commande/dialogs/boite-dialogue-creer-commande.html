@@ -1,9 +1,10 @@
 <h1 mat-dialog-title>{{typeDocument}} {{data.commande.id}}</h1>
-<div mat-dialog-content>
-    <mat-vertical-stepper [linear]="false" #stepper>
+<div>
+    <mat-vertical-stepper [linear]="true" #stepper>
         <!-- Step 1 -->
         <mat-step [stepControl]="firstFormGroup">
             <form [formGroup]="firstFormGroup">
+                <!-- partie information client -->
                 <ng-template matStepLabel>Informations du client</ng-template>
                 <h2>Client</h2>
                 <div class="row">
@@ -21,7 +22,7 @@
                 <div class="row">
                     <div class="colonne entete">Email:</div>
                     <div class="colonne">{{data.commande.email}}</div>
-                    <div class="colonne entete">Catégorie client</div>
+                    <div class="colonne entete">Catégorie client:</div>
                     <div class="colonne">{{data.commande.categorieClient}}</div>
                 </div>
                 <div class="row">
@@ -36,36 +37,60 @@
                     <div class="colonne entete">Numéro piéce d'identité:</div>
                     <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
                 </div>
+                <!-- partie adresse -->
                 <div class="map">
                     <div id="manupilation-adresse">
-                        <mat-form-field appearance="fill">
+                        <!-- selection adresse enregistrée -->
+                        <mat-form-field appearance="fill" id="select-adresse">
                             <mat-label>Adresse de livraison</mat-label>
                             <mat-select formControlName="adresse" (selectionChange)="selectionnerAdresse()">
-                                <mat-option *ngFor="let position of positionsClientEnregistree" [value]="position">
-                                    {{position.adresse}}
+                                <mat-option *ngFor="let position of positionsClientEnregistree; let i=index"
+                                    [value]="i">
+                                    {{position.ville}}: {{position.adresse}}
                                 </mat-option>
                                 <mat-option *ngIf="positionsClientEnregistree.length === 0" disabled>
                                     Pas d'adresse
                                 </mat-option>
                             </mat-select>
+                            <mat-error *ngIf="firstFormGroup.controls['adresse'].hasError('required')">
+                                Veuillez choisir une adresse
+                            </mat-error>
                         </mat-form-field>
-                        <div id="ajouter-adresse">
-                            <input type="text" id="adresse-input" formControlName="nouvelleAdresse">
-                            <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
-                                <mat-icon>add_location</mat-icon>
-                            </button>
+                        <!-- partie ajouter adresse -->
+                        <div class="ajouter-adresse" *ngIf="estNouvelleAdresse">
+                            <!-- selectionner ville -->
+                            <mat-form-field appearance="fill" id="select-adresse">
+                                <mat-label>Ville</mat-label>
+                                <mat-select formControlName="nouvelleVille" (selectionChange)="selectionnerVille()">
+                                    <mat-option *ngFor="let ville of villes" [value]="ville">
+                                        {{ville.nom}}
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                            <!-- champ adresse -->
+                            <mat-form-field appearance="fill">
+                                <input matInput placeholder="Adresse" formControlName="nouvelleAdresse" type="text" (keydown.enter)="$event.preventDefault()" autocorrect="off" autocapitalize="off" spellcheck="off" type="text" #search>
+
+                            </mat-form-field>
                         </div>
+                        <!-- bouton afficher et ajouter nouvelle adresse -->
+                        <button mat-mini-fab color="primary" id="bouton-ajouter" (click)="ajouterAdresse()">
+                            <mat-icon>add_location</mat-icon>
+                        </button>
                     </div>
+                    <!-- partie map pour modifier position -->
                     <agm-map [latitude]="latMap" [longitude]="lngMap" [zoom]="zoom" [disableDefaultUI]="false"
-                        (mapDblClick)="positionerMarquer($event)" [disableDoubleClickZoom]="true">
+                        (mapDblClick)="modifierPositionMarquer($event)" [disableDoubleClickZoom]="true"
+                        [restriction]="countryRestriction">
                         <agm-marker [latitude]="lat" [longitude]="lng" animation='DROP' [markerDraggable]="true"
                             (dragEnd)="modifierPositionMarquer($event)" *ngIf="positionExiste">
-                            <agm-info-window>{{data.commande.adresse}}</agm-info-window>
+                            <agm-info-window>{{infoMarqueur}}</agm-info-window>
                         </agm-marker>
                     </agm-map>
                 </div>
                 <div style="float: right;">
-                    <button mat-button matStepperNext>Next</button>
+                    <button mat-button mat-dialog-close color="warn">Annuler</button>
+                    <button mat-button matStepperNext color="primary">Suivant</button>
                 </div>
             </form>
         </mat-step>
@@ -113,8 +138,11 @@
                     </table>
                 </div>
                 <div style="float: right;">
-                    <button mat-button matStepperPrevious>Back</button>
-                    <button mat-button matStepperNext (click)="creerListeEmballageChoisi()">Next</button>
+                    <button mat-button mat-dialog-close color="warn">Annuler</button>
+                    <button mat-button matStepperPrevious>Précédent</button>
+                    <button mat-button matStepperNext
+                        (click)="verifierValiditeDeuxiemeStep(); creerListeEmballageChoisi()"
+                        color="primary">Suivant</button>
                 </div>
             </form>
         </mat-step>
@@ -142,9 +170,9 @@
             </div>
             <div class="row">
                 <div class="colonne entete">Ville:</div>
-                <div class="colonne">{{data.commande.ville}}</div>
+                <div class="colonne">{{positionClient.ville}}</div>
                 <div class="colonne entete">Adresse:</div>
-                <div class="colonne">{{data.commande.adresse}}</div>
+                <div class="colonne">{{positionClient.adresse}}</div>
             </div>
             <div class="row">
                 <div class="colonne entete">Type piéce d'identité:</div>
@@ -160,48 +188,50 @@
                     </agm-marker>
                 </agm-map>
             </div>
-            <h2>Liste colisage</h2>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th scope="col">id</th>
-                        <th scope="col">Produit</th>
-                        <th scope="col">Pack</th>
-                        <th scope="col">Qte</th>
-                        <th scope="col">Nbr. Pack</th>
-                        <th scope="col">LxlxH (cm)</th>
-                        <th scope="col">Volume (m³)</th>
-                        <th scope="col">Poids net (kg)</th>
-                        <th scope="col">Poids brut (kg)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let article of this.listeEmballageChoisi">
-                        <th scope="row">{{article.emballage.idProduit}}</th>
-                        <td>{{article.emballage.nomProduit}}</td>
-                        <td>{{article.emballage.nomEmballage}}</td>
-                        <td>{{getNombreArticles(article)}}</td>
-                        <td>{{article.qte}}</td>
-                        <td>{{getDimensionsPack(article)}}</td>
-                        <td>{{getVolumePack(article)}}</td>
-                        <td>{{getPoidsPackNet(article)}}</td>
-                        <td>{{getPoidsPackBrut(article)}}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row" colspan="3"></th>
-                        <td>Total</td>
-                        <td>{{nombrePackTotal}}</td>
-                        <td></td>
-                        <td>{{volumeTotal}}</td>
-                        <td>{{poidsTotalNet}}</td>
-                        <td>{{poidsTotalBrut}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2 style="margin-top: 15px;">Liste colisage</h2>
+            <div class="liste-colisage">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">id</th>
+                            <th scope="col">Produit</th>
+                            <th scope="col">Pack</th>
+                            <th scope="col">Qte</th>
+                            <th scope="col">Nbr. Pack</th>
+                            <th scope="col">LxlxH (cm)</th>
+                            <th scope="col">Volume (m³)</th>
+                            <th scope="col">Poids net (kg)</th>
+                            <th scope="col">Poids brut (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let article of this.listeEmballageChoisi">
+                            <th scope="row">{{article.emballage.idProduit}}</th>
+                            <td>{{article.emballage.nomProduit}}</td>
+                            <td>{{article.emballage.nomEmballage}}</td>
+                            <td>{{getNombreArticles(article)}}</td>
+                            <td>{{article.qte}}</td>
+                            <td>{{getDimensionsPack(article)}}</td>
+                            <td>{{getVolumePack(article)}}</td>
+                            <td>{{getPoidsPackNet(article)}}</td>
+                            <td>{{getPoidsPackBrut(article)}}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row" colspan="3"></th>
+                            <td>Total</td>
+                            <td>{{nombrePackTotal}}</td>
+                            <td></td>
+                            <td>{{volumeTotal}}</td>
+                            <td>{{poidsTotalNet}}</td>
+                            <td>{{poidsTotalBrut}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div style="float: right; margin-bottom: 10px;">
-                <button mat-button matStepperPrevious>Back</button>
-                <button mat-button (click)="stepper.reset()">Reset</button>
-                <button mat-raised-button color= "primary" (click)="enregistrer()">Valider</button>
+                <button mat-button mat-dialog-close color="warn">Annuler</button>
+                <button mat-button matStepperPrevious>Précédent</button>
+                <button mat-raised-button color="primary" (click)="enregistrer()">Valider</button>
             </div>
         </mat-step>
     </mat-vertical-stepper>

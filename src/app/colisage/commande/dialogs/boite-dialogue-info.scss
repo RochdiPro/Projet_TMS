@@ -1,28 +1,130 @@
-.colonne{
+.boutons {
+  float: right;
+}
+.produits {
+  max-height: 375px;
+  overflow-y: auto;
+}
+.colonne {
+  width: 25%;
+}
+.row {
+  margin-left: 10px;
+}
+.entete {
+  font-weight: bold;
+}
+
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  .colonne {
     width: 50%;
-}
-.row{
+  }
+  .row {
     margin-left: 10px;
-}
-.entete{
+  }
+  .entete {
     font-weight: bold;
-}
-.boutons{
-    float: right;
-}
-.produits{
-    max-height: 200px;
-    overflow-y: auto;
-}
-@media (min-width: 780px) {
-    .colonne{
-        width: 25%;
-    }
-    .row{
-        margin-left: 10px;
-    }
-    .entete{
-        font-weight: bold;
-    }
-    
+  }
+  h1 {
+    font-size: 20px;
+  }
+  h2 {
+    font-size: 18px;
+  }
+  //forcer le tableau pour ne pas s'afficher comme tableau
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  //cacher les table headers (pas avec display: none;, pour raison d'accessibilité)
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+
+  td {
+    // se comporter comme un "row"
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    font-size: 0.7em;
+    text-align: right;
+  }
+
+  th {
+    border: none;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    font-weight: normal;
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+  }
+
+  td:before,
+  th:before {
+    //se comporter comme un table header
+    position: absolute;
+    //valeur du Top/left imittent le padding
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    margin-top: 3px;
+  }
+
+  // donner un label pour les données du table des produits
+  th:before {
+    content: "Id";
+    font-weight: normal;
+    text-align: left;
+    margin-left: 10px;
+  }
+
+  // donner un label pour les données
+  td:nth-of-type(1):before {
+    content: "Nom produit";
+    font-weight: bold;
+    text-align: left;
+    margin-left: 10px;
+  }
+  td:nth-of-type(2):before {
+    content: "Quantité";
+    font-weight: bold;
+    text-align: left;
+    margin-left: 10px;
+  }
+  td:nth-of-type(3):before {
+    content: "Type produit";
+    font-weight: bold;
+    text-align: left;
+    margin-left: 10px;
+  }
+  td:nth-of-type(4):before {
+    content: "Details";
+    font-weight: bold;
+    color: #52595d;
+    text-align: left;
+    margin-left: 10px;
+    margin-top: 5px;
+  }
+  td:last-child {
+    padding: 0;
+    padding-right: 8.8px;
+  }
 }
