@@ -14,6 +14,7 @@ export class AffecterChauffeur implements OnInit {
   selectedValue: any;
   chauffeurs: any;
   couplesVehiculeChauffeurs: any = [];
+  copieVehiculeChauffeurs: any = [];
   form: FormGroup;
   constructor(
     private dialogRef: MatDialogRef<AffecterChauffeur>,
@@ -34,9 +35,8 @@ export class AffecterChauffeur implements OnInit {
       chauffeurs: this.fb.array([]),
     });
     this.vehicules.forEach(() => {
-        const chauffeur = this.fb.group({ chauffeur: '' });
-        this.chauffeursForms.push(chauffeur);
-        
+      const chauffeur = this.fb.group({ chauffeur: '' });
+      this.chauffeursForms.push(chauffeur);
     });
   }
 
@@ -68,19 +68,46 @@ export class AffecterChauffeur implements OnInit {
         chauffeurs: chauffeurs,
       });
     });
+    for (let i = 0; i < this.couplesVehiculeChauffeurs.length; i++) {
+      this.copieVehiculeChauffeurs.push({
+        vehicule: this.couplesVehiculeChauffeurs[i].vehicule,
+        chauffeurs: [...this.couplesVehiculeChauffeurs[i].chauffeurs],
+      });
+    }
   }
 
   // si un chauffeur est disponible pour plusieurs vehicules et on selectionne se chauffeur dans un vehicule on l'enleve pour les autres
-  rafraichirListeChauffeur(i: any){
-    for (let j = 0; j < this.couplesVehiculeChauffeurs.length; j++) {
-      this.couplesVehiculeChauffeurs[j].chauffeurs.forEach((chauffeurLoop: any) => {
-        if(j !== i && this.chauffeursForms.controls[i].get('chauffeur').value === chauffeurLoop) {
-          let index = this.couplesVehiculeChauffeurs[j].chauffeurs.findIndex((chauffeur: any) => this.chauffeursForms.controls[i].get('chauffeur').value.id === chauffeur.id);
-          this.couplesVehiculeChauffeurs[j].chauffeurs.splice(index,1);
-          console.log(this.couplesVehiculeChauffeurs[j].chauffeurs)
-        }
-      });
-      
+  rafraichirListeChauffeur() {
+    for (let i = 0; i < this.couplesVehiculeChauffeurs.length; i++) {
+      this.couplesVehiculeChauffeurs[i].chauffeurs = [
+        ...this.copieVehiculeChauffeurs[i].chauffeurs,
+      ];
+    }
+    for (let i = 0; i < this.chauffeursForms.controls.length; i++) {
+      for (let j = 0; j < this.couplesVehiculeChauffeurs.length; j++) {
+        this.couplesVehiculeChauffeurs[j].chauffeurs.forEach(
+          (chauffeurLoop: any) => {
+            console.log(
+              this.chauffeursForms.controls[i].get('chauffeur').value
+            );
+            if (
+              j !== i &&
+              this.chauffeursForms.controls[i].get('chauffeur').value
+                .id_Employe === chauffeurLoop.id_Employe
+            ) {
+              let index = this.couplesVehiculeChauffeurs[
+                j
+              ].chauffeurs.findIndex(
+                (chauffeur: any) =>
+                  this.chauffeursForms.controls[i].get('chauffeur').value
+                    .id_Employe === chauffeur.id_Employe
+              );
+              this.couplesVehiculeChauffeurs[j].chauffeurs.splice(index, 1);
+              console.log(this.couplesVehiculeChauffeurs[j].chauffeurs);
+            }
+          }
+        );
+      }
     }
   }
 

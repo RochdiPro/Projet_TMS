@@ -65,7 +65,11 @@ export class VehiculeService {
 
   //supprimer un vehicule
   public supprimerVehicule(id: any) {
-    return this.httpClient.delete(erp + 'supprimer-vehicule' + id).pipe(
+    return this.httpClient.delete(erp + 'supprimer-vehicule', {
+      params:{
+        id: id
+      }, observe: 'body'
+    }).pipe(
       catchError(this.handleError)
     );
   }

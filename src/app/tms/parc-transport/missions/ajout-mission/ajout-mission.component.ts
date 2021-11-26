@@ -53,8 +53,9 @@ export class AjoutMissionComponent implements OnInit {
   vehiculesSelectionnes: any[] = [];
   vehiculeEstSelectionne = false;
   vehiculesPriveSelectionnes: any = [];
-  vehiculesPriveAvecChauffeurSupprime: any = [];
+  copieVehiculesPrive: any = [];
   missions: any = [];
+  vehiculesMemeCategorieSelectionne: any = [];
 
   constructor(
     private fb: FormBuilder,
@@ -164,7 +165,7 @@ export class AjoutMissionComponent implements OnInit {
     this.checkBoxVehiculesLoues.forEach((checkBox) => {
       checkBox.disable = false;
     });
-    this.rajouterChauffeurAuVehicule(vehicule)
+    this.rajouterChauffeurAuVehicule(vehicule);
   }
   // ajouter vehicule loué a la liste vehiculeSelectionne
   selectionnerVehiculeLoue(vehicule: any) {
@@ -325,40 +326,48 @@ export class AjoutMissionComponent implements OnInit {
     vehicule: any,
     listeVehiculePrive: any
   ) {
-    var copieVehiculesPrive = [...listeVehiculePrive];
-    for (let i = 0; i < copieVehiculesPrive.length; i++) {
-      copieVehiculesPrive[i].chauffeurs = [...listeVehiculePrive[i].chauffeurs];
+    this.copieVehiculesPrive = [];
+    for (let i = 0; i < listeVehiculePrive.length; i++) {
+      this.copieVehiculesPrive.push({
+        vehicule: listeVehiculePrive[i].vehicule,
+        chauffeurs: [...listeVehiculePrive[i].chauffeurs],
+      });
     }
     if (vehicule.chauffeurs.length === 1) {
       // chercher l'index du vehicule selectionné dans la liste des vehicules privés
-      let index = copieVehiculesPrive.findIndex(
+      let index = this.copieVehiculesPrive.findIndex(
         (v: any) => v.vehicule.id === vehicule.vehicule.id
       );
       console.log(index);
       // pour chaque vehicule si il s'agit d'un vehicule different du vehicule selectionné en supprime le chauffeur du vehicule
       // selectionné de la liste des chauffeurs de cet vehicule
-      for (let i = 0; i < copieVehiculesPrive.length; i++) {
+      for (let i = 0; i < this.copieVehiculesPrive.length; i++) {
         if (i !== index) {
-          for (let j = 0; j < copieVehiculesPrive[i].chauffeurs.length; j++) {
+          for (
+            let j = 0;
+            j < this.copieVehiculesPrive[i].chauffeurs.length;
+            j++
+          ) {
             if (
-              copieVehiculesPrive[i].chauffeurs[j] === vehicule.chauffeurs[0]
+              this.copieVehiculesPrive[i].chauffeurs[j] ===
+              vehicule.chauffeurs[0]
             ) {
               // enlever le chauffeur de la liste des vehicules non selectionnées
-              console.log(this.listeVehiculesAffiches);
-              let index = this.vehiculesPriveAvecChauffeurSupprime.findIndex(
-                (v: any) => copieVehiculesPrive[i].vehicule === v.vehicule
-              );
-              if (index >= 0) {
-                console.log(true)
-                this.vehiculesPriveAvecChauffeurSupprime[index].chauffeurs.push(
-                  copieVehiculesPrive[i].chauffeurs.splice(j, 1)
-                );
-              } else {
-                this.vehiculesPriveAvecChauffeurSupprime.push(
-                  copieVehiculesPrive[i]
-                );
-                copieVehiculesPrive[i].chauffeurs.splice(j, 1);
-              }
+              // let index = this.vehiculesPriveAvecChauffeurSupprime.findIndex(
+              //   (v: any) => copieVehiculesPrive[i].vehicule === v.vehicule
+              // );
+              // if (index >= 0) {
+              //   console.log(true)
+              //   this.vehiculesPriveAvecChauffeurSupprime[index].chauffeurs.push(
+              //     copieVehiculesPrive[i].chauffeurs.splice(j, 1)
+              //   );
+              // } else {
+              //   this.vehiculesPriveAvecChauffeurSupprime.push(
+              //     copieVehiculesPrive[i]
+              //   );
+              // }
+              this.copieVehiculesPrive[i].chauffeurs.splice(j, 1);
+              console.log(this.copieVehiculesPrive);
               console.log(this.listeVehiculesAffiches);
             }
           }
@@ -367,18 +376,33 @@ export class AjoutMissionComponent implements OnInit {
     } else {
       this.vehiculesPriveSelectionnes.forEach((v: any) => {
         if (vehicule.chauffeurs === v.chauffeurs) {
-          vehicule.chauffeurs.forEach((chauffeur: any) => {
-            copieVehiculesPrive.forEach((ve: any) => {
-              let k = ve.chauffeurs.findIndex(chauffeur);
-              if (k > -1) {
-                ve.chauffeurs.splice(k, 1);
-              }
+          this.vehiculesMemeCategorieSelectionne.push(v);
+          if (
+            this.vehiculesMemeCategorieSelectionne.length >=
+            vehicule.chauffeurs.length
+          ) {
+            vehicule.chauffeurs.forEach((chauffeur: any) => {
+              this.copieVehiculesPrive.forEach((ve: any) => {
+                if (
+                  (this.vehiculesMemeCategorieSelectionne.filter(
+                    (v: any) => v.vehicule.id === ve.vehicule.id
+                  ).length = 0)
+                ) {
+                  console.log(ve.chauffeurs);
+                  let k = ve.chauffeurs.findIndex(
+                    (ch: any) => ch.id_Employe === chauffeur.id_Employe
+                  );
+                  if (k > -1) {
+                    ve.chauffeurs.splice(k, 1);
+                  }
+                }
+              });
             });
-          });
+          }
         }
       });
     }
-    this.disableVehiculePrive(copieVehiculesPrive);
+    this.disableVehiculePrive(this.copieVehiculesPrive);
   }
 
   // disable le checkBpx des vehicules privés qu'on ne peut pas affecter leurs chauffeurs qui peuvent la conduire
@@ -392,26 +416,16 @@ export class AjoutMissionComponent implements OnInit {
 
   // rajouter le chauffeur du vehicule deselectionné dans las vehicules convenables
   rajouterChauffeurAuVehicule(vehicule: any) {
-    console.log(this.vehiculesPriveAvecChauffeurSupprime)
-    vehicule.chauffeurs.forEach((ch: any) => {
-      for (
-        let i = 0;
-        i < this.vehiculesPriveAvecChauffeurSupprime.length;
-        i++
-      ) {
-        let indexVehiculeAvecChauffeurSupprime =
-          this.listeVehiculesAffiches.findIndex(
-            (v: any) =>
-              this.vehiculesPriveAvecChauffeurSupprime[i].vehicule ===
-              v.vehicule
-          );
-        if (indexVehiculeAvecChauffeurSupprime >= 0) {
-          console.log(ch)
-          this.listeVehiculesAffiches[
-            indexVehiculeAvecChauffeurSupprime
-          ].chauffeurs.push(ch);
+    vehicule.chauffeurs.forEach((ch: object) => {
+      for (let i = 0; i < this.listeVehiculesAffiches.length; i++) {
+        if (
+          vehicule.vehicule !== this.listeVehiculesAffiches[i].vehicule &&
+          this.listeVehiculesAffiches[i].chauffeurs.includes(ch)
+        ) {
+          this.copieVehiculesPrive[i].chauffeurs.push(ch);
         }
       }
+      console.log(this.copieVehiculesPrive);
     });
     // this.vehiculesPriveAvecChauffeurSupprime = []
   }
