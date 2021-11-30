@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,8 +21,9 @@ import { SafePipeModule } from 'safe-pipe';
 import { DirectionsMapDirective } from '../../../directions-map.directive';
 import { AjoutMissionComponent } from './ajout-mission/ajout-mission.component';
 import { MissionsRoutingModule } from './missions-routing.module';
-import { AffecterCommande, DetailComponent, ListerMissionsComponent, MapsComponent, MissionsComponent, QrCodeComponent } from './missions.component';
+import { AffecterCommande, DetailComponent, MapsComponent, MissionsComponent, QrCodeComponent } from './missions.component';
 import { AffecterChauffeur } from './dialogs/dialogs.component';
+import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
 
 
 
@@ -65,7 +66,8 @@ import { AffecterChauffeur } from './dialogs/dialogs.component';
     FormsModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatListModule
+    MatListModule,
+    MatNativeDateModule
   ],
   providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 

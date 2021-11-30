@@ -13,7 +13,7 @@ export class AffecterChauffeur implements OnInit {
   chauffeursCompatibles: any;
   selectedValue: any;
   chauffeurs: any;
-  couplesVehiculeChauffeurs: any = [];
+  couplesVehiculeChauffeursPrives: any = [];
   copieVehiculeChauffeurs: any = [];
   form: FormGroup;
   constructor(
@@ -32,11 +32,18 @@ export class AffecterChauffeur implements OnInit {
 
   creerForm() {
     this.form = this.fb.group({
-      chauffeurs: this.fb.array([]),
+      chauffeurs: this.fb.array([]), //chauffeurs privés
+      chauffeursLoues: this.fb.array([]), //chauffeurs Loués
     });
+
     this.vehicules.forEach(() => {
       const chauffeur = this.fb.group({ chauffeur: '' });
       this.chauffeursForms.push(chauffeur);
+    });
+
+    this.vehiculesLoues.forEach(() => {
+      const chauffeurLoue = this.fb.group({ chauffeurLoue: '' });
+      this.chauffeursLouesForms.push(chauffeurLoue);
     });
   }
 
@@ -44,8 +51,17 @@ export class AffecterChauffeur implements OnInit {
     return this.form.get('chauffeurs') as FormArray;
   }
 
+  get chauffeursLouesForms() {
+    return this.form.get('chauffeursLoues') as FormArray;
+  }
+
   get vehicules() {
-    return this.data.vehicules;
+    console.log(this.data.vehiculesPrives);
+    return this.data.vehiculesPrives;
+  }
+
+  get vehiculesLoues() {
+    return this.data.vehiculesLoues;
   }
 
   async getListeChauffeurs() {
@@ -53,6 +69,7 @@ export class AffecterChauffeur implements OnInit {
   }
 
   verifierCompatibiliteChauffeur() {
+    console.log(this.vehicules);
     this.vehicules.forEach((vehicule: any) => {
       let categorie = vehicule.vehicule.categories.split('/');
       let chauffeurs: any = [];
@@ -63,29 +80,29 @@ export class AffecterChauffeur implements OnInit {
           }
         });
       });
-      this.couplesVehiculeChauffeurs.push({
+      this.couplesVehiculeChauffeursPrives.push({
         vehicule: vehicule.vehicule,
         chauffeurs: chauffeurs,
       });
     });
-    for (let i = 0; i < this.couplesVehiculeChauffeurs.length; i++) {
+    for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
       this.copieVehiculeChauffeurs.push({
-        vehicule: this.couplesVehiculeChauffeurs[i].vehicule,
-        chauffeurs: [...this.couplesVehiculeChauffeurs[i].chauffeurs],
+        vehicule: this.couplesVehiculeChauffeursPrives[i].vehicule,
+        chauffeurs: [...this.couplesVehiculeChauffeursPrives[i].chauffeurs],
       });
     }
   }
 
   // si un chauffeur est disponible pour plusieurs vehicules et on selectionne se chauffeur dans un vehicule on l'enleve pour les autres
   rafraichirListeChauffeur() {
-    for (let i = 0; i < this.couplesVehiculeChauffeurs.length; i++) {
-      this.couplesVehiculeChauffeurs[i].chauffeurs = [
+    for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
+      this.couplesVehiculeChauffeursPrives[i].chauffeurs = [
         ...this.copieVehiculeChauffeurs[i].chauffeurs,
       ];
     }
     for (let i = 0; i < this.chauffeursForms.controls.length; i++) {
-      for (let j = 0; j < this.couplesVehiculeChauffeurs.length; j++) {
-        this.couplesVehiculeChauffeurs[j].chauffeurs.forEach(
+      for (let j = 0; j < this.couplesVehiculeChauffeursPrives.length; j++) {
+        this.couplesVehiculeChauffeursPrives[j].chauffeurs.forEach(
           (chauffeurLoop: any) => {
             console.log(
               this.chauffeursForms.controls[i].get('chauffeur').value
@@ -95,15 +112,18 @@ export class AffecterChauffeur implements OnInit {
               this.chauffeursForms.controls[i].get('chauffeur').value
                 .id_Employe === chauffeurLoop.id_Employe
             ) {
-              let index = this.couplesVehiculeChauffeurs[
+              let index = this.couplesVehiculeChauffeursPrives[
                 j
               ].chauffeurs.findIndex(
                 (chauffeur: any) =>
                   this.chauffeursForms.controls[i].get('chauffeur').value
                     .id_Employe === chauffeur.id_Employe
               );
-              this.couplesVehiculeChauffeurs[j].chauffeurs.splice(index, 1);
-              console.log(this.couplesVehiculeChauffeurs[j].chauffeurs);
+              this.couplesVehiculeChauffeursPrives[j].chauffeurs.splice(
+                index,
+                1
+              );
+              console.log(this.couplesVehiculeChauffeursPrives[j].chauffeurs);
             }
           }
         );
@@ -113,14 +133,25 @@ export class AffecterChauffeur implements OnInit {
 
   //   bouton ok
   valider() {
-    let couplesVehiculeChauffeur = [];
-    for (let i = 0; i < this.couplesVehiculeChauffeurs.length; i++) {
+    let couplesVehiculeChauffeurPrive = [];
+    let couplesVehiculeChauffeurLoue = [];
+    for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
       console.log(this.chauffeursForms.controls[i].get('chauffeur').value);
-      couplesVehiculeChauffeur.push({
-        vehicule: this.couplesVehiculeChauffeurs[i].vehicule,
+      couplesVehiculeChauffeurPrive.push({
+        vehicule: this.couplesVehiculeChauffeursPrives[i].vehicule,
         chauffeur: this.chauffeursForms.controls[i].get('chauffeur').value,
       });
     }
-    this.dialogRef.close(couplesVehiculeChauffeur);
+    for (let j = 0; j < this.vehiculesLoues.length; j++) {
+      couplesVehiculeChauffeurLoue.push({
+        vehicule: this.vehiculesLoues[j],
+        chauffeur:
+          this.chauffeursLouesForms.controls[j].get('chauffeurLoue').value,
+      });
+    }
+    this.dialogRef.close({
+      prive: couplesVehiculeChauffeurPrive,
+      loue: couplesVehiculeChauffeurLoue,
+    });
   }
 }

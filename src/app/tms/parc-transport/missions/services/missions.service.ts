@@ -13,25 +13,42 @@ export class MissionsService {
 
   //creer mission
   public creerMission(formData: any) {
-    this.httpClient.post(erp + 'creerMission', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    )
+    return this.httpClient.post(erp + 'creer-mission', formData).pipe(catchError(this.handleError));
   }
 
   //lister les missions
   public missions() {
-    return this.httpClient.get(erp + 'missions');
+    return this.httpClient.get(erp + 'missions').pipe(catchError(this.handleError));
   }
 
   //charger une mission par id
   public mission(id: any) {
     return this.httpClient.get(erp + 'mission')
   }
+
+  // supprimer une mission
+  public deleteMission(id: any) {
+    return this.httpClient.delete(erp + "supprimer-mission", {
+      params: {
+        id: id
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
+  // mise a jour mission
+  public updateMission(formData: any) {
+    return this.httpClient.put(erp + 'mise-a-jour-mission', formData).pipe(catchError(this.handleError));
+  }
   
   //filtrer les missions
-  public filtrerMissions(champ1: any, valeur1: any, champ2: any, valeur2: any, champ3: any, valeur3: any, champ4: any, valeur4: any) {
-    return this.httpClient.get(erp + 'filtrerMissions' + '?champ1=' + champ1 + '&valeur1=' + valeur1 + '&champ2=' + champ2 + '&valeur2=' + valeur2 + '&champ3=' + champ3 + '&valeur3=' + valeur3 + '&champ4=' + champ4 + '&valeur4=' + valeur4);
+  public filtrerMissions(nomChauffeur: any, matricule: any, etat: any) {
+    return this.httpClient.get(erp + 'filtrer-missions', {
+      params: {
+        nom: nomChauffeur,
+        matricule: matricule,
+        etat: etat
+      }, observe: 'body'
+    }).pipe(catchError(this.handleError));
   }
 
   //filtrer les missions par le matricule du vehicule et par nom chauffeur
