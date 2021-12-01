@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { DetailComponent } from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
 @Component({
@@ -126,7 +127,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     let dateChoisi = this.form.get('dateL').value;
     dateChoisi.setDate(dateChoisi.getDate() - 1);
     this.form.get('dateL').setValue(dateChoisi);
-    this.filtrerMission()
+    this.filtrerMission();
   }
 
   // augmenter le date dans le date picker par un jour
@@ -134,7 +135,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     let dateChoisi = this.form.get('dateL').value;
     dateChoisi.setDate(dateChoisi.getDate() + 1);
     this.form.get('dateL').setValue(dateChoisi);
-    this.filtrerMission()
+    this.filtrerMission();
   }
 
   supprimmerMission(id: any) {}
@@ -152,15 +153,14 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     // });
   }
 
-  detailDialog(id: any, idM: any): void {
+  detailDialog(mission: any): void {
     // ouvrir la boite de dialogue de détail d'une mission
-    // localStorage.setItem('idC', id);
-    // localStorage.setItem('idM', idM);
-    // const dialogRef = this.dialog.open(DetailComponent, {
-    //   width: '70vw',
-    //   panelClass: 'custom-dialog-detail',
-    //   autoFocus: false,
-    // });
+    const dialogRef = this.dialog.open(DetailComponent, {
+      width: '70vw',
+      panelClass: 'custom-dialog-detail',
+      autoFocus: false,
+      data: { mission: mission },
+    });
   }
   ouvrirMap(id: any, type: any) {
     // ouvrir google map avec le trajet

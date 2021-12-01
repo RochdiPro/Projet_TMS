@@ -23,7 +23,11 @@ export class MissionsService {
 
   //charger une mission par id
   public mission(id: any) {
-    return this.httpClient.get(erp + 'mission')
+    return this.httpClient.get(erp + 'mission', {
+      params: {
+        id: id
+      },observe: 'body'
+    }).pipe(catchError(this.handleError));
   }
 
   // supprimer une mission

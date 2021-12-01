@@ -301,114 +301,114 @@ export class MissionsComponent implements OnInit {
 //----------------------------------------Detail Component------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------------
 
-@Component({
-  selector: 'app-detail',
-  templateUrl: './detail.html',
-  styleUrls: ['./detail.scss'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0' })),
-      state('expanded', style({ height: '*' })),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
-})
-export class DetailComponent implements OnInit {
-  employe: any;
-  id: any;
-  idMission: any;
-  mission: any;
-  mis: any;
-  nbr_commandes: any;
-  poids_global = 0;
-  surface_globale = 0;
-  displayedColumns: string[] = ['referenceCommande', 'expediteur', 'mapExp', 'destinataire', 'mapDest', 'dateLivraison', 'etat', 'action'];
-  dataSource = new MatTableDataSource<tableCommandes>();
-  expandedElement: tableCommandes | null;
-  date_creation: any;
-  constructor(public serviceMission: MissionsService, private serviceChauffeur: ChauffeurService, public _DomSanitizationService: DomSanitizer, private dialog: MatDialog, private router: Router) {
-    this.refresh();
-  }
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+// @Component({
+//   selector: 'app-detail',
+//   templateUrl: './detail.html',
+//   styleUrls: ['./detail.scss'],
+//   animations: [
+//     trigger('detailExpand', [
+//       state('collapsed', style({ height: '0px', minHeight: '0' })),
+//       state('expanded', style({ height: '*' })),
+//       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+//     ]),
+//   ],
+// })
+// export class DetailComponent implements OnInit {
+//   employe: any;
+//   id: any;
+//   idMission: any;
+//   mission: any;
+//   mis: any;
+//   nbr_commandes: any;
+//   poids_global = 0;
+//   surface_globale = 0;
+//   displayedColumns: string[] = ['referenceCommande', 'expediteur', 'mapExp', 'destinataire', 'mapDest', 'dateLivraison', 'etat', 'action'];
+//   dataSource = new MatTableDataSource<tableCommandes>();
+//   expandedElement: tableCommandes | null;
+//   date_creation: any;
+//   constructor(public serviceMission: MissionsService, private serviceChauffeur: ChauffeurService, public _DomSanitizationService: DomSanitizer, private dialog: MatDialog, private router: Router) {
+//     this.refresh();
+//   }
+//   @ViewChild(MatPaginator) paginator: MatPaginator;
+//   @ViewChild(MatSort) sort: MatSort;
 
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
+//   ngAfterViewInit() {
+//     this.dataSource.paginator = this.paginator;
+//     this.dataSource.sort = this.sort;
+//   }
 
 
-  ngOnInit(): void {
-  }
-  refresh() { // rafraichier la liste des commandes et calcule du poids et surface global
-    this.id = localStorage.getItem('idC');
-    this.idMission = localStorage.getItem('idM');
-    this.serviceChauffeur.employe(this.id).subscribe((data) => {
-      this.employe = data;
-    });
-    this.serviceMission.mission(this.idMission).subscribe(res => {
-      this.mission = res;
-      this.date_creation = this.mission.date_creation;
+//   ngOnInit(): void {
+//   }
+//   refresh() { // rafraichier la liste des commandes et calcule du poids et surface global
+//     this.id = localStorage.getItem('idC');
+//     this.idMission = localStorage.getItem('idM');
+//     this.serviceChauffeur.employe(this.id).subscribe((data) => {
+//       this.employe = data;
+//     });
+//     this.serviceMission.mission(this.idMission).subscribe(res => {
+//       this.mission = res;
+//       this.date_creation = this.mission.date_creation;
 
-    });
-    this.serviceMission.filtrerCommande("id_mission", this.idMission).subscribe(res => { //recuperer la commande par l'id du mission
-      this.dataSource.data = res as tableCommandes[];
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      this.mis = res;
-      this.nbr_commandes = this.mis.length;
-      this.mis.forEach((x: any) => {
-      });
-      this.mis.forEach((x: any) => {
-        let articlesCommande = x.articles.split(",");
-        let surfaceCommande = 0;
-        let poidsCommande = 0;
-        articlesCommande.forEach((element: any) => {
-          let article = element.split("/");
-          let poidsArticle = article[2].split(":")[1];
-          let dimensionsArticle = article[1].split(":")[1].split("x");
-          let surfaceArticle = 1;
-          dimensionsArticle.forEach((d: any) => {
-            surfaceArticle *= Number(d);
-          });
-          poidsArticle *= article[0].split("x")[0];
-          poidsCommande += poidsArticle;
-          surfaceArticle *= article[0].split("x")[0];
-          surfaceCommande += surfaceArticle;
-        });
-        this.surface_globale += surfaceCommande;
-        this.poids_global += poidsCommande;
-      });
-    });
-  }
+//     });
+//     this.serviceMission.filtrerCommande("id_mission", this.idMission).subscribe(res => { //recuperer la commande par l'id du mission
+//       this.dataSource.data = res as tableCommandes[];
+//       this.dataSource.sort = this.sort;
+//       this.dataSource.paginator = this.paginator;
+//       this.mis = res;
+//       this.nbr_commandes = this.mis.length;
+//       this.mis.forEach((x: any) => {
+//       });
+//       this.mis.forEach((x: any) => {
+//         let articlesCommande = x.articles.split(",");
+//         let surfaceCommande = 0;
+//         let poidsCommande = 0;
+//         articlesCommande.forEach((element: any) => {
+//           let article = element.split("/");
+//           let poidsArticle = article[2].split(":")[1];
+//           let dimensionsArticle = article[1].split(":")[1].split("x");
+//           let surfaceArticle = 1;
+//           dimensionsArticle.forEach((d: any) => {
+//             surfaceArticle *= Number(d);
+//           });
+//           poidsArticle *= article[0].split("x")[0];
+//           poidsCommande += poidsArticle;
+//           surfaceArticle *= article[0].split("x")[0];
+//           surfaceCommande += surfaceArticle;
+//         });
+//         this.surface_globale += surfaceCommande;
+//         this.poids_global += poidsCommande;
+//       });
+//     });
+//   }
 
-  supprimerCommande(id: any) { // supprimer une commande
-    this.serviceMission.supprimerCommande(id);
-    window.setTimeout(() => {
-      this.refresh();
-    }, 100);
+//   supprimerCommande(id: any) { // supprimer une commande
+//     this.serviceMission.supprimerCommande(id);
+//     window.setTimeout(() => {
+//       this.refresh();
+//     }, 100);
 
-  }
-  terminerCommande(id: any) { //marquer une commande comme livrée
-    var formData: any = new FormData();
-    formData.append("etat", "Done");
-    this.serviceMission.majEtat(id, formData);
-    window.setTimeout(() => {
-      this.refresh();
-    }, 100);
-  }
-  ouvrirMap(id: any, type: any) { // ouvrir le map avec la position du client ou de l'expediteur
+//   }
+//   terminerCommande(id: any) { //marquer une commande comme livrée
+//     var formData: any = new FormData();
+//     formData.append("etat", "Done");
+//     this.serviceMission.majEtat(id, formData);
+//     window.setTimeout(() => {
+//       this.refresh();
+//     }, 100);
+//   }
+//   ouvrirMap(id: any, type: any) { // ouvrir le map avec la position du client ou de l'expediteur
 
-    localStorage.setItem('idCom', id);
-    localStorage.setItem('type', type)
-    const dialogRef = this.dialog.open(MapsComponent, {
-      width: '70vw',
-      autoFocus: false,
-    });
-  }
+//     localStorage.setItem('idCom', id);
+//     localStorage.setItem('type', type)
+//     const dialogRef = this.dialog.open(MapsComponent, {
+//       width: '70vw',
+//       autoFocus: false,
+//     });
+//   }
 
-}
+// }
 
 
 //------------------------------boite dialogue MAPS-------------------------------

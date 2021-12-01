@@ -1,0 +1,84 @@
+.card {
+  overflow: hidden;
+}
+
+.info{
+  padding-top: 20px;
+}
+
+table {
+  width: 100%;
+}
+th.mat-sort-header-sorted {
+  color: black;
+}
+.row {
+  width: 100%;
+}
+.attente {
+  color: #f7b924;
+}
+.termine {
+  color: #4bb543;
+}
+
+th {
+  width: 40px;
+}
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.container {
+  overflow: hidden;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+.row {
+  margin: 0;
+}
+.btn {
+  margin: 0;
+  padding: 0;
+}
+.mat-dialog-content {
+  margin: 0 !important;
+  padding: 24px !important;
+}
