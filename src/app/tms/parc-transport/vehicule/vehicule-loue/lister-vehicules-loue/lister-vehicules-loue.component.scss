@@ -10,14 +10,13 @@
   
   table {
     width: 100%;
+    margin-top: 10px;
+
   }
-  
+ 
   
   @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
     //forcer le tableau pour ne pas s'afficher comme tableau
-    table {
-      margin-top: 60px;
-    }
     table,
     thead,
     tbody,

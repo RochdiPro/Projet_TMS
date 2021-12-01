@@ -38,10 +38,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     'nom',
     'matricule',
     'dateLivraison',
-    'trajet',
     'etatMission',
     'actions',
-    'Detail',
   ]; //les colonne du tableau mission
   dataSource = new MatTableDataSource<tableMissions>();
   dateRecherche: any;
@@ -102,7 +100,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     }
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-    console.log(this.dataSource.data)
+    console.log(this.dataSource.data);
   }
   disableEnableDate() {
     //pour activer et desactiver le filtrage par date
@@ -114,13 +112,29 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   }
 
   getNomChauffeur(chauffeurs: string) {
-    let listeChauffeurs = chauffeurs.split("/")
-    return listeChauffeurs
+    let listeChauffeurs = chauffeurs.split('/');
+    return listeChauffeurs;
   }
 
   getMatricule(matricules: string) {
-    let listeMatricule = matricules.split("/");
+    let listeMatricule = matricules.split('/');
     return listeMatricule;
+  }
+
+  // diminuer la date dans le date picker par un jour
+  datePrecedente() {
+    let dateChoisi = this.form.get('dateL').value;
+    dateChoisi.setDate(dateChoisi.getDate() - 1);
+    this.form.get('dateL').setValue(dateChoisi);
+    this.filtrerMission()
+  }
+
+  // augmenter le date dans le date picker par un jour
+  dateSuivante() {
+    let dateChoisi = this.form.get('dateL').value;
+    dateChoisi.setDate(dateChoisi.getDate() + 1);
+    this.form.get('dateL').setValue(dateChoisi);
+    this.filtrerMission()
   }
 
   supprimmerMission(id: any) {}
