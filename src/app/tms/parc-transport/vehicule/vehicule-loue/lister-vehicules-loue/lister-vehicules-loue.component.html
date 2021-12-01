@@ -1,10 +1,12 @@
 <div *ngIf="tms >= 2">
-    <!-- Bouton pour ajouter nouvelle vehicule -->
-    <button mat-mini-fab color="primary" class="mt-1 mr-2 float-right add" style="margin-bottom: 13px;"
-        [routerLink]="['/Menu/TMS/Parc/Vehicules/Vehicules-Loues/ajouter-vehicule']"
-        routerLinkActive="router-link-active" *ngIf="tms >= 2">
-        <mat-icon>add</mat-icon>
-    </button>
+    <div style="width: 100%; display: flex;">
+        <!-- Bouton pour ajouter nouvelle vehicule -->
+        <button mat-mini-fab color="primary" style="margin-left: auto;"
+            [routerLink]="['/Menu/TMS/Parc/Vehicules/Vehicules-Loues/ajouter-vehicule']"
+            routerLinkActive="router-link-active" *ngIf="tms >= 2">
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
     <!-- fin Bouton pour ajouter nouvelle vehicule -->
     <table class="mb-0 table" [formGroup]="form">
         <thead>

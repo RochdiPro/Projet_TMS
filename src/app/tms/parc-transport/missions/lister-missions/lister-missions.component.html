@@ -1,0 +1,117 @@
+<div>
+    <section>
+        <mat-form-field class="filtres" [formGroup]="form">
+            <mat-label>Filtre Chauffeur</mat-label>
+            <input matInput placeholder="Nom" formControlName="nom" (keyup)="filtrerMission()" id="nom"
+                (focus)="nomFiltre = true">
+            <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="viderNom()">
+                <i class="fa fa-filter" aria-hidden="true"></i>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="filtres" [formGroup]="form">
+            <mat-label>Filtre Matricule</mat-label>
+            <input matInput placeholder="Matricule" formControlName="matricule" (keyup)="filtrerMission()"
+                (focus)="matriculeFiltre = true">
+            <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="viderMatricule()">
+                <i class="fa fa-filter" aria-hidden="true"></i>
+            </button>
+        </mat-form-field>
+        <mat-form-field class="filtres">
+            <mat-label>Filtre Etat Mission</mat-label>
+            <mat-select [(value)]="filtreEtatMission" (selectionChange)="etatMissionFiltre= true; filtrerMission();">
+                <mat-option></mat-option>
+                <mat-option value="Accordée">Accordée</mat-option>
+                <mat-option value="En Cours">En Cours</mat-option>
+                <mat-option value="Terminée">Terminée</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <div class="filtre-date">
+            <button mat-icon-button (click)="datePrecedente()" [disabled] = "!check"><mat-icon>navigate_before</mat-icon></button>
+            <mat-form-field [formGroup]="form">
+                <input matInput [matDatepicker]="picker" formControlName="dateL" (dateChange)="filtrerMission()" (focus)="picker.open()">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+            <button mat-icon-button (click)="dateSuivante()" [disabled] = "!check"><mat-icon>navigate_next</mat-icon></button>
+        </div>
+        <mat-checkbox class="ml-3" color="primary" [checked]="check" value="true"
+            (change)="check=!check; filtrerMission(); disableEnableDate()">
+            Filtrer Par Date
+        </mat-checkbox>
+    </section>
+</div>
+<div class="mat-elevation-z8">
+    <mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Id"> {{element.id}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne Nom -->
+        <ng-container matColumnDef="nom">
+            <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header>
+                Chauffeur
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Chauffeur">
+                <ul>
+                    <li *ngFor="let chauffeur of  getNomChauffeur(element.nomChauffeur)">
+                        {{chauffeur}}
+                    </li>
+                </ul>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Colonne Matricule -->
+        <ng-container matColumnDef="matricule">
+            <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header>
+                Matricule
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Matricule">
+                <ul>
+                    <li *ngFor="let matricule of getMatricule(element.matricule)">
+                        {{matricule}}
+                    </li>
+                </ul>
+            </mat-cell>
+        </ng-container>
+
+        <!-- Colonne Date -->
+        <ng-container matColumnDef="dateLivraison">
+            <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header> Date de Livraison </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Date de Livraison"> {{element.date | date:'dd-MM-yyyy'}} </mat-cell>
+        </ng-container>
+
+        <!-- Colonne etat -->
+        <ng-container matColumnDef="etatMission">
+            <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header class="ml-1"> Etat Mission
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Etat Mission">
+                <p class="accorde" *ngIf="element.etat === 'Accordée'">Accordée</p>
+                <p class="attente" *ngIf="element.etat === 'En Cours'">En Cours</p>
+                <p class="termine" *ngIf="element.etat === 'Terminée'">Terminée</p>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+            <mat-header-cell mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element">
+                <button class="mb-2  btn " *ngIf="element.etat === 'Accordée'"><i class="fas fa-play"
+                        style="color: #3f6ad8;" matTooltip="Lancer" matTooltipPosition="after" matTooltipShowDelay="600"></i></button>
+                <button class="mb-2  btn " *ngIf="element.etat === 'En Cours'"><i class="fas fas fa-stop"
+                        style="color: tomato" matTooltip="Terminer" matTooltipPosition="after" matTooltipShowDelay="600"></i></button>
+                <button class="mb-2  btn " *ngIf="element.etat === 'Terminée'" disabled><i
+                        class="fas fas fa-stop"></i></button>
+                <button class="mb-2  btn " matTooltip="Afficher détail" matTooltipPosition="after" matTooltipShowDelay="600"><i class="fas fa-info-circle" (click)='detailDialog(element.idE, element.id)'
+                        style="color: #3f6ad8;"></i></button>
+
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+</div>

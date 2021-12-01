@@ -4,7 +4,7 @@ tr {
 @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
     //forcer le tableau pour ne pas s'afficher comme tableau
     table {
-      margin-top: 60px;
+      margin-top: 20px;
     }
     table,
     thead,
@@ -26,6 +26,7 @@ tr {
       border: 1px solid #ccc;
       border-radius: 5px;
       margin-bottom: 10px;
+      height: auto;
     }
   
     td {

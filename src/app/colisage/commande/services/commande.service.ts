@@ -166,6 +166,11 @@ export class CommandeService {
     return this.httpClient.put(erp + 'modifier-id-position', formData).pipe(catchError(this.handleError));
   }
 
+  //modifier l'etat du commande
+  public modifierEtatCommande(formData: any) {
+    return this.httpClient.put(erp + 'modifier-etat-commande', formData).pipe(catchError(this.handleError));
+  }
+
   //supprimer commande
   public supprimerCommande(id: any) {
     return this.httpClient.delete(erp + 'supprimer-commande', {

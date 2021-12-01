@@ -1,9 +1,24 @@
-table {
+.container{
+  padding: 0 20px;
+}
+div {
   width: 100%;
 }
+.mat-form-field, p {
+  width: 50%;
+}
+
 td {
   width: 50%;
 }
 tbody th {
     padding-top: 0;
+}
+.inline-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+p{
+  font-weight: bold;
 }

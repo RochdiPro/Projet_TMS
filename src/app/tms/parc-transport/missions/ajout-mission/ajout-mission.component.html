@@ -1,11 +1,21 @@
 <div class="container">
+    <div class="date-mission" [formGroup]="formDate">
+        <button mat-icon-button (click)="datePrecedente()"><mat-icon>navigate_before</mat-icon></button>
+        <mat-form-field>
+            <mat-label>Date du mission</mat-label>
+            <input matInput formControlName="date" [min]="minDate" [matDatepicker]="picker1" (focus)="picker1.open()">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        <button mat-icon-button (click)="dateSuivante()"><mat-icon>navigate_next</mat-icon></button>
+    </div>
     <div class="row">
         <!-- liste des Commandes pretes a construire un Mission -->
         <div class="col-perso mission">
             <h3>Mission</h3>
             <div class="cadre">
                 <div class="entete">
-                    <span><b>Durée: </b>480min</span>
+                    <span><b>Durée: </b>0min</span>
                     <span><b>Poids Total:</b> {{calculerPoidsMission()}}kg </span>
                     <span><b>Volume Total:</b> {{calculerVolumeMission()}}m³</span>
                     <span style="width: 60px;">
@@ -28,8 +38,9 @@
                                 <th>Volume</th>
                                 <th>Score</th>
                                 <th>
-                                    <button mat-icon-button name="enlever-tous-commandes" color="warn" matTooltip="Annuler tous"
-                                        matTooltipPosition="above" (click)="annulerAjoutTousCommandeDansMission();"
+                                    <button mat-icon-button name="enlever-tous-commandes" color="warn"
+                                        matTooltip="Annuler tous" matTooltipPosition="above"
+                                        (click)="annulerAjoutTousCommandeDansMission();"
                                         [disabled]="mission.length === 0">
                                         <mat-icon>indeterminate_check_box</mat-icon>
                                     </button>
@@ -52,7 +63,8 @@
                                 <td>{{convertirScoreEnPourcentageParRapportMission(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button name="enlever-commande" color="warn" (click)="annulerAjoutCommandeDansMission(i)">
+                                    <button mat-icon-button name="enlever-commande" color="warn"
+                                        (click)="annulerAjoutCommandeDansMission(i)">
                                         <mat-icon>remove</mat-icon>
                                     </button>
                                 </td>
@@ -67,7 +79,7 @@
         <div class="col-perso vehicule">
             <h3>Vehicules</h3>
             <div class="cadre">
-                <div class="entete" [formGroup]="form">
+                <div class="entete" [formGroup]="formVehicule">
                     <span>
                         <label for="nb-voyages">Nb voyages</label>
                         <input type="number" autocomplete="off" min="1" id="nb-voyages" formControlName="nombreVoyages">
@@ -106,7 +118,8 @@
                                     <mat-checkbox *ngIf="checkBoxVehicules[i]" color="primary"
                                         [(ngModel)]="checkBoxVehicules[i].value"
                                         [disabled]="checkBoxVehicules[i].disable"
-                                        (change)="selectionnerDeselectionnerVehicule(i, 'privé', vehicule)"></mat-checkbox>
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'privé', vehicule)">
+                                    </mat-checkbox>
                                 </td>
                             </tr>
                             <tr>
@@ -479,6 +492,16 @@
             </div>
         </div>
     </div>
+    <div class="date-mission" [formGroup]="formDate">
+        <button mat-icon-button (click)="datePrecedente()"><mat-icon>navigate_before</mat-icon></button>
+        <mat-form-field>
+            <mat-label>Date du mission</mat-label>
+            <input matInput formControlName="date" [min]="minDate" [matDatepicker]="picker2" (focus)="picker2.open()">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+        <button mat-icon-button (click)="dateSuivante()"><mat-icon>navigate_next</mat-icon></button>
+    </div>
     <div class="row" id="file-attente">
         <!-- liste des commandes dans la file d'attente -->
         <div class="col-perso">
@@ -498,14 +521,15 @@
                                 <th>Poids</th>
                                 <th>
                                     <button mat-icon-button color="warn" matTooltip="Annuler tous"
-                                        matTooltipPosition="above" (click)="annulerAjoutTousMissionsDansFileAttente()" [disabled]="fileAttenteEstVide">
+                                        matTooltipPosition="above" (click)="annulerAjoutTousMissionsDansFileAttente()"
+                                        [disabled]="fileAttenteEstVide">
                                         <mat-icon>indeterminate_check_box</mat-icon>
                                     </button>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let mis of missions; let i=index;">
+                            <tr *ngFor="let mis of fileAttente; let i=index;">
                                 <!-- colonne region -->
                                 <td scope="row">1</td>
                                 <!-- colonne vehicule -->
@@ -525,7 +549,7 @@
                                     </ul>
                                 </td>
                                 <!-- colonne score -->
-                                <td>{{mis.score}}</td>
+                                <td>{{convertirScoreEnPourcentageParRapportFileAttente(mis.score)}}%</td>
                                 <!-- colonne volume vehicule -->
                                 <td>
                                     <ul>
@@ -548,7 +572,8 @@
                                 <td>{{mis.poids}}kg</td>
                                 <!-- bouton ajouter -->
                                 <td>
-                                    <button mat-icon-button color="warn" (click)="annulerAjoutMissionDansFileAttente(i)">
+                                    <button mat-icon-button color="warn"
+                                        (click)="annulerAjoutMissionDansFileAttente(i)">
                                         <mat-icon>remove</mat-icon>
                                     </button>
                                 </td>
@@ -563,7 +588,6 @@
         <!-- bouton Annuler -->
         <button mat-button color="warn" class="mb-2 mr-2">Annuler</button>
         <!-- Bouton Enregistrer -->
-        <button mat-button color="primary" class="mb-2 mr-2"
-            >Enregistrer</button>
+        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()">Enregistrer</button>
     </div>
 </div>
