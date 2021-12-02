@@ -1,24 +1,21 @@
 import {
-  trigger,
-  state,
+  animate, state,
   style,
-  transition,
-  animate,
+  transition, trigger
 } from '@angular/animations';
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
-  MAT_DIALOG_DATA,
+  MAT_DIALOG_DATA
 } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
-import { tableCommandes, MapsComponent } from '../missions.component';
+import { MapsComponent } from '../missions.component';
 import { MissionsService } from '../services/missions.service';
 
 // ************************************ Boite dialogue affecter chauffeur ********************************
@@ -196,24 +193,20 @@ export class AffecterChauffeur implements OnInit {
 export class DetailComponent implements OnInit {
   chauffeurs: any = [];
   matricule: any;
+  commandes: any;
 
-
-  mission: any;
-  mis: any;
-  nbr_commandes: any;
-  poids_global = 0;
-  surface_globale = 0;
   displayedColumns: string[] = [
-    'referenceCommande',
-    'expediteur',
-    'mapExp',
-    'destinataire',
-    'mapDest',
-    'dateLivraison',
+    'referenceDocument',
+    'nomClient',
+    'contact',
+    'telephone',
+    'ville',
+    'adresse',
+    'trackingNumber',
     'etat',
     'action',
   ];
-  dataSource = new MatTableDataSource<tableCommandes>();
+  dataSource = new MatTableDataSource();
   expandedElement: tableCommandes | null;
   date_creation: any;
   constructor(
@@ -223,9 +216,7 @@ export class DetailComponent implements OnInit {
     private dialog: MatDialog,
     private dialogRef: MatDialogRef<DetailComponent>,
     @Inject(MAT_DIALOG_DATA) private data: any,
-  ) {
-    this.refresh();
-  }
+  ) {}
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -234,10 +225,13 @@ export class DetailComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.refresh();
+  }
 
   
   async refresh() {
+    console.log(this.data.mission)
     // rafraichier la liste des commandes et calcule du poids et surface global
     let idChauffeurs = this.data.mission.idChauffeur.split("/");
     this.matricule = this.data.mission.matricule.split("/");
@@ -245,7 +239,24 @@ export class DetailComponent implements OnInit {
       let chauffeur = await this.serviceChauffeur.employe(Number(19)).toPromise();
       this.chauffeurs.push(chauffeur)
     }
-    console.log(this.mission)
+    await this.getListeCommandes();
+  }
+
+  get nbrCommandes() {
+    return this.data.mission.idCommandes.split("/").length;
+  }
+
+  get poidsMission () {
+    return this.data.mission.poids;
+  }
+
+  get volumeMission() {
+    return this.data.mission.volume;
+  }
+
+  async getListeCommandes() {
+    this.commandes = await this.serviceMission.getCommandesParIdMission(this.data.mission.id).toPromise();
+    console.log(this.commandes)
   }
 
   supprimerCommande(id: any) {
@@ -274,4 +285,15 @@ export class DetailComponent implements OnInit {
       autoFocus: false,
     });
   }
+}
+
+
+// *********************************************interface table commandes***************************************
+export interface tableCommandes {
+  id: number;
+  idMission: number;
+  referenceCommande: number;
+  destinataire: string;
+  destination: String;
+  etat: String;
 }

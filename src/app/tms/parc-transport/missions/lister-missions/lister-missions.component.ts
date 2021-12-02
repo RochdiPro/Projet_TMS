@@ -156,7 +156,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   detailDialog(mission: any): void {
     // ouvrir la boite de dialogue de détail d'une mission
     const dialogRef = this.dialog.open(DetailComponent, {
-      width: '70vw',
+      width: '1200px',
+      maxHeight: '90vh',
       panelClass: 'custom-dialog-detail',
       autoFocus: false,
       data: { mission: mission },

@@ -56,9 +56,9 @@ export class MissionsService {
   }
 
   //filtrer les missions par le matricule du vehicule et par nom chauffeur
-  public filtrerMissionsVehiculeChauffeur(vehicule : any, chauffeur : any) {
-    return this.httpClient.get(erp + 'filtrerMissionsVehiculeChauffeur' + '?vehicule=' + vehicule + '&chauffeur=' + chauffeur);
-  }
+  // public filtrerMissionsVehiculeChauffeur(vehicule : any, chauffeur : any) {
+  //   return this.httpClient.get(erp + 'filtrerMissionsVehiculeChauffeur' + '?vehicule=' + vehicule + '&chauffeur=' + chauffeur);
+  // }
 
    // get liste des commandes
    public commandes() {
@@ -78,6 +78,15 @@ export class MissionsService {
       params:{
         etat: etat
       },observe: 'body'
+    }).pipe(catchError(this.handleError));
+  }
+
+  // get commandes par id mission
+  public getCommandesParIdMission(idMission: any) {
+    return this.httpClient.get(erp + "commandes-id-mission", {
+      params: {
+        idMission: idMission
+      }, observe: 'body'
     }).pipe(catchError(this.handleError));
   }
 
