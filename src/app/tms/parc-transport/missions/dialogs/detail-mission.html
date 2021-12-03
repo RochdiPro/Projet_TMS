@@ -22,8 +22,7 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <h5>Matricule Du Vehicule: <span
-                                style="font-weight: bold;">{{matricule[i]}} </span></h5>
+                        <h5>Matricule Du Vehicule: <span style="font-weight: bold;">{{matricule[i]}} </span></h5>
                     </div>
                 </div>
             </div>
@@ -33,7 +32,7 @@
 <!-- INFO MISSION -->
 <h2>Informations supplémentaire du mission</h2>
 <div class="card pt-3">
-    <div class="container-info-mission" style="padding: 0 28.8px;">
+    <div class="container-info-mission">
         <p>Nombre des commandes: </p>
         <p style="font-weight: bold;"> {{nbrCommandes}} </p>
         <p>Poids: </p>
@@ -53,13 +52,24 @@
     <tbody>
         <tr *ngFor="let commande of commandes" class="card">
             <td scope="row">
-                <h3>Référence: {{commande.referenceDocument}}</h3>
+                <div style="width: 100%; display: flex; align-items: center;">
+                    <h3>Référence: {{commande.referenceDocument}}</h3>
+                    <button mat-icon-button style="margin-left: auto; color: tomato;" class="position" (click)="ouvrirMap(commande)">
+                        <mat-icon>place</mat-icon>
+                    </button>
+                </div>
                 <div class="container-commande">
                     <p>
                         Client:
                     </p>
                     <p style="font-weight: bold;">
                         {{commande.nomClient}}
+                    </p>
+                    <p>
+                        Ville:
+                    </p>
+                    <p style="font-weight: bold;">
+                        {{commande.ville}}
                     </p>
                     <p>
                         Adresse de livraison: &nbsp;

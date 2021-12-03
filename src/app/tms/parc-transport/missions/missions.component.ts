@@ -1,15 +1,8 @@
-import { AfterViewInit, Component, ViewChild, OnInit, Inject, ErrorHandler } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
 import { DatePipe } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DomSanitizer } from '@angular/platform-browser';
-import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ILatLng } from 'src/app/directions-map.directive';
-import { ChauffeurService } from '../chauffeurs/services/chauffeur.service';
 import { MissionsService } from './services/missions.service';
 
 
@@ -413,61 +406,61 @@ export class MissionsComponent implements OnInit {
 
 //------------------------------boite dialogue MAPS-------------------------------
 
-@Component({
-  selector: 'app-maps',
-  templateUrl: './maps.html',
-  styleUrls: ['./maps.scss'],
-})
-export class MapsComponent {
-  lat: any;
-  long: any
-  id: any;
-  commande: any;
-  type: any;
-  expediteur = false;
-  destinataire = false;
-  trajet = false;
+// @Component({
+//   selector: 'app-maps',
+//   templateUrl: './maps.html',
+//   styleUrls: ['./maps.scss'],
+// })
+// export class MapsComponent {
+//   lat: any;
+//   long: any
+//   id: any;
+//   commande: any;
+//   type: any;
+//   expediteur = false;
+//   destinataire = false;
+//   trajet = false;
 
-  origin: ILatLng = {
-    latitude: 34.74056,
-    longitude: 10.76028
-  };
-  destination: ILatLng = {
-    latitude: 34.74056,
-    longitude: 10.76028
-  };
-  displayDirections = false;
-  zoom = 15;
-
-
-  constructor(public serviceMission: MissionsService) {
-    this.id = localStorage.getItem("idCom");
-    this.type = localStorage.getItem("type");
-    this.serviceMission.commande(this.id).subscribe((data) => {
-      this.commande = data;
-      if (this.type === "expediteur") { //afficher la position de l'expediteur
-        var x = this.commande.positionExp.split(",");
-        this.lat = Number(x[0]);
-        this.long = Number(x[1]);
-        this.origin.latitude = Number(x[0]);
-        this.origin.longitude = Number(x[1]);
-        this.displayDirections = false;
-        this.expediteur = true;
-      } else if (this.type === "destinataire") { //afficher la position de l'expediteur
-        var x = this.commande.positionDest.split(",");
-        this.lat = Number(x[0]);
-        this.long = Number(x[1]);
-        this.destination.latitude = Number(x[0]);
-        this.destination.longitude = Number(x[1]);
-        this.displayDirections = false;
-        this.destinataire = true;
-
-      }
-    });
-  }
+//   origin: ILatLng = {
+//     latitude: 34.74056,
+//     longitude: 10.76028
+//   };
+//   destination: ILatLng = {
+//     latitude: 34.74056,
+//     longitude: 10.76028
+//   };
+//   displayDirections = false;
+//   zoom = 15;
 
 
-}
+//   constructor(public serviceMission: MissionsService) {
+//     this.id = localStorage.getItem("idCom");
+//     this.type = localStorage.getItem("type");
+//     this.serviceMission.commande(this.id).subscribe((data) => {
+//       this.commande = data;
+//       if (this.type === "expediteur") { //afficher la position de l'expediteur
+//         var x = this.commande.positionExp.split(",");
+//         this.lat = Number(x[0]);
+//         this.long = Number(x[1]);
+//         this.origin.latitude = Number(x[0]);
+//         this.origin.longitude = Number(x[1]);
+//         this.displayDirections = false;
+//         this.expediteur = true;
+//       } else if (this.type === "destinataire") { //afficher la position de l'expediteur
+//         var x = this.commande.positionDest.split(",");
+//         this.lat = Number(x[0]);
+//         this.long = Number(x[1]);
+//         this.destination.latitude = Number(x[0]);
+//         this.destination.longitude = Number(x[1]);
+//         this.displayDirections = false;
+//         this.destinataire = true;
+
+//       }
+//     });
+//   }
+
+
+// }
 
 //--------------------------------------------------------------------------------------------------------------------
 //------------------------------------Boite de dialogue affecter commandes--------------------------------------------

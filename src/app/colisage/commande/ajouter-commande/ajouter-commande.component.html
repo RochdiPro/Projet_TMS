@@ -1,4 +1,6 @@
 <div *ngIf="wms >= 2">
+    <mat-slide-toggle [(ngModel)]="estManuel">mode manuel</mat-slide-toggle>
+    <input type="file" (change)="onFileChange($event)" multiple="false" *ngIf="estManuel"/>
     <form [formGroup]="filtre">
         <div class="filtres">
             <div class="filtre-id">

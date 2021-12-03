@@ -9,6 +9,8 @@ import {
   BoiteDialogueInfo,
 } from '../dialogs/dialogs.component';
 import { CommandeService } from '../services/commande.service';
+// svp installer le package xlsx "npm i xlsx"
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-ajouter-commande',
@@ -67,6 +69,8 @@ export class AjouterCommandeComponent implements OnInit {
   nom: any;
   acces: any;
   wms: any;
+  estManuel: false;
+  data: [][];
 
   constructor(
     private serviceCommande: CommandeService,
@@ -93,9 +97,17 @@ export class AjouterCommandeComponent implements OnInit {
       trie: 'date-ascendant',
     });
     await this.getListeClients();
-    await this.getListeFactures();
-    await this.getListeBLs();
-    this.listeCommandes = this.listeFactures.concat(this.listeBonsLivraison);
+    if (this.estManuel) {
+      this.listeCommandes = [];
+    } else {
+      await this.getListeFactures();
+      await this.getListeBLs();
+      this.listeCommandes = this.listeFactures.concat(this.listeBonsLivraison);
+      this.afficherListeCommandes();
+    }
+  }
+
+  afficherListeCommandes() {
     this.dataSource.data = this.listeCommandes.sort(
       (commandeA: any, commandeB: any) =>
         commandeA.dateCreation > commandeB.dateCreation ? 1 : -1
@@ -191,6 +203,7 @@ export class AjouterCommandeComponent implements OnInit {
   }
 
   ouvrirBoiteDialogueCreerCommande(commande: any) {
+    console.log(commande);
     const dialogRef = this.dialogue.open(BoiteDialogueCreerCommande, {
       width: '1000px',
       maxWidth: '95vw',
@@ -217,6 +230,58 @@ export class AjouterCommandeComponent implements OnInit {
     } else {
       this.dataSource.data = this.listeCommandes as TableCommandes[];
     }
+  }
+
+  onFileChange(evt: any) {
+    const target: DataTransfer = <DataTransfer>evt.target;
+
+    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
+
+    const reader: FileReader = new FileReader();
+
+    reader.onload = (e: any) => {
+      const bstr: string = e.target.result;
+
+      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
+
+      const wsname: string = wb.SheetNames[0];
+
+      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+
+      console.log(ws);
+
+      this.data = XLSX.utils.sheet_to_json(ws, { header: 1 });
+
+      console.log(this.data);
+
+      this.listeCommandes = [];
+
+      for (let i = 1; i < this.data.length; i++) {
+        const commande: any[] = this.data[i];
+        let typeCommande = commande[0].split('-')[0];
+        if (typeCommande === 'F' || typeCommande === 'BL') {
+          let objCommande = new Commande(
+            commande[1],
+            commande[0],
+            commande[2],
+            commande[3],
+            commande[7],
+            commande[8],
+            commande[4],
+            commande[6],
+            commande[5],
+            commande[9],
+            commande[10],
+            commande[11],
+            commande[12]
+          );
+          this.listeCommandes.push(objCommande);
+        }
+      }
+      this.afficherListeCommandes();
+    };
+
+    reader.readAsBinaryString(target.files[0]);
   }
 }
 
@@ -256,6 +321,52 @@ class BonLivraison {
   dateCreation: Date;
 
   constructor() {}
+}
+
+class Commande {
+  id: Number;
+  reference: String;
+  idClient: Number;
+  nomClient: String;
+  ville: String;
+  adresse: String;
+  contact: String;
+  email: String;
+  telephone: Number;
+  typePieceIdentite: String;
+  numeroPieceIdentite: Number;
+  categorieClient: String;
+  dateCreation: Date;
+
+  constructor(
+    id: Number,
+    reference: String,
+    idClient: Number,
+    nomClient: String,
+    ville: String,
+    adresse: String,
+    contact: String,
+    email: String,
+    telephone: Number,
+    typePieceIdentite: String,
+    numeroPieceIdentite: Number,
+    categorieClient: String,
+    dateCreation: Date
+  ) {
+    this.id = id;
+    this.reference = reference;
+    this.idClient = idClient;
+    this.nomClient = nomClient;
+    this.ville = ville;
+    this.adresse = adresse;
+    this.contact = contact;
+    this.email = email;
+    this.telephone = telephone;
+    this.typePieceIdentite = typePieceIdentite;
+    this.numeroPieceIdentite = numeroPieceIdentite;
+    this.categorieClient = categorieClient;
+    this.dateCreation = dateCreation;
+  }
 }
 
 // -----------------------------------------------------------------------------------------

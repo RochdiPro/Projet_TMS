@@ -14,8 +14,9 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer } from '@angular/platform-browser';
+import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
-import { MapsComponent } from '../missions.component';
+import { ILatLng } from '../directions-map.directive';
 import { MissionsService } from '../services/missions.service';
 
 // ************************************ Boite dialogue affecter chauffeur ********************************
@@ -275,14 +276,14 @@ export class DetailComponent implements OnInit {
       this.refresh();
     }, 100);
   }
-  ouvrirMap(id: any, type: any) {
-    // ouvrir le map avec la position du client ou de l'expediteur
-
-    localStorage.setItem('idCom', id);
-    localStorage.setItem('type', type);
-    const dialogRef = this.dialog.open(MapsComponent, {
-      width: '70vw',
+  ouvrirMap(commande: any) {
+    const dialogRef = this.dialog.open(PositionComponent, {
+      width: '1000px',
+      maxWidth: '95vw',
+      height: '50vh',
       autoFocus: false,
+      panelClass: 'custom-dialog-position',
+      data: { idPosition: commande.idPosition}
     });
   }
 }
@@ -296,4 +297,35 @@ export interface tableCommandes {
   destinataire: string;
   destination: String;
   etat: String;
+}
+
+
+// **************************************** boite dialog position *********************************************
+
+
+@Component({
+  selector: 'position',
+  templateUrl: './position.html',
+  styleUrls: ['./position.scss'],
+})
+export class PositionComponent implements OnInit {
+  lat: any;
+  lng: any
+  zoom = 15;
+  adresse: string;
+
+
+  constructor(public serviceCommande: CommandeService, @Inject(MAT_DIALOG_DATA) private data: any) {}
+  ngOnInit(): void {
+    this.getPosition()
+  }
+
+  async getPosition(){
+    let position = await this.serviceCommande.getPositionById(this.data.idPosition).toPromise();
+    this.lat = Number(position.latitude);
+    this.lng = Number(position.longitude);
+    this.adresse = position.adresse;
+    console.log(position)
+  }
+
 }

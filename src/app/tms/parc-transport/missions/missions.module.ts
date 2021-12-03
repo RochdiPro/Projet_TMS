@@ -18,12 +18,12 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { QRCodeModule } from 'angular2-qrcode';
 import { SafePipeModule } from 'safe-pipe';
-import { DirectionsMapDirective } from '../../../directions-map.directive';
 import { AjoutMissionComponent } from './ajout-mission/ajout-mission.component';
 import { MissionsRoutingModule } from './missions-routing.module';
-import { AffecterCommande, MapsComponent, MissionsComponent, QrCodeComponent } from './missions.component';
-import { AffecterChauffeur, DetailComponent } from './dialogs/dialogs.component';
+import { AffecterCommande, MissionsComponent, QrCodeComponent } from './missions.component';
+import { AffecterChauffeur, DetailComponent, PositionComponent } from './dialogs/dialogs.component';
 import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
+import { DirectionsMapDirective } from './directions-map.directive';
 
 
 
@@ -36,7 +36,7 @@ import { ListerMissionsComponent } from './lister-missions/lister-missions.compo
     MissionsComponent,
     ListerMissionsComponent,
     DetailComponent,
-    MapsComponent,
+    PositionComponent,
     AffecterCommande,
     QrCodeComponent,
     DirectionsMapDirective,

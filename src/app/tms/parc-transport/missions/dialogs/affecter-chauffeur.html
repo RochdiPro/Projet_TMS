@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Affecter des chauffeurs</h1>
 <div class="container">
     <div [formGroup]="form">
-        <div class="inline-flex">
+        <div class="inline-flex" *ngIf="couplesVehiculeChauffeursPrives.length > 0">
             <p>Vehicule privé</p>
             <p>Chauffeur</p>
         </div>
@@ -18,7 +18,7 @@
                 </mat-form-field>
             </div>
         </div>
-        <div class="inline-flex">
+        <div class="inline-flex" *ngIf="vehiculesLoues.length > 0">
             <p>Vehicule loué</p>
             <p>Chauffeur</p>
         </div>

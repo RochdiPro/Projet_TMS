@@ -771,69 +771,73 @@ export class AjoutMissionComponent implements OnInit {
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
-      result.prive.forEach((element: any) => {
-        vehicules.push(element.vehicule);
-        chauffeurs.push(element.chauffeur);
-      });
-      result.loue.forEach((element: any) => {
-        vehicules.push(element.vehicule);
-        chauffeurs.push({ nom: element.chauffeur });
-      });
-      this.fileAttente.push({
-        commandes: this.mission,
-        vehicule: vehicules,
-        chauffeur: chauffeurs,
-        score: this.calculerScoreMission(),
-        volume: this.calculerVolumeMission(),
-        poids: this.calculerPoidsMission(),
-      });
-      console.log(this.fileAttente);
-      this.mission = [];
-      console.log(vehiculesLoues);
-      console.log(this.vehiculesSelectionnes);
+      if (result) {
+        result.prive.forEach((element: any) => {
+          vehicules.push(element.vehicule);
+          chauffeurs.push(element.chauffeur);
+        });
+        result.loue.forEach((element: any) => {
+          vehicules.push(element.vehicule);
+          chauffeurs.push({ nom: element.chauffeur });
+        });
+        this.fileAttente.push({
+          commandes: this.mission,
+          vehicule: vehicules,
+          chauffeur: chauffeurs,
+          score: this.calculerScoreMission(),
+          volume: this.calculerVolumeMission(),
+          poids: this.calculerPoidsMission(),
+        });
+        console.log(this.fileAttente);
+        this.mission = [];
+        console.log(vehiculesLoues);
+        console.log(this.vehiculesSelectionnes);
 
-      this.checkBoxVehicules.forEach((checkBox) => {
-        checkBox.value = false;
-      });
-      this.checkBoxVehiculesLoues.forEach((checkBox) => {
-        checkBox.value = false;
-      });
-      this.vehiculesSelectionnes = [];
-      this.vehiculesPriveSelectionnes = [];
-      this.vehiculesLoueSelectionnes = [];
-      this.formVehicule.get('multiVehicule').setValue(false);
-      this.disableCheckBoxsVehiculePoidsVolumeInferieur();
-      // si la file d'attente s'agit d'une nouvelle file d'attente on l'ajoute sinon on modifie la valeur de la file d'attente existante
-      let dateFileAttente = new Date(this.formDate.get('date').value.getTime());
-      console.log(typeof dateFileAttente);
-      let fileAttente = this.listeFilesAttentes.filter(
-        (f: any) => f.date.getTime() === dateFileAttente.getTime()
-      );
-      console.log(this.fileAttente);
-      let copieFileAttente: any = [];
-      this.fileAttente.forEach((mission: any) => {
-        copieFileAttente.push({
-          commandes: [...mission.commandes],
-          vehicule: [...mission.vehicule],
-          chauffeur: [...mission.chauffeur],
-          score: mission.score,
-          volume: mission.volume,
-          poids: mission.poids,
+        this.checkBoxVehicules.forEach((checkBox) => {
+          checkBox.value = false;
         });
-      });
-      if (fileAttente.length === 0) {
-        this.listeFilesAttentes.push({
-          date: dateFileAttente,
-          fileAttente: copieFileAttente,
+        this.checkBoxVehiculesLoues.forEach((checkBox) => {
+          checkBox.value = false;
         });
-      } else {
-        let index = this.listeFilesAttentes.findIndex(
+        this.vehiculesSelectionnes = [];
+        this.vehiculesPriveSelectionnes = [];
+        this.vehiculesLoueSelectionnes = [];
+        this.formVehicule.get('multiVehicule').setValue(false);
+        this.disableCheckBoxsVehiculePoidsVolumeInferieur();
+        // si la file d'attente s'agit d'une nouvelle file d'attente on l'ajoute sinon on modifie la valeur de la file d'attente existante
+        let dateFileAttente = new Date(
+          this.formDate.get('date').value.getTime()
+        );
+        console.log(typeof dateFileAttente);
+        let fileAttente = this.listeFilesAttentes.filter(
           (f: any) => f.date.getTime() === dateFileAttente.getTime()
         );
-        console.log(index);
-        this.listeFilesAttentes[index].fileAttente = copieFileAttente;
+        console.log(this.fileAttente);
+        let copieFileAttente: any = [];
+        this.fileAttente.forEach((mission: any) => {
+          copieFileAttente.push({
+            commandes: [...mission.commandes],
+            vehicule: [...mission.vehicule],
+            chauffeur: [...mission.chauffeur],
+            score: mission.score,
+            volume: mission.volume,
+            poids: mission.poids,
+          });
+        });
+        if (fileAttente.length === 0) {
+          this.listeFilesAttentes.push({
+            date: dateFileAttente,
+            fileAttente: copieFileAttente,
+          });
+        } else {
+          let index = this.listeFilesAttentes.findIndex(
+            (f: any) => f.date.getTime() === dateFileAttente.getTime()
+          );
+          console.log(index);
+          this.listeFilesAttentes[index].fileAttente = copieFileAttente;
+        }
+        console.log(this.listeFilesAttentes);
       }
-      console.log(this.listeFilesAttentes);
     });
   }
   //calculer le volume de chaque vehicul dans une misssion
@@ -982,7 +986,7 @@ export class AjoutMissionComponent implements OnInit {
     console.log(this.listeFilesAttentes);
     for (let i = 0; i < this.listeFilesAttentes.length; i++) {
       for (let j = 0; j < this.listeFilesAttentes[i].fileAttente.length; j++) {
-        let mission = this.listeFilesAttentes[i].fileAttente[j]
+        let mission = this.listeFilesAttentes[i].fileAttente[j];
         let formData = new FormData();
         let idChauffeur = '';
         let nomChauffeur = '';
@@ -1018,9 +1022,11 @@ export class AjoutMissionComponent implements OnInit {
         await this.serviceMission.creerMission(formData).toPromise();
         for (let i = 0; i < mission.commandes.length; i++) {
           let formDataCommande = new FormData();
-          formDataCommande.append('id', mission.commandes[i].id)
-          formDataCommande.append('etat', 'Affectée')
-          await this.serviceCommande.modifierEtatCommande(formDataCommande).toPromise();
+          formDataCommande.append('id', mission.commandes[i].id);
+          formDataCommande.append('etat', 'Affectée');
+          await this.serviceCommande
+            .modifierEtatCommande(formDataCommande)
+            .toPromise();
         }
       }
     }
