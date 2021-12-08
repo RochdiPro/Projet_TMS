@@ -31,6 +31,12 @@
   max-height: 45vh;
   overflow-y: auto;
 }
+.filtre-date {
+  width: min-content;
+}
+.filtre-date .mat-form-field {
+  width: 55%;
+}
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {
   .filtres {

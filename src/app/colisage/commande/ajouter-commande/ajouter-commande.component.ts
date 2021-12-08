@@ -9,8 +9,6 @@ import {
   BoiteDialogueInfo,
 } from '../dialogs/dialogs.component';
 import { CommandeService } from '../services/commande.service';
-// svp installer le package xlsx "npm i xlsx"
-import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-ajouter-commande',
@@ -29,6 +27,7 @@ export class AjouterCommandeComponent implements OnInit {
   listeCommandes: any = [];
   displayedColumns: string[] = [
     'reference',
+    'type',
     'idClient',
     'nomClient',
     'ville',
@@ -69,8 +68,18 @@ export class AjouterCommandeComponent implements OnInit {
   nom: any;
   acces: any;
   wms: any;
-  estManuel: false;
+  estManuel = true;
   data: [][];
+  today = new Date();
+  date = new Date(
+    this.today.getFullYear(),
+    this.today.getMonth(),
+    this.today.getDate(),
+    0,
+    0,
+    0
+  );
+  datesDispo: string[];
 
   constructor(
     private serviceCommande: CommandeService,
@@ -94,17 +103,31 @@ export class AjouterCommandeComponent implements OnInit {
       type: 'F-',
       id: '',
       ville: '',
-      trie: 'date-ascendant',
+      date: this.date,
     });
     await this.getListeClients();
+    this.listeCommandes = [];
     if (this.estManuel) {
-      this.listeCommandes = [];
+      let generation = await this.serviceCommande.genererXML().toPromise();
+      console.log(generation)
+      this.datesDispo = await this.serviceCommande
+        .datesDisponibles()
+        .toPromise();
+      let dateDivise = this.datesDispo[this.datesDispo.length - 1].split('-');
+      let date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
+      this.filtre.get('date').setValue(new Date(date));
+      this.getCommandesModeManuel();
     } else {
       await this.getListeFactures();
       await this.getListeBLs();
       this.listeCommandes = this.listeFactures.concat(this.listeBonsLivraison);
       this.afficherListeCommandes();
     }
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   afficherListeCommandes() {
@@ -131,11 +154,6 @@ export class AjouterCommandeComponent implements OnInit {
     return this.filtre.get('trie').value;
   }
 
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
   async getListeFactures() {
     this.listeFacturesDB = await this.serviceCommande
       .filtreFacture('etat', 'Validée')
@@ -146,7 +164,8 @@ export class AjouterCommandeComponent implements OnInit {
       );
       var factureConstruit: Facture = new Facture();
       factureConstruit.id = facture.id_Facture;
-      factureConstruit.reference = 'F-' + facture.id_Facture;
+      factureConstruit.type = "Facture";
+      factureConstruit.reference = facture.id_Facture;
       factureConstruit.idClient = Number(facture.id_Clt);
       factureConstruit.nomClient = client[0].nom_Client;
       factureConstruit.ville = client[0].ville;
@@ -172,7 +191,8 @@ export class AjouterCommandeComponent implements OnInit {
       );
       var bonLivraisonConstruit: BonLivraison = new BonLivraison();
       bonLivraisonConstruit.id = bonLivraison.id_Bl;
-      bonLivraisonConstruit.reference = 'BL-' + bonLivraison.id_Bl;
+      bonLivraisonConstruit.type = "BL";
+      bonLivraisonConstruit.reference = bonLivraison.id_Bl;
       bonLivraisonConstruit.idClient = Number(bonLivraison.id_Clt);
       bonLivraisonConstruit.nomClient = client[0].nom_Client;
       bonLivraisonConstruit.ville = client[0].ville;
@@ -193,6 +213,72 @@ export class AjouterCommandeComponent implements OnInit {
   async getListeClients() {
     this.listeClients = await this.serviceCommande.clients().toPromise();
   }
+
+  // charger la liste des commandes en mode manuel
+  async getCommandesModeManuel() {
+    let date = new Date(this.filtre.get('date').value);
+    // let dateStr = date.toISOString().split('T')[0];
+    let dateStr =
+      date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    console.log(dateStr);
+    this.listeCommandes = await this.serviceCommande
+      .commandesModeManuel(dateStr)
+      .toPromise();
+    this.afficherListeCommandes();
+  }
+
+  // diminuer la date dans le date picker par un jour
+  async datePrecedente() {
+    let dateChoisi = this.filtre.get('date').value;
+    let date =
+      ('0' + dateChoisi.getDate()).slice(-2) +
+      '-' +
+      (dateChoisi.getMonth() + 1) +
+      '-' +
+      dateChoisi.getFullYear();
+    let index = this.datesDispo.findIndex((d) => date === d);
+    if (index > 0) {
+      let dateDivise = this.datesDispo[index - 1].split('-');
+      let nouveauDateChoisi =
+        dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
+      this.filtre.get('date').setValue(new Date(nouveauDateChoisi));
+    }
+    this.getCommandesModeManuel();
+  }
+
+  // augmenter le date dans le date picker par un jour
+  async dateSuivante() {
+    let dateChoisi = this.filtre.get('date').value;
+    let date =
+      ('0' + dateChoisi.getDate()).slice(-2) +
+      '-' +
+      (dateChoisi.getMonth() + 1) +
+      '-' +
+      dateChoisi.getFullYear();
+    let index = this.datesDispo.findIndex((d) => date === d);
+    if (index < this.datesDispo.length - 1) {
+      let dateDivise = this.datesDispo[index + 1].split('-');
+      let nouveauDateChoisi =
+        dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
+      this.filtre.get('date').setValue(new Date(nouveauDateChoisi));
+    }
+    this.getCommandesModeManuel();
+  }
+
+  myFilter = (d: Date | null): boolean => {
+    // disable les dates qui ne sont pas dans la liste datesDispo
+    let dateEstDisponible = false;
+    if (this.datesDispo) {
+      this.datesDispo.forEach((dateStr) => {
+        let dateDivise = dateStr.split('-');
+        let dateString =
+          dateDivise[1] + '-' + dateDivise[0] + '-' + dateDivise[2];
+        let date = new Date(dateString);
+        date.getTime() === d.getTime() ? (dateEstDisponible = true) : '';
+      });
+    }
+    return dateEstDisponible;
+  };
 
   ouvrirBoiteDialogueInfo(commande: any) {
     const dialogRef = this.dialogue.open(BoiteDialogueInfo, {
@@ -231,58 +317,6 @@ export class AjouterCommandeComponent implements OnInit {
       this.dataSource.data = this.listeCommandes as TableCommandes[];
     }
   }
-
-  onFileChange(evt: any) {
-    const target: DataTransfer = <DataTransfer>evt.target;
-
-    if (target.files.length !== 1) throw new Error('Cannot use multiple files');
-
-    const reader: FileReader = new FileReader();
-
-    reader.onload = (e: any) => {
-      const bstr: string = e.target.result;
-
-      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
-
-      const wsname: string = wb.SheetNames[0];
-
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
-
-      console.log(ws);
-
-      this.data = XLSX.utils.sheet_to_json(ws, { header: 1 });
-
-      console.log(this.data);
-
-      this.listeCommandes = [];
-
-      for (let i = 1; i < this.data.length; i++) {
-        const commande: any[] = this.data[i];
-        let typeCommande = commande[0].split('-')[0];
-        if (typeCommande === 'F' || typeCommande === 'BL') {
-          let objCommande = new Commande(
-            commande[1],
-            commande[0],
-            commande[2],
-            commande[3],
-            commande[7],
-            commande[8],
-            commande[4],
-            commande[6],
-            commande[5],
-            commande[9],
-            commande[10],
-            commande[11],
-            commande[12]
-          );
-          this.listeCommandes.push(objCommande);
-        }
-      }
-      this.afficherListeCommandes();
-    };
-
-    reader.readAsBinaryString(target.files[0]);
-  }
 }
 
 // --------------------------------------------------------------------------------------------------------------------
@@ -290,6 +324,7 @@ export class AjouterCommandeComponent implements OnInit {
 // --------------------------------------------------------------------------------------------------------------------
 class Facture {
   id: Number;
+  type: string;
   reference: String;
   idClient: Number;
   nomClient: String;
@@ -307,6 +342,7 @@ class Facture {
 }
 class BonLivraison {
   id: Number;
+  type: string;
   reference: String;
   idClient: Number;
   nomClient: String;
@@ -374,6 +410,7 @@ class Commande {
 // -----------------------------------------------------------------------------------------
 interface TableCommandes {
   id: Number;
+  type: string;
   reference: String;
   idClient: Number;
   nomClient: String;

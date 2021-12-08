@@ -24,7 +24,6 @@ import { CommandeService } from '../services/commande.service';
   styleUrls: ['./boite-dialogue-info.scss'],
 })
 export class BoiteDialogueInfo implements OnInit {
-  indicateurTypeCommande: String;
   typeDocument: String;
   articles: any;
   listeArticlesDetail: any = [];
@@ -39,14 +38,13 @@ export class BoiteDialogueInfo implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.indicateurTypeCommande = this.data.commande.reference.split('-')[0];
     this.getTypeCommande();
     await this.getListeEmballage();
     this.getDetail();
   }
 
   getTypeCommande() {
-    if (this.indicateurTypeCommande === 'F') {
+    if (this.data.commande.type === 'Facture') {
       this.typeDocument = 'Facture';
     } else {
       this.typeDocument = 'Bon Livraison';
@@ -59,7 +57,7 @@ export class BoiteDialogueInfo implements OnInit {
   }
 
   async getDetail() {
-    if (this.indicateurTypeCommande === 'F') {
+    if (this.data.commande.type === 'Facture') {
       var detail = await this.serviceCommande
         .Detail_Facture(this.data.commande.id)
         .toPromise();
