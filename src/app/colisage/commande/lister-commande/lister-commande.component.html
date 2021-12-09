@@ -24,9 +24,9 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> Date </mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Date"> {{element.dateCreation | date: "dd/MM/yyyy"}} </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="score">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> Score </mat-header-cell>
-            <mat-cell *matCellDef="let element" data-label="Score"> {{element.score}} </mat-cell>
+        <ng-container matColumnDef="tracking">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Tracking N </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Tracking N"> {{element.trackingNumber}} </mat-cell>
         </ng-container>
         <ng-container matColumnDef="etat">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Etat </mat-header-cell>

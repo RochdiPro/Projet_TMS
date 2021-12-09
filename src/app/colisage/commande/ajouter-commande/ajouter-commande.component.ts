@@ -281,10 +281,11 @@ export class AjouterCommandeComponent implements OnInit {
   };
 
   ouvrirBoiteDialogueInfo(commande: any) {
+    console.log(commande)
     const dialogRef = this.dialogue.open(BoiteDialogueInfo, {
       width: '1000px',
       maxWidth: '95vw',
-      data: { commande: commande },
+      data: { commande: commande, modeManuel: this.estManuel },
     });
   }
 
@@ -294,7 +295,7 @@ export class AjouterCommandeComponent implements OnInit {
       width: '1000px',
       maxWidth: '95vw',
       maxHeight: '95vh',
-      data: { commande: commande },
+      data: { commande: commande, modeManuel: this.estManuel },
     });
   }
 
@@ -423,4 +424,6 @@ interface TableCommandes {
   numeroPieceIdentite: Number;
   categorieClient: String;
   dateCreation: Date;
+  nomFichier: string;
+  totalTTC: number;
 }

@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -258,5 +258,18 @@ export class CommandeService {
     return this.httpClient
       .get(erp + 'creer-fichiers-xml')
       .pipe(catchError(this.handleError));
+  }
+
+  // get le fichier xml d'une commande
+  public loadXML (date: string ,nomFichier: string) {
+    return this.httpClient.get('assets/DATA/' + date + "/Xmls/" + nomFichier,  
+    {  
+      headers: new HttpHeaders()  
+        .set('Content-Type', 'text/xml')  
+        .append('Access-Control-Allow-Methods', 'GET')  
+        .append('Access-Control-Allow-Origin', '*')  
+        .append('Access-Control-Allow-Headers', "Access-Control-Allow-Headers, Access-Control-Allow-Origin, Access-Control-Request-Method"),  
+      responseType: 'blob'  
+    }).pipe(catchError(this.handleError));
   }
 }

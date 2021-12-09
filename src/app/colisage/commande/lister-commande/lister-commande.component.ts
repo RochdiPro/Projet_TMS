@@ -25,7 +25,7 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
     'ville',
     'adresse',
     'dateCreation',
-    'score',
+    'tracking',
     'etat',
     'actions',
   ];

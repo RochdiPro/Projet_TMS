@@ -27,8 +27,6 @@ export class BoiteDialogueInfo implements OnInit {
   typeDocument: String;
   articles: any;
   listeArticlesDetail: any = [];
-  listeEmballage: any;
-  listeProduitDansListeEmballage: any;
   constructor(
     public dialogRef: MatDialogRef<BoiteDialogueInfo>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -39,7 +37,6 @@ export class BoiteDialogueInfo implements OnInit {
 
   async ngOnInit() {
     this.getTypeCommande();
-    await this.getListeEmballage();
     this.getDetail();
   }
 
@@ -50,75 +47,29 @@ export class BoiteDialogueInfo implements OnInit {
       this.typeDocument = 'Bon Livraison';
     }
   }
-  async getListeEmballage() {
-    this.listeEmballage = await this.serviceEmballage
-      .listeEmballage()
-      .toPromise();
-  }
 
   async getDetail() {
-    if (this.data.commande.type === 'Facture') {
-      var detail = await this.serviceCommande
-        .Detail_Facture(this.data.commande.id)
-        .toPromise();
-      this.articles = await getDetailFacture(detail);
+    if (this.data.modeManuel) {
+      let date = this.data.commande.dateCreation;
+      let dateDivise = date.split('-');
+      date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
+      let nomFichier = this.data.commande.nomFichier;
+      let detail = await this.serviceCommande.loadXML(date, nomFichier).toPromise();
+      this.data.commande.type === 'Facture' ? this.articles = await getDetail(detail,'facture') : this.articles = await getDetail(detail,'bl');
     } else {
-      var detail = await this.serviceCommande
-        .Detail_BL(this.data.commande.id)
-        .toPromise();
-      this.articles = await getDetailBL(detail);
+      if (this.data.commande.type === 'Facture') {
+        let detail = await this.serviceCommande
+          .Detail_Facture(this.data.commande.id)
+          .toPromise();
+        this.articles = await getDetail(detail,'facture');
+      } else {
+        let detail = await this.serviceCommande
+          .Detail_BL(this.data.commande.id)
+          .toPromise();
+        this.articles = await getDetail(detail,'bl');
+      }
     }
     for (let i = 0; i < this.articles.length; i++) {
-      let qteProduitCommande = this.articles[i].qte;
-      let listeEmballageProduit = [];
-      this.listeProduitDansListeEmballage = this.listeEmballage.filter(
-        (emballage: any) => emballage.idProduit === this.articles[i].id
-      );
-      if (this.listeProduitDansListeEmballage.length > 0) {
-        do {
-          let differenceQte = (index: any) => {
-            return (
-              qteProduitCommande -
-              this.listeProduitDansListeEmballage[index].qte
-            );
-          };
-          let emballage: any;
-          let qteEmballage;
-          for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) {
-            if (j !== 0) {
-              if (
-                qteProduitCommande >=
-                  this.listeProduitDansListeEmballage[j].qte &&
-                differenceQte(j) < differenceQte(j - 1)
-              ) {
-                let difference = differenceQte(j);
-                qteEmballage = 0;
-                do {
-                  difference -= this.listeProduitDansListeEmballage[j].qte;
-                  qteEmballage++;
-                } while (difference > 0);
-                emballage = this.listeProduitDansListeEmballage[j];
-              }
-            } else if (
-              qteProduitCommande >=
-                this.listeProduitDansListeEmballage[j].qte &&
-              j === 0
-            ) {
-              let difference = differenceQte(j);
-              qteEmballage = 0;
-              do {
-                difference -= this.listeProduitDansListeEmballage[j].qte;
-                qteEmballage++;
-              } while (difference > 0);
-              emballage = this.listeProduitDansListeEmballage[j];
-            }
-          }
-          qteProduitCommande -= emballage.qte * qteEmballage;
-          listeEmballageProduit.push({
-            emballage: emballage,
-            qteEmballage: qteEmballage,
-          });
-        } while (qteProduitCommande > 0);
         this.listeArticlesDetail.push(
           new Article(
             this.articles[i].id,
@@ -129,12 +80,10 @@ export class BoiteDialogueInfo implements OnInit {
             this.articles[i].numSerie,
             this.articles[i].produit4Gs,
             this.articles[i].numeroLots,
-            listeEmballageProduit,
+            [],
             []
           )
         );
-      } else {
-      }
     }
   }
 
@@ -662,16 +611,25 @@ export class BoiteDialogueCreerCommande implements OnInit {
       .toPromise();
   }
   async getDetail() {
-    if (this.indicateurTypeCommande === 'F') {
-      var detail = await this.serviceCommande
-        .Detail_Facture(this.data.commande.id)
-        .toPromise();
-      this.articles = await getDetailFacture(detail);
+    if(this.data.modeManuel) {
+      let date = this.data.commande.dateCreation;
+      let dateDivise = date.split('-');
+      date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
+      let nomFichier = this.data.commande.nomFichier;
+      let detail = await this.serviceCommande.loadXML(date, nomFichier).toPromise();
+      this.data.commande.type === 'Facture' ? this.articles = await getDetail(detail,'facture') : this.articles = await getDetail(detail,'bl');
     } else {
-      var detail = await this.serviceCommande
-        .Detail_BL(this.data.commande.id)
-        .toPromise();
-      this.articles = await getDetailBL(detail);
+      if (this.data.commande.type === 'Facture') {
+        var detail = await this.serviceCommande
+          .Detail_Facture(this.data.commande.id)
+          .toPromise();
+        this.articles = await getDetail(detail,'facture');
+      } else {
+        var detail = await this.serviceCommande
+          .Detail_BL(this.data.commande.id)
+          .toPromise();
+        this.articles = await getDetail(detail,'bl');
+      }
     }
     for (let i = 0; i < this.articles.length; i++) {
       //pour chaque article
@@ -852,18 +810,22 @@ export class BoiteDialogueCreerCommande implements OnInit {
 
     // get prix
     let prix;
-    if (this.typeDocument === 'Facture') {
-      //si le type est Facture on recupere le prix de la facture
-      let facture = await this.serviceCommande
-        .facture(this.data.commande.id)
-        .toPromise();
-      prix = facture.total_TTC;
-    } else if (this.typeDocument === 'Bon Livraison') {
-      //si le type est Bon Livraison on recupere le prix du bon livraison
-      let bonLivraison = await this.serviceCommande
-        .bonLivraison(this.data.commande.id)
-        .toPromise();
-      prix = bonLivraison.total_TTC;
+    if (this.data.modeManuel) {
+      prix = this.data.commande.totalTTC;
+    } else {
+      if (this.data.commande.type === 'Facture') {
+        //si le type est Facture on recupere le prix de la facture
+        let facture = await this.serviceCommande
+          .facture(this.data.commande.id)
+          .toPromise();
+        prix = facture.total_TTC;
+      } else if (this.typeDocument === 'Bon Livraison') {
+        //si le type est Bon Livraison on recupere le prix du bon livraison
+        let bonLivraison = await this.serviceCommande
+          .bonLivraison(this.data.commande.id)
+          .toPromise();
+        prix = bonLivraison.total_TTC;
+      }
     }
     let fraisLivraison = 7; //frais livraison temporaire jusqu'a avoir la formule
     // get le score du client
@@ -893,6 +855,12 @@ export class BoiteDialogueCreerCommande implements OnInit {
       scoreClient * coefficientScoreCommande.client +
       retard * coefficientScoreCommande.retard;
   }
+
+  trackingNumber = () => {
+    let trackingNumber = ""
+    for(let i=0; i<15; i++) trackingNumber += ~~(Math.random() * 10);
+    return Number(trackingNumber);
+  };
 
   async enregistrer() {
     await this.calculerScoreCommande();
@@ -961,12 +929,18 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('adresse', this.positionClient.adresse);
     commande.append('typePieceIdentite', this.data.commande.typePieceIdentite);
     commande.append('numPieceIdentite', this.data.commande.numeroPieceIdentite);
-    commande.append('dateCreation', this.data.commande.dateCreation);
+    if (this.data.modeManuel) {
+      let date = new Date(this.data.commande.dateCreation);
+      commande.append('dateCreation', date);
+    } else {
+      commande.append('dateCreation', this.data.commande.dateCreation);
+    }
     commande.append('idPosition', this.positionClient.id);
     commande.append('etat', 'En cours de traitement');
     commande.append('score', this.score);
     commande.append('poids', this.poidsTotalBrut);
     commande.append('volume', this.volumeTotal);
+    commande.append('trackingNumber', this.trackingNumber());
 
     await this.serviceCommande.creerCommande(commande).toPromise();
     Swal.fire({
@@ -1825,12 +1799,12 @@ export class BoiteDialogueModifierColisage implements OnInit {
       var detail = await this.serviceCommande
         .Detail_Facture(this.idDocument)
         .toPromise();
-      this.articles = await getDetailFacture(detail);
+      this.articles = await getDetail(detail,'facture');
     } else {
       var detail = await this.serviceCommande
         .Detail_BL(this.idDocument)
         .toPromise();
-      this.articles = await getDetailBL(detail);
+      this.articles = await getDetail(detail,'bl');
     }
     for (let i = 0; i < this.articles.length; i++) {
       //pour chaque article
@@ -2196,9 +2170,9 @@ export class InformationCommandeComponent implements OnInit {
 // -------------------------------------------------------------------------------------------------------------
 //**************************************************** fonctions reutilisable **********************************
 // -------------------------------------------------------------------------------------------------------------
-async function getDetailFacture(detail: any) {
+async function getDetail(detail: any, typeCommande: string) {
   //pour avoir les ids et les qtes des produits dans une facture
-  var facture: any;
+  var fichier: any;
   var xmldata: any;
   var new_obj: any;
   var articles: any = [];
@@ -2208,11 +2182,12 @@ async function getDetailFacture(detail: any) {
     reader.onloadend = async () => {
       try {
         articles = [];
-        facture = reader.result;
+        fichier = reader.result;
         var parseString = require('xml2js').parseString;
         let data1;
-        parseString(atob(facture.substr(28)), function (err: any, result: any) {
-          data1 = result.Facture;
+        console.log(typeCommande);
+        parseString(atob(fichier.substr(28)), function (err: any, result: any) {
+          typeCommande === 'facture' ? data1 = result.Facture : data1 = result.Bon_Livraison;
         });
         xmldata = data1;
         if (xmldata.Produits[0].Produits_Simples[0].Produit) {
@@ -2344,160 +2319,8 @@ async function getDetailFacture(detail: any) {
             articles.push(new_obj);
           }
         }
+        console.log(articles);
         resolve(articles);
-      } catch (err) {
-        reject(err);
-      }
-    };
-    reader.readAsDataURL(detail);
-  });
-}
-async function getDetailBL(detail: any) {
-  //pour avoir les ids et les qtes des produits dans un bon livraison
-  var BL: any;
-  var xmldata: any;
-  var new_obj: any;
-  var articlesBl: any = [];
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onloadend = async () => {
-      try {
-        articlesBl = [];
-        BL = reader.result;
-        var parseString = require('xml2js').parseString;
-        let data1;
-        parseString(atob(BL.substr(28)), function (err: any, result: any) {
-          data1 = result.Bon_Livraison;
-        });
-        xmldata = data1;
-        if (xmldata.Produits[0].Produits_Simples[0].Produit) {
-          for (
-            let i = 0;
-            i < xmldata.Produits[0].Produits_Simples[0].Produit.length;
-            i++
-          ) {
-            new_obj = {};
-            new_obj.id =
-              xmldata.Produits[0].Produits_Simples[0].Produit[i].Id[0];
-            new_obj.nom =
-              xmldata.Produits[0].Produits_Simples[0].Produit[i].Nom[0];
-            new_obj.qte =
-              xmldata.Produits[0].Produits_Simples[0].Produit[i].Qte[0];
-            new_obj.type = 'Produit simple';
-
-            articlesBl.push(new_obj);
-          }
-        }
-        if (xmldata.Produits[0].Produits_Series[0].Produit) {
-          for (
-            let i = 0;
-            i < xmldata.Produits[0].Produits_Series[0].Produit.length;
-            i++
-          ) {
-            new_obj = {};
-            let numSerie: any = [];
-            new_obj.id =
-              xmldata.Produits[0].Produits_Series[0].Produit[i].Id[0];
-            new_obj.nom =
-              xmldata.Produits[0].Produits_Series[0].Produit[i].Nom[0];
-            new_obj.qte =
-              xmldata.Produits[0].Produits_Series[0].Produit[i].Qte[0];
-            new_obj.type = 'Produit serie';
-            for (
-              let j = 0;
-              j <
-              xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0]
-                .N_Serie.length;
-              j++
-            ) {
-              numSerie.push(
-                xmldata.Produits[0].Produits_Series[0].Produit[i].N_Series[0]
-                  .N_Serie[j]
-              );
-            }
-            new_obj.numSerie = numSerie;
-
-            articlesBl.push(new_obj);
-          }
-        }
-        if (xmldata.Produits[0].Produits_4Gs[0].Produit) {
-          for (
-            let i = 0;
-            i < xmldata.Produits[0].Produits_4Gs[0].Produit.length;
-            i++
-          ) {
-            new_obj = {};
-            let produit4Gs: any = [];
-            new_obj.id = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Id[0];
-            new_obj.nom = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Nom[0];
-            new_obj.qte = xmldata.Produits[0].Produits_4Gs[0].Produit[i].Qte[0];
-            new_obj.type = 'Produit 4G';
-            for (
-              let j = 0;
-              j <
-              xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0]
-                .Produit_4G.length;
-              j++
-            ) {
-              produit4Gs.push({
-                numSerie:
-                  xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0]
-                    .Produit_4G[j].N_Serie[0],
-                numImei1:
-                  xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0]
-                    .Produit_4G[j].E1[0],
-                numImei2:
-                  xmldata.Produits[0].Produits_4Gs[0].Produit[i].Produit_4Gs[0]
-                    .Produit_4G[j].E2[0],
-              });
-            }
-            new_obj.produit4Gs = produit4Gs;
-
-            articlesBl.push(new_obj);
-          }
-        }
-        if (xmldata.Produits[0].Produits_N_Lot) {
-          for (
-            let i = 0;
-            i < xmldata.Produits[0].Produits_N_Lot[0].Produit.length;
-            i++
-          ) {
-            new_obj = {};
-            let numeroLots: any = [];
-            let numeroLot: any = {};
-            new_obj.id = xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Id[0];
-            new_obj.nom =
-              xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Nom[0];
-            new_obj.qte =
-              xmldata.Produits[0].Produits_N_Lot[0].Produit[i].Qte[0];
-            new_obj.type = 'Produit 4G';
-            for (
-              let j = 0;
-              j <
-              xmldata.Produits[0].Produits_N_Lot[0].Produit[i].N_Lots[0].N_Lot
-                .length;
-              j++
-            ) {
-              numeroLot.numero =
-                xmldata.Produits[0].Produits_N_Lot[0].Produit[
-                  i
-                ].N_Lots[0].N_Lot[j].Numero[0];
-              numeroLot.quantite =
-                xmldata.Produits[0].Produits_N_Lot[0].Produit[
-                  i
-                ].N_Lots[0].N_Lot[j].Qte[0];
-              numeroLot.date =
-                xmldata.Produits[0].Produits_N_Lot[0].Produit[
-                  i
-                ].N_Lots[0].N_Lot[j].Date[0];
-              numeroLots.push(numeroLot);
-            }
-            new_obj.numeroLots = numeroLots;
-            articlesBl.push(new_obj);
-          }
-        }
-        resolve(articlesBl);
       } catch (err) {
         reject(err);
       }
