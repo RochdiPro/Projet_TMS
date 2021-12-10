@@ -1,12 +1,5 @@
 import { MapsAPILoader } from '@agm/core';
-import {
-  Component,
-  ElementRef,
-  Inject,
-  NgZone,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { Component, Inject, NgZone, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   MatDialog,
@@ -54,36 +47,40 @@ export class BoiteDialogueInfo implements OnInit {
       let dateDivise = date.split('-');
       date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
       let nomFichier = this.data.commande.nomFichier;
-      let detail = await this.serviceCommande.loadXML(date, nomFichier).toPromise();
-      this.data.commande.type === 'Facture' ? this.articles = await getDetail(detail,'facture') : this.articles = await getDetail(detail,'bl');
+      let detail = await this.serviceCommande
+        .loadXML(date, nomFichier)
+        .toPromise();
+      this.data.commande.type === 'Facture'
+        ? (this.articles = await getDetail(detail, 'facture'))
+        : (this.articles = await getDetail(detail, 'bl'));
     } else {
       if (this.data.commande.type === 'Facture') {
         let detail = await this.serviceCommande
           .Detail_Facture(this.data.commande.id)
           .toPromise();
-        this.articles = await getDetail(detail,'facture');
+        this.articles = await getDetail(detail, 'facture');
       } else {
         let detail = await this.serviceCommande
           .Detail_BL(this.data.commande.id)
           .toPromise();
-        this.articles = await getDetail(detail,'bl');
+        this.articles = await getDetail(detail, 'bl');
       }
     }
     for (let i = 0; i < this.articles.length; i++) {
-        this.listeArticlesDetail.push(
-          new Article(
-            this.articles[i].id,
-            this.articles[i].nom,
-            this.articles[i].qte,
-            this.articles[i].qte,
-            this.articles[i].type,
-            this.articles[i].numSerie,
-            this.articles[i].produit4Gs,
-            this.articles[i].numeroLots,
-            [],
-            []
-          )
-        );
+      this.listeArticlesDetail.push(
+        new Article(
+          this.articles[i].id,
+          this.articles[i].nom,
+          this.articles[i].qte,
+          this.articles[i].qte,
+          this.articles[i].type,
+          this.articles[i].numSerie,
+          this.articles[i].produit4Gs,
+          this.articles[i].numeroLots,
+          [],
+          []
+        )
+      );
     }
   }
 
@@ -459,6 +456,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
   private geoCoder: any;
   address: string;
   infoMarqueur: string;
+  boutonValiderEstActive = true;
 
   // @ViewChild('search')
   // public searchElementRef: ElementRef;
@@ -611,24 +609,28 @@ export class BoiteDialogueCreerCommande implements OnInit {
       .toPromise();
   }
   async getDetail() {
-    if(this.data.modeManuel) {
+    if (this.data.modeManuel) {
       let date = this.data.commande.dateCreation;
       let dateDivise = date.split('-');
       date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
       let nomFichier = this.data.commande.nomFichier;
-      let detail = await this.serviceCommande.loadXML(date, nomFichier).toPromise();
-      this.data.commande.type === 'Facture' ? this.articles = await getDetail(detail,'facture') : this.articles = await getDetail(detail,'bl');
+      let detail = await this.serviceCommande
+        .loadXML(date, nomFichier)
+        .toPromise();
+      this.data.commande.type === 'Facture'
+        ? (this.articles = await getDetail(detail, 'facture'))
+        : (this.articles = await getDetail(detail, 'bl'));
     } else {
       if (this.data.commande.type === 'Facture') {
         var detail = await this.serviceCommande
           .Detail_Facture(this.data.commande.id)
           .toPromise();
-        this.articles = await getDetail(detail,'facture');
+        this.articles = await getDetail(detail, 'facture');
       } else {
         var detail = await this.serviceCommande
           .Detail_BL(this.data.commande.id)
           .toPromise();
-        this.articles = await getDetail(detail,'bl');
+        this.articles = await getDetail(detail, 'bl');
       }
     }
     for (let i = 0; i < this.articles.length; i++) {
@@ -857,12 +859,13 @@ export class BoiteDialogueCreerCommande implements OnInit {
   }
 
   trackingNumber = () => {
-    let trackingNumber = ""
-    for(let i=0; i<15; i++) trackingNumber += ~~(Math.random() * 10);
+    let trackingNumber = '';
+    for (let i = 0; i < 15; i++) trackingNumber += ~~(Math.random() * 10);
     return Number(trackingNumber);
   };
 
   async enregistrer() {
+    this.boutonValiderEstActive = false;
     await this.calculerScoreCommande();
     let commande: any = new FormData();
     //creation position client s'il n'existe pas
@@ -943,6 +946,13 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('trackingNumber', this.trackingNumber());
 
     await this.serviceCommande.creerCommande(commande).toPromise();
+    await this.serviceCommande
+      .modifierEtatCommandeDansExcel(
+        this.data.commande.dateCreation,
+        this.data.commande.type,
+        this.data.commande.nomFichier
+      )
+      .toPromise();
     Swal.fire({
       icon: 'success',
       title: 'Commande bien ajoutée',
@@ -1799,12 +1809,12 @@ export class BoiteDialogueModifierColisage implements OnInit {
       var detail = await this.serviceCommande
         .Detail_Facture(this.idDocument)
         .toPromise();
-      this.articles = await getDetail(detail,'facture');
+      this.articles = await getDetail(detail, 'facture');
     } else {
       var detail = await this.serviceCommande
         .Detail_BL(this.idDocument)
         .toPromise();
-      this.articles = await getDetail(detail,'bl');
+      this.articles = await getDetail(detail, 'bl');
     }
     for (let i = 0; i < this.articles.length; i++) {
       //pour chaque article
@@ -2187,7 +2197,9 @@ async function getDetail(detail: any, typeCommande: string) {
         let data1;
         console.log(typeCommande);
         parseString(atob(fichier.substr(28)), function (err: any, result: any) {
-          typeCommande === 'facture' ? data1 = result.Facture : data1 = result.Bon_Livraison;
+          typeCommande === 'facture'
+            ? (data1 = result.Facture)
+            : (data1 = result.Bon_Livraison);
         });
         xmldata = data1;
         if (xmldata.Produits[0].Produits_Simples[0].Produit) {

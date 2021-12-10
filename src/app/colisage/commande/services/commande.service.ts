@@ -261,15 +261,33 @@ export class CommandeService {
   }
 
   // get le fichier xml d'une commande
-  public loadXML (date: string ,nomFichier: string) {
-    return this.httpClient.get('assets/DATA/' + date + "/Xmls/" + nomFichier,  
-    {  
-      headers: new HttpHeaders()  
-        .set('Content-Type', 'text/xml')  
-        .append('Access-Control-Allow-Methods', 'GET')  
-        .append('Access-Control-Allow-Origin', '*')  
-        .append('Access-Control-Allow-Headers', "Access-Control-Allow-Headers, Access-Control-Allow-Origin, Access-Control-Request-Method"),  
-      responseType: 'blob'  
-    }).pipe(catchError(this.handleError));
+  public loadXML(date: string, nomFichier: string) {
+    return this.httpClient
+      .get('assets/DATA/' + date + '/Xmls/' + nomFichier, {
+        headers: new HttpHeaders()
+          .set('Content-Type', 'text/xml')
+          .append('Access-Control-Allow-Methods', 'GET')
+          .append('Access-Control-Allow-Origin', '*')
+          .append(
+            'Access-Control-Allow-Headers',
+            'Access-Control-Allow-Headers, Access-Control-Allow-Origin, Access-Control-Request-Method'
+          ),
+        responseType: 'blob',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  // modifier l'etat du commande manuel dans le fichier excel
+  public modifierEtatCommandeDansExcel(
+    date: string,
+    type: string,
+    nomFichier: string
+  ) {
+    let formData: any = new FormData();
+    formData.append("date", date);
+    formData.append("type", type);
+    formData.append("nomFichier", nomFichier);
+
+    return this.httpClient.put(erp + "changer-etat-commande-manuel", formData).pipe(catchError(this.handleError));
   }
 }

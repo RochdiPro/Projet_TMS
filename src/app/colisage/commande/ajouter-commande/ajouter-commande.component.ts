@@ -217,7 +217,6 @@ export class AjouterCommandeComponent implements OnInit {
   // charger la liste des commandes en mode manuel
   async getCommandesModeManuel() {
     let date = new Date(this.filtre.get('date').value);
-    // let dateStr = date.toISOString().split('T')[0];
     let dateStr =
       date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
     console.log(dateStr);
@@ -297,6 +296,10 @@ export class AjouterCommandeComponent implements OnInit {
       maxHeight: '95vh',
       data: { commande: commande, modeManuel: this.estManuel },
     });
+    dialogRef.afterClosed().subscribe(async ()=> {
+      await this.serviceCommande.genererXML().toPromise();
+      this.getCommandesModeManuel();
+    })
   }
 
   filtrerParId() {
@@ -426,4 +429,5 @@ interface TableCommandes {
   dateCreation: Date;
   nomFichier: string;
   totalTTC: number;
+  etat: String;
 }
