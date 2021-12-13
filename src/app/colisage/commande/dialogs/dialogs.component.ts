@@ -33,6 +33,7 @@ export class BoiteDialogueInfo implements OnInit {
     this.getDetail();
   }
 
+  // get le type du document source de la commande
   getTypeCommande() {
     if (this.data.commande.type === 'Facture') {
       this.typeDocument = 'Facture';
@@ -41,8 +42,10 @@ export class BoiteDialogueInfo implements OnInit {
     }
   }
 
+  // recupérer les details d'une commande depuis le fichier XML convenable
   async getDetail() {
     if (this.data.modeManuel) {
+      // si le mode est manuel on recupére le fichiers xml local on donnant la date du commande desirée et le nom du fichier
       let date = this.data.commande.dateCreation;
       let dateDivise = date.split('-');
       date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
@@ -50,23 +53,32 @@ export class BoiteDialogueInfo implements OnInit {
       let detail = await this.serviceCommande
         .loadXML(date, nomFichier)
         .toPromise();
-      this.data.commande.type === 'Facture'
+
+      //selon le type de la commande on appele la fonction qui permet l'extrait des details depuis le fichier xml
+      this.typeDocument === 'Facture'
         ? (this.articles = await getDetail(detail, 'facture'))
         : (this.articles = await getDetail(detail, 'bl'));
     } else {
-      if (this.data.commande.type === 'Facture') {
+      // si le mode n'est pas mode manuel on recupere le fichier xml depuis la base des données on donnant l'id du commande desirée
+      if (this.typeDocument === 'Facture') {
         let detail = await this.serviceCommande
           .Detail_Facture(this.data.commande.id)
           .toPromise();
+
+        //selon le type de la commande on appele la fonction qui permet l'extrait des details depuis le fichier xml
         this.articles = await getDetail(detail, 'facture');
       } else {
         let detail = await this.serviceCommande
           .Detail_BL(this.data.commande.id)
           .toPromise();
+
+        //selon le type de la commande on appele la fonction qui permet l'extrait des details depuis le fichier xml
         this.articles = await getDetail(detail, 'bl');
       }
     }
     for (let i = 0; i < this.articles.length; i++) {
+      // pour chaque article qu'on a recupérer depuis le fichier detail on construit avec ses données un objet article
+      // avec les informations desirées et on l'ajoute a la listeArticlesDetail
       this.listeArticlesDetail.push(
         new Article(
           this.articles[i].id,
@@ -88,6 +100,7 @@ export class BoiteDialogueInfo implements OnInit {
     this.dialogRef.close();
   }
 
+  // ouvrir la boite de dialogue detail qui contient les numero de serie et les numeros imeis pour chaque produit
   ouvrirBoiteDialogueDetailProduit(article: any) {
     const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
       width: '600px',
@@ -105,29 +118,40 @@ export class BoiteDialogueInfo implements OnInit {
   styleUrls: ['boite-dialogue-creer-commande.scss'],
 })
 export class BoiteDialogueCreerCommande implements OnInit {
-  indicateurTypeCommande: String;
   typeDocument: String;
   articles: any;
   listeArticlesDetail: any = [];
   listeEmballage: any;
   listeProduitDansListeEmballage: any;
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
   listeEmballageChoisi: any = [];
 
+  // formGroup du premier step du stepper
+  firstFormGroup: FormGroup;
+  // formGroup du deuxieme step du stepper
+  secondFormGroup: FormGroup;
+
+  // les variables pour le map
   latMap: any = 34.74056;
   lngMap: any = 10.76028;
   lat: any = 0;
   lng: any = 0;
   zoom: number = 5;
+
+  // on n'affiche le pin de localisation qu si la position existe
   positionExiste = false;
+
+  // position client initialisé au centre ville sfax
   positionClient: any = {
     latitude: 34.74056,
     longitude: 10.76028,
   };
+  // liste des position deja enregistre pour un client
   positionsClientEnregistree: any = [];
+  // un flag pour indiquer si la position a été modifié ou non
   positionEstModifie: boolean = false;
   score: Number;
+
+  // liste des villes qui contient le nom de toute les villes tunisiennes avec les coordonnées de leurs frontières et les coordonnées de leurs centres
   villes: any[] = [
     {
       nom: 'Bizerte',
@@ -473,7 +497,9 @@ export class BoiteDialogueCreerCommande implements OnInit {
   ) {}
 
   async ngOnInit() {
+    // trier la liste des villes par l'ordre alphabétique
     this.villes.sort((a: any, b: any) => (a.nom > b.nom ? 1 : -1));
+    // construction des formGroups
     this.firstFormGroup = this.fb.group({
       adresse: ['', Validators.required],
       nouvelleVille: '',
@@ -482,6 +508,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.secondFormGroup = this.fb.group({
       secondCtrl: ['', Validators.required],
     });
+
     this.getTypeDocument();
     await this.getListeEmballage();
     await this.getPositionsEnregistrees();
@@ -489,10 +516,11 @@ export class BoiteDialogueCreerCommande implements OnInit {
     // this.initialiserMap()
   }
 
+  // indiquer le type du coommande
   getTypeDocument() {
-    this.indicateurTypeCommande = this.data.commande.reference.split('-')[0];
-    if (this.indicateurTypeCommande === 'F') this.typeDocument = 'Facture';
-    else this.typeDocument = 'Bon Livraison';
+    this.data.commande.type === 'Facture'
+      ? (this.typeDocument = 'Facture')
+      : (this.typeDocument = 'Bon Livraison');
   }
 
   // initialiserMap() {
@@ -540,40 +568,50 @@ export class BoiteDialogueCreerCommande implements OnInit {
   //   );
   // }
 
-  async setPositionClient() {
+  // on change les variable lat, lng, latMap, lngMap, on zoom et on change positionExiste vers 'true' pour afficher la position du client proprement
+  setPositionClient() {
     this.lat = Number(this.positionClient.latitude);
     this.lng = Number(this.positionClient.longitude);
     this.latMap = Number(this.positionClient.latitude);
     this.lngMap = Number(this.positionClient.longitude);
     this.zoom = 15;
     this.positionExiste = true;
+
+    // pour afficher l'adresse du client dans une petite pop up si on clique la position du client
     this.infoMarqueur = this.positionClient.adresse;
   }
 
+  // on recupére les positions enregistrées pour un client a l'aide de son id
   async getPositionsEnregistrees() {
     this.positionsClientEnregistree = await this.serviceCommande
       .positionClient(this.data.commande.idClient)
       .toPromise();
   }
 
+  // fonction utilisée dans le bouton d'ajout position
   ajouterAdresse() {
     if (!this.estNouvelleAdresse) {
+      // si la variable estNouvelleAdresse == false on affiche le champs d'ajout d'une nouvelle adresse on changeant l'etat de cette variable ver true
       this.estNouvelleAdresse = true;
     } else if (
       this.firstFormGroup.get('nouvelleAdresse').value !== '' &&
       this.firstFormGroup.get('nouvelleVille').value !== ''
     ) {
+      // si la variable estNouvelleAdresse == true et les champs du ville et adresse ne sont pas vides on ajoute cette nouvelle adresse dans positionsClientEnregistree
       this.positionsClientEnregistree.push({
         adresse: this.firstFormGroup.get('nouvelleAdresse').value,
         ville: this.firstFormGroup.get('nouvelleVille').value.nom,
         latitude: this.lat,
         longitude: this.lng,
       });
+      // on vide les champs
       this.firstFormGroup.get('nouvelleAdresse').setValue('');
       this.firstFormGroup.get('nouvelleVille').setValue('');
+      // on selectionne automatiquement l'adresse ajouté
       this.firstFormGroup
         .get('adresse')
         .setValue(this.positionsClientEnregistree.length - 1);
+      // on on change la position du client vers la nouvelle position
       this.positionClient =
         this.positionsClientEnregistree[
           this.positionsClientEnregistree.length - 1
@@ -582,10 +620,13 @@ export class BoiteDialogueCreerCommande implements OnInit {
     }
   }
 
+  // fonction qu s'execute lors du changement du selection d'adresse
   selectionnerAdresse() {
     let ville: any;
+    // changer positionClient
     this.positionClient =
       this.positionsClientEnregistree[this.firstFormGroup.get('adresse').value];
+    //changer les valeurs des frontiers pour changer la ville affichée su map 
     this.villes.forEach((v) => {
       v.nom === this.positionClient.ville ? (ville = v) : '';
     });
@@ -593,9 +634,12 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.setPositionClient();
   }
 
+  // fonction qu s'execute lors du changement du selection de la ville
   selectionnerVille() {
+    //changer les valeurs des frontiers pour changer la ville affichée su map 
     this.countryRestriction =
       this.firstFormGroup.get('nouvelleVille').value.restriction;
+    // on affiche la ville et on donne comme position par defaut le centre de la ville
     this.latMap = this.firstFormGroup.get('nouvelleVille').value.centre.lat;
     this.lngMap = this.firstFormGroup.get('nouvelleVille').value.centre.lng;
     this.positionExiste = true;
@@ -603,13 +647,17 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.lng = this.firstFormGroup.get('nouvelleVille').value.centre.lng;
   }
 
+  // recuperer la liste des emballages
   async getListeEmballage() {
     this.listeEmballage = await this.serviceEmballage
       .listeEmballage()
       .toPromise();
   }
+
+  // recuperer les fichier des details des commandes
   async getDetail() {
     if (this.data.modeManuel) {
+      // si le mode est manuel on recupere le fichier xml detail depuis la machine local
       let date = this.data.commande.dateCreation;
       let dateDivise = date.split('-');
       date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
@@ -617,11 +665,13 @@ export class BoiteDialogueCreerCommande implements OnInit {
       let detail = await this.serviceCommande
         .loadXML(date, nomFichier)
         .toPromise();
-      this.data.commande.type === 'Facture'
+      // on recupére les detail necessaire depuis le fichier qu'on a chargé
+      this.typeDocument === 'Facture'
         ? (this.articles = await getDetail(detail, 'facture'))
         : (this.articles = await getDetail(detail, 'bl'));
     } else {
-      if (this.data.commande.type === 'Facture') {
+      // si le mode n'est pa manuel on recupere le fichier xml depuis la base des données
+      if (this.typeDocument === 'Facture') {
         var detail = await this.serviceCommande
           .Detail_Facture(this.data.commande.id)
           .toPromise();
@@ -815,7 +865,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     if (this.data.modeManuel) {
       prix = this.data.commande.totalTTC;
     } else {
-      if (this.data.commande.type === 'Facture') {
+      if (this.typeDocument === 'Facture') {
         //si le type est Facture on recupere le prix de la facture
         let facture = await this.serviceCommande
           .facture(this.data.commande.id)
@@ -858,6 +908,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       retard * coefficientScoreCommande.retard;
   }
 
+  // generer le tracking number
   trackingNumber = () => {
     let trackingNumber = '';
     for (let i = 0; i < 15; i++) trackingNumber += ~~(Math.random() * 10);
@@ -894,33 +945,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
       await this.serviceCommande.modifierPositionClient(position).toPromise();
     }
 
-    for (let i = 0; i < this.listeEmballageChoisi.length; i++) {
-      let listeColisage: any = new FormData();
-      let emballage = this.listeEmballageChoisi[i];
-      listeColisage.append('reference', this.data.commande.reference);
-      listeColisage.append('idEmballage', emballage.emballage.id);
-      listeColisage.append('emballage', emballage.emballage.nomEmballage);
-      listeColisage.append('idProduit', emballage.emballage.idProduit);
-      listeColisage.append('produit', emballage.emballage.nomProduit);
-      listeColisage.append(
-        'quantite',
-        Number(this.getNombreArticles(emballage))
-      );
-      listeColisage.append(
-        'quantiteDansEmballage',
-        Number(emballage.emballage.qte)
-      );
-      listeColisage.append('nombrePack', Number(emballage.qte));
-      listeColisage.append('dimensions', this.getDimensionsPack(emballage));
-      listeColisage.append('volume', Number(this.getVolumePack(emballage)));
-      listeColisage.append('poidsNet', Number(this.getPoidsPackNet(emballage)));
-      listeColisage.append(
-        'poidsBrut',
-        Number(this.getPoidsPackBrut(emballage))
-      );
-      await this.serviceCommande.creerColis(listeColisage).toPromise();
-    }
-
     commande.append('referenceDocument', this.data.commande.reference);
     commande.append('idClient', this.data.commande.idClient);
     commande.append('nomClient', this.data.commande.nomClient);
@@ -946,13 +970,45 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('trackingNumber', this.trackingNumber());
 
     await this.serviceCommande.creerCommande(commande).toPromise();
-    await this.serviceCommande
-      .modifierEtatCommandeDansExcel(
-        this.data.commande.dateCreation,
-        this.data.commande.type,
-        this.data.commande.nomFichier
-      )
+    const derniereCommandeEnregistree = await this.serviceCommande
+      .getDerniereCommande()
       .toPromise();
+
+    for (let i = 0; i < this.listeEmballageChoisi.length; i++) {
+      let listeColisage: any = new FormData();
+      let emballage = this.listeEmballageChoisi[i];
+      listeColisage.append('idCommande', derniereCommandeEnregistree.id);
+      listeColisage.append('idEmballage', emballage.emballage.id);
+      listeColisage.append('emballage', emballage.emballage.nomEmballage);
+      listeColisage.append('idProduit', emballage.emballage.idProduit);
+      listeColisage.append('produit', emballage.emballage.nomProduit);
+      listeColisage.append(
+        'quantite',
+        Number(this.getNombreArticles(emballage))
+      );
+      listeColisage.append(
+        'quantiteDansEmballage',
+        Number(emballage.emballage.qte)
+      );
+      listeColisage.append('nombrePack', Number(emballage.qte));
+      listeColisage.append('dimensions', this.getDimensionsPack(emballage));
+      listeColisage.append('volume', Number(this.getVolumePack(emballage)));
+      listeColisage.append('poidsNet', Number(this.getPoidsPackNet(emballage)));
+      listeColisage.append(
+        'poidsBrut',
+        Number(this.getPoidsPackBrut(emballage))
+      );
+      await this.serviceCommande.creerColis(listeColisage).toPromise();
+    }
+    if (this.data.modeManuel) {
+      await this.serviceCommande
+        .modifierEtatCommandeDansExcel(
+          this.data.commande.dateCreation,
+          this.data.commande.type,
+          this.data.commande.nomFichier
+        )
+        .toPromise();
+    }
     Swal.fire({
       icon: 'success',
       title: 'Commande bien ajoutée',
@@ -1056,8 +1112,9 @@ export class BoiteDialogueEmballer implements OnInit {
             });
           } else {
             qte = this.fb.group({
-              qte: [0, [Validators.min(0)], Validators.required],
+              qte: [0, [Validators.min(0), Validators.required]],
             });
+            console.log(emb);
           }
         } else {
           qte = this.fb.group({
@@ -1067,6 +1124,7 @@ export class BoiteDialogueEmballer implements OnInit {
       }
       this.qteForm.push(qte);
       this.listeMax.push(Number(this.data.produit.qte) / Number(emballage.qte));
+      console.log(this.qteForm.value);
     });
   }
   async getListeEmballages() {
@@ -1783,7 +1841,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
 
   async getListeColis() {
     this.listeColis = await this.serviceCommande
-      .getListeColisParReference(this.data.commande.referenceDocument)
+      .getListeColisParIdCommande(this.data.commande.referenceDocument)
       .toPromise();
   }
 
@@ -2026,12 +2084,12 @@ export class BoiteDialogueModifierColisage implements OnInit {
   //bouton valider
   async validerModification() {
     await this.serviceCommande
-      .deleteColisParReference(this.data.commande.referenceDocument)
+      .deleteColisParIdCommande(this.data.commande.id)
       .toPromise();
     for (let i = 0; i < this.listeEmballageChoisi.length; i++) {
       let listeColisage: any = new FormData();
       let emballage = this.listeEmballageChoisi[i];
-      listeColisage.append('reference', this.data.commande.referenceDocument);
+      listeColisage.append('idCommande', this.data.commande.id);
       listeColisage.append('idEmballage', emballage.emballage.id);
       listeColisage.append('emballage', emballage.emballage.nomEmballage);
       listeColisage.append('idProduit', emballage.emballage.idProduit);
@@ -2116,7 +2174,7 @@ export class InformationCommandeComponent implements OnInit {
 
   async getListeColisage() {
     this.listeColisage = await this.serviceCommande
-      .getListeColisParReference(this.data.commande.referenceDocument)
+      .getListeColisParIdCommande(this.data.commande.id)
       .toPromise();
   }
 

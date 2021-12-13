@@ -6,7 +6,7 @@
 .selection-filter {
   font-size: 10.5px;
 }
-.filtre-id {
+.filtre-reference{
   display: flex;
   flex-direction: row;
 }
@@ -20,11 +20,7 @@
   text-align: center;
 }
 
-#champs-filtre-id {
-  width: 130px;
-}
-
-#champs-filtre-id {
+#champs-filtre-reference {
   width: 200px;
 }
 .mat-table {
@@ -45,7 +41,7 @@
     flex-direction: column;
   }
 
-  .filtre-id {
+  .filtre-reference {
     width: 100%;
   }
 
@@ -58,7 +54,7 @@
     width: 100%;
   }
   
-  #champs-filtre-id {
+  #champs-filtre-reference {
     width: 74%;
   }
 

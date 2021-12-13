@@ -164,24 +164,24 @@ export class CommandeService {
       .pipe(catchError(this.handleError));
   }
 
-  //get liste des colis par reference commande
-  public getListeColisParReference(reference: any) {
+  //get liste des colis par id commande
+  public getListeColisParIdCommande(idCommande: any) {
     return this.httpClient
-      .get(erp + 'liste-colis-par-reference', {
+      .get(erp + 'liste-colis-par-id-commande', {
         params: {
-          reference: reference,
+          idCommande: idCommande,
         },
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
   }
 
-  //delete from liste colisage by reference
-  public deleteColisParReference(reference: any) {
+  //delete from liste colisage by id commande
+  public deleteColisParIdCommande(idCommande: any) {
     return this.httpClient
-      .delete(erp + 'supprimer-par-reference', {
+      .delete(erp + 'supprimer-par-id-commande', {
         params: {
-          reference: reference,
+          idCommande: idCommande,
         },
         observe: 'body',
       })
@@ -200,6 +200,11 @@ export class CommandeService {
     return this.httpClient
       .get(erp + 'commandes')
       .pipe(catchError(this.handleError));
+  }
+
+  //get la derniere cmmmande enregistrée
+  public getDerniereCommande(){
+    return this.httpClient.get(erp + "dernier-enregistrement-commande").pipe(catchError(this.handleError));
   }
 
   //modifier l'id du position dans le table commande

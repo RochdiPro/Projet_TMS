@@ -32,6 +32,12 @@
   h2 {
     font-size: 18px;
   }
+
+  .produits {
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
   //forcer le tableau pour ne pas s'afficher comme tableau
   table,
   thead,

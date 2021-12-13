@@ -1,22 +1,27 @@
 <div *ngIf="wms >= 2">
-    <form [formGroup]="filtre">
+    <!-- formGroup des filtres -->
+    <form [formGroup]="filtreFormGroup">
         <div class="filtres">
-            <div class="filtre-id">
+            <!-- filtrage par reference -->
+            <div class="filtre-reference">
+                <!-- type -->
                 <div class="selection-filter">
                     <mat-form-field appearance="fill" id="type-id">
                         <mat-select formControlName="type">
-                            <mat-option value="F-">Facture</mat-option>
-                            <mat-option value="BL-">BL</mat-option>
+                            <mat-option value="Facture">Facture</mat-option>
+                            <mat-option value="BL">BL</mat-option>
                         </mat-select>
                     </mat-form-field>
                 </div>
-                <mat-form-field id="champs-filtre-id">
+                <!-- reference -->
+                <mat-form-field id="champs-filtre-reference">
                     <mat-label style="padding-left: 10px;">Chercher ID</mat-label>
-                    <input type="text" matInput style="padding-left: 10px;" (keyup)="filtrerParId()"
+                    <input type="text" matInput style="padding-left: 10px;" (keyup)="filtrerParReference()"
                         formControlName="id">
                     <mat-icon matSuffix>search</mat-icon>
                 </mat-form-field>
             </div>
+            <!-- filtre par ville -->
             <div class="filtre-ville">
                 <mat-form-field id="champs-filtre-ville">
                     <mat-select formControlName="ville" (selectionChange)="filtrerParVille()">
@@ -25,18 +30,21 @@
                     </mat-select>
                 </mat-form-field>
             </div>
-
+            <!-- filtre par date -->
             <div class="filtre-date" *ngIf="estManuel">
+                <!-- bouton date precedante -->
                 <button mat-icon-button (click)="datePrecedente()">
                     <mat-icon>navigate_before</mat-icon>
                 </button>
+                <!-- datePicker -->
                 <mat-form-field>
                     <input matInput [matDatepicker]="picker" formControlName="date"
                         (dateChange)="getCommandesModeManuel()" (click)="picker.open()"
-                        [matDatepickerFilter]="myFilter" readonly style="cursor: pointer;">
+                        [matDatepickerFilter]="disableDateNonExistante" readonly style="cursor: pointer;">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
+                <!-- bouton date suivante -->
                 <button mat-icon-button (click)="dateSuivante()">
                     <mat-icon>navigate_next</mat-icon>
                 </button>
