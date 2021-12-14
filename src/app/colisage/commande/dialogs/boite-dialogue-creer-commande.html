@@ -101,6 +101,7 @@
             <form [formGroup]="secondFormGroup">
                 <ng-template matStepLabel>Produits</ng-template>
                 <div class="produits">
+                    <!-- table qui contient les produits a emballer d'une commande -->
                     <table class="table">
                         <thead>
                             <tr>
@@ -118,19 +119,25 @@
                                 <td>{{article.nom}}</td>
                                 <td>{{article.qte}}</td>
                                 <td>{{article.type}}</td>
+                                <!-- bouton detail produit contient numero serie/imeis -->
+                                <!-- ce bouton est desactivé si le produit est un produit simple -->
                                 <td style="justify-content: center;">
                                     <button mat-icon-button (click)="ouvrirBoiteDialogueDetailProduit(article)"
                                         [disabled]="article.type === 'Produit simple'">
                                         <mat-icon>list_alt</mat-icon>
                                     </button>
                                 </td>
+                                <!-- les bouton d'emballage d'un produit -->
                                 <td><button mat-icon-button (click)="ouvrirBoiteDialogueEmballer(article)">
+                                        <!-- icon qui signifie que le produit est emballé mais pas totalement, c'est a dire que la quantité emballée < qte desirée  -->
                                         <i class="fas fa-box" style="color: #f7b91e;"
                                             *ngIf="article.qteNonEmballe !== 0 && article.listeEmballageChoisi.length !== 0"
                                             matTooltip="Emballage produit n'est pas terminé"></i>
+                                        <!-- icon qui signifie que le produit n'est pas encore emballé -->
                                         <i class="fas fa-box-open" style="color: #f7b91e;"
                                             *ngIf="article.qteNonEmballe !== 0 && article.listeEmballageChoisi.length === 0"
                                             matTooltip="Produit n'est pas emballé"></i>
+                                        <!-- produit emballé avec succés -->
                                         <i class="fas fa-box" style="color: #4caf50;"
                                             *ngIf="article.qteNonEmballe === 0 && article.listeEmballageChoisi.length !== 0"
                                             matTooltip="Produit emballé"></i>
@@ -139,6 +146,7 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- boutons de navigations entre les steps et bouton annuler pour quitter la boite de dialog sans enregistrer -->
                 <div style="float: right;">
                     <button mat-button mat-dialog-close color="warn">Annuler</button>
                     <button mat-button matStepperPrevious>Précédent</button>
@@ -151,6 +159,7 @@
         <!-- step 3 -->
         <mat-step>
             <ng-template matStepLabel>Valider</ng-template>
+            <!-- informations client -->
             <h2>Client</h2>
             <div class="row">
                 <div class="colonne entete">Nom:</div>
@@ -182,6 +191,7 @@
                 <div class="colonne entete">Numéro piéce d'identité:</div>
                 <div class="colonne">{{data.commande.numeroPieceIdentite}}</div>
             </div>
+            <!-- position client -->
             <div class="map">
                 <agm-map [latitude]="lat" [longitude]="lng" [zoom]="13" [disableDefaultUI]="false"
                     [disableDoubleClickZoom]="true">
@@ -191,6 +201,7 @@
                 </agm-map>
             </div>
             <h2 style="margin-top: 15px;">Liste colisage</h2>
+            <!-- table liste de colisage -->
             <div class="liste-colisage">
                 <table class="table table-bordered">
                     <thead>
@@ -230,12 +241,14 @@
                     </tbody>
                 </table>
             </div>
+            <!-- boutons de navigations entre les steps et bouton annuler pour quitter la boite de dialog sans enregistrer -->
             <div style="float: right; margin-bottom: 10px;">
                 <button mat-button mat-dialog-close color="warn">Annuler</button>
                 <button mat-button matStepperPrevious>Précédent</button>
-                <button mat-raised-button color="primary" (click)="enregistrer()"
-                    [disabled]="!boutonValiderEstActive" style="width: 6em;"><span *ngIf="boutonValiderEstActive">Valider</span>
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" *ngIf="!boutonValiderEstActive"></span>
+                <button mat-raised-button color="primary" (click)="enregistrer()" [disabled]="!boutonValiderEstActive"
+                    style="width: 6em;"><span *ngIf="boutonValiderEstActive">Valider</span>
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                        *ngIf="!boutonValiderEstActive"></span>
                 </button>
             </div>
         </mat-step>

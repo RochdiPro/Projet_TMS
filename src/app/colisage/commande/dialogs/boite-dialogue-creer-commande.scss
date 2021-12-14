@@ -15,10 +15,12 @@
 .boutons {
   float: right;
 }
+// pour le div qui contient le table des produits a emballer
 .produits {
   height: 375px;
   overflow-y: auto;
 }
+// div qui contient la partie de selection et ajout adresse et aussi la map
 .map {
   margin-top: 10px;
 }
@@ -144,16 +146,6 @@ agm-map {
     font-size: 0.7em;
     text-align: right;
   }
-
-  // td:last-child {
-  //   border: none;
-  //   border-bottom: 1px solid #eee;
-  //   position: relative;
-  //   padding-left: 0;
-  //   padding-top: 0;
-  //   padding-bottom: 0;
-  //   width: 100% !important;
-  // }
 
   th {
     border: none;
@@ -300,7 +292,6 @@ agm-map {
     margin-left: 10px;
   }
 
-  // donner un label pour les données du ligne de totals table de liste colisage
   .liste-colisage tr:last-child {
     background-color: #f1f4f6;
   }

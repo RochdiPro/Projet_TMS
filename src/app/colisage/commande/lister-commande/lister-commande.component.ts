@@ -35,6 +35,7 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   nom: any;
   acces: any;
   wms: any;
+  estManuel = false;
   constructor(
     public serviceCommande: CommandeService,
     public dialog: MatDialog
@@ -83,7 +84,7 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
       width: '1000px',
       maxWidth: '95vw',
       maxHeight: '95vh',
-      data: { commande: commande },
+      data: { commande: commande, modeManuel: this.estManuel },
     });
     // la boite de dialogue info commande contient des boutons pour la modification du position et de la liste de colisage
     // c'est pourquoi apres la fermeture de cette boite de dialogue on rafraichit la liste des commandes pour mettre a jour les champs modifiés
@@ -94,6 +95,20 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
 
   //supprime commande et sa liste colisage quand on appuie sur bouton 'annuler'
   async annulerCommande(commande: any){
+    if (this.estManuel) {
+      let date = commande.dateCreation.split('T')[0];
+      let type
+      commande.type === "Facture" ? type = "Facture" : type = "Bon_Livraison";
+      console.log(date);
+      await this.serviceCommande
+        .modifierEtatCommandeDansExcel(
+          date,
+          type,
+          commande.nomFichier,
+          "valide"
+        )
+        .toPromise();
+    }
     await this.serviceCommande.supprimerCommande(commande.id).toPromise();
     await this.serviceCommande.deleteColisParIdCommande(commande.id).toPromise();
     Swal.fire({

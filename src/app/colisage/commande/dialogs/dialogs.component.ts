@@ -626,7 +626,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     // changer positionClient
     this.positionClient =
       this.positionsClientEnregistree[this.firstFormGroup.get('adresse').value];
-    //changer les valeurs des frontiers pour changer la ville affichée su map 
+    //changer les valeurs des frontiers pour changer la ville affichée su map
     this.villes.forEach((v) => {
       v.nom === this.positionClient.ville ? (ville = v) : '';
     });
@@ -636,7 +636,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
 
   // fonction qu s'execute lors du changement du selection de la ville
   selectionnerVille() {
-    //changer les valeurs des frontiers pour changer la ville affichée su map 
+    //changer les valeurs des frontiers pour changer la ville affichée su map
     this.countryRestriction =
       this.firstFormGroup.get('nouvelleVille').value.restriction;
     // on affiche la ville et on donne comme position par defaut le centre de la ville
@@ -654,7 +654,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       .toPromise();
   }
 
-  // recuperer les fichier des details des commandes
+  // recuperer les fichier des details des commandes et generer un liste embllage suggérée pour chaque produit puis les enregistrer dans listeArticlesDetail
   async getDetail() {
     if (this.data.modeManuel) {
       // si le mode est manuel on recupere le fichier xml detail depuis la machine local
@@ -670,7 +670,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
         ? (this.articles = await getDetail(detail, 'facture'))
         : (this.articles = await getDetail(detail, 'bl'));
     } else {
-      // si le mode n'est pa manuel on recupere le fichier xml depuis la base des données
+      // si le mode n'est pa manuel on recupere le fichier xml depuis la base des données puis on enregistre les details des articles dans la variable articles
       if (this.typeDocument === 'Facture') {
         var detail = await this.serviceCommande
           .Detail_Facture(this.data.commande.id)
@@ -683,16 +683,20 @@ export class BoiteDialogueCreerCommande implements OnInit {
         this.articles = await getDetail(detail, 'bl');
       }
     }
+    //pour chaque article
     for (let i = 0; i < this.articles.length; i++) {
-      //pour chaque article
+      // qte produit desirée par le client
       let qteProduitCommande = Number(this.articles[i].qte);
       let listeEmballageProduit = [];
+
+      //liste emballage enregistrées dans base de donnée pour un produit specifique
       this.listeProduitDansListeEmballage = this.listeEmballage.filter(
         (emballage: any) => emballage.idProduit === this.articles[i].id
       );
       if (this.listeProduitDansListeEmballage.length > 0) {
         //s'il y a des element dans la listeProduitDansListeEmballage
         do {
+          // retourne la difference entre la qte desirée et la qte du produit dans un emballage
           let differenceQte = (index: any) => {
             return (
               qteProduitCommande -
@@ -705,16 +709,19 @@ export class BoiteDialogueCreerCommande implements OnInit {
           for (let j = 0; j < this.listeProduitDansListeEmballage.length; j++) {
             //pour chaque emballage d'un produit
             if (j !== 0) {
-              //tous les element sauf le premier element
+              //tous les elements sauf le premier
               if (
                 qteProduitCommande >=
                 Number(this.listeProduitDansListeEmballage[j].qte)
               ) {
                 //si qte commande > qte emballage
                 if (differenceQte(j) < differenceQuantite) {
+                  // si la nouvelle difference entre la quantite de la commande et la quantité dans l'emballage est moins que la difference precedente
+                  // pour avoir l'emballage avec la quantité inferieur a quantité du commande et la plus proche de cette quantité
                   differenceQuantite = differenceQte(j);
                   let difference = differenceQte(j);
                   qteEmballage = 0;
+                  // boucle qui permet de calculer le nombre max de l'emballage sans que la quantité total depasse la quantité du commande
                   do {
                     difference -= Number(
                       this.listeProduitDansListeEmballage[j].qte
@@ -743,12 +750,14 @@ export class BoiteDialogueCreerCommande implements OnInit {
               }
             }
           }
+          // on diminue la qteProduitCommande pour avoir la qte desirée restante aprés emballage
           qteProduitCommande -= Number(emballage.qte) * qteEmballage;
           listeEmballageProduit.push({
             emballage: emballage,
             qteEmballage: qteEmballage,
           });
         } while (qteProduitCommande > 0);
+        // on ajoute les articles avec leurs liste d'emballage suggérée par l'algorithme precedent dans listeArticlesDetail qui contient les articles avec leurs details necessaires
         this.listeArticlesDetail.push(
           new Article(
             this.articles[i].id,
@@ -782,8 +791,11 @@ export class BoiteDialogueCreerCommande implements OnInit {
       data: { produit: produit },
     });
     dialogRef.afterClosed().subscribe((result) => {
+      // apres fermeture du boite dialogue si la fermeture est effectué par le bouton valider on aura un objet result on test si cet objet existe a chaque fermeture di dialog
       if (result) {
+        // on reintitalise la qteNonEmballe pour savoir combien de qte reste non emballée
         produit.qteNonEmballe = result.qteNonEmballe;
+        // initialement cette liste etait vide. Aprés fermeture du dialog on a choisi une liste emballage on l'enregistre dans nos details
         produit.listeEmballageChoisi = result.listeEmballageChoisi;
       }
       this.setValiditeListeProduits();
@@ -797,6 +809,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       data: { produit: article },
     });
   }
+  // creation de la liste qui contient les emballages choisit de toute les articles
   creerListeEmballageChoisi() {
     this.listeEmballageChoisi = [];
     this.listeArticlesDetail.forEach((article: any) => {
@@ -806,6 +819,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     });
   }
 
+  // verifier si tou les articles on était emballé avec succés, si oui on valide et autorisee le passage au step suivant
   setValiditeListeProduits() {
     let deuxiemeStepEstValide = true;
     this.listeArticlesDetail.forEach((element: any) => {
@@ -816,6 +830,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       : this.secondFormGroup.get('secondCtrl').setValue('');
   }
 
+  // si on essaie de clicker suivant mais il'y a des produit qui ne sont pas totalement emballés on affiche un alerte pour informer l'utilisateur
   verifierValiditeDeuxiemeStep() {
     if (this.secondFormGroup.get('secondCtrl').value === '') {
       Swal.fire({
@@ -824,28 +839,35 @@ export class BoiteDialogueCreerCommande implements OnInit {
       });
     }
   }
-  getNombreArticles(article: any) {
-    return article.qte * article.emballage.qte;
+
+  // retourne le nombre d'article on calculant le nombre d'emballage * qte articles dans l'emballage
+  getNombreArticles(emballage: any) {
+    console.log(emballage);
+    return emballage.qte * emballage.emballage.qte;
   }
 
-  getDimensionsPack(article: any) {
+  // retourne les dimensions de l'emballage sous la forme suivante (LxlxH)
+  getDimensionsPack(emballage: any) {
     return (
-      article.emballage.longueur +
+      emballage.emballage.longueur +
       'x' +
-      article.emballage.largeur +
+      emballage.emballage.largeur +
       'x' +
-      article.emballage.hauteur
+      emballage.emballage.hauteur
     );
   }
 
-  getVolumePack(article: any) {
-    return article.emballage.volume * article.qte;
+  // retourne le volume total de l'emballage
+  getVolumePack(emballage: any) {
+    return emballage.emballage.volume * emballage.qte;
   }
 
-  getPoidsPackNet(article: any) {
-    return article.emballage.poids_total_net * article.qte;
+  // retourne le poids total net de l'emballage
+  getPoidsPackNet(emballage: any) {
+    return emballage.emballage.poids_total_net * emballage.qte;
   }
 
+  // retourne le poids total brut de l'emballage
   getPoidsPackBrut(article: any) {
     return article.emballage.poids_emballage_total * article.qte;
   }
@@ -916,6 +938,8 @@ export class BoiteDialogueCreerCommande implements OnInit {
   };
 
   async enregistrer() {
+    // on desactive le bouton valider pour eviter que l'utilisateur le clique une autre fois lors de l'execution des services du back
+    // car l'envoie d'email prend un peut de temp selon la qualité de l'internet de l'utilisateur
     this.boutonValiderEstActive = false;
     await this.calculerScoreCommande();
     let commande: any = new FormData();
@@ -934,6 +958,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
         .dernierPositionClient()
         .toPromise();
     } else if (this.positionEstModifie) {
+      // si la position deja existe mais elle a été modifié
       let position: any = new FormData();
       position.append('id', this.positionClient.id);
       position.append('idClient', this.positionClient.idClient);
@@ -945,6 +970,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
       await this.serviceCommande.modifierPositionClient(position).toPromise();
     }
 
+    // creation de la commande
     commande.append('referenceDocument', this.data.commande.reference);
     commande.append('idClient', this.data.commande.idClient);
     commande.append('nomClient', this.data.commande.nomClient);
@@ -968,12 +994,20 @@ export class BoiteDialogueCreerCommande implements OnInit {
     commande.append('poids', this.poidsTotalBrut);
     commande.append('volume', this.volumeTotal);
     commande.append('trackingNumber', this.trackingNumber());
+    commande.append('type', this.typeDocument);
+    if (this.data.modeManuel) {
+      commande.append('nomFichier', this.data.commande.nomFichier);
+    } else {
+      commande.append('nomFichier', "");
+    }
 
     await this.serviceCommande.creerCommande(commande).toPromise();
+    // recupérer la derniére commande enregistrée
     const derniereCommandeEnregistree = await this.serviceCommande
       .getDerniereCommande()
       .toPromise();
 
+    // creation de la liste de colisage
     for (let i = 0; i < this.listeEmballageChoisi.length; i++) {
       let listeColisage: any = new FormData();
       let emballage = this.listeEmballageChoisi[i];
@@ -1000,14 +1034,28 @@ export class BoiteDialogueCreerCommande implements OnInit {
       );
       await this.serviceCommande.creerColis(listeColisage).toPromise();
     }
+    // si on est dans le mode manuel on modifie l'etat de la commande dans le fichier excel correspondant
     if (this.data.modeManuel) {
       await this.serviceCommande
         .modifierEtatCommandeDansExcel(
           this.data.commande.dateCreation,
           this.data.commande.type,
-          this.data.commande.nomFichier
+          this.data.commande.nomFichier,
+          "crée"
         )
         .toPromise();
+    } else {
+      if (this.typeDocument === "Facture") {
+        let formData = new FormData();
+        formData.append("Id", this.data.commande.reference)
+        formData.append("Etat", "En cours de transport")
+        await this.serviceCommande.modifierEtatFacture(formData).toPromise();
+      } else if(this.typeDocument === "Bon Livraison") {
+        let formData: any = new FormData();
+        formData.append("Id", Number(this.data.commande.reference))
+        formData.append("Etat", "En cours de transport")
+        await this.serviceCommande.modifierEtatBonLivraison(formData);
+      }
     }
     Swal.fire({
       icon: 'success',
@@ -1018,6 +1066,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     this.dialgRef.close();
   }
 
+  // retourne le nombre total des emballages
   get nombrePackTotal() {
     var nombrePack = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -1026,6 +1075,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     return nombrePack;
   }
 
+  // retourne le volume total des emballages
   get volumeTotal() {
     var volumeTotal = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -1034,6 +1084,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     return volumeTotal.toFixed(3);
   }
 
+  // retourne le poids total net des emballages
   get poidsTotalNet() {
     var poidsTotalNet = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -1042,6 +1093,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     return poidsTotalNet.toFixed(3);
   }
 
+  // retourne le poids total brut des emballages
   get poidsTotalBrut() {
     var poidsTotalBrut = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -1061,7 +1113,6 @@ export class BoiteDialogueEmballer implements OnInit {
   quantiteNonEmballee: number;
   listeEmballages: any;
   form: FormGroup;
-  maxInput: number;
   minInput: number = 0;
   listeEmballagesChoisi: any = [];
   listeMax: number[] = [];
@@ -1075,7 +1126,10 @@ export class BoiteDialogueEmballer implements OnInit {
 
   async ngOnInit() {
     this.quantiteNonEmballee = Number(this.data.produit.qte);
+    // la quantité no emballé avant de faire l'emballage
     this.quantiteNonEmballeePrecedente = Number(this.data.produit.qte);
+
+    // creation du formGroup
     this.form = this.fb.group({
       qte: this.fb.array([]),
     });
@@ -1083,13 +1137,20 @@ export class BoiteDialogueEmballer implements OnInit {
     await this.ajouterChampQte();
     this.ajouterQuantiteEmballage();
   }
+
+  // retourne le FormArray qte sous forme d'un array
   get qteForm() {
     return this.form.get('qte') as FormArray;
   }
+
+  // fonction qui permet d'ajouter les formControl 'qte' dans le FormArray 'qte
   async ajouterChampQte() {
+    // pour chaque emballage on ajoute un formControl
     this.listeEmballages.forEach((emballage: any) => {
       let qte: any;
+
       if (emballage.qte > this.quantiteNonEmballee) {
+        // si la quantité dans l'emballage est supérieur a la quantité non emballé on ajoute le formControl mais on le disable
         qte = this.fb.group({
           qte: [
             { value: 0, disabled: true },
@@ -1103,42 +1164,52 @@ export class BoiteDialogueEmballer implements OnInit {
         });
       } else {
         if (this.data.produit.listeEmballageChoisi.length > 0) {
+          // si on a deja emballé le produit on recupére les emballages depuis listeEmballageChoisi
           const emb = this.data.produit.listeEmballageChoisi.filter(
             (emb: any) => emb.emballage.id === emballage.id
           );
           if (emb.length > 0) {
+            // si l'emballage existe dans listeEmballageChoisi on met la valeur du formControl = qte emballage
             qte = this.fb.group({
               qte: [emb[0].qte, [Validators.min(0), Validators.required]],
             });
           } else {
+            // si l'emballage n'existe pas la valeur du formControl = 0
             qte = this.fb.group({
               qte: [0, [Validators.min(0), Validators.required]],
             });
-            console.log(emb);
           }
         } else {
+          // si on n'a pas encore emballer un produit les valeurs des formControls = 0
           qte = this.fb.group({
             qte: [0, [Validators.min(0), Validators.required]],
           });
         }
       }
+      // on ajoute le formControl crée au formArray
       this.qteForm.push(qte);
+      // liste des valeurs max que le formControle peut atteindre
       this.listeMax.push(Number(this.data.produit.qte) / Number(emballage.qte));
-      console.log(this.qteForm.value);
     });
   }
+
+  // recupérer la liste des emballages
   async getListeEmballages() {
     this.listeEmballages = await this.serviceEmballage
       .listeEmballage()
       .toPromise();
+
+    // recupérer la liste des emballage d'un produit spécifique
     this.listeEmballages = this.listeEmballages.filter(
       (emballage: any) => emballage.idProduit === this.data.produit.id
     );
+    // trier la liste d'emballage selon qte produit ascendante
     this.listeEmballages = this.listeEmballages.sort(
       (emballage1: any, emballage2: any) =>
         Number(emballage1.qte) > Number(emballage2.qte) ? 1 : -1
     );
   }
+  // mise a jour du limite max de l'input qte pour eviter les fautes
   updateMax(i: any) {
     var qteFormArray = this.form.get('qte') as FormArray;
     for (let j = 0; j < this.listeMax.length; j++) {
@@ -1151,6 +1222,8 @@ export class BoiteDialogueEmballer implements OnInit {
     }
     this.quantiteNonEmballeePrecedente = this.quantiteNonEmballee;
   }
+
+  // fonction qui permet l'emballage du produit a chaque fois q'on change la valeur de l'input de qte
   ajouterQuantiteEmballage() {
     var qteFormArray = this.form.get('qte') as FormArray;
     this.quantiteNonEmballee = Number(this.data.produit.qte);
@@ -1193,6 +1266,8 @@ export class BoiteDialogueEmballer implements OnInit {
     }
     this.listeEmballagesChoisi = listeEmballage;
   }
+
+  // pour afficher la qte suggérée pour chaque emballage
   donnerSuggestion(emballage: any) {
     var listeSuggestion = this.data.produit.listeEmballage.filter(
       (emb: any) => emb.emballage.id === emballage.id
@@ -1203,6 +1278,8 @@ export class BoiteDialogueEmballer implements OnInit {
     }
     return qteSuggestion;
   }
+
+  // bouton valider
   valider() {
     this.listeEmballagesChoisi = this.listeEmballagesChoisi.filter(
       (emballage: any) => emballage.qte > 0
@@ -1213,6 +1290,7 @@ export class BoiteDialogueEmballer implements OnInit {
     };
     this.dialogRef.close(result);
   }
+  // bouton annuler
   annuler() {
     const result = {
       qteNonEmballe: this.data.produit.qteNonEmballe,
@@ -1261,6 +1339,8 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
   };
   positionsClientEnregistree: any = [];
   positionEstModifie: boolean = false;
+
+  // liste des ville: restriction contienne les coordonnées des frontiers
   villes: any[] = [
     {
       nom: 'Bizerte',
@@ -1575,7 +1655,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
       centre: { lat: 33.707124933652835, lng: 8.971489104616344 },
     },
   ];
-  //view port restrictions
+  //view port restrictions => les restrictions pour afficher que la tunisie si on n'a pas encore selectionner une ville ou adresse
   countryRestriction = {
     latLngBounds: {
       east: -149.73088535701655,
@@ -1612,6 +1692,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
     // this.initialiserMap()
   }
 
+  // pour l'API de recherche des adresse presenté par google (besoin de payement)
   // initialiserMap() {
   //   //load Places Autocomplete
   //   this.mapsAPILoader.load().then(() => {
@@ -1657,6 +1738,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
   //   );
   // }
 
+  // recuperer les positions enregistrées pour un client specifique
   async getPositionsEnregistrees() {
     this.positionsClientEnregistree = await this.serviceCommande
       .positionClient(this.data.commande.idClient)
@@ -1665,6 +1747,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
     this.selectionnerAdresse();
   }
 
+  // recuperer la position du commande a modifier
   getPositionCommande() {
     let i = this.positionsClientEnregistree.findIndex(
       (position: any) => position.id === this.data.commande.idPosition
@@ -1672,6 +1755,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
     this.form.get('adresse').setValue(i);
   }
 
+  // changer les variables du map pour afficher l'adresse selectionnée
   async setPositionClient() {
     this.lat = this.positionClient.latitude;
     this.lng = this.positionClient.longitude;
@@ -1682,13 +1766,16 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
     this.infoMarqueur = this.positionClient.adresse;
   }
 
+  // ajouter une nouvelle adresse
   ajouterAdresse() {
     if (!this.estNouvelleAdresse) {
+      // on affiche les input d'ajout adresse
       this.estNouvelleAdresse = true;
     } else if (
       this.form.get('nouvelleAdresse').value !== '' &&
       this.form.get('nouvelleVille').value !== ''
     ) {
+      // creer et ajouter l'adresse a la liste des adresse enregistrées
       this.positionsClientEnregistree.push({
         adresse: this.form.get('nouvelleAdresse').value,
         ville: this.form.get('nouvelleVille').value.nom,
@@ -1708,10 +1795,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
     }
   }
 
-  fonctionComparaisonPosition(option: any, value: any): boolean {
-    return option.id === value.id;
-  }
-
+  // affecter l'adresse selectionné au variable positionClient puis on affiche la ville et la position du client
   selectionnerAdresse() {
     let ville: any;
     this.positionClient =
@@ -1723,6 +1807,8 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
     this.setPositionClient();
   }
 
+  // on selectionnant une ville lors de l'ajout d'une nouvelle adresse on change la restrection pour afficher cette ville
+  // et on affiche le pin de localisation au centre de cette ville
   selectionnerVille() {
     this.countryRestriction = this.form.get('nouvelleVille').value.restriction;
     this.latMap = this.form.get('nouvelleVille').value.centre.lat;
@@ -1748,7 +1834,10 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
     // this.getAddress(this.lat, this.lat);
   }
 
+  // enregistrer les modifications
   async enregistrerModificationPositionClient() {
+    // lors de creation d'une nouvelle position on n'a pas ajouté l'id du client donc si idClient est undefined ca veut dire que
+    // c'est une nouvelle adresse qui n'est pas enregitrée dans la base de donnée donc on l'enregistre
     if (this.positionClient.idClient === undefined) {
       let position: any = new FormData();
       this.positionClient.longitude = this.lng;
@@ -1772,6 +1861,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
         .modifierIdPositionDansTableCommande(formData)
         .toPromise();
     } else if (this.positionEstModifie) {
+      // si la position deja existe on teste si elle etait modifié ou non si elle est modifié en enregistre les modifications dans la table position
       let position: any = new FormData();
       position.append('id', this.positionClient.id);
       position.append('idClient', this.positionClient.idClient);
@@ -1782,6 +1872,7 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
 
       await this.serviceCommande.modifierPositionClient(position).toPromise();
     }
+    // a la fin de nos modifications on change l'id du position, l'adresse et la ville dans le table commande
     this.data.commande.idPosition = this.positionClient.id;
     let formData: any = new FormData();
     formData.append('id', this.data.commande.id);
@@ -1814,11 +1905,9 @@ export class BoiteDialogueModifierColisage implements OnInit {
   listeColis: any;
   listeArticlesDetail: any = [];
   indicateurTypeCommande: String;
-  idDocument: Number;
   articles: any;
   listeEmballage: any;
   listeProduitDansListeEmballage: any;
-  typeDocument: String;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
   listeEmballageChoisi: any = [];
@@ -1834,45 +1923,52 @@ export class BoiteDialogueModifierColisage implements OnInit {
 
   async ngOnInit() {
     this.getListeColis();
-    this.getTypeDocument();
     await this.getListeEmballage();
     this.getDetail();
   }
 
+  // recuperer la liste des colis
   async getListeColis() {
     this.listeColis = await this.serviceCommande
       .getListeColisParIdCommande(this.data.commande.referenceDocument)
       .toPromise();
   }
 
-  getTypeDocument() {
-    this.indicateurTypeCommande =
-      this.data.commande.referenceDocument.split('-')[0];
-    this.idDocument = Number(
-      this.data.commande.referenceDocument.split('-')[1]
-    );
-    if (this.indicateurTypeCommande === 'F') this.typeDocument = 'Facture';
-    else this.typeDocument = 'Bon Livraison';
-  }
-
+  // recuperer liste emballages
   async getListeEmballage() {
     this.listeEmballage = await this.serviceEmballage
       .listeEmballage()
       .toPromise();
   }
 
+  // recuperer les details des commandes depuis le fichier xml
   async getDetail() {
     let listeEmballageChoisi: any = [];
-    if (this.indicateurTypeCommande === 'F') {
-      var detail = await this.serviceCommande
-        .Detail_Facture(this.idDocument)
+    if (this.data.modeManuel) {
+      // si le mode est manuel on recupere le fichier xml detail depuis la machine local
+      let date = this.data.commande.dateCreation.split('T');
+      let dateDivise = date[0].split('-');
+      date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
+      let nomFichier = this.data.commande.nomFichier;
+      let detail = await this.serviceCommande
+        .loadXML(date, nomFichier)
         .toPromise();
-      this.articles = await getDetail(detail, 'facture');
+      // on recupére les detail necessaire depuis le fichier qu'on a chargé
+      this.data.commande.type === 'Facture'
+        ? (this.articles = await getDetail(detail, 'facture'))
+        : (this.articles = await getDetail(detail, 'bl'));
     } else {
-      var detail = await this.serviceCommande
-        .Detail_BL(this.idDocument)
-        .toPromise();
-      this.articles = await getDetail(detail, 'bl');
+      if (this.data.commande.type === 'Facture') {
+        var detail = await this.serviceCommande
+          .Detail_Facture(this.data.commande.referenceDocument)
+          .toPromise();
+        this.articles = await getDetail(detail, 'facture');
+      } else {
+        var detail = await this.serviceCommande
+          .Detail_BL(this.data.commande.referenceDocument)
+          .toPromise();
+        this.articles = await getDetail(detail, 'bl');
+      }
     }
     for (let i = 0; i < this.articles.length; i++) {
       //pour chaque article
@@ -2007,6 +2103,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
     });
   }
 
+  // permet la creation de la liste des emballage que l'utilisateur a choisi
   creerListeEmballageChoisi() {
     this.listeEmballageChoisi = [];
     this.listeArticlesDetail.forEach((article: any) => {
@@ -2016,10 +2113,12 @@ export class BoiteDialogueModifierColisage implements OnInit {
     });
   }
 
+  // retourne le nombre d'articles
   getNombreArticles(article: any) {
     return article.qte * article.emballage.qte;
   }
 
+  // retourne les dimensions d'un emballage
   getDimensionsPack(article: any) {
     return (
       article.emballage.longueur +
@@ -2030,18 +2129,22 @@ export class BoiteDialogueModifierColisage implements OnInit {
     );
   }
 
+  //  retourne le volume d'un emballage
   getVolumePack(article: any) {
     return article.emballage.volume * article.qte;
   }
 
+  // retourne le poids total net d'emballage
   getPoidsPackNet(article: any) {
     return article.emballage.poids_total_net * article.qte;
   }
 
+  // retourne le poids total brut d'un emballage
   getPoidsPackBrut(article: any) {
     return article.emballage.poids_emballage_total * article.qte;
   }
 
+  // retourne le nombre d'emballages total
   get nombrePackTotal() {
     var nombrePack = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -2050,6 +2153,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
     return nombrePack;
   }
 
+  // retourne le volume total d'une commande
   get volumeTotal() {
     var volumeTotal = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -2058,6 +2162,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
     return volumeTotal.toFixed(2);
   }
 
+  // retourne le poids total net d'une commande
   get poidsTotalNet() {
     var poidsTotalNet = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -2066,6 +2171,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
     return poidsTotalNet.toFixed(2);
   }
 
+  // retourne le poids total brut d'une commande
   get poidsTotalBrut() {
     var poidsTotalBrut = 0;
     this.listeEmballageChoisi.forEach((emballage: any) => {
@@ -2074,6 +2180,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
     return poidsTotalBrut.toFixed(2);
   }
 
+  // ne permet pas la validation si la quantité non emballée diffirente de 0
   verifierValiditeListeProduits() {
     this.estValide = true;
     this.listeArticlesDetail.forEach((element: any) => {
@@ -2162,6 +2269,7 @@ export class InformationCommandeComponent implements OnInit {
     await this.getListeColisage();
   }
 
+  // recuperer la position du client pour la commande selectionnée
   async getLocalisationClient() {
     this.localisationClient = await this.serviceCommande
       .getPositionById(this.data.commande.idPosition)
@@ -2172,12 +2280,14 @@ export class InformationCommandeComponent implements OnInit {
     this.adresse = this.localisationClient.adresse;
   }
 
+  // recuperer la liste de colisage du commande selectionnée
   async getListeColisage() {
     this.listeColisage = await this.serviceCommande
       .getListeColisParIdCommande(this.data.commande.id)
       .toPromise();
   }
 
+  // retourne le nombre d'emballages total
   get nombrePackTotal() {
     var nombrePack = 0;
     this.listeColisage.forEach((colis: any) => {
@@ -2186,6 +2296,7 @@ export class InformationCommandeComponent implements OnInit {
     return nombrePack;
   }
 
+  // retourne le volume total d'une commande
   get volumeTotal() {
     var volumeTotal = 0;
     this.listeColisage.forEach((colis: any) => {
@@ -2194,6 +2305,7 @@ export class InformationCommandeComponent implements OnInit {
     return volumeTotal.toFixed(3);
   }
 
+  // retourne le poids total net d'une commande
   get poidsTotalNet() {
     var poidsTotalNet = 0;
     this.listeColisage.forEach((colis: any) => {
@@ -2202,6 +2314,7 @@ export class InformationCommandeComponent implements OnInit {
     return poidsTotalNet.toFixed(3);
   }
 
+  // retourne le poids total brut d'une commande
   get poidsTotalBrut() {
     var poidsTotalBrut = 0;
     this.listeColisage.forEach((colis: any) => {
@@ -2226,7 +2339,7 @@ export class InformationCommandeComponent implements OnInit {
     const dialogRef = this.dialog.open(BoiteDialogueModifierColisage, {
       width: '1000px',
       maxWidth: '95vw',
-      data: { commande: commande },
+      data: { commande: commande, modeManuel: this.data.modeManuel },
     });
     dialogRef.afterClosed().subscribe(async (result) => {
       this.getLocalisationClient();

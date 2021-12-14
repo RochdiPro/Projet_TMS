@@ -1,11 +1,13 @@
 <h1 mat-dialog-title>Detail du produit {{data.produit.nom}}</h1>
 <div mat-dialog-content>
+    <!-- si produit serie on affiche que le num serie -->
     <div *ngIf="data.produit.type === 'Produit serie'">
         <h2>Liste des numeros de série:</h2>
         <mat-list role="list" style="padding-left: 20px;">
             <mat-list-item role="listitem" *ngFor="let numSerie of data.produit.numSerie">{{numSerie}}</mat-list-item>
         </mat-list>
     </div>
+    <!-- si le produit est produit 4G on affiche le numero de serie et les numéros imeis -->
     <div *ngIf="data.produit.type === 'Produit 4G'">
         <table class="table">
             <thead>
@@ -24,6 +26,7 @@
             </tbody>
         </table>
     </div>
+    <!-- si le produit est de type produit numero lot  -->
     <div *ngIf="data.produit.type === 'Numero Lot'">
         <table class="table">
             <thead>
@@ -31,10 +34,12 @@
                     <th scope="col">Numero de serie</th>
                     <th scope="col">Numero Imei 1</th>
                     <th scope="col">Numero Imei 2</th>
+                    <th scope="col">Numero de lot</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let produit of this.data.produit.numeroLots">
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
