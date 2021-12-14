@@ -286,13 +286,25 @@ export class CommandeService {
   public modifierEtatCommandeDansExcel(
     date: string,
     type: string,
-    nomFichier: string
+    nomFichier: string,
+    nouveauEtat: string
   ) {
     let formData: any = new FormData();
     formData.append("date", date);
     formData.append("type", type);
     formData.append("nomFichier", nomFichier);
+    formData.append("nouveauEtat", nouveauEtat);
 
     return this.httpClient.put(erp + "changer-etat-commande-manuel", formData).pipe(catchError(this.handleError));
+  }
+
+  // modifier l'etat du facture
+  public modifierEtatFacture(formData: any) {
+    return this.httpClient.post(infonet + "Changer_Etat_Facture", formData).pipe(catchError(this.handleError));
+  }
+
+  // modifier l'etat du Bon Livraison
+  public async  modifierEtatBonLivraison(formData: any) {
+    return await this.httpClient.post(infonet + "Changer_Etat_BL", formData).toPromise();
   }
 }
