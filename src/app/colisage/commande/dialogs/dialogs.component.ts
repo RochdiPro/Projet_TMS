@@ -842,7 +842,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
 
   // retourne le nombre d'article on calculant le nombre d'emballage * qte articles dans l'emballage
   getNombreArticles(emballage: any) {
-    console.log(emballage);
     return emballage.qte * emballage.emballage.qte;
   }
 
@@ -1049,12 +1048,12 @@ export class BoiteDialogueCreerCommande implements OnInit {
         let formData = new FormData();
         formData.append("Id", this.data.commande.reference)
         formData.append("Etat", "En cours de transport")
-        await this.serviceCommande.modifierEtatFacture(formData).toPromise();
+        this.serviceCommande.modifierEtatFacture(formData);
       } else if(this.typeDocument === "Bon Livraison") {
         let formData: any = new FormData();
         formData.append("Id", Number(this.data.commande.reference))
         formData.append("Etat", "En cours de transport")
-        await this.serviceCommande.modifierEtatBonLivraison(formData);
+        this.serviceCommande.modifierEtatBonLivraison(formData);
       }
     }
     Swal.fire({
@@ -2366,7 +2365,6 @@ async function getDetail(detail: any, typeCommande: string) {
         fichier = reader.result;
         var parseString = require('xml2js').parseString;
         let data1;
-        console.log(typeCommande);
         parseString(atob(fichier.substr(28)), function (err: any, result: any) {
           typeCommande === 'facture'
             ? (data1 = result.Facture)
@@ -2502,7 +2500,6 @@ async function getDetail(detail: any, typeCommande: string) {
             articles.push(new_obj);
           }
         }
-        console.log(articles);
         resolve(articles);
       } catch (err) {
         reject(err);

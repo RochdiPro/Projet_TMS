@@ -24,6 +24,7 @@ import { AffecterCommande, MissionsComponent, QrCodeComponent } from './missions
 import { AffecterChauffeur, DetailComponent, PositionComponent } from './dialogs/dialogs.component';
 import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
 import { DirectionsMapDirective } from './directions-map.directive';
+import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauffeur.component';
 
 
 
@@ -41,7 +42,8 @@ import { DirectionsMapDirective } from './directions-map.directive';
     QrCodeComponent,
     DirectionsMapDirective,
     AjoutMissionComponent,
-    AffecterChauffeur
+    AffecterChauffeur,
+    MissionsChauffeurComponent
 
   ],
   imports: [

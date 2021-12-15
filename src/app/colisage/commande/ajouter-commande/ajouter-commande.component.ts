@@ -70,7 +70,6 @@ export class AjouterCommandeComponent implements OnInit {
   acces: any;
   wms: any;
   estManuel = false;
-  data: [][];
   today = new Date();
   date = new Date(
     this.today.getFullYear(),
@@ -166,6 +165,7 @@ export class AjouterCommandeComponent implements OnInit {
       .toPromise();
 
     listeFacturesDB.forEach((facture: any) => {
+      this.listeFactures = []
       // pour chaque facture on recupére le client depuis la liste des clients puis on construit notre objet facture qui contient les informations necessaire
       var client = this.listeClients.filter(
         (client: any) => Number(client.id_Clt) === Number(facture.id_Clt)
@@ -192,6 +192,7 @@ export class AjouterCommandeComponent implements OnInit {
 
   // recuperer la liste des BLs qui ont l'etat validée
   async getListeBLs() {
+    this.listeBonsLivraison= []
     const listeBLsDB = await this.serviceCommande
       .filtreBonLivraison('etat', 'Validée')
       .toPromise();
@@ -313,6 +314,15 @@ export class AjouterCommandeComponent implements OnInit {
       if (this.estManuel) {
         await this.serviceCommande.genererXML().toPromise();
         this.getCommandesModeManuel();
+      } else {
+        // pour le mode non manuel on recupére la liste des factures et des bls depuis la base des données
+        await this.getListeFactures();
+        await this.getListeBLs();
+        // les commandes recupérées depuis la liste des factures et les bls sont fusionnée dans une liste commune qui s'appele listeCommandes
+        this.listeCommandes = this.listeFactures.concat(
+          this.listeBonsLivraison
+        );
+        this.afficherListeCommandes();
       }
     });
   }

@@ -1,0 +1,42 @@
+<div class="barre-trie">
+    <div [ngClass]="{'active': enCoursEstClique}"><a href="javascript:void(0);"
+            (click)="enCoursEstClique = true; enAttenteEstClique = false; enTermineEstClique = false">En cours</a></div>
+    <div [ngClass]="{'active': enAttenteEstClique}"><a href="javascript:void(0);"
+            (click)="enCoursEstClique = false; enAttenteEstClique = true; enTermineEstClique = false">En attente</a>
+    </div>
+    <div [ngClass]="{'active': enTermineEstClique}"><a href="javascript:void(0);"
+            (click)="enCoursEstClique = false; enAttenteEstClique = false; enTermineEstClique = true">Terminées</a>
+    </div>
+</div>
+<div class="missions">
+    <table>
+        <tr *ngFor="let mission of missions" class="card">
+            <td scope="row">
+                <div class="entete">
+                    <div class="temps">
+                        <i class="fas fa-clock"></i>
+                        ~ 1h 15m
+                    </div>
+                    <div class="matricule">
+                        <label>Matricule</label>
+                        {{mission.matricule}}
+                    </div>
+                </div>
+                <div class="detail">
+                    <div>
+                        <label>Nbr commandes</label>
+                        {{nbrCommandes(mission)}}
+                    </div>
+                    <div>
+                        <label>Poids</label>
+                        {{poidsMission (mission)}} kg
+                    </div>
+                    <div>
+                        <label>Volume</label>
+                        {{volumeMission(mission)}} m³
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>

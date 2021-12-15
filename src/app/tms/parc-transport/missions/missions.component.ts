@@ -69,6 +69,8 @@ export class MissionsComponent implements OnInit {
   listerMissionEstActive = false;
   ajouterMissionEstActive = false;
 
+  estChauffeur = true;
+
 
   constructor(public router: Router) { }
 

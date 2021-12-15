@@ -99,7 +99,6 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
       let date = commande.dateCreation.split('T')[0];
       let type
       commande.type === "Facture" ? type = "Facture" : type = "Bon_Livraison";
-      console.log(date);
       await this.serviceCommande
         .modifierEtatCommandeDansExcel(
           date,
@@ -108,6 +107,18 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
           "valide"
         )
         .toPromise();
+    } else {
+      if (commande.type === "Facture") {
+        let formData: any = new FormData();
+        formData.append("Id", Number(commande.referenceDocument))
+        formData.append("Etat", "En cours de transport")
+        this.serviceCommande.modifierEtatFacture(formData);
+      } else if(commande.type === "Bon Livraison") {
+        let formData: any = new FormData();
+        formData.append("Id", Number(commande.referenceDocument))
+        formData.append("Etat", "En cours de transport")
+        this.serviceCommande.modifierEtatBonLivraison(formData);
+      }
     }
     await this.serviceCommande.supprimerCommande(commande.id).toPromise();
     await this.serviceCommande.deleteColisParIdCommande(commande.id).toPromise();

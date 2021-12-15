@@ -203,8 +203,10 @@ export class CommandeService {
   }
 
   //get la derniere cmmmande enregistrée
-  public getDerniereCommande(){
-    return this.httpClient.get(erp + "dernier-enregistrement-commande").pipe(catchError(this.handleError));
+  public getDerniereCommande() {
+    return this.httpClient
+      .get(erp + 'dernier-enregistrement-commande')
+      .pipe(catchError(this.handleError));
   }
 
   //modifier l'id du position dans le table commande
@@ -290,21 +292,29 @@ export class CommandeService {
     nouveauEtat: string
   ) {
     let formData: any = new FormData();
-    formData.append("date", date);
-    formData.append("type", type);
-    formData.append("nomFichier", nomFichier);
-    formData.append("nouveauEtat", nouveauEtat);
+    formData.append('date', date);
+    formData.append('type', type);
+    formData.append('nomFichier', nomFichier);
+    formData.append('nouveauEtat', nouveauEtat);
 
-    return this.httpClient.put(erp + "changer-etat-commande-manuel", formData).pipe(catchError(this.handleError));
+    return this.httpClient
+      .put(erp + 'changer-etat-commande-manuel', formData)
+      .pipe(catchError(this.handleError));
   }
 
   // modifier l'etat du facture
   public modifierEtatFacture(formData: any) {
-    return this.httpClient.post(infonet + "Changer_Etat_Facture", formData).pipe(catchError(this.handleError));
+    this.httpClient.post(infonet + 'Changer_Etat_Facture', formData).subscribe(
+      (response) => console.log(response),
+      (error) => console.log(error)
+    );
   }
 
   // modifier l'etat du Bon Livraison
-  public async  modifierEtatBonLivraison(formData: any) {
-    return await this.httpClient.post(infonet + "Changer_Etat_BL", formData).toPromise();
+  public modifierEtatBonLivraison(formData: any) {
+    this.httpClient.post(infonet + 'Changer_Etat_BL', formData).subscribe(
+      (response) => console.log(response),
+      (error) => console.log(error)
+    );
   }
 }

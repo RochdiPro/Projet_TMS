@@ -90,6 +90,15 @@ export class MissionsService {
     }).pipe(catchError(this.handleError));
   }
 
+  // getMissionsChauffeur
+  public getMissionsChauffeur(idChauffeur: any) {
+    return this.httpClient.get(erp + "missions-chauffeur", {
+      params: {
+        idChauffeur: idChauffeur 
+      }, observe: "body"
+    }).pipe(catchError(this.handleError));
+  }
+
   public majEtat(id: any, formData: any) {
     this.httpClient.put(erp + 'miseajouretat/' + id, formData).subscribe(
       (response) => console.log(response),
