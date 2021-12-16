@@ -1,8 +1,3 @@
-import {
-  animate, state,
-  style,
-  transition, trigger
-} from '@angular/animations';
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import {
@@ -16,7 +11,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
-import { ILatLng } from '../directions-map.directive';
 import { MissionsService } from '../services/missions.service';
 
 // ************************************ Boite dialogue affecter chauffeur ********************************
@@ -180,16 +174,6 @@ export class AffecterChauffeur implements OnInit {
   selector: 'app-detail-mission',
   templateUrl: './detail-mission.html',
   styleUrls: ['./detail-mission.scss'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0' })),
-      state('expanded', style({ height: '*' })),
-      transition(
-        'expanded <=> collapsed',
-        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
-      ),
-    ]),
-  ],
 })
 export class DetailComponent implements OnInit {
   chauffeurs: any = [];
@@ -328,4 +312,18 @@ export class PositionComponent implements OnInit {
     console.log(position)
   }
 
+}
+
+
+// **************************************** dialog detail commande *****************************
+@Component({
+  selector: 'app-detail-commande',
+  templateUrl: 'detail-commande.html',
+  styleUrls: ['detail-commande.scss']
+})
+
+export class DetailCommande implements OnInit {
+  constructor(private dialogRef: MatDialogRef<DetailCommande>) { }
+
+  ngOnInit() { }
 }

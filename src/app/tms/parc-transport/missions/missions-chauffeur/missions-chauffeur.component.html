@@ -1,11 +1,15 @@
 <div class="barre-trie">
-    <div [ngClass]="{'active': enCoursEstClique}"><a href="javascript:void(0);"
-            (click)="enCoursEstClique = true; enAttenteEstClique = false; enTermineEstClique = false">En cours</a></div>
-    <div [ngClass]="{'active': enAttenteEstClique}"><a href="javascript:void(0);"
-            (click)="enCoursEstClique = false; enAttenteEstClique = true; enTermineEstClique = false">En attente</a>
+    <div [ngClass]="{'active': enCoursEstClique}"
+        (click)="enCoursEstClique = true; enAttenteEstClique = false; enTermineEstClique = false">
+        <a href="javascript:void(0);">En cours</a>
     </div>
-    <div [ngClass]="{'active': enTermineEstClique}"><a href="javascript:void(0);"
-            (click)="enCoursEstClique = false; enAttenteEstClique = false; enTermineEstClique = true">Terminées</a>
+    <div [ngClass]="{'active': enAttenteEstClique}"
+        (click)="enCoursEstClique = false; enAttenteEstClique = true; enTermineEstClique = false">
+        <a href="javascript:void(0);">En attente</a>
+    </div>
+    <div [ngClass]="{'active': enTermineEstClique}"
+        (click)="enCoursEstClique = false; enAttenteEstClique = false; enTermineEstClique = true">
+        <a href="javascript:void(0);">Terminées</a>
     </div>
 </div>
 <div class="missions">
@@ -15,11 +19,15 @@
                 <div class="entete">
                     <div class="temps">
                         <i class="fas fa-clock"></i>
-                        ~ 1h 15m
+                        ~ _h __m
                     </div>
                     <div class="matricule">
                         <label>Matricule</label>
                         {{mission.matricule}}
+                    </div>
+                    <div class="id-mission">
+                        <label>ID</label>
+                        {{mission.id}}
                     </div>
                 </div>
                 <div class="detail">
@@ -39,4 +47,65 @@
             </td>
         </tr>
     </table>
+</div>
+<div class="mission" [@statusDetailMission]="statusDetailMission">
+    <div class="slide-here" (click)="toggleDetailMission()"></div>
+    <iframe
+        src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d52449.39840968706!2d10.744501199999984!3d34.7533911!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2stn!4v1639649629800!5m2!1sfr!2stn"
+        style="border:0;" loading="lazy"></iframe>
+    <div class="details" [@statusAfficherCommandes]="statusAfficherCommandes">
+        <div class="compteur-commandes">
+            0 commandes non livrées
+        </div>
+        <div id="id-mission">
+            <div class="icon"><i class="fas fa-hashtag"></i></div>
+            11111
+        </div>
+        <div class="informations">
+            <div>
+                <label>Matricule</label>
+                122TU1222
+            </div>
+            <div>
+                <label>Etat</label>
+                En cours
+            </div>
+        </div>
+        <div class="boutons">
+            <a href="javascript:void(0);" (click)=" toggleAfficherCommandes()">Détails</a>
+            <a href="javascript:void(0);">Lancer</a>
+        </div>
+        <div id="separateur"></div>
+        <div class="details-mission">
+            <table>
+                <tr *ngFor="let mission of missions" class="card">
+                    <td scope="row" (click)="ouvrirDetailCommande()">
+                        <div class="entete">
+                            <div id="icon-map-marker" class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="adresse">
+                                <label>123456</label>
+                                route mahdi km 0.5, Sfax
+                            </div>
+                        </div>
+                        <div class="client">
+                            <div>
+                                <i class="fas fa-user-alt"></i>
+                                <div>
+                                    <label>Client</label>
+                                    Infonet
+                                </div>
+                            </div>
+                            <div>
+                                <i class="fas fa-phone-alt"></i>
+                                <div>
+                                    <label>Téléphone</label>
+                                    98178449
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 </div>
