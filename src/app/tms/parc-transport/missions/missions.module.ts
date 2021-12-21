@@ -21,7 +21,7 @@ import { SafePipeModule } from 'safe-pipe';
 import { AjoutMissionComponent } from './ajout-mission/ajout-mission.component';
 import { MissionsRoutingModule } from './missions-routing.module';
 import { AffecterCommande, MissionsComponent, QrCodeComponent } from './missions.component';
-import { AffecterChauffeur, DetailComponent, PositionComponent } from './dialogs/dialogs.component';
+import { AffecterChauffeur, DetailComponent, PositionComponent, DetailCommande, ConfirmerLivraison } from './dialogs/dialogs.component';
 import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
 import { DirectionsMapDirective } from './directions-map.directive';
 import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauffeur.component';
@@ -43,7 +43,9 @@ import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauff
     DirectionsMapDirective,
     AjoutMissionComponent,
     AffecterChauffeur,
-    MissionsChauffeurComponent
+    MissionsChauffeurComponent,
+    DetailCommande,
+    ConfirmerLivraison
 
   ],
   imports: [

@@ -239,7 +239,7 @@ iframe {
   margin: 5px 15px;
 }
 
-.details-mission{
+.details-mission {
   width: 100%;
   height: calc(100vh - 285px);
   overflow-y: auto;
@@ -248,7 +248,7 @@ iframe {
   padding-top: 0;
 }
 
-#icon-map-marker{
+#icon-map-marker {
   background-color: #fddc3f;
   margin: 0;
 }
@@ -285,7 +285,7 @@ iframe {
   padding-right: 15px;
 }
 
-.client > div > div{
+.client > div > div {
   display: flex;
   flex-direction: column;
   font-weight: 500;
@@ -302,8 +302,21 @@ iframe {
   border-left: 2px solid #dedede;
   padding-left: 15px;
 }
-#separateur{
+#separateur {
   height: 10px;
   width: 100%;
   background-color: #f1f4f6;
+}
+
+.delivered {
+  background-color: #f1f1f1;
+}
+
+.disable {
+  cursor: not-allowed;
+  opacity: 0.5;
+  color: currentColor;
+  display: inline-block;  /* For IE11/ MS Edge bug */
+  pointer-events: none;
+  text-decoration: none;
 }

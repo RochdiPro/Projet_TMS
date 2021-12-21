@@ -43,12 +43,13 @@ table {
   width: 100%;
 }
 
-tr {
+tr ~ tr {
   margin-top: 10px;
 }
 
 ::ng-deep .custom-dialog-detail {
     mat-dialog-container {
-      background-color: #f1f4f6 !important;
+      background-color: transparent !important;
+      padding: 0 !important;
     }
   }

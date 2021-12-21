@@ -1016,7 +1016,7 @@ export class AjoutMissionComponent implements OnInit {
         formData.append('poids', mission.poids);
         formData.append('score', mission.score);
         formData.append('region', '');
-        formData.append('etat', 'Accordée');
+        formData.append('etat', 'En attente');
         formData.append('date', this.listeFilesAttentes[i].date);
         console.log(formData.get('date'));
         await this.serviceMission.creerMission(formData).toPromise();

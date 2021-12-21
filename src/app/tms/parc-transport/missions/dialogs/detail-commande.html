@@ -1,33 +1,33 @@
 <table>
-    <tr class="card">
+    <tr class="card" *ngFor="let colis of listeColis">
         <td scope="row">
             <div class="detail-commande">
                 <div>
                     <div class="icon"><i class="fab fa-product-hunt"></i></div>
                     <div>
                         <label>Produit</label>
-                        Imprimante
+                        {{colis.produit}}
                     </div>
                 </div>
                 <div>
                     <div class="icon"><i class="fas fa-box"></i></div>
                     <div>
                         <label>Pack</label>
-                        3x imprimantes
+                        {{colis.emballage}}
                     </div>
                 </div>
                 <div>
                     <div class="icon"><i class="fas fa-boxes"></i></div>
                     <div>
                         <label>Nbr Pack</label>
-                        10
+                        {{colis.quantite}}
                     </div>
                 </div>
                 <div>
                     <div class="icon"><i class="fas fa-ruler-combined"></i></div>
                     <div>
                         <label>Dimensions</label>
-                        20x30x40
+                        {{colis.dimensions}}
                     </div>
                 </div>
             </div>

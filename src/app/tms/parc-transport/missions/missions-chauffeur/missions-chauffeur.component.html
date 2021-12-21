@@ -1,21 +1,18 @@
 <div class="barre-trie">
-    <div [ngClass]="{'active': enCoursEstClique}"
-        (click)="enCoursEstClique = true; enAttenteEstClique = false; enTermineEstClique = false">
+    <div [ngClass]="{'active': enCoursEstClique}" (click)="cliquerEnCours()">
         <a href="javascript:void(0);">En cours</a>
     </div>
-    <div [ngClass]="{'active': enAttenteEstClique}"
-        (click)="enCoursEstClique = false; enAttenteEstClique = true; enTermineEstClique = false">
+    <div [ngClass]="{'active': enAttenteEstClique}" (click)="cliquerEnAttente()">
         <a href="javascript:void(0);">En attente</a>
     </div>
-    <div [ngClass]="{'active': enTermineEstClique}"
-        (click)="enCoursEstClique = false; enAttenteEstClique = false; enTermineEstClique = true">
-        <a href="javascript:void(0);">Terminées</a>
+    <div [ngClass]="{'active': enTermineEstClique}" (click)="cliquerTerminee()">
+        <a href="javascript:void(0);">Terminée</a>
     </div>
 </div>
 <div class="missions">
-    <table>
-        <tr *ngFor="let mission of missions" class="card">
-            <td scope="row">
+    <table [@statusTableMissions]="statusTableMissions">
+        <tr *ngFor="let mission of missionsFiltree" class="card">
+            <td scope="row" (click)="getCommandesMission(mission)">
                 <div class="entete">
                     <div class="temps">
                         <i class="fas fa-clock"></i>
@@ -53,38 +50,44 @@
     <iframe
         src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d52449.39840968706!2d10.744501199999984!3d34.7533911!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2stn!4v1639649629800!5m2!1sfr!2stn"
         style="border:0;" loading="lazy"></iframe>
-    <div class="details" [@statusAfficherCommandes]="statusAfficherCommandes">
+    <div class="details" [@statusAfficherCommandes]="statusAfficherCommandes" *ngIf="missionSelectionnee && commandesNonLivrees">
         <div class="compteur-commandes">
-            0 commandes non livrées
+            {{commandesNonLivrees.length}} commandes non livrées
         </div>
         <div id="id-mission">
             <div class="icon"><i class="fas fa-hashtag"></i></div>
-            11111
+            {{missionSelectionnee.id}}
         </div>
         <div class="informations">
             <div>
                 <label>Matricule</label>
-                122TU1222
+                {{missionSelectionnee.matricule}}
             </div>
             <div>
                 <label>Etat</label>
-                En cours
+                {{missionSelectionnee.etat}}
             </div>
         </div>
         <div class="boutons">
             <a href="javascript:void(0);" (click)=" toggleAfficherCommandes()">Détails</a>
-            <a href="javascript:void(0);">Lancer</a>
+            <ng-container *ngIf="missionSelectionnee.etat === 'En cours'; else elseTemplate">
+                <a href="javascript:void(0);" (click)="ouvrirConfirmationLivraison()">Livrer</a>
+            </ng-container>
+            <ng-template #elseTemplate>
+                <a href="javascript:void(0);" (click)="lancerMission(missionSelectionnee.id)" [ngClass]="{'disable': missionEnCoursExiste}">Lancer</a>
+            </ng-template>
+            
         </div>
         <div id="separateur"></div>
         <div class="details-mission">
             <table>
-                <tr *ngFor="let mission of missions" class="card">
-                    <td scope="row" (click)="ouvrirDetailCommande()">
+                <tr *ngFor="let commande of commandesNonLivrees" class="card">
+                    <td scope="row" (click)="ouvrirDetailCommande(commande.id)">
                         <div class="entete">
                             <div id="icon-map-marker" class="icon"><i class="fas fa-map-marker-alt"></i></div>
                             <div class="adresse">
-                                <label>123456</label>
-                                route mahdi km 0.5, Sfax
+                                <label>{{commande.id}}</label>
+                                {{commande.adresse}}, {{commande.ville}}
                             </div>
                         </div>
                         <div class="client">
@@ -92,14 +95,43 @@
                                 <i class="fas fa-user-alt"></i>
                                 <div>
                                     <label>Client</label>
-                                    Infonet
+                                    {{commande.nomClient}}
                                 </div>
                             </div>
                             <div>
                                 <i class="fas fa-phone-alt"></i>
                                 <div>
                                     <label>Téléphone</label>
-                                    98178449
+                                    {{commande.telephone}}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr *ngFor="let commande of commandesLivrees" class="card delivered">
+                    <td scope="row" (click)="ouvrirDetailCommande(commande.id)">
+                        <div class="entete">
+                            <div id="icon-map-marker" class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="adresse">
+                                <label>{{commande.id}}</label>
+                                {{commande.adresse}}, {{commande.ville}}
+                            </div>
+                        </div>
+                        <div class="client">
+                            <div>
+                                <i class="fas fa-user-alt"></i>
+                                <div>
+                                    <label>Client</label>
+                                    {{commande.nomClient}}
+                                </div>
+                            </div>
+                            <div>
+                                <i class="fas fa-phone-alt"></i>
+                                <div>
+                                    <label>Téléphone</label>
+                                    {{commande.telephone}}
                                 </div>
                             </div>
                         </div>
