@@ -200,7 +200,7 @@ export class DetailComponent implements OnInit {
     public _DomSanitizationService: DomSanitizer,
     private dialog: MatDialog,
     private dialogRef: MatDialogRef<DetailComponent>,
-    @Inject(MAT_DIALOG_DATA) private data: any,
+    @Inject(MAT_DIALOG_DATA) private data: any
   ) {}
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -214,24 +214,25 @@ export class DetailComponent implements OnInit {
     this.refresh();
   }
 
-  
   async refresh() {
-    console.log(this.data.mission)
+    console.log(this.data.mission);
     // rafraichier la liste des commandes et calcule du poids et surface global
-    let idChauffeurs = this.data.mission.idChauffeur.split("/");
-    this.matricule = this.data.mission.matricule.split("/");
+    let idChauffeurs = this.data.mission.idChauffeur.split('/');
+    this.matricule = this.data.mission.matricule.split('/');
     for (let i = 0; i < idChauffeurs.length; i++) {
-      let chauffeur = await this.serviceChauffeur.employe(Number(19)).toPromise();
-      this.chauffeurs.push(chauffeur)
+      let chauffeur = await this.serviceChauffeur
+        .employe(Number(19))
+        .toPromise();
+      this.chauffeurs.push(chauffeur);
     }
     await this.getListeCommandes();
   }
 
   get nbrCommandes() {
-    return this.data.mission.idCommandes.split("/").length;
+    return this.data.mission.idCommandes.split('/').length;
   }
 
-  get poidsMission () {
+  get poidsMission() {
     return this.data.mission.poids;
   }
 
@@ -240,8 +241,10 @@ export class DetailComponent implements OnInit {
   }
 
   async getListeCommandes() {
-    this.commandes = await this.serviceMission.getCommandesParIdMission(this.data.mission.id).toPromise();
-    console.log(this.commandes)
+    this.commandes = await this.serviceMission
+      .getCommandesParIdMission(this.data.mission.id)
+      .toPromise();
+    console.log(this.commandes);
   }
 
   supprimerCommande(id: any) {
@@ -267,11 +270,10 @@ export class DetailComponent implements OnInit {
       height: '50vh',
       autoFocus: false,
       panelClass: 'custom-dialog-position',
-      data: { idPosition: commande.idPosition}
+      data: { idPosition: commande.idPosition },
     });
   }
 }
-
 
 // *********************************************interface table commandes***************************************
 export interface tableCommandes {
@@ -283,9 +285,7 @@ export interface tableCommandes {
   etat: String;
 }
 
-
 // **************************************** boite dialog position *********************************************
-
 
 @Component({
   selector: 'position',
@@ -294,36 +294,78 @@ export interface tableCommandes {
 })
 export class PositionComponent implements OnInit {
   lat: any;
-  lng: any
+  lng: any;
   zoom = 15;
   adresse: string;
 
-
-  constructor(public serviceCommande: CommandeService, @Inject(MAT_DIALOG_DATA) private data: any) {}
+  constructor(
+    public serviceCommande: CommandeService,
+    @Inject(MAT_DIALOG_DATA) private data: any
+  ) {}
   ngOnInit(): void {
-    this.getPosition()
+    this.getPosition();
   }
 
-  async getPosition(){
-    let position = await this.serviceCommande.getPositionById(this.data.idPosition).toPromise();
+  async getPosition() {
+    let position = await this.serviceCommande
+      .getPositionById(this.data.idPosition)
+      .toPromise();
     this.lat = Number(position.latitude);
     this.lng = Number(position.longitude);
     this.adresse = position.adresse;
-    console.log(position)
+    console.log(position);
   }
-
 }
-
 
 // **************************************** dialog detail commande *****************************
 @Component({
   selector: 'app-detail-commande',
   templateUrl: 'detail-commande.html',
-  styleUrls: ['detail-commande.scss']
+  styleUrls: ['detail-commande.scss'],
 })
-
 export class DetailCommande implements OnInit {
-  constructor(private dialogRef: MatDialogRef<DetailCommande>) { }
+  listeColis: any;
+  constructor(
+    private dialogRef: MatDialogRef<DetailCommande>,
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private serviceMission: MissionsService
+  ) {}
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.getListeColis();
+  }
+
+  async getListeColis() {
+    this.listeColis = await this.serviceMission.getListeColisParIdCommande(this.data.idCommande).toPromise();
+    console.log(this.listeColis);
+  }
+}
+
+// **************************************** dialog detail confirmer livraison *****************************
+@Component({
+  selector: 'app-confirmer-livraison',
+  templateUrl: 'confirmer-livraison.html',
+  styleUrls: ['confirmer-livraison.scss'],
+})
+export class ConfirmerLivraison implements OnInit {
+  interval: any; //intervalle entre les keyup ==> on va specifier interval de 20ms pour ne pas autoriser l'ecriture que au scanner du code a barre
+  qrCode = '';
+  inputQrCode: any;
+  
+  constructor(private dialogRef: MatDialogRef<ConfirmerLivraison>) {}
+
+  ngOnInit() {}
+
+   // fonction pour scanner le Qr code de confirmation de livraison avec le scanner
+   scannerQrCode(qrCodeScanne: any) {
+    if (this.interval) clearInterval(this.interval);
+    if (qrCodeScanne.code == 'Enter') {
+      if (this.qrCode) console.log(this.qrCode);
+      this.inputQrCode ='';
+      this.qrCode = '';
+      return;
+    }
+    if (qrCodeScanne.key != 'Shift') this.qrCode += qrCodeScanne.key;
+    this.interval = setInterval(() => (this.qrCode = ''), 20);
+  }
 }
