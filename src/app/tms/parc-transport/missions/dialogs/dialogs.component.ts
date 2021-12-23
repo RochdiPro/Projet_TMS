@@ -1,15 +1,22 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  Inject,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
-  MAT_DIALOG_DATA
+  MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
+import Swal from 'sweetalert2';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
 import { MissionsService } from '../services/missions.service';
 
@@ -273,6 +280,17 @@ export class DetailComponent implements OnInit {
       data: { idPosition: commande.idPosition },
     });
   }
+
+  // ouvrir la boite dialogue details commande
+  ouvrirDetailCommande(id: any) {
+    const dialogRef = this.dialog.open(DetailCommande, {
+      width: '1200px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'custom-dialog-detail-commande',
+      data: { idCommande: id, mode: 'admin' },
+    });
+  }
 }
 
 // *********************************************interface table commandes***************************************
@@ -327,7 +345,7 @@ export class DetailCommande implements OnInit {
   listeColis: any;
   constructor(
     private dialogRef: MatDialogRef<DetailCommande>,
-    @Inject(MAT_DIALOG_DATA) private data: any,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     private serviceMission: MissionsService
   ) {}
 
@@ -336,12 +354,49 @@ export class DetailCommande implements OnInit {
   }
 
   async getListeColis() {
-    this.listeColis = await this.serviceMission.getListeColisParIdCommande(this.data.idCommande).toPromise();
+    this.listeColis = await this.serviceMission
+      .getListeColisParIdCommande(this.data.idCommande)
+      .toPromise();
     console.log(this.listeColis);
+  }
+  // retourne le nombre d'emballages total
+  get nombrePackTotal() {
+    var nombrePack = 0;
+    this.listeColis.forEach((colis: any) => {
+      nombrePack += colis.nombrePack;
+    });
+    return nombrePack;
+  }
+
+  // retourne le volume total d'une commande
+  get volumeTotal() {
+    var volumeTotal = 0;
+    this.listeColis.forEach((colis: any) => {
+      volumeTotal += colis.volume;
+    });
+    return volumeTotal.toFixed(3);
+  }
+
+  // retourne le poids total net d'une commande
+  get poidsTotalNet() {
+    var poidsTotalNet = 0;
+    this.listeColis.forEach((colis: any) => {
+      poidsTotalNet += colis.poidsNet;
+    });
+    return poidsTotalNet.toFixed(3);
+  }
+
+  // retourne le poids total brut d'une commande
+  get poidsTotalBrut() {
+    var poidsTotalBrut = 0;
+    this.listeColis.forEach((colis: any) => {
+      poidsTotalBrut += colis.poidsBrut;
+    });
+    return poidsTotalBrut.toFixed(3);
   }
 }
 
-// **************************************** dialog detail confirmer livraison *****************************
+// **************************************** dialog  confirmer livraison *****************************
 @Component({
   selector: 'app-confirmer-livraison',
   templateUrl: 'confirmer-livraison.html',
@@ -350,22 +405,44 @@ export class DetailCommande implements OnInit {
 export class ConfirmerLivraison implements OnInit {
   interval: any; //intervalle entre les keyup ==> on va specifier interval de 20ms pour ne pas autoriser l'ecriture que au scanner du code a barre
   qrCode = '';
-  inputQrCode: any;
-  
-  constructor(private dialogRef: MatDialogRef<ConfirmerLivraison>) {}
+
+  constructor(
+    private dialogRef: MatDialogRef<ConfirmerLivraison>,
+    private serviceMission: MissionsService,
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {}
 
   ngOnInit() {}
 
-   // fonction pour scanner le Qr code de confirmation de livraison avec le scanner
-   scannerQrCode(qrCodeScanne: any) {
+  // fonction pour scanner le Qr code de confirmation de livraison avec le scanner
+  @HostListener('window:keyup', ['$event'])
+  async keyEvent(event: KeyboardEvent) {
+    let reponse: any;
     if (this.interval) clearInterval(this.interval);
-    if (qrCodeScanne.code == 'Enter') {
-      if (this.qrCode) console.log(this.qrCode);
-      this.inputQrCode ='';
+    if (event.code == 'Enter') {
+      if (this.qrCode)
+        reponse = await this.serviceMission
+          .livrerCommande(this.qrCode, this.data.mission.id)
+          .toPromise();
       this.qrCode = '';
+      if (reponse[0]) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Commande bien reçue',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        this.dialogRef.close();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Qr code invalide',
+          text: "Ce Qr code n'appartiens à aucune commande pour cette mission!",
+        });
+      }
       return;
     }
-    if (qrCodeScanne.key != 'Shift') this.qrCode += qrCodeScanne.key;
+    if (event.key != 'Shift') this.qrCode += event.key;
     this.interval = setInterval(() => (this.qrCode = ''), 20);
   }
 }

@@ -70,7 +70,7 @@ import {
 export class MissionsChauffeurComponent implements OnInit {
   enCoursEstClique = false;
   enAttenteEstClique = false;
-  enTermineEstClique = false;
+  termineEstClique = false;
   tableMissionsEstAffiche = true;
   detailMissionEstAffiche = false;
   commandesAffiche = false;
@@ -94,11 +94,16 @@ export class MissionsChauffeurComponent implements OnInit {
 
   async ngOnInit() {
     await this.getMissionsParIdChauffeur();
-    this.etatInitiale === 'En cours'
-      ? ((this.missionsFiltree = this.filtrerMissionsParEtat('En cours')),
-        (this.enCoursEstClique = true))
-      : ((this.missionsFiltree = this.filtrerMissionsParEtat('En attente')),
-        (this.enAttenteEstClique = true));
+    if (this.etatInitiale === 'En cours') {
+      this.missionsFiltree = this.filtrerMissionsParEtat('En cours');
+      this.enCoursEstClique = true;
+    } else if (this.etatInitiale === 'En attente') {
+      this.missionsFiltree = this.filtrerMissionsParEtat('En attente');
+      this.enAttenteEstClique = true;
+    } else {
+      this.missionsFiltree = this.filtrerMissionsParEtat('Terminée');
+      this.termineEstClique = true;
+    }
   }
 
   // get liste des missions
@@ -116,25 +121,32 @@ export class MissionsChauffeurComponent implements OnInit {
   // pour avoir l'etat initiale. On verifie si on a une mission en cours pour donner un etat initiale = En cours si non l'etatInitiale = En attente
   get etatInitiale() {
     let etat;
-    this.filtrerMissionsParEtat('En cours').length > 0
-      ? (etat = 'En cours')
-      : (etat = 'En attente');
+    if (this.filtrerMissionsParEtat('En cours').length > 0) {
+      etat = 'En cours';
+    } else if (this.filtrerMissionsParEtat('En attente').length > 0) {
+      etat = 'En attente';
+    } else {
+      etat = 'Terminée';
+    }
     return etat;
   }
 
   // verifier si il y'a une mission en cours
-  get missionEnCoursExiste () {
-    let existe
-    this.filtrerMissionsParEtat('En cours').length > 0 ? existe = true : existe = false;
-    return existe
+  get missionEnCoursExiste() {
+    let existe;
+    this.filtrerMissionsParEtat('En cours').length > 0
+      ? (existe = true)
+      : (existe = false);
+    return existe;
   }
 
   //si on clique sur le bouton de filtrage par etat En cours on active se bouton et on affiche la liste des missions En cours
   cliquerEnCours() {
-    if (this.enCoursEstClique) return
+    if (this.filtrerMissionsParEtat('En cours').length === 0) return 
+    if (this.enCoursEstClique) return;
     this.enCoursEstClique = true;
     this.enAttenteEstClique = false;
-    this.enTermineEstClique = false;
+    this.termineEstClique = false;
     this.toggleTableMissions();
     setTimeout(() => {
       this.missionsFiltree = this.filtrerMissionsParEtat('En cours');
@@ -146,10 +158,11 @@ export class MissionsChauffeurComponent implements OnInit {
 
   //si on clique sur le bouton de filtrage par etat En attente on active se bouton et on affiche la liste des missions En cours
   cliquerEnAttente() {
-    if (this.enAttenteEstClique) return
+    if (this.filtrerMissionsParEtat('En attente').length === 0) return 
+    if (this.enAttenteEstClique) return;
     this.enCoursEstClique = false;
     this.enAttenteEstClique = true;
-    this.enTermineEstClique = false;
+    this.termineEstClique = false;
     this.toggleTableMissions();
     setTimeout(() => {
       this.missionsFiltree = this.filtrerMissionsParEtat('En attente');
@@ -161,10 +174,11 @@ export class MissionsChauffeurComponent implements OnInit {
 
   //si on clique sur le bouton de filtrage par etat Terminées on active se bouton et on affiche la liste des missions En cours
   cliquerTerminee() {
-    if (this.enTermineEstClique) return
+    if (this.filtrerMissionsParEtat('Terminée').length === 0) return 
+    if (this.termineEstClique) return;
     this.enCoursEstClique = false;
     this.enAttenteEstClique = false;
-    this.enTermineEstClique = true;
+    this.termineEstClique = true;
     this.toggleTableMissions();
     setTimeout(() => {
       this.missionsFiltree = this.filtrerMissionsParEtat('Terminée');
@@ -191,10 +205,15 @@ export class MissionsChauffeurComponent implements OnInit {
 
   async getCommandesMission(mission: any) {
     this.missionSelectionnee = mission;
-    this.commandes = await this.serviceMission.getCommandesParIdMission(mission.id).toPromise();
-    this.commandesLivrees = this.commandes.filter((commande: any) => commande.etat === "Livrée");
-    this.commandesNonLivrees = this.commandes.filter((commande: any) => commande.etat !== "Livrée");
-    this.toggleDetailMission();
+    this.commandes = await this.serviceMission
+      .getCommandesParIdMission(mission.id)
+      .toPromise();
+    this.commandesLivrees = this.commandes.filter(
+      (commande: any) => commande.etat === 'Livrée'
+    );
+    this.commandesNonLivrees = this.commandes.filter(
+      (commande: any) => commande.etat !== 'Livrée'
+    );
   }
 
   async lancerMission(id: number) {
@@ -242,18 +261,34 @@ export class MissionsChauffeurComponent implements OnInit {
       width: '1200px',
       maxWidth: '95vw',
       maxHeight: '90vh',
-      panelClass: 'custom-dialog-detail',
-      data: {idCommande: id}
+      panelClass: 'custom-dialog-detail-commande-chauffeur',
+      data: { idCommande: id, mode: "chauffeur" },
     });
   }
 
   // ouvrir boite dialogue confirmation livraison
-  ouvrirConfirmationLivraison() {
+  ouvrirConfirmationLivraison(mission: any) {
     const dialogRef = this.dialog.open(ConfirmerLivraison, {
       width: '1200px',
       maxWidth: '95vw',
       maxHeight: '90vh',
       panelClass: 'custom-dialog-livraison',
+      data: { mission: mission },
+    });
+    dialogRef.afterClosed().subscribe(async () => {
+      await this.getCommandesMission(this.missionSelectionnee);
+
+      if (
+        this.commandesLivrees.length != 0 &&
+        this.commandesNonLivrees.length == 0
+      ) {
+        await this.serviceMission
+          .modifierEtatMission(this.missionSelectionnee.id, 'Terminée')
+          .toPromise();
+        await this.getMissionsParIdChauffeur();
+        this.missionSelectionnee = this.filtrerMissionsParEtat('Terminée')[0];
+        this.cliquerTerminee();
+      }
     });
   }
 }

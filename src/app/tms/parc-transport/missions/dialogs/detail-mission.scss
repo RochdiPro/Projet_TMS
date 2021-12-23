@@ -111,7 +111,7 @@ tr {
 tr ~ tr {
   margin-top: 20px;
 }
-::ng-deep .custom-dialog-detail {
+::ng-deep .custom-dialog-detail-mission {
   mat-dialog-container {
     background-color: #f1f1f1 !important;
   }
@@ -139,6 +139,9 @@ tr:hover .position {
 }
 tr:hover {
   background: #f9f9f9;
+}
+.container-commande:hover, h3:hover {
+  cursor: pointer;
 }
 //pour mobile
 @media only screen and (max-width: 760px),

@@ -53,12 +53,12 @@
         <tr *ngFor="let commande of commandes" class="card">
             <td scope="row">
                 <div style="width: 100%; display: flex; align-items: center;">
-                    <h3>Référence: {{commande.referenceDocument}}</h3>
+                    <h3 (click)="ouvrirDetailCommande(commande.id)">Référence: {{commande.referenceDocument}}</h3>
                     <button mat-icon-button style="margin-left: auto; color: tomato;" class="position" (click)="ouvrirMap(commande)">
                         <mat-icon>place</mat-icon>
                     </button>
                 </div>
-                <div class="container-commande">
+                <div class="container-commande" (click)="ouvrirDetailCommande(commande.id)">
                     <p>
                         Client:
                     </p>
@@ -111,7 +111,7 @@
                         Tracking num:
                     </p>
                     <p style="font-weight: bold;">
-                        123456789
+                        {{commande.trackingNumber}}
                     </p>
                     <p>
                         Etat :

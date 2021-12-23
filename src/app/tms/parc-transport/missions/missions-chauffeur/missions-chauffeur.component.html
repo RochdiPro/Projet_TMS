@@ -5,14 +5,14 @@
     <div [ngClass]="{'active': enAttenteEstClique}" (click)="cliquerEnAttente()">
         <a href="javascript:void(0);">En attente</a>
     </div>
-    <div [ngClass]="{'active': enTermineEstClique}" (click)="cliquerTerminee()">
+    <div [ngClass]="{'active': termineEstClique}" (click)="cliquerTerminee()">
         <a href="javascript:void(0);">Terminée</a>
     </div>
 </div>
 <div class="missions">
     <table [@statusTableMissions]="statusTableMissions">
         <tr *ngFor="let mission of missionsFiltree" class="card">
-            <td scope="row" (click)="getCommandesMission(mission)">
+            <td scope="row" (click)="getCommandesMission(mission); this.toggleDetailMission();">
                 <div class="entete">
                     <div class="temps">
                         <i class="fas fa-clock"></i>
@@ -71,10 +71,16 @@
         <div class="boutons">
             <a href="javascript:void(0);" (click)=" toggleAfficherCommandes()">Détails</a>
             <ng-container *ngIf="missionSelectionnee.etat === 'En cours'; else elseTemplate">
-                <a href="javascript:void(0);" (click)="ouvrirConfirmationLivraison()">Livrer</a>
+                <a href="javascript:void(0);" (click)="ouvrirConfirmationLivraison(missionSelectionnee)">Livrer</a>
             </ng-container>
             <ng-template #elseTemplate>
-                <a href="javascript:void(0);" (click)="lancerMission(missionSelectionnee.id)" [ngClass]="{'disable': missionEnCoursExiste}">Lancer</a>
+                <ng-container *ngIf="missionSelectionnee.etat === 'En attente'; else elseTemplate2">
+                    <a href="javascript:void(0);" (click)="lancerMission(missionSelectionnee.id)" [ngClass]="{'disable': missionEnCoursExiste}">Lancer</a>
+                </ng-container>
+                <ng-template #elseTemplate2>
+                    <a href="javascript:void(0);" class="disable">Terminée</a>
+                </ng-template>
+                
             </ng-template>
             
         </div>

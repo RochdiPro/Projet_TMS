@@ -159,7 +159,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
       width: '1200px',
       maxWidth: '95vw',
       maxHeight: '90vh',
-      panelClass: 'custom-dialog-detail',
+      panelClass: 'custom-dialog-detail-mission',
       autoFocus: false,
       data: { mission: mission },
     });

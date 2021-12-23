@@ -1019,13 +1019,14 @@ export class AjoutMissionComponent implements OnInit {
         formData.append('etat', 'En attente');
         formData.append('date', this.listeFilesAttentes[i].date);
         console.log(formData.get('date'));
-        await this.serviceMission.creerMission(formData).toPromise();
+        let newMission = await this.serviceMission.creerMission(formData).toPromise();
         for (let i = 0; i < mission.commandes.length; i++) {
           let formDataCommande = new FormData();
           formDataCommande.append('id', mission.commandes[i].id);
           formDataCommande.append('etat', 'Affectée');
+          formDataCommande.append('idMission', newMission.id);
           await this.serviceCommande
-            .modifierEtatCommande(formDataCommande)
+            .affecterCommande(formDataCommande)
             .toPromise();
         }
       }

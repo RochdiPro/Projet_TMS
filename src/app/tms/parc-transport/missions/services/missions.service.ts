@@ -70,11 +70,6 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
-  //filtrer les missions par le matricule du vehicule et par nom chauffeur
-  // public filtrerMissionsVehiculeChauffeur(vehicule : any, chauffeur : any) {
-  //   return this.httpClient.get(erp + 'filtrerMissionsVehiculeChauffeur' + '?vehicule=' + vehicule + '&chauffeur=' + chauffeur);
-  // }
-
   // get liste des commandes
   public commandes() {
     return this.httpClient.get(erp + 'commandes');
@@ -145,6 +140,16 @@ export class MissionsService {
     formData.append('etat', etat);
     return this.httpClient
       .put(erp + 'modifier-etat-mission', formData)
+      .pipe(catchError(this.handleError));
+  }
+
+  // livrer commande
+  public livrerCommande(qrCode: string, idMaission: any) {
+    let formData = new FormData();
+    formData.append("qrCode", qrCode)
+    formData.append("idMission", idMaission)
+    return this.httpClient
+      .put(erp + 'livrer-commande', formData)
       .pipe(catchError(this.handleError));
   }
 

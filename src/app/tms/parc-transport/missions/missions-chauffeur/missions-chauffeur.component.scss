@@ -309,7 +309,8 @@ iframe {
 }
 
 .delivered {
-  background-color: #f1f1f1;
+  opacity: 0.5;
+  color: currentColor;
 }
 
 .disable {
@@ -318,5 +319,9 @@ iframe {
   color: currentColor;
   display: inline-block;  /* For IE11/ MS Edge bug */
   pointer-events: none;
+  text-decoration: none;
+}
+
+a, a:hover, a:active, a:visited, a:link{
   text-decoration: none;
 }

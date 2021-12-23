@@ -217,9 +217,9 @@ export class CommandeService {
   }
 
   //modifier l'etat du commande
-  public modifierEtatCommande(formData: any) {
+  public affecterCommande(formData: any) {
     return this.httpClient
-      .put(erp + 'modifier-etat-commande', formData)
+      .put(erp + 'affecter-commande', formData)
       .pipe(catchError(this.handleError));
   }
 
