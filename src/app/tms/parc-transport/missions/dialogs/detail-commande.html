@@ -1,75 +1,41 @@
-<table *ngIf="data.mode === 'chauffeur'">
-    <tr class="card" *ngFor="let colis of listeColis">
-        <td scope="row">
-            <div class="detail-commande">
-                <div>
-                    <div class="icon"><i class="fab fa-product-hunt"></i></div>
-                    <div>
-                        <label>Produit</label>
-                        {{colis.produit}}
-                    </div>
-                </div>
-                <div>
-                    <div class="icon"><i class="fas fa-box"></i></div>
-                    <div>
-                        <label>Pack</label>
-                        {{colis.emballage}}
-                    </div>
-                </div>
-                <div>
-                    <div class="icon"><i class="fas fa-boxes"></i></div>
-                    <div>
-                        <label>Nbr Pack</label>
-                        {{colis.quantite}}
-                    </div>
-                </div>
-                <div>
-                    <div class="icon"><i class="fas fa-ruler-combined"></i></div>
-                    <div>
-                        <label>Dimensions</label>
-                        {{colis.dimensions}}
-                    </div>
-                </div>
-            </div>
-        </td>
-    </tr>
-</table>
 <!-- table liste colisage -->
-<h2 *ngIf="data.mode === 'admin' && this.listeColis">Liste colisage</h2>
-<table class="table table-bordered" *ngIf="data.mode === 'admin' && this.listeColis">
-    <thead>
-        <tr>
-            <th scope="col">id</th>
-            <th scope="col">Produit</th>
-            <th scope="col">Pack</th>
-            <th scope="col">Qte</th>
-            <th scope="col">Nbr. Pack</th>
-            <th scope="col">LxlxH (cm)</th>
-            <th scope="col">Volume (m³)</th>
-            <th scope="col">Poids net (kg)</th>
-            <th scope="col">Poids brut (kg)</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let colis of this.listeColis">
-            <th scope="row">{{colis.idProduit}}</th>
-            <td>{{colis.produit}}</td>
-            <td>{{colis.emballage}}</td>
-            <td>{{colis.nombrePack}}</td>
-            <td>{{colis.quantite}}</td>
-            <td>{{colis.dimensions}}</td>
-            <td>{{colis.volume}}</td>
-            <td>{{colis.poidsNet}}</td>
-            <td>{{colis.poidsBrut}}</td>
-        </tr>
-        <tr>
-            <th scope="row" colspan="3"></th>
-            <td>Total</td>
-            <td>{{nombrePackTotal}}</td>
-            <td></td>
-            <td>{{volumeTotal}}</td>
-            <td>{{poidsTotalNet}}</td>
-            <td>{{poidsTotalBrut}}</td>
-        </tr>
-    </tbody>
-</table>
+<h2 *ngIf="this.listeColis">Liste colisage</h2>
+<div>
+    <table class="table table-bordered" *ngIf="this.listeColis">
+        <thead>
+            <tr>
+                <th scope="col">id</th>
+                <th scope="col">Produit</th>
+                <th scope="col">Pack</th>
+                <th scope="col">Qte</th>
+                <th scope="col">Nbr. Pack</th>
+                <th scope="col">LxlxH (cm)</th>
+                <th scope="col">Volume (m³)</th>
+                <th scope="col">Poids net (kg)</th>
+                <th scope="col">Poids brut (kg)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let colis of this.listeColis">
+                <th scope="row">{{colis.idProduit}}</th>
+                <td>{{colis.produit}}</td>
+                <td>{{colis.emballage}}</td>
+                <td>{{colis.nombrePack}}</td>
+                <td>{{colis.quantite}}</td>
+                <td>{{colis.dimensions}}</td>
+                <td>{{colis.volume}}</td>
+                <td>{{colis.poidsNet}}</td>
+                <td>{{colis.poidsBrut}}</td>
+            </tr>
+            <tr>
+                <th scope="row" colspan="3"></th>
+                <td>Total</td>
+                <td>{{nombrePackTotal}}</td>
+                <td></td>
+                <td>{{volumeTotal}}</td>
+                <td>{{poidsTotalNet}}</td>
+                <td>{{poidsTotalBrut}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

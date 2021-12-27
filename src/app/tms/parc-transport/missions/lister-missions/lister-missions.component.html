@@ -102,14 +102,14 @@
         <ng-container matColumnDef="actions">
             <mat-header-cell mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
             <mat-cell mat-cell *matCellDef="let element">
-                <button class="mb-2  btn " *ngIf="element.etat === 'Accordée'"><i class="fas fa-play"
+                <!-- <button class="mb-2  btn " *ngIf="element.etat === 'Accordée'"><i class="fas fa-play"
                         style="color: #3f6ad8;" matTooltip="Lancer" matTooltipPosition="after"
                         matTooltipShowDelay="600"></i></button>
                 <button class="mb-2  btn " *ngIf="element.etat === 'En Cours'"><i class="fas fas fa-stop"
                         style="color: tomato" matTooltip="Terminer" matTooltipPosition="after"
                         matTooltipShowDelay="600"></i></button>
                 <button class="mb-2  btn " *ngIf="element.etat === 'Terminée'" disabled><i
-                        class="fas fas fa-stop"></i></button>
+                        class="fas fas fa-stop"></i></button> -->
                 <button class="mb-2  btn " matTooltip="Afficher détail" matTooltipPosition="after"
                     matTooltipShowDelay="600"><i class="fas fa-info-circle"
                         (click)='detailDialog(element)' style="color: #3f6ad8;"></i></button>

@@ -32,19 +32,32 @@ export class AffecterChauffeur implements OnInit {
   chauffeurs: any;
   couplesVehiculeChauffeursPrives: any = [];
   copieVehiculeChauffeurs: any = [];
+  commandeActive: Array<boolean> = [];
+  vehiculeActive: Array<boolean> = [];
+  vehiculesTot: any = [];
+  listeColis: any;
+  typeVehicule: any;
+  vehiculeChauffeurs: any
+  vehiculeLoue: any;
+
   form: FormGroup;
   constructor(
     private dialogRef: MatDialogRef<AffecterChauffeur>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private serviceChauffeur: ChauffeurService,
+    private serviceMission: MissionsService,
     private fb: FormBuilder
   ) {}
 
   async ngOnInit() {
-    this;
     this.creerForm();
     await this.getListeChauffeurs();
     this.verifierCompatibiliteChauffeur();
+    this.data.vehiculesPrives.forEach((v: any) => {
+      this.vehiculesTot.push(v.vehicule);
+    });
+    this.vehiculesTot = this.vehiculesTot.concat(this.vehiculesLoues);
+    console.log(this.vehiculesTot);
   }
 
   creerForm() {
@@ -73,7 +86,6 @@ export class AffecterChauffeur implements OnInit {
   }
 
   get vehicules() {
-    console.log(this.data.vehiculesPrives);
     return this.data.vehiculesPrives;
   }
 
@@ -83,6 +95,34 @@ export class AffecterChauffeur implements OnInit {
 
   async getListeChauffeurs() {
     this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+  }
+
+  changerCommandeActive(i: number) {
+    this.commandeActive[i] = true;
+    for (let j = 0; j < this.commandeActive.length; j++) {
+      j === i ? '' : (this.commandeActive[j] = false);
+    }
+  }
+
+  changerVehiculeActive(i: number) {
+    this.vehiculeActive[i] = true;
+    for (let j = 0; j < this.vehiculeActive.length; j++) {
+      j === i ? '' : (this.vehiculeActive[j] = false);
+    }
+  }
+
+  async choisirCommande(commande: any) {
+    this.listeColis = await this.serviceMission.getListeColisParIdCommande(commande.id).toPromise();
+  }
+
+  choisirVehicule(i: number) {
+    if (i < this.couplesVehiculeChauffeursPrives.length) {
+      this.typeVehicule = "prive";
+      this.vehiculeChauffeurs = this.couplesVehiculeChauffeursPrives[i];
+    } else {
+      this.typeVehicule = "loue"
+      this.vehiculeLoue = this.vehiculesLoues[i - this.couplesVehiculeChauffeursPrives.length]
+    }
   }
 
   verifierCompatibiliteChauffeur() {

@@ -1,38 +1,133 @@
-<h1 mat-dialog-title>Affecter des chauffeurs</h1>
-<div class="container">
-    <div [formGroup]="form">
-        <div class="inline-flex" *ngIf="couplesVehiculeChauffeursPrives.length > 0">
-            <p>Vehicule privé</p>
-            <p>Chauffeur</p>
+<div *ngIf="false">
+    <h1 mat-dialog-title>Affecter des chauffeurs</h1>
+    <div class="container">
+        <div [formGroup]="form">
+            <div class="inline-flex" *ngIf="couplesVehiculeChauffeursPrives.length > 0">
+                <p>Vehicule privé</p>
+                <p>Chauffeur</p>
+            </div>
+            <div formArrayName="chauffeurs">
+                <div class="inline-flex" *ngFor="let couple of couplesVehiculeChauffeursPrives; let i=index"
+                    [formGroupName]="i">
+                    <p>{{couple.vehicule.matricule}}</p>
+                    <mat-form-field appearance="fill">
+                        <mat-select placeholder="Chauffeur" name="chauffeur" formControlName="chauffeur"
+                            (selectionChange)="rafraichirListeChauffeur()">
+                            <mat-option *ngFor="let chauffeur of couple.chauffeurs" [value]="chauffeur">
+                                {{chauffeur.nom}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="inline-flex" *ngIf="vehiculesLoues.length > 0">
+                <p>Vehicule loué</p>
+                <p>Chauffeur</p>
+            </div>
+            <div formArrayName="chauffeursLoues">
+                <div class="inline-flex" *ngFor="let vehicule of vehiculesLoues; let i=index" [formGroupName]="i">
+                    <p>{{vehicule.matricule}}</p>
+                    <mat-form-field appearance="fill">
+                        <input matInput type="text" placeholder="Nom chauffeur" name="chauffeurLoue"
+                            formControlName="chauffeurLoue">
+                    </mat-form-field>
+                </div>
+            </div>
         </div>
-        <div formArrayName="chauffeurs">
-            <div class="inline-flex" *ngFor="let couple of couplesVehiculeChauffeursPrives; let i=index" [formGroupName]="i">
-                <p>{{couple.vehicule.matricule}}</p>
-                <mat-form-field appearance="fill">
-                    <mat-select placeholder="Chauffeur" name="chauffeur" formControlName="chauffeur"
-                        (selectionChange)="rafraichirListeChauffeur()">
-                        <mat-option *ngFor="let chauffeur of couple.chauffeurs" [value]="chauffeur">
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button mat-dialog-close color="warn" style="margin-left: auto;">Annuler</button>
+        <button mat-raised-button color="primary" cdkFocusInitial (click)="valider()">Ok</button>
+    </div>
+</div>
+
+
+
+<div *ngIf="true" style="height: 500px; width: 100%; display: flex; position: relative">
+    <div class="liste-commandes">
+        <ul>
+            <li class="list" *ngFor="let commande of data.mission; let i = index;" [attr.data-selected]="false"
+                [class.active]="commandeActive[i]">
+                <a href="javascript:void(0);" (click)="changerCommandeActive(i); choisirCommande(commande)">commande
+                    {{commande.id}}</a>
+            </li>
+        </ul>
+    </div>
+    <div class="container">
+        <div class="container-colis">
+            <h2>Colis</h2>
+            <div class="liste-colis scrollbar">
+                <ul>
+                    <li class="list" *ngFor="let colis of listeColis">
+                        <a href="javascript:void(0);" style="display: flex;">{{colis.emballage}} <span
+                                style="margin-left: auto; margin-right: 10px;">quantité {{colis.nombrePack}}</span></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="container-vehicule">
+            <div class="chauffeur">
+                <i class="fas fa-user"></i>
+                <mat-form-field *ngIf="typeVehicule === 'prive'">
+                    <mat-label>Chauffeur</mat-label>
+                    <mat-select placeholder="Chauffeur" name="chauffeur" (selectionChange)="rafraichirListeChauffeur()">
+                        <mat-option *ngFor="let chauffeur of vehiculeChauffeurs.chauffeurs" [value]="chauffeur">
                             {{chauffeur.nom}}
                         </mat-option>
                     </mat-select>
                 </mat-form-field>
-            </div>
-        </div>
-        <div class="inline-flex" *ngIf="vehiculesLoues.length > 0">
-            <p>Vehicule loué</p>
-            <p>Chauffeur</p>
-        </div>
-        <div formArrayName="chauffeursLoues">
-            <div class="inline-flex" *ngFor="let vehicule of vehiculesLoues; let i=index" [formGroupName]="i">
-                <p>{{vehicule.matricule}}</p>
-                <mat-form-field appearance="fill">
-                    <input matInput type="text" placeholder="Nom chauffeur" name="chauffeurLoue" formControlName="chauffeurLoue">
+                <mat-form-field *ngIf="typeVehicule === 'loue'">
+                    <mat-label>Chauffeur</mat-label>
+                    <input matInput placeholder="nom chauffeur">
+                    <mat-icon matSuffix>mode_edit</mat-icon>
                 </mat-form-field>
+            </div>
+            <div class="commandes">
+                <h2>Commandes</h2>
+                <div class="liste-commande scrollbar">
+                    <ul>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 1</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 2</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 3</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 4</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 5</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 1</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 2</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 3</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 4</a>
+                        </li>
+                        <li class="list">
+                            <a href="javascript:void(0);">commande 5</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div mat-dialog-actions>
-    <button mat-button mat-dialog-close color="warn" style="margin-left: auto;">Annuler</button>
-    <button mat-raised-button color="primary" cdkFocusInitial (click)="valider()">Ok</button>
+    <div class="liste-vehicules">
+        <ul>
+            <li class="list" *ngFor="let vehicule of vehiculesTot; let i=index" [attr.data-selected]="false"
+                [class.active]="vehiculeActive[i]">
+                <a href="javascript:void(0);"
+                    (click)="changerVehiculeActive(i); choisirVehicule(i)"><span>{{vehicule.matricule}}</span></a>
+            </li>
+        </ul>
+    </div>
 </div>

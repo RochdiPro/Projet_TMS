@@ -21,6 +21,10 @@
                     <span style="width: 60px;">
                         <button mat-icon-button name="ajouter-mission" color="primary"
                             [disabled]="pasDeVehiculeSelectionne || missionVide || poidsVehiculeInferieurPoidsCommande || volumeVehiculeInferieurVolumeCommande"
+                            (click)=" ajouterMissionFileAttente()" *ngIf="false">
+                            <mat-icon>add_circle</mat-icon>
+                        </button>
+                        <button mat-icon-button name="ajouter-mission" color="primary"
                             (click)=" ajouterMissionFileAttente()">
                             <mat-icon>add_circle</mat-icon>
                         </button>

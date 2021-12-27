@@ -764,10 +764,13 @@ export class AjoutMissionComponent implements OnInit {
     console.log(this.vehiculesSelectionnes);
     // ouvrir boite dialogue affecter-chauffeur
     const dialogRef = this.dialog.open(AffecterChauffeur, {
-      width: '400px',
+      width: '2000px',
+      minHeight: '500px',
+      panelClass: 'affecter-commandes',
       data: {
         vehiculesPrives: this.vehiculesPriveSelectionnes,
         vehiculesLoues: this.vehiculesLoueSelectionnes,
+        mission: this.mission
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
