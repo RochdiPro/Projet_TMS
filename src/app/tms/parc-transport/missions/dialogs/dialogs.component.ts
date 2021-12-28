@@ -35,10 +35,19 @@ export class AffecterChauffeur implements OnInit {
   commandeActive: Array<boolean> = [];
   vehiculeActive: Array<boolean> = [];
   vehiculesTot: any = [];
+  listeColisTot: any;
   listeColis: any;
+  copieListeColis: any;
   typeVehicule: any;
-  vehiculeChauffeurs: any
+  vehiculeChauffeurs: any;
   vehiculeLoue: any;
+  vehiculeChauffeurSelectionne: any = [];
+  index: any;
+  listeCommandesParVehicule: any = [];
+  listeMissionsVehiculesPrive: any = [];
+  listeMissionsVehiculesLoue: any = [];
+  listeCommandes: any = [];
+  commandeSelectionne: any;
 
   form: FormGroup;
   constructor(
@@ -57,7 +66,11 @@ export class AffecterChauffeur implements OnInit {
       this.vehiculesTot.push(v.vehicule);
     });
     this.vehiculesTot = this.vehiculesTot.concat(this.vehiculesLoues);
-    console.log(this.vehiculesTot);
+    this.commandeActive[0] = true;
+    this.vehiculeActive[0] = true;
+    await this.chargerCommandes();
+    this.choisirCommande(this.data.mission[0]);
+    this.choisirVehicule(0);
   }
 
   creerForm() {
@@ -111,22 +124,92 @@ export class AffecterChauffeur implements OnInit {
     }
   }
 
-  async choisirCommande(commande: any) {
-    this.listeColis = await this.serviceMission.getListeColisParIdCommande(commande.id).toPromise();
+  async chargerCommandes() {
+    let listeColis: any = [];
+    for (let i = 0; i < this.data.mission.length; i++) {
+      const commande = this.data.mission[i];
+      listeColis = listeColis.concat(
+        await this.serviceMission
+          .getListeColisParIdCommande(commande.id)
+          .toPromise()
+      );
+    }
+    this.listeColisTot = listeColis;
+    console.log(this.listeColisTot);
+  }
+
+  choisirCommande(commande: any) {
+    this.listeColis = this.listeColisTot.filter(
+      (colis: any) => Number(colis.idCommande) === commande.id
+    );
+    // bloquage la
+    this.copieListeColis = [...this.listeColis]
   }
 
   choisirVehicule(i: number) {
     if (i < this.couplesVehiculeChauffeursPrives.length) {
-      this.typeVehicule = "prive";
+      this.typeVehicule = 'prive';
       this.vehiculeChauffeurs = this.couplesVehiculeChauffeursPrives[i];
+      this.index = i;
     } else {
-      this.typeVehicule = "loue"
-      this.vehiculeLoue = this.vehiculesLoues[i - this.couplesVehiculeChauffeursPrives.length]
+      this.typeVehicule = 'loue';
+      this.vehiculeLoue =
+        this.vehiculesLoues[i - this.couplesVehiculeChauffeursPrives.length];
     }
   }
 
+  ajouterCommandeAuVehicule(col: any) {
+    let colis = Object.assign({}, col);
+    let commandeExiste =
+      this.listeCommandes.filter(
+        (commande: any) => Number(colis.idCommande) === commande.commande.id
+      ).length > 0;
+    if (!commandeExiste) {
+      colis.nombrePack = 1;
+      // changer cette valeur quand en finie par -=1
+      col.nombrePack = 4;
+      this.listeCommandes.push({
+        commande: this.commandeSelectionne,
+        colis: [colis],
+      });
+    } else {
+      let index = this.listeCommandes.findIndex(
+        (commande: any) => Number(colis.idCommande) === commande.commande.id
+      );
+
+      let colisExiste =
+        this.listeCommandes[index].colis.filter(
+          (col: any) => Number(colis.id) === col.id
+        ).length > 0;
+      if (!colisExiste) {
+        colis.nombrePack = 1;
+        col.nombrePack -= 1;
+        this.listeCommandes[index].colis.push(colis);
+      }
+    }
+  }
+
+  augmenterQte(colis: any) {
+    if (this.changerQteNonAffectee(colis, -1)) colis.nombrePack += 1;
+  }
+
+  diminuerQte(colis: any) {
+    if (colis.nombrePack === 1) return;
+    colis.nombrePack -= 1;
+    this.changerQteNonAffectee(colis, 1);
+  }
+
+  changerQteNonAffectee(col: any, pas: number) {
+    let index = this.listeColis.findIndex((colis: any) => colis.id === col.id);
+    this.listeColis[index].nombrePack = this.copieListeColis[index].nombrePack + pas;
+    if (this.listeColis[index].nombrePack < 0) {
+      this.listeColis[index].nombrePack = 0
+      return false
+    };
+    return true;
+  }
+
   verifierCompatibiliteChauffeur() {
-    console.log(this.vehicules);
     this.vehicules.forEach((vehicule: any) => {
       let categorie = vehicule.vehicule.categories.split('/');
       let chauffeurs: any = [];
@@ -140,6 +223,10 @@ export class AffecterChauffeur implements OnInit {
       this.couplesVehiculeChauffeursPrives.push({
         vehicule: vehicule.vehicule,
         chauffeurs: chauffeurs,
+      });
+      this.vehiculeChauffeurSelectionne.push({
+        vehicule: vehicule.vehicule,
+        chauffeur: {},
       });
     });
     for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
@@ -157,30 +244,26 @@ export class AffecterChauffeur implements OnInit {
         ...this.copieVehiculeChauffeurs[i].chauffeurs,
       ];
     }
-    for (let i = 0; i < this.chauffeursForms.controls.length; i++) {
+    for (let i = 0; i < this.vehiculeChauffeurSelectionne.length; i++) {
       for (let j = 0; j < this.couplesVehiculeChauffeursPrives.length; j++) {
         this.couplesVehiculeChauffeursPrives[j].chauffeurs.forEach(
           (chauffeurLoop: any) => {
-            console.log(
-              this.chauffeursForms.controls[i].get('chauffeur').value
-            );
             if (
               j !== i &&
-              this.chauffeursForms.controls[i].get('chauffeur').value
-                .id_Employe === chauffeurLoop.id_Employe
+              this.vehiculeChauffeurSelectionne[i].chauffeur.id_Employe ===
+                chauffeurLoop.id_Employe
             ) {
               let index = this.couplesVehiculeChauffeursPrives[
                 j
               ].chauffeurs.findIndex(
                 (chauffeur: any) =>
-                  this.chauffeursForms.controls[i].get('chauffeur').value
-                    .id_Employe === chauffeur.id_Employe
+                  this.vehiculeChauffeurSelectionne[i].chauffeur.id_Employe ===
+                  chauffeur.id_Employe
               );
               this.couplesVehiculeChauffeursPrives[j].chauffeurs.splice(
                 index,
                 1
               );
-              console.log(this.couplesVehiculeChauffeursPrives[j].chauffeurs);
             }
           }
         );

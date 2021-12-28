@@ -59,7 +59,7 @@
             <div class="liste-colis scrollbar">
                 <ul>
                     <li class="list" *ngFor="let colis of listeColis">
-                        <a href="javascript:void(0);" style="display: flex;">{{colis.emballage}} <span
+                        <a href="javascript:void(0);" style="display: flex;" (click)="ajouterCommandeAuVehicule(colis)">{{colis.emballage}} <span
                                 style="margin-left: auto; margin-right: 10px;">quantité {{colis.nombrePack}}</span></a>
                     </li>
                 </ul>
@@ -70,7 +70,7 @@
                 <i class="fas fa-user"></i>
                 <mat-form-field *ngIf="typeVehicule === 'prive'">
                     <mat-label>Chauffeur</mat-label>
-                    <mat-select placeholder="Chauffeur" name="chauffeur" (selectionChange)="rafraichirListeChauffeur()">
+                    <mat-select placeholder="Chauffeur" name="chauffeur" (selectionChange)="rafraichirListeChauffeur()" [(ngModel)]="vehiculeChauffeurSelectionne[index].chauffeur">
                         <mat-option *ngFor="let chauffeur of vehiculeChauffeurs.chauffeurs" [value]="chauffeur">
                             {{chauffeur.nom}}
                         </mat-option>
@@ -86,35 +86,23 @@
                 <h2>Commandes</h2>
                 <div class="liste-commande scrollbar">
                     <ul>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 1</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 2</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 3</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 4</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 5</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 1</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 2</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 3</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 4</a>
-                        </li>
-                        <li class="list">
-                            <a href="javascript:void(0);">commande 5</a>
+                        <li class="list" *ngFor="let commande of this.listeCommandes">
+                            <a href="javascript:void(0);" *ngIf="false">{{commande.commande.id}}</a>
+                            <div class="colis">
+                                <div class="entete"><h3>Commande {{commande.commande.id}}</h3><mat-icon class="close">close</mat-icon></div>
+                                <div class="contenue">
+                                    <ul>
+                                        <li class="list" *ngFor="let colis of commande.colis">
+                                            <div>{{colis.emballage}}</div>
+                                            <div class="qte">
+                                                <button style="margin-left: auto;" (click)="augmenterQte(colis)"><mat-icon>add</mat-icon></button>
+                                                <input type="number" [(ngModel)]="colis.nombrePack" min="1" (keyup)="changerQteNonAffectee(colis, colis.nombrePack)">
+                                                <button (click)="diminuerQte(colis)"><mat-icon>remove</mat-icon></button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>

@@ -384,3 +384,79 @@ h2 {
   margin-top: 20px;
 
 }
+
+.liste-commande .list {
+  max-height: 300px;
+}
+
+.liste-commande .colis {
+  height: 300px;
+  color: #000000;
+  position: relative;
+}
+
+.liste-commande .colis .entete {
+  display: flex;
+  width: 100%;
+  padding: 10px;
+}
+
+.close {
+  margin-left: auto;
+  opacity: 0.3;
+}
+.close:hover {
+  opacity: 1;
+}
+
+.liste-commande .colis .contenue .list {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  align-items: center;
+}
+
+.liste-commande .colis .contenue .list .qte {
+  display: flex;
+  align-items: center;
+}
+
+.liste-commande .colis .contenue .list .qte input {
+  width: 40px;
+  height: 20px;
+  border: none;
+  outline: none;
+  text-align: center;
+}
+
+.liste-commande .colis .contenue .list .qte .mat-icon {
+  font-size: 16px;
+}
+
+.liste-commande .colis .contenue .list .qte button {
+  background: none;
+  width: 24px;
+  height: 16px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.3;
+}
+
+.liste-commande .colis .contenue .list .qte button:hover {
+  opacity: 1;
+} 
+
+
+// pour cacher les fleches de input number
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
