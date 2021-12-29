@@ -360,6 +360,7 @@ h2 {
   overflow: auto;
 }
 
+// pour le scrollbar
 .scrollbar::-webkit-scrollbar {
   display: block;
   width: 3px;
@@ -390,7 +391,6 @@ h2 {
 }
 
 .liste-commande .colis {
-  height: 300px;
   color: #000000;
   position: relative;
 }
@@ -399,6 +399,9 @@ h2 {
   display: flex;
   width: 100%;
   padding: 10px;
+  position: sticky;
+  top: 0;
+  background-color: white;
 }
 
 .close {

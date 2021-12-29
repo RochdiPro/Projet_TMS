@@ -59,7 +59,8 @@
             <div class="liste-colis scrollbar">
                 <ul>
                     <li class="list" *ngFor="let colis of listeColis">
-                        <a href="javascript:void(0);" style="display: flex;" (click)="ajouterCommandeAuVehicule(colis)">{{colis.emballage}} <span
+                        <a href="javascript:void(0);" style="display: flex;"
+                            (click)="ajouterCommandeAuVehicule(colis);">{{colis.emballage}} <span
                                 style="margin-left: auto; margin-right: 10px;">quantité {{colis.nombrePack}}</span></a>
                     </li>
                 </ul>
@@ -70,7 +71,8 @@
                 <i class="fas fa-user"></i>
                 <mat-form-field *ngIf="typeVehicule === 'prive'">
                     <mat-label>Chauffeur</mat-label>
-                    <mat-select placeholder="Chauffeur" name="chauffeur" (selectionChange)="rafraichirListeChauffeur()" [(ngModel)]="vehiculeChauffeurSelectionne[index].chauffeur">
+                    <mat-select placeholder="Chauffeur" name="chauffeur" (selectionChange)="rafraichirListeChauffeur()"
+                        [(ngModel)]="couplesVehiculeChauffeurPrive[index].chauffeur">
                         <mat-option *ngFor="let chauffeur of vehiculeChauffeurs.chauffeurs" [value]="chauffeur">
                             {{chauffeur.nom}}
                         </mat-option>
@@ -86,18 +88,29 @@
                 <h2>Commandes</h2>
                 <div class="liste-commande scrollbar">
                     <ul>
-                        <li class="list" *ngFor="let commande of this.listeCommandes">
-                            <a href="javascript:void(0);" *ngIf="false">{{commande.commande.id}}</a>
-                            <div class="colis">
-                                <div class="entete"><h3>Commande {{commande.commande.id}}</h3><mat-icon class="close">close</mat-icon></div>
+                        <li class="list" *ngFor="let commande of listeCommandes">
+                            <a href="javascript:void(0);"
+                                *ngIf="!commandeDansVehiculeSelectionne"
+                                (click)="afficherListeColis(commande.commande); choisirCommande(commande.commande)">{{commande.commande.id}}</a>
+                            <div class="colis scrollbar" [@statusDetailCommande]="statusDetailCommande"
+                                *ngIf="commandeDansVehiculeSelectionne && commandeDansVehiculeSelectionne.id === commande.commande.id">
+                                <div class="entete">
+                                    <h3>Commande {{commande.commande.id}}</h3>
+                                    <mat-icon class="close" (click)="boutonFermerListeColis()">close</mat-icon>
+                                </div>
                                 <div class="contenue">
                                     <ul>
                                         <li class="list" *ngFor="let colis of commande.colis">
                                             <div>{{colis.emballage}}</div>
                                             <div class="qte">
-                                                <button style="margin-left: auto;" (click)="augmenterQte(colis)"><mat-icon>add</mat-icon></button>
-                                                <input type="number" [(ngModel)]="colis.nombrePack" min="1" (keyup)="changerQteNonAffectee(colis, colis.nombrePack)">
-                                                <button (click)="diminuerQte(colis)"><mat-icon>remove</mat-icon></button>
+                                                <button style="margin-left: auto;" (click)="augmenterQte(colis)">
+                                                    <mat-icon>add</mat-icon>
+                                                </button>
+                                                <input type="number" [(ngModel)]="colis.nombrePack" min="1"
+                                                    (keyup)="changerQteNonAffectee(colis)">
+                                                <button (click)="diminuerQte(colis)">
+                                                    <mat-icon>remove</mat-icon>
+                                                </button>
                                             </div>
                                         </li>
                                     </ul>
@@ -114,7 +127,7 @@
             <li class="list" *ngFor="let vehicule of vehiculesTot; let i=index" [attr.data-selected]="false"
                 [class.active]="vehiculeActive[i]">
                 <a href="javascript:void(0);"
-                    (click)="changerVehiculeActive(i); choisirVehicule(i)"><span>{{vehicule.matricule}}</span></a>
+                    (click)="changerVehiculeActive(i); choisirVehicule(i); boutonFermerListeColis()"><span>{{vehicule.matricule}}</span></a>
             </li>
         </ul>
     </div>

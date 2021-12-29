@@ -1,4 +1,11 @@
 import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import {
   Component,
   HostListener,
   Inject,
@@ -25,6 +32,27 @@ import { MissionsService } from '../services/missions.service';
   selector: 'affecter-chauffeur',
   templateUrl: 'affecter-chauffeur.html',
   styleUrls: ['affecter-chauffeur.scss'],
+  animations: [
+    trigger('statusDetailCommande', [
+      state(
+        'show',
+        style({
+          height: '300px',
+          opacity: 1,
+          overflow: 'auto',
+        })
+      ),
+      state(
+        'hide',
+        style({
+          overflow: 'hidden',
+          opacity: 0,
+          height: '40px',
+        })
+      ),
+      transition('show <=> hide', animate('300ms')),
+    ]),
+  ],
 })
 export class AffecterChauffeur implements OnInit {
   chauffeursCompatibles: any;
@@ -37,17 +65,20 @@ export class AffecterChauffeur implements OnInit {
   vehiculesTot: any = [];
   listeColisTot: any;
   listeColis: any;
-  copieListeColis: any;
+  copieListeColisTot: any;
   typeVehicule: any;
   vehiculeChauffeurs: any;
   vehiculeLoue: any;
-  vehiculeChauffeurSelectionne: any = [];
   index: any;
   listeCommandesParVehicule: any = [];
   listeMissionsVehiculesPrive: any = [];
   listeMissionsVehiculesLoue: any = [];
   listeCommandes: any = [];
   commandeSelectionne: any;
+  listeColisAffiche = false;
+  commandeDansVehiculeSelectionne: any;
+  couplesVehiculeChauffeurPrive: any = [];
+  couplesVehiculeChauffeurLoue: any = [];
 
   form: FormGroup;
   constructor(
@@ -64,6 +95,18 @@ export class AffecterChauffeur implements OnInit {
     this.verifierCompatibiliteChauffeur();
     this.data.vehiculesPrives.forEach((v: any) => {
       this.vehiculesTot.push(v.vehicule);
+      this.couplesVehiculeChauffeurPrive.push({
+        vehicule: v.vehicule,
+        chauffeur: {},
+        commandes: [],
+      });
+    });
+    this.vehiculesLoues.forEach((vehicule: any) => {
+      this.couplesVehiculeChauffeurLoue.push({
+        vehicule: vehicule,
+        chauffeur: '',
+        commandes: [],
+      });
     });
     this.vehiculesTot = this.vehiculesTot.concat(this.vehiculesLoues);
     this.commandeActive[0] = true;
@@ -106,6 +149,40 @@ export class AffecterChauffeur implements OnInit {
     return this.data.vehiculesLoues;
   }
 
+  // etat du div qui contient liste des colis dans voiture "show" pour afficher, "hide" pour cacher
+  get statusDetailCommande() {
+    return this.listeColisAffiche ? 'show' : 'hide';
+  }
+
+  // la fonction qui permet de lancer le changement d'etat
+  toggleListeColis() {
+    this.listeColisAffiche = !this.listeColisAffiche;
+  }
+
+  afficherListeColis(commande: any) {
+    this.commandeDansVehiculeSelectionne = commande;
+    if (!this.listeColisAffiche) {
+      setTimeout(() => {
+        this.toggleListeColis();
+      }, 20);
+    } else {
+      this.toggleListeColis();
+      setTimeout(() => {
+        this.commandeDansVehiculeSelectionne = commande;
+      }, 310);
+      setTimeout(() => {
+        this.toggleListeColis();
+      }, 20);
+    }
+  }
+
+  boutonFermerListeColis() {
+    this.toggleListeColis();
+    setTimeout(() => {
+      this.commandeDansVehiculeSelectionne = undefined;
+    }, 310);
+  }
+
   async getListeChauffeurs() {
     this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
   }
@@ -136,14 +213,18 @@ export class AffecterChauffeur implements OnInit {
     }
     this.listeColisTot = listeColis;
     console.log(this.listeColisTot);
+    this.copieListeColisTot = JSON.parse(JSON.stringify(this.listeColisTot));
   }
 
   choisirCommande(commande: any) {
     this.listeColis = this.listeColisTot.filter(
       (colis: any) => Number(colis.idCommande) === commande.id
     );
-    // bloquage la
-    this.copieListeColis = [...this.listeColis]
+    this.commandeSelectionne = commande;
+    let index = this.data.mission.findIndex(
+      (cmd: any) => cmd.id === commande.id
+    );
+    this.changerCommandeActive(index);
   }
 
   choisirVehicule(i: number) {
@@ -151,11 +232,13 @@ export class AffecterChauffeur implements OnInit {
       this.typeVehicule = 'prive';
       this.vehiculeChauffeurs = this.couplesVehiculeChauffeursPrives[i];
       this.index = i;
+      this.listeCommandes = this.couplesVehiculeChauffeurPrive[i].commandes;
     } else {
       this.typeVehicule = 'loue';
       this.vehiculeLoue =
         this.vehiculesLoues[i - this.couplesVehiculeChauffeursPrives.length];
     }
+    console.log(this.couplesVehiculeChauffeurPrive);
   }
 
   ajouterCommandeAuVehicule(col: any) {
@@ -164,48 +247,85 @@ export class AffecterChauffeur implements OnInit {
       this.listeCommandes.filter(
         (commande: any) => Number(colis.idCommande) === commande.commande.id
       ).length > 0;
-    if (!commandeExiste) {
-      colis.nombrePack = 1;
-      // changer cette valeur quand en finie par -=1
-      col.nombrePack = 4;
-      this.listeCommandes.push({
-        commande: this.commandeSelectionne,
-        colis: [colis],
-      });
-    } else {
-      let index = this.listeCommandes.findIndex(
-        (commande: any) => Number(colis.idCommande) === commande.commande.id
-      );
-
-      let colisExiste =
-        this.listeCommandes[index].colis.filter(
-          (col: any) => Number(colis.id) === col.id
-        ).length > 0;
-      if (!colisExiste) {
+    if (col.nombrePack > 0) {
+      if (!commandeExiste) {
         colis.nombrePack = 1;
         col.nombrePack -= 1;
-        this.listeCommandes[index].colis.push(colis);
+        this.listeCommandes.push({
+          commande: this.commandeSelectionne,
+          colis: [colis],
+        });
+        this.afficherListeColis(this.commandeSelectionne);
+      } else {
+        let index = this.listeCommandes.findIndex(
+          (commande: any) => Number(colis.idCommande) === commande.commande.id
+        );
+
+        let colisExiste =
+          this.listeCommandes[index].colis.filter(
+            (col: any) => Number(colis.id) === col.id
+          ).length > 0;
+        if (!colisExiste) {
+          colis.nombrePack = 1;
+          col.nombrePack -= 1;
+          this.listeCommandes[index].colis.push(colis);
+          this.afficherListeColis(this.commandeSelectionne);
+        }
       }
     }
   }
 
   augmenterQte(colis: any) {
-    if (this.changerQteNonAffectee(colis, -1)) colis.nombrePack += 1;
+    let index = this.listeColisTot.findIndex((col: any) => colis.id === col.id);
+    if (this.listeColisTot[index].nombrePack === 0) return;
+    colis.nombrePack += 1;
+    this.changerQteNonAffectee(colis);
   }
 
   diminuerQte(colis: any) {
     if (colis.nombrePack === 1) return;
     colis.nombrePack -= 1;
-    this.changerQteNonAffectee(colis, 1);
+    this.changerQteNonAffectee(colis);
   }
 
-  changerQteNonAffectee(col: any, pas: number) {
-    let index = this.listeColis.findIndex((colis: any) => colis.id === col.id);
-    this.listeColis[index].nombrePack = this.copieListeColis[index].nombrePack + pas;
-    if (this.listeColis[index].nombrePack < 0) {
-      this.listeColis[index].nombrePack = 0
-      return false
-    };
+  changerQteNonAffectee(col: any) {
+    let index = this.listeColisTot.findIndex(
+      (colis: any) => colis.id === col.id
+    );
+    let nbrPack = 0;
+    let nbrPackAffecte = 0;
+    let i = 0;
+    this.couplesVehiculeChauffeurPrive.forEach((element: any) => {
+      element.commandes.forEach((commande: any) => {
+        let commandeFiltre = commande.colis.filter(
+          (coli: any) => coli.id === col.id
+        );
+        if (commandeFiltre.length > 0) {
+          nbrPack += commandeFiltre[0].nombrePack;
+          if (i !== this.index) {
+            nbrPackAffecte += commandeFiltre[0].nombrePack;
+          }
+        }
+      });
+      i++;
+    });
+    this.listeColisTot[index].nombrePack =
+      this.copieListeColisTot[index].nombrePack - nbrPack;
+    if (this.listeColisTot[index].nombrePack < 0) {
+      this.listeColisTot[index].nombrePack = 0;
+      col.nombrePack =
+        this.copieListeColisTot[index].nombrePack - nbrPackAffecte;
+      return false;
+    } else if (
+      this.listeColisTot[index].nombrePack >
+      this.copieListeColisTot[index].nombrePack
+    ) {
+      this.listeColisTot[index].nombrePack =
+        this.copieListeColisTot[index].nombrePack - nbrPackAffecte;
+      col.nombrePack = 0;
+      return false;
+    }
+    console.log(this.copieListeColisTot[index].nombrePack);
     return true;
   }
 
@@ -224,10 +344,6 @@ export class AffecterChauffeur implements OnInit {
         vehicule: vehicule.vehicule,
         chauffeurs: chauffeurs,
       });
-      this.vehiculeChauffeurSelectionne.push({
-        vehicule: vehicule.vehicule,
-        chauffeur: {},
-      });
     });
     for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
       this.copieVehiculeChauffeurs.push({
@@ -244,20 +360,20 @@ export class AffecterChauffeur implements OnInit {
         ...this.copieVehiculeChauffeurs[i].chauffeurs,
       ];
     }
-    for (let i = 0; i < this.vehiculeChauffeurSelectionne.length; i++) {
+    for (let i = 0; i < this.couplesVehiculeChauffeurPrive.length; i++) {
       for (let j = 0; j < this.couplesVehiculeChauffeursPrives.length; j++) {
         this.couplesVehiculeChauffeursPrives[j].chauffeurs.forEach(
           (chauffeurLoop: any) => {
             if (
               j !== i &&
-              this.vehiculeChauffeurSelectionne[i].chauffeur.id_Employe ===
+              this.couplesVehiculeChauffeurPrive[i].chauffeur.id_Employe ===
                 chauffeurLoop.id_Employe
             ) {
               let index = this.couplesVehiculeChauffeursPrives[
                 j
               ].chauffeurs.findIndex(
                 (chauffeur: any) =>
-                  this.vehiculeChauffeurSelectionne[i].chauffeur.id_Employe ===
+                  this.couplesVehiculeChauffeurPrive[i].chauffeur.id_Employe ===
                   chauffeur.id_Employe
               );
               this.couplesVehiculeChauffeursPrives[j].chauffeurs.splice(
