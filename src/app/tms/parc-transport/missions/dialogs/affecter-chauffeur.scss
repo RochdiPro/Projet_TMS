@@ -6,7 +6,7 @@ div {
 }
 .mat-form-field,
 p {
-  width: 50%;
+  width: 40%;
 }
 
 td {
@@ -29,6 +29,10 @@ p {
     padding: 0 !important;
     background: #1f2041;
   }
+}
+
+a{
+  cursor: pointer;
 }
 
 .liste-commandes {
@@ -119,6 +123,8 @@ p {
   );
   overflow: hidden;
   margin-left: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .liste-vehicules ul {
@@ -315,10 +321,10 @@ h2 {
 .commandes .liste-commande {
   background: white;
   border-radius: 20px;
-  height: 320px;
+  height: 280px;
   width: 75%;
   position: absolute;
-  top: 150px;
+  top: 190px;
   left: 50%;
   transform: translate(-50%, 0%);
 }
@@ -326,7 +332,8 @@ h2 {
 .commandes h2 {
   color: white;
   padding: 0;
-  padding-left: 60px;
+  font-size: 1.8rem;
+  margin: 0;
 }
 
 .liste-commande ul {
@@ -462,4 +469,81 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+}
+
+.liste-vehicules .valider {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  height: 60px;
+}
+
+.liste-vehicules .valider a {
+  margin: auto;
+  background: #2b343b;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-align: center;
+  vertical-align: middle;
+  color: white;
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.liste-vehicules .valider a:hover {
+  color: #5ec5f6;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.liste-vehicules .valider .active {
+  opacity: 1;
+  cursor: pointer;
+}
+
+.info-vehicule {
+  display: flex;
+  padding-left: 60px;
+}
+
+.info-vehicule div {
+  width: 50%;
+  font-size: 16px;
+}
+
+b {
+  font-weight: 500;
+  font-size: 17px;
+  background-image: linear-gradient( 109.6deg,  rgba(156,252,248,1) 11.2%, rgba(110,123,251,1) 91.1% );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.commandes > .entete {
+  display: flex;
+  padding-left: 60px;
+  padding-top: 20px;
+  align-items: center;
+}
+
+.commandes > .entete b {
+  font-size: 15px;
+}
+
+.commandes > .entete div {
+  font-size: 13px;
+  max-width: 130px;
+}
+
+.commandes > .entete .poids {
+  padding-left: 20px;
+}
+
+.liste-vide {
+  opacity: 0.5;
+  width: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000000;
 }

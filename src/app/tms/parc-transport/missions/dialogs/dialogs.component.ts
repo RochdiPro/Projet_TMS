@@ -37,7 +37,7 @@ import { MissionsService } from '../services/missions.service';
       state(
         'show',
         style({
-          height: '300px',
+          height: '260px',
           opacity: 1,
           overflow: 'auto',
         })
@@ -228,20 +228,25 @@ export class AffecterChauffeur implements OnInit {
   }
 
   choisirVehicule(i: number) {
+    this.index = i;
     if (i < this.couplesVehiculeChauffeursPrives.length) {
       this.typeVehicule = 'prive';
       this.vehiculeChauffeurs = this.couplesVehiculeChauffeursPrives[i];
-      this.index = i;
       this.listeCommandes = this.couplesVehiculeChauffeurPrive[i].commandes;
     } else {
       this.typeVehicule = 'loue';
       this.vehiculeLoue =
         this.vehiculesLoues[i - this.couplesVehiculeChauffeursPrives.length];
+      this.listeCommandes =
+        this.couplesVehiculeChauffeurLoue[
+          i - this.couplesVehiculeChauffeursPrives.length
+        ].commandes;
     }
-    console.log(this.couplesVehiculeChauffeurPrive);
+    console.log(this.couplesVehiculeChauffeurLoue);
   }
 
   ajouterCommandeAuVehicule(col: any) {
+    if ((this.poidsCommandes + col.poidsBrut) > this.vehiculesTot[this.index].charge_utile) return
     let colis = Object.assign({}, col);
     let commandeExiste =
       this.listeCommandes.filter(
@@ -295,7 +300,10 @@ export class AffecterChauffeur implements OnInit {
     let nbrPack = 0;
     let nbrPackAffecte = 0;
     let i = 0;
-    this.couplesVehiculeChauffeurPrive.forEach((element: any) => {
+    let listeVehicule = this.couplesVehiculeChauffeurPrive.concat(
+      this.couplesVehiculeChauffeurLoue
+    );
+    listeVehicule.forEach((element: any) => {
       element.commandes.forEach((commande: any) => {
         let commandeFiltre = commande.colis.filter(
           (coli: any) => coli.id === col.id
@@ -317,12 +325,12 @@ export class AffecterChauffeur implements OnInit {
         this.copieListeColisTot[index].nombrePack - nbrPackAffecte;
       return false;
     } else if (
-      this.listeColisTot[index].nombrePack >
-      this.copieListeColisTot[index].nombrePack
+      this.listeColisTot[index].nombrePack >=
+      this.copieListeColisTot[index].nombrePack - 1
     ) {
       this.listeColisTot[index].nombrePack =
-        this.copieListeColisTot[index].nombrePack - nbrPackAffecte;
-      col.nombrePack = 0;
+        this.copieListeColisTot[index].nombrePack - nbrPackAffecte - 1;
+      col.nombrePack = 1;
       return false;
     }
     console.log(this.copieListeColisTot[index].nombrePack);
@@ -387,24 +395,118 @@ export class AffecterChauffeur implements OnInit {
     }
   }
 
+  // retourne le poids de la vehicule
+  get poidsVehicule() {
+    let poids;
+    this.typeVehicule === 'prive'
+      ? (poids =
+          this.couplesVehiculeChauffeurPrive[this.index].vehicule.charge_utile)
+      : (poids =
+          this.couplesVehiculeChauffeurLoue[
+            this.index - this.couplesVehiculeChauffeursPrives.length
+          ].vehicule.charge_utile);
+    return Number(poids.toFixed(4));
+  }
+
+  // retourne le volume de la vehicule
+  get volumeVehicule() {
+    let volume;
+    this.typeVehicule === 'prive'
+      ? (volume =
+          this.couplesVehiculeChauffeurPrive[this.index].vehicule.longueur *
+          this.couplesVehiculeChauffeurPrive[this.index].vehicule.largeur *
+          this.couplesVehiculeChauffeurPrive[this.index].vehicule.hauteur)
+      : (volume =
+          this.couplesVehiculeChauffeurLoue[
+            this.index - this.couplesVehiculeChauffeursPrives.length
+          ].vehicule.longueur *
+          this.couplesVehiculeChauffeurLoue[
+            this.index - this.couplesVehiculeChauffeursPrives.length
+          ].vehicule.largeur *
+          this.couplesVehiculeChauffeurLoue[
+            this.index - this.couplesVehiculeChauffeursPrives.length
+          ].vehicule.hauteur);
+    return Number((volume / 1000000).toFixed(4));
+  }
+
+  // retourne le poids des commandes dans vehicule
+  get poidsCommandes() {
+    let poids = 0;
+    this.typeVehicule === 'prive'
+      ? this.couplesVehiculeChauffeurPrive[this.index].commandes.forEach(
+          (commande: any) => {
+            commande.colis.forEach((colis: any) => {
+              poids += colis.poidsBrut;
+            });
+          }
+        )
+      : this.couplesVehiculeChauffeurLoue[
+          this.index - this.couplesVehiculeChauffeursPrives.length
+        ].commandes.forEach((commande: any) => {
+          commande.colis.forEach((colis: any) => {
+            poids += colis.poidsBrut;
+          });
+        });
+    return Number(poids.toFixed(4));
+  }
+
+  // retourne volume commandes
+  get volumeCommandes() {
+    let volume = 0;
+    this.typeVehicule === 'prive'
+      ? this.couplesVehiculeChauffeurPrive[this.index].commandes.forEach(
+          (commande: any) => {
+            commande.colis.forEach((colis: any) => {
+              volume += colis.volume;
+            });
+          }
+        )
+      : this.couplesVehiculeChauffeurLoue[
+          this.index - this.couplesVehiculeChauffeursPrives.length
+        ].commandes.forEach((commande: any) => {
+          commande.colis.forEach((colis: any) => {
+            volume += colis.volume;
+          });
+        });
+    return Number(volume.toFixed(4));
+  }
+
+  // verifier si toutes les commandes sont affectées dans des vehicules
+  get toutValide() {
+    let estValide = true;
+    this.listeColisTot.forEach((colis: any) => {
+      colis.nombrePack !== 0 ? (estValide = false) : '';
+    });
+    this.couplesVehiculeChauffeurPrive.forEach((element: any) => {
+      console.log(element);
+      element.commandes.length === 0 ? (estValide = false) : '';
+      Object.keys(element.chauffeur).length === 0 ? (estValide = false) : '';
+    });
+    this.couplesVehiculeChauffeurLoue.forEach((element: any) => {
+      element.commandes.length === 0 ? (estValide = false) : '';
+      element.chauffeur === '' ? (estValide = false) : '';
+    });
+    return estValide;
+  }
+
   //   bouton ok
   valider() {
-    let couplesVehiculeChauffeurPrive = [];
-    let couplesVehiculeChauffeurLoue = [];
-    for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
-      console.log(this.chauffeursForms.controls[i].get('chauffeur').value);
-      couplesVehiculeChauffeurPrive.push({
-        vehicule: this.couplesVehiculeChauffeursPrives[i].vehicule,
-        chauffeur: this.chauffeursForms.controls[i].get('chauffeur').value,
-      });
-    }
-    for (let j = 0; j < this.vehiculesLoues.length; j++) {
-      couplesVehiculeChauffeurLoue.push({
-        vehicule: this.vehiculesLoues[j],
-        chauffeur:
-          this.chauffeursLouesForms.controls[j].get('chauffeurLoue').value,
-      });
-    }
+    let couplesVehiculeChauffeurPrive = this.couplesVehiculeChauffeurPrive;
+    let couplesVehiculeChauffeurLoue = this.couplesVehiculeChauffeurLoue;
+    // for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
+    //   console.log(this.chauffeursForms.controls[i].get('chauffeur').value);
+    //   couplesVehiculeChauffeurPrive.push({
+    //     vehicule: this.couplesVehiculeChauffeursPrives[i].vehicule,
+    //     chauffeur: this.chauffeursForms.controls[i].get('chauffeur').value,
+    //   });
+    // }
+    // for (let j = 0; j < this.vehiculesLoues.length; j++) {
+    //   couplesVehiculeChauffeurLoue.push({
+    //     vehicule: this.vehiculesLoues[j],
+    //     chauffeur:
+    //       this.chauffeursLouesForms.controls[j].get('chauffeurLoue').value,
+    //   });
+    // }
     this.dialogRef.close({
       prive: couplesVehiculeChauffeurPrive,
       loue: couplesVehiculeChauffeurLoue,

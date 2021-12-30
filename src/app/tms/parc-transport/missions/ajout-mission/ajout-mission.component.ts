@@ -776,21 +776,37 @@ export class AjoutMissionComponent implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         result.prive.forEach((element: any) => {
-          vehicules.push(element.vehicule);
-          chauffeurs.push(element.chauffeur);
+          // vehicules.push(element.vehicule);
+          // chauffeurs.push(element.chauffeur);
+          this.fileAttente.push({
+            commandes: this.mission,
+            vehicule: [element.vehicule],
+            chauffeur: [element.chauffeur],
+            score: this.calculerScoreMission(),
+            volume: this.calculerVolumeMission(),
+            poids: this.calculerPoidsMission(),
+          });
         });
         result.loue.forEach((element: any) => {
-          vehicules.push(element.vehicule);
-          chauffeurs.push({ nom: element.chauffeur });
+          // vehicules.push(element.vehicule);
+          // chauffeurs.push({ nom: element.chauffeur });
+          this.fileAttente.push({
+            commandes: this.mission,
+            vehicule: [element.vehicule],
+            chauffeur: [{ nom: element.chauffeur }],
+            score: this.calculerScoreMission(),
+            volume: this.calculerVolumeMission(),
+            poids: this.calculerPoidsMission(),
+          });
         });
-        this.fileAttente.push({
-          commandes: this.mission,
-          vehicule: vehicules,
-          chauffeur: chauffeurs,
-          score: this.calculerScoreMission(),
-          volume: this.calculerVolumeMission(),
-          poids: this.calculerPoidsMission(),
-        });
+        // this.fileAttente.push({
+        //   commandes: this.mission,
+        //   vehicule: vehicules,
+        //   chauffeur: chauffeurs,
+        //   score: this.calculerScoreMission(),
+        //   volume: this.calculerVolumeMission(),
+        //   poids: this.calculerPoidsMission(),
+        // });
         console.log(this.fileAttente);
         this.mission = [];
         console.log(vehiculesLoues);
