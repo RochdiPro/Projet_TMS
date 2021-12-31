@@ -227,13 +227,14 @@ h2 {
   color: #2b343b;
   padding: 40px;
   padding-left: 60px;
+  padding-bottom: 0;
   font-size: 2rem;
 }
 
 // liste colis
 .liste-colis {
   position: absolute;
-  top: 100px;
+  top: 140px;
   left: 50px;
   width: 75%;
   height: 320px;
@@ -490,7 +491,7 @@ input[type=number] {
   cursor: not-allowed;
 }
 
-.liste-vehicules .valider a:hover {
+.liste-vehicules .valider .active:hover {
   color: #5ec5f6;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
@@ -546,4 +547,12 @@ b {
   left: 50%;
   transform: translate(-50%, -50%);
   color: #000000;
+}
+
+.info-commande {
+  display: flex;
+  width: 80%;
+  margin: 20px auto;
+  font-weight: 500;
+  color: #1f2041;
 }

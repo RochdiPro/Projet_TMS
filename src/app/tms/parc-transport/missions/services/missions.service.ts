@@ -153,6 +153,11 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
+  //creer liste colisage par mission
+  public creerListeColisMission(colis: any) {
+    return this.httpClient.post(erp + 'creer-colis-mission', colis).pipe(catchError(this.handleError));
+  }
+
   public majEtat(id: any, formData: any) {
     this.httpClient.put(erp + 'miseajouretat/' + id, formData).subscribe(
       (response) => console.log(response),

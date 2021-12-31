@@ -761,6 +761,9 @@ export class AjoutMissionComponent implements OnInit {
     let vehicules: any = [];
     let chauffeurs: any = [];
     var vehiculesLoues = [...this.vehiculesSelectionnes];
+    let volumeMission: any = [];
+    let poidsMission: any = [];
+    let commandesAffectees: any = [];
     console.log(this.vehiculesSelectionnes);
     // ouvrir boite dialogue affecter-chauffeur
     const dialogRef = this.dialog.open(AffecterChauffeur, {
@@ -770,43 +773,51 @@ export class AjoutMissionComponent implements OnInit {
       data: {
         vehiculesPrives: this.vehiculesPriveSelectionnes,
         vehiculesLoues: this.vehiculesLoueSelectionnes,
-        mission: this.mission
+        mission: this.mission,
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         result.prive.forEach((element: any) => {
-          // vehicules.push(element.vehicule);
-          // chauffeurs.push(element.chauffeur);
-          this.fileAttente.push({
-            commandes: this.mission,
-            vehicule: [element.vehicule],
-            chauffeur: [element.chauffeur],
-            score: this.calculerScoreMission(),
-            volume: this.calculerVolumeMission(),
-            poids: this.calculerPoidsMission(),
+          console.log(element);
+          vehicules.push(element.vehicule);
+          chauffeurs.push(element.chauffeur);
+          commandesAffectees.push(element.commandes);
+          let volumeTotal = 0;
+          let poidsTotal = 0;
+          element.commandes.forEach((commande: any) => {
+            commande.colis.forEach((colis: any) => {
+              volumeTotal += colis.volume;
+              poidsTotal += colis.poidsBrut;
+            });
           });
+          volumeMission.push(Number(volumeTotal.toFixed(4)));
+          poidsMission.push(Number(poidsTotal.toFixed(4)));
         });
         result.loue.forEach((element: any) => {
-          // vehicules.push(element.vehicule);
-          // chauffeurs.push({ nom: element.chauffeur });
-          this.fileAttente.push({
-            commandes: this.mission,
-            vehicule: [element.vehicule],
-            chauffeur: [{ nom: element.chauffeur }],
-            score: this.calculerScoreMission(),
-            volume: this.calculerVolumeMission(),
-            poids: this.calculerPoidsMission(),
+          vehicules.push(element.vehicule);
+          chauffeurs.push({ nom: element.chauffeur });
+          commandesAffectees.push(element.commandes);
+          let volumeTotal = 0;
+          let poidsTotal = 0;
+          element.commandes.forEach((commande: any) => {
+            commande.colis.forEach((colis: any) => {
+              volumeTotal += colis.volume;
+              poidsTotal += colis.poidsBrut;
+            });
           });
+          volumeMission.push(Number(volumeTotal.toFixed(4)));
+          poidsMission.push(Number(poidsTotal.toFixed(4)));
         });
-        // this.fileAttente.push({
-        //   commandes: this.mission,
-        //   vehicule: vehicules,
-        //   chauffeur: chauffeurs,
-        //   score: this.calculerScoreMission(),
-        //   volume: this.calculerVolumeMission(),
-        //   poids: this.calculerPoidsMission(),
-        // });
+        this.fileAttente.push({
+          commandes: this.mission,
+          commandesAffectees: commandesAffectees,
+          vehicule: vehicules,
+          chauffeur: chauffeurs,
+          score: this.calculerScoreMission(),
+          volume: volumeMission,
+          poids: poidsMission,
+        });
         console.log(this.fileAttente);
         this.mission = [];
         console.log(vehiculesLoues);
@@ -836,6 +847,7 @@ export class AjoutMissionComponent implements OnInit {
         this.fileAttente.forEach((mission: any) => {
           copieFileAttente.push({
             commandes: [...mission.commandes],
+            commandesAffectees: [...commandesAffectees],
             vehicule: [...mission.vehicule],
             chauffeur: [...mission.chauffeur],
             score: mission.score,
@@ -1005,48 +1017,76 @@ export class AjoutMissionComponent implements OnInit {
     console.log(this.listeFilesAttentes);
     for (let i = 0; i < this.listeFilesAttentes.length; i++) {
       for (let j = 0; j < this.listeFilesAttentes[i].fileAttente.length; j++) {
-        let mission = this.listeFilesAttentes[i].fileAttente[j];
-        let formData = new FormData();
-        let idChauffeur = '';
-        let nomChauffeur = '';
-        let matriculeVehicule = '';
-        let idCommandes = '';
-        mission.chauffeur.forEach((chauffeur: any) => {
-          chauffeur.id_Employe === undefined
-            ? (idChauffeur += null + '/')
-            : (idChauffeur += chauffeur.id_Employe + '/');
-          nomChauffeur += chauffeur.nom + '/';
-        });
-        mission.vehicule.forEach((vehicule: any) => {
-          matriculeVehicule += vehicule.matricule + '/';
-        });
-        mission.commandes.forEach((commande: any) => {
-          idCommandes += commande.id + '/';
-        });
-        idChauffeur = idChauffeur.slice(0, -1);
-        nomChauffeur = nomChauffeur.slice(0, -1);
-        matriculeVehicule = matriculeVehicule.slice(0, -1);
-        idCommandes = idCommandes.slice(0, -1);
-        formData.append('idChauffeur', idChauffeur);
-        formData.append('nomChauffeur', nomChauffeur);
-        formData.append('matricule', matriculeVehicule);
-        formData.append('idCommandes', idCommandes);
-        formData.append('volume', mission.volume);
-        formData.append('poids', mission.poids);
-        formData.append('score', mission.score);
-        formData.append('region', '');
-        formData.append('etat', 'En attente');
-        formData.append('date', this.listeFilesAttentes[i].date);
-        console.log(formData.get('date'));
-        let newMission = await this.serviceMission.creerMission(formData).toPromise();
-        for (let i = 0; i < mission.commandes.length; i++) {
-          let formDataCommande = new FormData();
-          formDataCommande.append('id', mission.commandes[i].id);
-          formDataCommande.append('etat', 'Affectée');
-          formDataCommande.append('idMission', newMission.id);
-          await this.serviceCommande
-            .affecterCommande(formDataCommande)
+        for (
+          let k = 0;
+          k < this.listeFilesAttentes[i].fileAttente[j].vehicule.length;
+          k++
+        ) {
+          let mission = this.listeFilesAttentes[i].fileAttente[j];
+          let formData = new FormData();
+          let idChauffeur = '';
+          let nomChauffeur = '';
+          let matriculeVehicule = '';
+          let idCommandes = '';
+          mission.chauffeur[k].id_Employe === undefined
+            ? (idChauffeur = null)
+            : (idChauffeur = mission.chauffeur[k].id_Employe);
+          nomChauffeur = mission.chauffeur[k].nom;
+          matriculeVehicule = mission.vehicule[k].matricule;
+
+          mission.commandes.forEach((commande: any) => {
+            idCommandes += commande.id + '/';
+          });
+          idCommandes = idCommandes.slice(0, -1);
+          formData.append('idChauffeur', idChauffeur);
+          formData.append('nomChauffeur', nomChauffeur);
+          formData.append('matricule', matriculeVehicule);
+          formData.append('idCommandes', idCommandes);
+          formData.append('volume', mission.volume[k]);
+          formData.append('poids', mission.poids[k]);
+          formData.append('score', mission.score);
+          formData.append('region', '');
+          formData.append('etat', 'En attente');
+          formData.append('date', this.listeFilesAttentes[i].date);
+          console.log(formData.get('date'));
+          let newMission = await this.serviceMission
+            .creerMission(formData)
             .toPromise();
+
+          for (let l = 0; l < mission.commandesAffectees[k].length; l++) {
+            const colis = mission.commandesAffectees[k][l].colis;
+            for (let m = 0; m < colis.length; m++) {
+              const col = colis[m];
+              let listeColisage: any = new FormData();
+              listeColisage.append('idMission', newMission.id);
+              listeColisage.append('idCommande', col.idCommande);
+              listeColisage.append('idEmballage', col.idEmballage);
+              listeColisage.append('emballage', col.emballage);
+              listeColisage.append('idProduit', col.idProduit);
+              listeColisage.append('produit', col.produit);
+              listeColisage.append('quantite', col.quantite);
+              listeColisage.append(
+                'quantiteDansEmballage',
+                col.quantiteDansEmballage
+              );
+              listeColisage.append('nombrePack', col.nombrePack);
+              listeColisage.append('dimensions', col.dimensions);
+              listeColisage.append('volume', col.volume);
+              listeColisage.append('poidsNet', col.poidsNet);
+              listeColisage.append('poidsBrut', col.poidsBrut);
+              console.log(col);
+              await this.serviceMission.creerListeColisMission(listeColisage).toPromise();
+            }
+          }
+          for (let i = 0; i < mission.commandes.length; i++) {
+            let formDataCommande = new FormData();
+            formDataCommande.append('id', mission.commandes[i].id);
+            formDataCommande.append('etat', 'Affectée');
+            formDataCommande.append('idMission', newMission.id);
+            await this.serviceCommande
+              .affecterCommande(formDataCommande)
+              .toPromise();
+          }
         }
       }
     }

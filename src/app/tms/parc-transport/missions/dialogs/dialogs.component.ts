@@ -246,7 +246,7 @@ export class AffecterChauffeur implements OnInit {
   }
 
   ajouterCommandeAuVehicule(col: any) {
-    if ((this.poidsCommandes + col.poidsBrut) > this.vehiculesTot[this.index].charge_utile) return
+    if ((this.poidsCommandes + (col.poidsBrut/col.nombrePack)) > this.vehiculesTot[this.index].charge_utile) return
     let colis = Object.assign({}, col);
     let commandeExiste =
       this.listeCommandes.filter(
@@ -255,6 +255,8 @@ export class AffecterChauffeur implements OnInit {
     if (col.nombrePack > 0) {
       if (!commandeExiste) {
         colis.nombrePack = 1;
+        colis.poidsBrut = col.poidsBrut/col.nombrePack;
+        colis.volume = col.volume/col.nombrePack;
         col.nombrePack -= 1;
         this.listeCommandes.push({
           commande: this.commandeSelectionne,
@@ -272,6 +274,8 @@ export class AffecterChauffeur implements OnInit {
           ).length > 0;
         if (!colisExiste) {
           colis.nombrePack = 1;
+          colis.poidsBrut = col.poidsBrut/col.nombrePack;
+          colis.volume = col.volume/col.nombrePack;
           col.nombrePack -= 1;
           this.listeCommandes[index].colis.push(colis);
           this.afficherListeColis(this.commandeSelectionne);
@@ -319,6 +323,8 @@ export class AffecterChauffeur implements OnInit {
     });
     this.listeColisTot[index].nombrePack =
       this.copieListeColisTot[index].nombrePack - nbrPack;
+    col.poidsBrut = (this.copieListeColisTot[index].poidsBrut/this.copieListeColisTot[index].nombrePack)*col.nombrePack
+    col.volume = (this.copieListeColisTot[index].volume/this.copieListeColisTot[index].nombrePack)*col.nombrePack
     if (this.listeColisTot[index].nombrePack < 0) {
       this.listeColisTot[index].nombrePack = 0;
       col.nombrePack =

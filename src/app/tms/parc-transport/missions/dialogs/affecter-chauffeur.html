@@ -56,6 +56,10 @@
     <div class="container">
         <div class="container-colis">
             <h2>Colis</h2>
+            <div class="info-commande">
+                <div class="poids">Poids commande: {{commandeSelectionne.poids}}kg</div>
+                <div class="volume">Volume commande: {{commandeSelectionne.volume}}m³</div>
+            </div>
             <div class="liste-colis scrollbar">
                 <ul>
                     <li class="list" *ngFor="let colis of listeColis">

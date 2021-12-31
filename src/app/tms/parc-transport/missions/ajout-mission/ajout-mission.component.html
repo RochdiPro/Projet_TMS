@@ -559,7 +559,13 @@
                                     </ul>
                                 </td>
                                 <!-- colonne volume mission -->
-                                <td>{{mis.volume}}m³</td>
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let volume of mis.volume">
+                                            {{volume}}m³
+                                        </li>
+                                    </ul>
+                                </td>
                                 <!-- colonne poids vehicule -->
                                 <td>
                                     <ul>
@@ -569,7 +575,13 @@
                                     </ul>
                                 </td>
                                 <!-- colonne poids mission -->
-                                <td>{{mis.poids}}kg</td>
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let poids of mis.poids">
+                                            {{poids}}kg
+                                        </li>
+                                    </ul>
+                                </td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button color="warn"
