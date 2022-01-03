@@ -31,7 +31,7 @@ p {
   }
 }
 
-a{
+a {
   cursor: pointer;
 }
 
@@ -136,6 +136,8 @@ a{
   padding-top: 40px;
   padding-left: 0;
   padding-bottom: 0;
+  overflow: auto;
+  height: calc(100% - 60px);
 }
 
 .liste-vehicules ul li {
@@ -231,10 +233,14 @@ h2 {
   font-size: 2rem;
 }
 
+.container-colis button {
+  margin-left: 50px;
+}
+
 // liste colis
 .liste-colis {
   position: absolute;
-  top: 140px;
+  top: 170px;
   left: 50px;
   width: 75%;
   height: 320px;
@@ -376,7 +382,7 @@ h2 {
 .scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
-  
+
 .scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba($color: #000000, $alpha: 0.3);
   border-right: none;
@@ -391,7 +397,6 @@ h2 {
 .scrollbar::-webkit-scrollbar-track-piece:start {
   background: transparent;
   margin-top: 20px;
-
 }
 
 .liste-commande .list {
@@ -407,9 +412,11 @@ h2 {
   display: flex;
   width: 100%;
   padding: 10px;
+  padding-bottom: 0;
   position: sticky;
   top: 0;
   background-color: white;
+  z-index: 1;
 }
 
 .close {
@@ -418,6 +425,10 @@ h2 {
 }
 .close:hover {
   opacity: 1;
+}
+
+.liste-commande .colis .contenue ul {
+  padding-top: 0;
 }
 
 .liste-commande .colis .contenue .list {
@@ -456,8 +467,7 @@ h2 {
 
 .liste-commande .colis .contenue .list .qte button:hover {
   opacity: 1;
-} 
-
+}
 
 // pour cacher les fleches de input number
 /* Chrome, Safari, Edge, Opera */
@@ -468,7 +478,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -514,7 +524,11 @@ input[type=number] {
 b {
   font-weight: 500;
   font-size: 17px;
-  background-image: linear-gradient( 109.6deg,  rgba(156,252,248,1) 11.2%, rgba(110,123,251,1) 91.1% );
+  background-image: linear-gradient(
+    109.6deg,
+    rgba(156, 252, 248, 1) 11.2%,
+    rgba(110, 123, 251, 1) 91.1%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -554,5 +568,23 @@ b {
   width: 80%;
   margin: 20px auto;
   font-weight: 500;
+  font-size: 0.9em;
   color: #1f2041;
+}
+
+.selectionner-tous a {
+  width: fit-content;
+  padding: 10px;
+  margin-left: 60px;
+  display: flex;
+  align-items: center;
+  font-size: 1.1em;
+  font-weight: 500;
+  background-image: radial-gradient(
+    circle farthest-corner at 10% 20%,
+    rgba(90, 92, 106, 1) 0%,
+    rgba(32, 45, 58, 1) 81.3%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

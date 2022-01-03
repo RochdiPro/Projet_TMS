@@ -774,6 +774,7 @@ export class AjoutMissionComponent implements OnInit {
         vehiculesPrives: this.vehiculesPriveSelectionnes,
         vehiculesLoues: this.vehiculesLoueSelectionnes,
         mission: this.mission,
+        autoFocus: false
       },
     });
     dialogRef.afterClosed().subscribe((result) => {

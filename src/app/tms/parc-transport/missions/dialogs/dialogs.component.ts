@@ -246,7 +246,11 @@ export class AffecterChauffeur implements OnInit {
   }
 
   ajouterCommandeAuVehicule(col: any) {
-    if ((this.poidsCommandes + (col.poidsBrut/col.nombrePack)) > this.vehiculesTot[this.index].charge_utile) return
+    if (
+      this.poidsCommandes + col.poidsBrut / col.nombrePack >
+      this.vehiculesTot[this.index].charge_utile
+    )
+      return;
     let colis = Object.assign({}, col);
     let commandeExiste =
       this.listeCommandes.filter(
@@ -255,8 +259,10 @@ export class AffecterChauffeur implements OnInit {
     if (col.nombrePack > 0) {
       if (!commandeExiste) {
         colis.nombrePack = 1;
-        colis.poidsBrut = col.poidsBrut/col.nombrePack;
-        colis.volume = col.volume/col.nombrePack;
+        colis.poidsBrut = col.poidsBrut / col.nombrePack;
+        colis.volume = col.volume / col.nombrePack;
+        col.volume -= colis.volume;
+        col.poidsBrut -= colis.poidsBrut;
         col.nombrePack -= 1;
         this.listeCommandes.push({
           commande: this.commandeSelectionne,
@@ -274,11 +280,19 @@ export class AffecterChauffeur implements OnInit {
           ).length > 0;
         if (!colisExiste) {
           colis.nombrePack = 1;
-          colis.poidsBrut = col.poidsBrut/col.nombrePack;
-          colis.volume = col.volume/col.nombrePack;
+          colis.poidsBrut = col.poidsBrut / col.nombrePack;
+          colis.volume = col.volume / col.nombrePack;
+          col.volume -= colis.volume;
+          col.poidsBrut -= colis.poidsBrut;
           col.nombrePack -= 1;
           this.listeCommandes[index].colis.push(colis);
           this.afficherListeColis(this.commandeSelectionne);
+        } else {
+          this.augmenterQte(
+            this.listeCommandes[index].colis.filter(
+              (col: any) => Number(colis.id) === col.id
+            )[0]
+          );
         }
       }
     }
@@ -297,11 +311,15 @@ export class AffecterChauffeur implements OnInit {
     this.changerQteNonAffectee(colis);
   }
 
+  // changer la quantité des colis ne sont pas encore affactée ( en changeant la quantité en  change aussi le poids et le volume)
   changerQteNonAffectee(col: any) {
+    // chercher l'index du colis desiré dans la liste des colis totale
     let index = this.listeColisTot.findIndex(
       (colis: any) => colis.id === col.id
     );
+    // nombre de pack d'un colis affectée dans tou les vehicules
     let nbrPack = 0;
+    // nombre des pack affectées dans une vehicule specifique
     let nbrPackAffecte = 0;
     let i = 0;
     let listeVehicule = this.couplesVehiculeChauffeurPrive.concat(
@@ -321,14 +339,47 @@ export class AffecterChauffeur implements OnInit {
       });
       i++;
     });
+    // nombre de pack non affectées
     this.listeColisTot[index].nombrePack =
       this.copieListeColisTot[index].nombrePack - nbrPack;
-    col.poidsBrut = (this.copieListeColisTot[index].poidsBrut/this.copieListeColisTot[index].nombrePack)*col.nombrePack
-    col.volume = (this.copieListeColisTot[index].volume/this.copieListeColisTot[index].nombrePack)*col.nombrePack
+    col.poidsBrut =
+      (this.copieListeColisTot[index].poidsBrut /
+        this.copieListeColisTot[index].nombrePack) *
+      col.nombrePack;
+    // paids des pack non affectées
+    this.listeColisTot[index].poidsBrut =
+      this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+    col.volume =
+      (this.copieListeColisTot[index].volume /
+        this.copieListeColisTot[index].nombrePack) *
+      col.nombrePack;
+    // volume des pack non affectées
+    this.listeColisTot[index].volume =
+      this.copieListeColisTot[index].volume - col.volume;
     if (this.listeColisTot[index].nombrePack < 0) {
       this.listeColisTot[index].nombrePack = 0;
+
       col.nombrePack =
         this.copieListeColisTot[index].nombrePack - nbrPackAffecte;
+
+      col.poidsBrut =
+        (this.copieListeColisTot[index].poidsBrut /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
+
+      // paids des pack non affectées
+      this.listeColisTot[index].poidsBrut =
+        this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+
+      col.volume =
+        (this.copieListeColisTot[index].volume /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
+
+      // volume des pack non affectées
+      this.listeColisTot[index].volume =
+        this.copieListeColisTot[index].volume - col.volume;
+
       return false;
     } else if (
       this.listeColisTot[index].nombrePack >=
@@ -336,7 +387,26 @@ export class AffecterChauffeur implements OnInit {
     ) {
       this.listeColisTot[index].nombrePack =
         this.copieListeColisTot[index].nombrePack - nbrPackAffecte - 1;
+
       col.nombrePack = 1;
+
+      col.poidsBrut =
+        (this.copieListeColisTot[index].poidsBrut /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
+
+      // paids des pack non affectées
+      this.listeColisTot[index].poidsBrut =
+        this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+
+      col.volume =
+        (this.copieListeColisTot[index].volume /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
+
+      // volume des pack non affectées
+      this.listeColisTot[index].volume =
+        this.copieListeColisTot[index].volume - col.volume;
       return false;
     }
     console.log(this.copieListeColisTot[index].nombrePack);
@@ -399,6 +469,132 @@ export class AffecterChauffeur implements OnInit {
         );
       }
     }
+  }
+
+  // fonction pour selectionner tous les colis dans une commande
+  selectionnerTouteLaCommande() {
+    this.listeColis.forEach((colis: any) => {
+      let copieColie = JSON.parse(JSON.stringify(colis));
+      for (let i = 0; i < copieColie.nombrePack; i++) {
+        this.ajouterCommandeAuVehicule(colis);
+      }
+    });
+    this.afficherListeColis(this.commandeSelectionne);
+  }
+
+  // annuler affectation colis dans voiture
+  annulerAffectationColis(col: any) {
+    col.nombrePack = 0;
+    // chercher l'index du colis desiré dans la liste des colis totale
+    let index = this.listeColisTot.findIndex(
+      (colis: any) => colis.id === col.id
+    );
+
+    // index commande dans liste commande d'une vehicule
+    let indexCommande = this.listeCommandes.findIndex(
+      (commande: any) => commande.commande.id === Number(col.idCommande)
+    );
+
+    // index colis dans liste colis d'une commande
+    let indexColis = this.listeCommandes[indexCommande].colis.findIndex(
+      (colis: any) => colis.id === col.id
+    );
+
+    // nombre de pack d'un colis affectée dans tou les vehicules
+    let nbrPack = 0;
+    // nombre des pack affectées dans une vehicule specifique
+    let i = 0;
+    let listeVehicule = this.couplesVehiculeChauffeurPrive.concat(
+      this.couplesVehiculeChauffeurLoue
+    );
+    listeVehicule.forEach((element: any) => {
+      element.commandes.forEach((commande: any) => {
+        let commandeFiltre = commande.colis.filter(
+          (coli: any) => coli.id === col.id
+        );
+        if (commandeFiltre.length > 0) {
+          nbrPack += commandeFiltre[0].nombrePack;
+        }
+      });
+      i++;
+    });
+    // nombre de pack non affectées
+    this.listeColisTot[index].nombrePack =
+      this.copieListeColisTot[index].nombrePack - nbrPack;
+    col.poidsBrut =
+      (this.copieListeColisTot[index].poidsBrut /
+        this.copieListeColisTot[index].nombrePack) *
+      col.nombrePack;
+    // paids des pack non affectées
+    this.listeColisTot[index].poidsBrut =
+      this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+    col.volume =
+      (this.copieListeColisTot[index].volume /
+        this.copieListeColisTot[index].nombrePack) *
+      col.nombrePack;
+    // volume des pack non affectées
+    this.listeColisTot[index].volume =
+      this.copieListeColisTot[index].volume - col.volume;
+
+    this.listeCommandes[indexCommande].colis.splice(indexColis, 1);
+    if (this.listeCommandes[indexCommande].colis.length === 0) {
+      this.listeCommandes.splice(indexCommande, 1);
+      this.boutonFermerListeColis();
+    }
+  }
+
+  // annuler toute la commande affectée dans une vehicule (si une commande affectée dans plusieurs vehicule elle s'annule que de la vehicule selectionée)
+  async annulerAffectationCommande(commande: any) {
+    commande.colis.forEach((col: any) => {
+      col.nombrePack = 0;
+      // chercher l'index du colis desiré dans la liste des colis totale
+      let index = this.listeColisTot.findIndex(
+        (colis: any) => colis.id === col.id
+      );
+
+      // nombre de pack d'un colis affectée dans tou les vehicules
+      let nbrPack = 0;
+      // nombre des pack affectées dans une vehicule specifique
+      let i = 0;
+      let listeVehicule = this.couplesVehiculeChauffeurPrive.concat(
+        this.couplesVehiculeChauffeurLoue
+      );
+      listeVehicule.forEach((element: any) => {
+        element.commandes.forEach((commande: any) => {
+          let commandeFiltre = commande.colis.filter(
+            (coli: any) => coli.id === col.id
+          );
+          if (commandeFiltre.length > 0) {
+            nbrPack += commandeFiltre[0].nombrePack;
+          }
+        });
+        i++;
+      });
+      // nombre de pack non affectées
+      this.listeColisTot[index].nombrePack =
+        this.copieListeColisTot[index].nombrePack - nbrPack;
+      col.poidsBrut =
+        (this.copieListeColisTot[index].poidsBrut /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
+      // paids des pack non affectées
+      this.listeColisTot[index].poidsBrut =
+        this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+      col.volume =
+        (this.copieListeColisTot[index].volume /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
+      // volume des pack non affectées
+      this.listeColisTot[index].volume =
+        this.copieListeColisTot[index].volume - col.volume;
+    });
+
+    // index commande dans liste commande d'une vehicule
+    let indexCommande = this.listeCommandes.findIndex(
+      (commande: any) => commande.commande.id === commande.id
+    );
+
+    this.listeCommandes.splice(indexCommande, 1);
   }
 
   // retourne le poids de la vehicule
@@ -477,6 +673,24 @@ export class AffecterChauffeur implements OnInit {
     return Number(volume.toFixed(4));
   }
 
+  // retourne le poids de la commande affichée
+  get poidsCommandeSelectionne() {
+    let poids = 0;
+    this.listeColis.forEach((colis: any) => {
+      poids += colis.poidsBrut;
+    });
+    return Number(poids.toFixed(4));
+  }
+
+  // retourne le volume de la commande affichée
+  get volumeCommandeSelectionne() {
+    let volume = 0;
+    this.listeColis.forEach((colis: any) => {
+      volume += colis.volume;
+    });
+    return Number(volume.toFixed(4));
+  }
+
   // verifier si toutes les commandes sont affectées dans des vehicules
   get toutValide() {
     let estValide = true;
@@ -484,7 +698,6 @@ export class AffecterChauffeur implements OnInit {
       colis.nombrePack !== 0 ? (estValide = false) : '';
     });
     this.couplesVehiculeChauffeurPrive.forEach((element: any) => {
-      console.log(element);
       element.commandes.length === 0 ? (estValide = false) : '';
       Object.keys(element.chauffeur).length === 0 ? (estValide = false) : '';
     });
