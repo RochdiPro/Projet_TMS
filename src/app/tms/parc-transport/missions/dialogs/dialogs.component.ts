@@ -163,15 +163,15 @@ export class AffecterChauffeur implements OnInit {
     this.commandeDansVehiculeSelectionne = commande;
     if (!this.listeColisAffiche) {
       setTimeout(() => {
-        this.toggleListeColis();
+        this.listeColisAffiche = true;
       }, 20);
     } else {
-      this.toggleListeColis();
+      this.listeColisAffiche = false;
       setTimeout(() => {
         this.commandeDansVehiculeSelectionne = commande;
       }, 310);
       setTimeout(() => {
-        this.toggleListeColis();
+        this.listeColisAffiche = true;
       }, 20);
     }
   }
@@ -260,9 +260,11 @@ export class AffecterChauffeur implements OnInit {
       if (!commandeExiste) {
         colis.nombrePack = 1;
         colis.poidsBrut = col.poidsBrut / col.nombrePack;
+        colis.poidsNet = col.poidsNet / col.nombrePack;
         colis.volume = col.volume / col.nombrePack;
         col.volume -= colis.volume;
         col.poidsBrut -= colis.poidsBrut;
+        col.poidsNet -= colis.poidsNet;
         col.nombrePack -= 1;
         this.listeCommandes.push({
           commande: this.commandeSelectionne,
@@ -281,9 +283,11 @@ export class AffecterChauffeur implements OnInit {
         if (!colisExiste) {
           colis.nombrePack = 1;
           colis.poidsBrut = col.poidsBrut / col.nombrePack;
+          colis.poidsNet = col.poidsNet / col.nombrePack;
           colis.volume = col.volume / col.nombrePack;
           col.volume -= colis.volume;
           col.poidsBrut -= colis.poidsBrut;
+          col.poidsNet -= colis.poidsNet;
           col.nombrePack -= 1;
           this.listeCommandes[index].colis.push(colis);
           this.afficherListeColis(this.commandeSelectionne);
@@ -346,16 +350,28 @@ export class AffecterChauffeur implements OnInit {
       (this.copieListeColisTot[index].poidsBrut /
         this.copieListeColisTot[index].nombrePack) *
       col.nombrePack;
+    col.poidsNet =
+      (this.copieListeColisTot[index].poidsNet /
+        this.copieListeColisTot[index].nombrePack) *
+      col.nombrePack;
     // paids des pack non affectées
     this.listeColisTot[index].poidsBrut =
-      this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+      (this.copieListeColisTot[index].poidsBrut /
+        this.copieListeColisTot[index].nombrePack) *
+      this.listeColisTot[index].nombrePack;
+    this.listeColisTot[index].poidsNet =
+      (this.copieListeColisTot[index].poidsNet /
+        this.copieListeColisTot[index].nombrePack) *
+      this.listeColisTot[index].nombrePack;
     col.volume =
       (this.copieListeColisTot[index].volume /
         this.copieListeColisTot[index].nombrePack) *
       col.nombrePack;
     // volume des pack non affectées
     this.listeColisTot[index].volume =
-      this.copieListeColisTot[index].volume - col.volume;
+      (this.copieListeColisTot[index].volume /
+        this.copieListeColisTot[index].nombrePack) *
+      this.listeColisTot[index].nombrePack;
     if (this.listeColisTot[index].nombrePack < 0) {
       this.listeColisTot[index].nombrePack = 0;
 
@@ -367,9 +383,16 @@ export class AffecterChauffeur implements OnInit {
           this.copieListeColisTot[index].nombrePack) *
         col.nombrePack;
 
+      col.poidsNet =
+        (this.copieListeColisTot[index].poidsNet /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
+
       // paids des pack non affectées
       this.listeColisTot[index].poidsBrut =
         this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+      this.listeColisTot[index].poidsNet =
+        this.copieListeColisTot[index].poidsNet - col.poidsNet;
 
       col.volume =
         (this.copieListeColisTot[index].volume /
@@ -394,10 +417,16 @@ export class AffecterChauffeur implements OnInit {
         (this.copieListeColisTot[index].poidsBrut /
           this.copieListeColisTot[index].nombrePack) *
         col.nombrePack;
+      col.poidsNet =
+        (this.copieListeColisTot[index].poidsNet /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
 
       // paids des pack non affectées
       this.listeColisTot[index].poidsBrut =
         this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+      this.listeColisTot[index].poidsNet =
+        this.copieListeColisTot[index].poidsNet - col.poidsNet;
 
       col.volume =
         (this.copieListeColisTot[index].volume /
@@ -471,10 +500,25 @@ export class AffecterChauffeur implements OnInit {
     }
   }
 
+  // verifier si toute les colis d'une commande peut etre affectée
+  get commandePeutEtreTotalementAffectee() {
+    let poidsListeColisRestante = 0;
+    this.listeColis.forEach((colis: any) => {
+      poidsListeColisRestante += colis.poidsBrut;
+    });
+    if (
+      this.poidsCommandes + poidsListeColisRestante >
+      this.vehiculesTot[this.index].charge_utile
+    )
+      return false;
+    else return true;
+  }
+
   // fonction pour selectionner tous les colis dans une commande
   selectionnerTouteLaCommande() {
     this.listeColis.forEach((colis: any) => {
       let copieColie = JSON.parse(JSON.stringify(colis));
+      console.log(copieColie);
       for (let i = 0; i < copieColie.nombrePack; i++) {
         this.ajouterCommandeAuVehicule(colis);
       }
@@ -525,9 +569,15 @@ export class AffecterChauffeur implements OnInit {
       (this.copieListeColisTot[index].poidsBrut /
         this.copieListeColisTot[index].nombrePack) *
       col.nombrePack;
+    col.poidsNet =
+      (this.copieListeColisTot[index].poidsNet /
+        this.copieListeColisTot[index].nombrePack) *
+      col.nombrePack;
     // paids des pack non affectées
     this.listeColisTot[index].poidsBrut =
       this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+    this.listeColisTot[index].poidsNet =
+      this.copieListeColisTot[index].poidsNet - col.poidsNet;
     col.volume =
       (this.copieListeColisTot[index].volume /
         this.copieListeColisTot[index].nombrePack) *
@@ -577,9 +627,15 @@ export class AffecterChauffeur implements OnInit {
         (this.copieListeColisTot[index].poidsBrut /
           this.copieListeColisTot[index].nombrePack) *
         col.nombrePack;
+      col.poidsNet =
+        (this.copieListeColisTot[index].poidsNet /
+          this.copieListeColisTot[index].nombrePack) *
+        col.nombrePack;
       // paids des pack non affectées
       this.listeColisTot[index].poidsBrut =
         this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
+      this.listeColisTot[index].poidsNet =
+        this.copieListeColisTot[index].poidsNet - col.poidsNet;
       col.volume =
         (this.copieListeColisTot[index].volume /
           this.copieListeColisTot[index].nombrePack) *
@@ -745,7 +801,7 @@ export class AffecterChauffeur implements OnInit {
 export class DetailComponent implements OnInit {
   chauffeurs: any = [];
   matricule: any;
-  commandes: any;
+  commandes: any = [];
 
   displayedColumns: string[] = [
     'referenceDocument',
@@ -808,9 +864,13 @@ export class DetailComponent implements OnInit {
   }
 
   async getListeCommandes() {
-    this.commandes = await this.serviceMission
-      .getCommandesParIdMission(this.data.mission.id)
-      .toPromise();
+    let idCommandes = this.data.mission.idCommandes.split('/');
+    for (let i = 0; i < idCommandes.length; i++) {
+      const idCommande = Number(idCommandes[i]);
+      this.commandes.push(
+        await this.serviceMission.commande(idCommande).toPromise()
+      );
+    }
     console.log(this.commandes);
   }
 
@@ -848,7 +908,7 @@ export class DetailComponent implements OnInit {
       maxWidth: '95vw',
       maxHeight: '90vh',
       panelClass: 'custom-dialog-detail-commande',
-      data: { idCommande: id, mode: 'admin' },
+      data: { idMission: this.data.mission.id, idCommande: id, mode: 'admin' },
     });
   }
 }
@@ -914,10 +974,13 @@ export class DetailCommande implements OnInit {
   }
 
   async getListeColis() {
-    this.listeColis = await this.serviceMission
-      .getListeColisParIdCommande(this.data.idCommande)
+    let listeColisParMission = await this.serviceMission
+      .getColisParIdMission(this.data.idMission)
       .toPromise();
-    console.log(this.listeColis);
+    this.listeColis = listeColisParMission.filter(
+      (colis: any) => colis.idCommande == this.data.idCommande
+    );
+    console.log(listeColisParMission);
   }
   // retourne le nombre d'emballages total
   get nombrePackTotal() {

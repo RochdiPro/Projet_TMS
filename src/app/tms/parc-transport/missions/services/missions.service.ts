@@ -109,6 +109,18 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
+  // get liste colis par id mission
+  public getColisParIdMission(idMission: any) {
+    return this.httpClient
+      .get(erp + 'liste-colis-par-id-mission', {
+        params: {
+          idMission: idMission,
+        },
+        observe: 'body',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
   // getMissionsChauffeur
   public getMissionsChauffeur(idChauffeur: any) {
     return this.httpClient

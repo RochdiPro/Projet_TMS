@@ -118,7 +118,10 @@
                                     <mat-checkbox *ngIf="checkBoxVehicules[i]" color="primary"
                                         [(ngModel)]="checkBoxVehicules[i].value"
                                         [disabled]="checkBoxVehicules[i].disable"
-                                        (change)="selectionnerDeselectionnerVehicule(i, 'privé', vehicule)">
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'privé', vehicule)"
+                                        matTooltip="Séléctionner une commande s'il vous plait"
+                                        [matTooltipDisabled]="!checkBoxVehicules[i].disable"
+                                        matTooltipPosition="before">
                                     </mat-checkbox>
                                 </td>
                             </tr>
@@ -134,7 +137,10 @@
                                 <td style="height: 41px; text-align: center;">
                                     <mat-checkbox color="primary" [(ngModel)]="checkBoxVehiculesLoues[i].value"
                                         [disabled]="checkBoxVehiculesLoues[i].disable"
-                                        (change)="selectionnerDeselectionnerVehicule(i, 'loue', vehiculeLoue)">
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'loue', vehiculeLoue)"
+                                        matTooltip="Séléctionner une commande s'il vous plait"
+                                        [matTooltipDisabled]="!checkBoxVehiculesLoues[i].disable"
+                                        matTooltipPosition="before">
                                     </mat-checkbox>
                                 </td>
                             </tr>

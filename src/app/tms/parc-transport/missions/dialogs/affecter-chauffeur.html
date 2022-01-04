@@ -60,8 +60,8 @@
                 <div class="poids">Poids commande: {{poidsCommandeSelectionne}}kg</div>
                 <div class="volume">Volume commande: {{volumeCommandeSelectionne}}m³</div>
             </div>
-            <div class="selectionner-tous">
-                <a role="button" (click)="selectionnerTouteLaCommande()">
+            <div class="selectionner-tous" *ngIf="listeColis">
+                <a role="button" (click)="selectionnerTouteLaCommande()" [ngClass]="{'disabled': !commandePeutEtreTotalementAffectee}">
                     <mat-icon>library_add_check</mat-icon> Séléctionner toute la commande
                 </a>
             </div>

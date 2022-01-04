@@ -132,14 +132,14 @@ export class AjoutMissionComponent implements OnInit {
   // creation de la liste qui contient les valeur des ngModels du checkBoxs vehicules
   async creerCheckBoxsVehicules() {
     this.listeVehiculesAffiches.forEach(() => {
-      this.checkBoxVehicules.push({ value: false, diasable: false });
+      this.checkBoxVehicules.push({ value: false, disable: true });
     });
   }
 
   // creation de la liste qui contient les valeur des ngModels du checkBoxs vehiculesLoues
   async creerCheckBoxsVehiculesLoues() {
     this.listeVehiculesLoues.forEach(() => {
-      this.checkBoxVehiculesLoues.push({ value: false, diasable: false });
+      this.checkBoxVehiculesLoues.push({ value: false, disable: true });
     });
   }
 
@@ -287,8 +287,11 @@ export class AjoutMissionComponent implements OnInit {
         checkBox.value = false;
       });
       this.vehiculesSelectionnes = [];
+      this.vehiculesPriveSelectionnes = [];
+      this.vehiculesLoueSelectionnes = [];
       this.disableCheckBoxsVehiculePoidsVolumeInferieur();
     }
+    this.mission.length === 0 ? this.disableChaeckBoxTouteVehicules() : '';
   }
 
   // retourne la charge utile des vehicules selectionnées
@@ -706,7 +709,9 @@ export class AjoutMissionComponent implements OnInit {
         break;
     }
     this.disableCheckBoxsVehiculePoidsVolumeInferieur();
+    this.mission.length === 0 ? this.disableChaeckBoxTouteVehicules() : '';
   }
+
   // si on clique le bouton enlever-tous-commandes en supprime toutes les commandes de la liste des commandes par mission "mission"
   //et on les rajoutes dans la liste des commandes dans les regions compatibles
   annulerAjoutTousCommandeDansMission() {
@@ -755,7 +760,19 @@ export class AjoutMissionComponent implements OnInit {
     }
     this.mission = [];
     this.disableCheckBoxsVehiculePoidsVolumeInferieur();
+    this.disableChaeckBoxTouteVehicules();
   }
+
+  // disable toute les checkBoxs des vehicules
+  disableChaeckBoxTouteVehicules() {
+    this.checkBoxVehicules.forEach((checkBox) => {
+      checkBox.disable = true;
+    });
+    this.checkBoxVehiculesLoues.forEach((checkBox) => {
+      checkBox.disable = true;
+    });
+  }
+
   // si on clique sur le bouton ajouter-mission on ajoute cette mission a la liste de la file d'attente
   async ajouterMissionFileAttente() {
     let vehicules: any = [];
@@ -764,7 +781,8 @@ export class AjoutMissionComponent implements OnInit {
     let volumeMission: any = [];
     let poidsMission: any = [];
     let commandesAffectees: any = [];
-    console.log(this.vehiculesSelectionnes);
+    console.log(this.vehiculesPriveSelectionnes);
+    console.log(this.vehiculesLoueSelectionnes);
     // ouvrir boite dialogue affecter-chauffeur
     const dialogRef = this.dialog.open(AffecterChauffeur, {
       width: '2000px',
@@ -774,7 +792,7 @@ export class AjoutMissionComponent implements OnInit {
         vehiculesPrives: this.vehiculesPriveSelectionnes,
         vehiculesLoues: this.vehiculesLoueSelectionnes,
         mission: this.mission,
-        autoFocus: false
+        autoFocus: false,
       },
     });
     dialogRef.afterClosed().subscribe((result) => {
@@ -835,6 +853,7 @@ export class AjoutMissionComponent implements OnInit {
         this.vehiculesLoueSelectionnes = [];
         this.formVehicule.get('multiVehicule').setValue(false);
         this.disableCheckBoxsVehiculePoidsVolumeInferieur();
+        this.disableChaeckBoxTouteVehicules();
         // si la file d'attente s'agit d'une nouvelle file d'attente on l'ajoute sinon on modifie la valeur de la file d'attente existante
         let dateFileAttente = new Date(
           this.formDate.get('date').value.getTime()
@@ -1076,7 +1095,9 @@ export class AjoutMissionComponent implements OnInit {
               listeColisage.append('poidsNet', col.poidsNet);
               listeColisage.append('poidsBrut', col.poidsBrut);
               console.log(col);
-              await this.serviceMission.creerListeColisMission(listeColisage).toPromise();
+              await this.serviceMission
+                .creerListeColisMission(listeColisage)
+                .toPromise();
             }
           }
           for (let i = 0; i < mission.commandes.length; i++) {

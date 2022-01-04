@@ -80,7 +80,7 @@ export class MissionsChauffeurComponent implements OnInit {
   missionsFiltree: any;
   missionSelectionnee: any;
 
-  commandes: any;
+  commandes: any = [];
   commandesNonLivrees: any;
   commandesLivrees: any;
 
@@ -204,10 +204,15 @@ export class MissionsChauffeurComponent implements OnInit {
   }
 
   async getCommandesMission(mission: any) {
+    this.commandes = []
     this.missionSelectionnee = mission;
-    this.commandes = await this.serviceMission
-      .getCommandesParIdMission(mission.id)
-      .toPromise();
+    let idCommandes = mission.idCommandes.split('/');
+    for (let i = 0; i < idCommandes.length; i++) {
+      const idCommande = Number(idCommandes[i]);
+      this.commandes.push(
+        await this.serviceMission.commande(idCommande).toPromise()
+      );
+    }
     this.commandesLivrees = this.commandes.filter(
       (commande: any) => commande.etat === 'Livrée'
     );
@@ -262,7 +267,7 @@ export class MissionsChauffeurComponent implements OnInit {
       maxWidth: '95vw',
       maxHeight: '90vh',
       panelClass: 'custom-dialog-detail-commande-chauffeur',
-      data: { idCommande: id, mode: "chauffeur" },
+      data: { idMission: this.missionSelectionnee.id, idCommande: id, mode: "chauffeur" },
     });
   }
 

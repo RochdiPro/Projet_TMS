@@ -94,7 +94,7 @@
             <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header class="ml-1"> Etat Mission
             </mat-header-cell>
             <mat-cell mat-cell *matCellDef="let element" data-label="Etat Mission">
-                <p class="accorde" *ngIf="element.etat === 'Accordée'">Accordée</p>
+                <p class="accorde" *ngIf="element.etat === 'En attente'">En attente</p>
                 <p class="attente" *ngIf="element.etat === 'En Cours'">En Cours</p>
                 <p class="termine" *ngIf="element.etat === 'Terminée'">Terminée</p>
             </mat-cell>

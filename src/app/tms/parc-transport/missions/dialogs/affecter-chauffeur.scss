@@ -588,3 +588,8 @@ b {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
