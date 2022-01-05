@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
 import { VehiculeService } from '../../vehicule/services/vehicule.service';
-import { AffecterChauffeur } from '../dialogs/dialogs.component';
+import { AffecterChauffeur, AffecterMultiChauffeur } from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
 @Component({
@@ -151,6 +151,7 @@ export class AjoutMissionComponent implements OnInit {
           this.selectionnerVehiculePrive(vehicule);
         } else {
           this.deselectionnerVehiculePrive(vehicule);
+          this.disableCheckBoxsVehiculePoidsVolumeInferieur();
         }
         break;
 
@@ -159,6 +160,7 @@ export class AjoutMissionComponent implements OnInit {
           this.selectionnerVehiculeLoue(vehicule);
         } else {
           this.deselectionnerVehiculeloue(vehicule);
+          this.disableCheckBoxsVehiculePoidsVolumeInferieur();
         }
         break;
 
@@ -511,8 +513,15 @@ export class AjoutMissionComponent implements OnInit {
           this.checkBoxVehiculesLoues[i].disable = false;
         }
       }
+    } else {
+      for (let i = 0; i < this.listeVehiculesAffiches.length; i++) {
+          this.checkBoxVehicules[i].disable = false;
+      }
+      for (let i = 0; i < this.listeVehiculesLoues.length; i++) {
+          this.checkBoxVehiculesLoues[i].disable = false;
+        }
+      }
     }
-  }
 
   //affecter chaque commande a une region selon sa ville
   affecterCommandeAuRegion() {
@@ -783,18 +792,34 @@ export class AjoutMissionComponent implements OnInit {
     let commandesAffectees: any = [];
     console.log(this.vehiculesPriveSelectionnes);
     console.log(this.vehiculesLoueSelectionnes);
-    // ouvrir boite dialogue affecter-chauffeur
-    const dialogRef = this.dialog.open(AffecterChauffeur, {
-      width: '2000px',
-      minHeight: '500px',
-      panelClass: 'affecter-commandes',
-      data: {
-        vehiculesPrives: this.vehiculesPriveSelectionnes,
-        vehiculesLoues: this.vehiculesLoueSelectionnes,
-        mission: this.mission,
+    // ouvrir boite dialogue d'affectation chauffeur
+    let dialogRef
+    if (this.formVehicule.get('multiVehicule').value || this.formVehicule.get('nombreVoyages').value > 1) {
+      dialogRef = this.dialog.open(AffecterMultiChauffeur, {
+        width: '2000px',
+        minHeight: '500px',
+        panelClass: 'affecter-commandes',
+        data: {
+          vehiculesPrives: this.vehiculesPriveSelectionnes,
+          vehiculesLoues: this.vehiculesLoueSelectionnes,
+          mission: this.mission,
+        },
         autoFocus: false,
-      },
-    });
+      });
+      
+    } else {
+      dialogRef = this.dialog.open(AffecterChauffeur, {
+        width: '1500px',
+        minHeight: '500px',
+        panelClass: 'affecter-chauffeur',
+        data: {
+          vehiculesPrives: this.vehiculesPriveSelectionnes,
+          vehiculesLoues: this.vehiculesLoueSelectionnes,
+          mission: this.mission,
+        },
+        autoFocus: false,
+      });
+    }
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         result.prive.forEach((element: any) => {
