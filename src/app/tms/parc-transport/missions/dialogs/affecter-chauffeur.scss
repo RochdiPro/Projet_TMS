@@ -1,3 +1,4 @@
+// backgroud du boite dilaogue
 ::ng-deep .affecter-chauffeur {
   mat-dialog-container {
     background-image: radial-gradient(
@@ -8,7 +9,7 @@
   }
 }
 
-// pour le scrollbar
+// pour changer le style du scrollbar
 .scrollbar::-webkit-scrollbar {
   display: block;
   width: 3px;
@@ -40,11 +41,7 @@ div {
   width: 25%;
 }
 
-.inline-flex {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
+// style du title (matricule vehicule)
 h1 {
   font-size: 3em;
   color: white;
@@ -77,6 +74,7 @@ h1 {
   font-size: 2rem;
 }
 
+// style titre partie commande
 h2 {
   color: white;
   font-size: 2em;
@@ -189,6 +187,7 @@ tr ~ tr {
   margin-top: 10px;
 }
 
+// style du bouton valider
 .actions a {
   margin: 5px;
   background: #2b343b;
@@ -209,4 +208,27 @@ tr ~ tr {
 .actions .active {
   opacity: 1;
   cursor: pointer;
+}
+
+// style du spinner
+.spinner{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

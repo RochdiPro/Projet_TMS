@@ -55,32 +55,26 @@ import { MissionsService } from '../services/missions.service';
   ],
 })
 export class AffecterMultiChauffeur implements OnInit {
-  chauffeursCompatibles: any;
-  selectedValue: any;
   chauffeurs: any;
+  //liste des vehicules prive avec leurs chauffeurs compatibles
   couplesVehiculeChauffeursPrives: any = [];
   copieVehiculeChauffeurs: any = [];
   commandeActive: Array<boolean> = [];
   vehiculeActive: Array<boolean> = [];
-  vehiculesTot: any = [];
-  listeColisTot: any;
-  listeColis: any;
+  vehiculesTot: any = []; //liste de toute les vehicules (prive + loue)
+  listeColisTot: any; //liste de toutes les colis
+  listeColis: any; //liste des colis pour une commande specifique
   copieListeColisTot: any;
   typeVehicule: any;
-  vehiculeChauffeurs: any;
-  vehiculeLoue: any;
-  index: any;
-  listeCommandesParVehicule: any = [];
-  listeMissionsVehiculesPrive: any = [];
-  listeMissionsVehiculesLoue: any = [];
+  vehiculeChauffeurs: any; //une vehicule avec ses chauffeurs compatibles
+  index: any; //index du vehicule selectionne
   listeCommandes: any = [];
   commandeSelectionne: any;
-  listeColisAffiche = false;
+  listeColisAffiche = false; //liste colis dans commande affectée est affiché ou non
   commandeDansVehiculeSelectionne: any;
   couplesVehiculeChauffeurPrive: any = [];
   couplesVehiculeChauffeurLoue: any = [];
 
-  form: FormGroup;
   constructor(
     private dialogRef: MatDialogRef<AffecterMultiChauffeur>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -90,17 +84,18 @@ export class AffecterMultiChauffeur implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.creerForm();
     await this.getListeChauffeurs();
     this.verifierCompatibiliteChauffeur();
-    this.vehicules.forEach((v: any) => {
-      this.vehiculesTot.push(v.vehicule);
-      this.couplesVehiculeChauffeurPrive.push({
-        vehicule: v.vehicule,
-        chauffeur: {},
-        commandes: [],
+    for (let i = 0; i < this.data.nombreVoyages; i++) {
+      this.vehicules.forEach((v: any) => {
+        this.vehiculesTot.push(v.vehicule);
+        this.couplesVehiculeChauffeurPrive.push({
+          vehicule: v.vehicule,
+          chauffeur: {},
+          commandes: [],
+        });
       });
-    });
+    }
     this.vehiculesLoues.forEach((vehicule: any) => {
       this.couplesVehiculeChauffeurLoue.push({
         vehicule: vehicule,
@@ -116,37 +111,17 @@ export class AffecterMultiChauffeur implements OnInit {
     this.choisirVehicule(0);
   }
 
-  creerForm() {
-    this.form = this.fb.group({
-      chauffeurs: this.fb.array([]), //chauffeurs privés
-      chauffeursLoues: this.fb.array([]), //chauffeurs Loués
-    });
-
-    this.vehicules.forEach(() => {
-      const chauffeur = this.fb.group({ chauffeur: '' });
-      this.chauffeursForms.push(chauffeur);
-    });
-
-    this.vehiculesLoues.forEach(() => {
-      const chauffeurLoue = this.fb.group({ chauffeurLoue: '' });
-      this.chauffeursLouesForms.push(chauffeurLoue);
-    });
-  }
-
-  get chauffeursForms() {
-    return this.form.get('chauffeurs') as FormArray;
-  }
-
-  get chauffeursLouesForms() {
-    return this.form.get('chauffeursLoues') as FormArray;
-  }
-
+  //vehicules prive
   get vehicules() {
     return this.data.vehiculesPrives;
   }
 
   get vehiculesLoues() {
-    return this.data.vehiculesLoues;
+    let vehiculeLoue: any = [];
+    for (let i = 0; i < this.data.nombreVoyages; i++) {
+      vehiculeLoue = vehiculeLoue.concat(this.data.vehiculesLoues);
+    }
+    return vehiculeLoue;
   }
 
   // etat du div qui contient liste des colis dans voiture "show" pour afficher, "hide" pour cacher
@@ -159,6 +134,7 @@ export class AffecterMultiChauffeur implements OnInit {
     this.listeColisAffiche = !this.listeColisAffiche;
   }
 
+  //afficher liste colis dans une commande affectée dans un vehicule
   afficherListeColis(commande: any) {
     this.commandeDansVehiculeSelectionne = commande;
     if (!this.listeColisAffiche) {
@@ -176,6 +152,7 @@ export class AffecterMultiChauffeur implements OnInit {
     }
   }
 
+  //fermer liste colis affectées
   boutonFermerListeColis() {
     this.toggleListeColis();
     setTimeout(() => {
@@ -212,7 +189,6 @@ export class AffecterMultiChauffeur implements OnInit {
       );
     }
     this.listeColisTot = listeColis;
-    console.log(this.listeColisTot);
     this.copieListeColisTot = JSON.parse(JSON.stringify(this.listeColisTot));
   }
 
@@ -235,23 +211,26 @@ export class AffecterMultiChauffeur implements OnInit {
       this.listeCommandes = this.couplesVehiculeChauffeurPrive[i].commandes;
     } else {
       this.typeVehicule = 'loue';
-      this.vehiculeLoue =
-        this.vehiculesLoues[i - this.couplesVehiculeChauffeursPrives.length];
       this.listeCommandes =
         this.couplesVehiculeChauffeurLoue[
           i - this.couplesVehiculeChauffeursPrives.length
         ].commandes;
     }
-    console.log(this.couplesVehiculeChauffeurLoue);
   }
 
+  //si le volume ou le poids d'une commande va exceder celles du vehicule cette fonction n'aura aucun effet
   ajouterCommandeAuVehicule(col: any) {
+    let volumeVehicule =
+      this.vehiculesTot[this.index].longueur *
+      this.vehiculesTot[this.index].largeur *
+      this.vehiculesTot[this.index].hauteur;
     if (
       this.poidsCommandes + col.poidsBrut / col.nombrePack >
-      this.vehiculesTot[this.index].charge_utile
+        this.vehiculesTot[this.index].charge_utile ||
+      this.volumeCommandes + col.volume / col.nombrePack > volumeVehicule
     )
       return;
-    let colis = Object.assign({}, col);
+    let colis = Object.assign({}, col); //copie du colis desirée
     let commandeExiste =
       this.listeCommandes.filter(
         (commande: any) => Number(colis.idCommande) === commande.commande.id
@@ -302,6 +281,7 @@ export class AffecterMultiChauffeur implements OnInit {
     }
   }
 
+  //augmenter nobrePacks affectées
   augmenterQte(colis: any) {
     let index = this.listeColisTot.findIndex((col: any) => colis.id === col.id);
     if (this.listeColisTot[index].nombrePack === 0) return;
@@ -309,6 +289,7 @@ export class AffecterMultiChauffeur implements OnInit {
     this.changerQteNonAffectee(colis);
   }
 
+  //diminuer nombrePacks affectées
   diminuerQte(colis: any) {
     if (colis.nombrePack === 1) return;
     colis.nombrePack -= 1;
@@ -354,7 +335,7 @@ export class AffecterMultiChauffeur implements OnInit {
       (this.copieListeColisTot[index].poidsNet /
         this.copieListeColisTot[index].nombrePack) *
       col.nombrePack;
-    // paids des pack non affectées
+    // poids des pack non affectées
     this.listeColisTot[index].poidsBrut =
       (this.copieListeColisTot[index].poidsBrut /
         this.copieListeColisTot[index].nombrePack) *
@@ -388,7 +369,7 @@ export class AffecterMultiChauffeur implements OnInit {
           this.copieListeColisTot[index].nombrePack) *
         col.nombrePack;
 
-      // paids des pack non affectées
+      // poids des pack non affectées
       this.listeColisTot[index].poidsBrut =
         this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
       this.listeColisTot[index].poidsNet =
@@ -422,7 +403,7 @@ export class AffecterMultiChauffeur implements OnInit {
           this.copieListeColisTot[index].nombrePack) *
         col.nombrePack;
 
-      // paids des pack non affectées
+      // poids des pack non affectées
       this.listeColisTot[index].poidsBrut =
         this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
       this.listeColisTot[index].poidsNet =
@@ -438,26 +419,28 @@ export class AffecterMultiChauffeur implements OnInit {
         this.copieListeColisTot[index].volume - col.volume;
       return false;
     }
-    console.log(this.copieListeColisTot[index].nombrePack);
     return true;
   }
 
+  //ajoute a chaque vehicule la liste des chauffeurs compatibles
   verifierCompatibiliteChauffeur() {
-    this.vehicules.forEach((vehicule: any) => {
-      let categorie = vehicule.vehicule.categories.split('/');
-      let chauffeurs: any = [];
-      categorie.forEach((value: any) => {
-        this.chauffeurs.forEach((chauffeur: any) => {
-          if (value === chauffeur.categorie_Permis) {
-            chauffeurs.push(chauffeur);
-          }
+    for (let i = 0; i < this.data.nombreVoyages; i++) {
+      this.vehicules.forEach((vehicule: any) => {
+        let categorie = vehicule.vehicule.categories.split('/');
+        let chauffeurs: any = [];
+        categorie.forEach((value: any) => {
+          this.chauffeurs.forEach((chauffeur: any) => {
+            if (value === chauffeur.categorie_Permis) {
+              chauffeurs.push(chauffeur);
+            }
+          });
+        });
+        this.couplesVehiculeChauffeursPrives.push({
+          vehicule: vehicule.vehicule,
+          chauffeurs: chauffeurs,
         });
       });
-      this.couplesVehiculeChauffeursPrives.push({
-        vehicule: vehicule.vehicule,
-        chauffeurs: chauffeurs,
-      });
-    });
+    }
     for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
       this.copieVehiculeChauffeurs.push({
         vehicule: this.couplesVehiculeChauffeursPrives[i].vehicule,
@@ -473,8 +456,17 @@ export class AffecterMultiChauffeur implements OnInit {
         ...this.copieVehiculeChauffeurs[i].chauffeurs,
       ];
     }
-    for (let i = 0; i < this.couplesVehiculeChauffeurPrive.length; i++) {
-      for (let j = 0; j < this.couplesVehiculeChauffeursPrives.length; j++) {
+    for (
+      let i = 0;
+      i < this.couplesVehiculeChauffeurPrive.length / this.data.nombreVoyages;
+      i++
+    ) {
+      for (
+        let j = 0;
+        j <
+        this.couplesVehiculeChauffeursPrives.length / this.data.nombreVoyages;
+        j++
+      ) {
         this.couplesVehiculeChauffeursPrives[j].chauffeurs.forEach(
           (chauffeurLoop: any) => {
             if (
@@ -498,17 +490,46 @@ export class AffecterMultiChauffeur implements OnInit {
         );
       }
     }
+    //si on a plusieurs nombres de voyages on selectionne le chauffeur seulement pour le premier voyages et les autres sont les meme comme selectionnées
+    for (
+      let i =
+        this.couplesVehiculeChauffeurPrive.length / this.data.nombreVoyages;
+      i < this.couplesVehiculeChauffeurPrive.length;
+      i++
+    ) {
+      this.couplesVehiculeChauffeursPrives[i].chauffeurs = [];
+      this.couplesVehiculeChauffeurPrive[i].chauffeur =
+        this.couplesVehiculeChauffeurPrive[
+          i -
+            this.couplesVehiculeChauffeursPrives.length /
+              this.data.nombreVoyages
+        ].chauffeur;
+      this.couplesVehiculeChauffeursPrives[i].chauffeurs.push(
+        this.couplesVehiculeChauffeurPrive[
+          i -
+            this.couplesVehiculeChauffeursPrives.length /
+              this.data.nombreVoyages
+        ].chauffeur
+      );
+    }
   }
 
   // verifier si toute les colis d'une commande peut etre affectée
   get commandePeutEtreTotalementAffectee() {
     let poidsListeColisRestante = 0;
+    let volumeListeColisRestante = 0;
+    let volumeVehicule =
+      this.vehiculesTot[this.index].longueur *
+      this.vehiculesTot[this.index].largeur *
+      this.vehiculesTot[this.index].hauteur;
     this.listeColis.forEach((colis: any) => {
       poidsListeColisRestante += colis.poidsBrut;
+      volumeListeColisRestante += colis.volume;
     });
     if (
       this.poidsCommandes + poidsListeColisRestante >
-      this.vehiculesTot[this.index].charge_utile
+        this.vehiculesTot[this.index].charge_utile ||
+      this.volumeCommandes + volumeListeColisRestante > volumeVehicule
     )
       return false;
     else return true;
@@ -518,7 +539,6 @@ export class AffecterMultiChauffeur implements OnInit {
   selectionnerTouteLaCommande() {
     this.listeColis.forEach((colis: any) => {
       let copieColie = JSON.parse(JSON.stringify(colis));
-      console.log(copieColie);
       for (let i = 0; i < copieColie.nombrePack; i++) {
         this.ajouterCommandeAuVehicule(colis);
       }
@@ -573,7 +593,7 @@ export class AffecterMultiChauffeur implements OnInit {
       (this.copieListeColisTot[index].poidsNet /
         this.copieListeColisTot[index].nombrePack) *
       col.nombrePack;
-    // paids des pack non affectées
+    // poids des pack non affectées
     this.listeColisTot[index].poidsBrut =
       this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
     this.listeColisTot[index].poidsNet =
@@ -631,7 +651,7 @@ export class AffecterMultiChauffeur implements OnInit {
         (this.copieListeColisTot[index].poidsNet /
           this.copieListeColisTot[index].nombrePack) *
         col.nombrePack;
-      // paids des pack non affectées
+      // poids des pack non affectées
       this.listeColisTot[index].poidsBrut =
         this.copieListeColisTot[index].poidsBrut - col.poidsBrut;
       this.listeColisTot[index].poidsNet =
@@ -757,6 +777,7 @@ export class AffecterMultiChauffeur implements OnInit {
       element.commandes.length === 0 ? (estValide = false) : '';
       Object.keys(element.chauffeur).length === 0 ? (estValide = false) : '';
     });
+    console.log(this.couplesVehiculeChauffeurLoue);
     this.couplesVehiculeChauffeurLoue.forEach((element: any) => {
       element.commandes.length === 0 ? (estValide = false) : '';
       element.chauffeur === '' ? (estValide = false) : '';
@@ -768,21 +789,6 @@ export class AffecterMultiChauffeur implements OnInit {
   valider() {
     let couplesVehiculeChauffeurPrive = this.couplesVehiculeChauffeurPrive;
     let couplesVehiculeChauffeurLoue = this.couplesVehiculeChauffeurLoue;
-    console.log(couplesVehiculeChauffeurPrive);
-    // for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
-    //   console.log(this.chauffeursForms.controls[i].get('chauffeur').value);
-    //   couplesVehiculeChauffeurPrive.push({
-    //     vehicule: this.couplesVehiculeChauffeursPrives[i].vehicule,
-    //     chauffeur: this.chauffeursForms.controls[i].get('chauffeur').value,
-    //   });
-    // }
-    // for (let j = 0; j < this.vehiculesLoues.length; j++) {
-    //   couplesVehiculeChauffeurLoue.push({
-    //     vehicule: this.vehiculesLoues[j],
-    //     chauffeur:
-    //       this.chauffeursLouesForms.controls[j].get('chauffeurLoue').value,
-    //   });
-    // }
     this.dialogRef.close({
       prive: couplesVehiculeChauffeurPrive,
       loue: couplesVehiculeChauffeurLoue,
@@ -802,7 +808,7 @@ export class AffecterChauffeur implements OnInit {
   chauffeurs: any;
   chauffeurSelectionne: any;
   typeVehicule: string;
-  commandeActive: Array<boolean> = [];
+  commandeActive: Array<boolean> = []; //liste des valeurs boolean pour avoir quel commande est active
   listeColis: any;
   vehicule: any;
   constructor(
@@ -813,6 +819,7 @@ export class AffecterChauffeur implements OnInit {
   ) {}
 
   async ngOnInit() {
+    //tester si le vehicule s'agit d'un vehicule prive ou vehicule loue
     if (
       this.data.vehiculesPrives.length === 1 &&
       this.data.vehiculesLoues.length === 0
@@ -828,6 +835,7 @@ export class AffecterChauffeur implements OnInit {
       this.typeVehicule = 'loue';
       this.vehicule = this.data.vehiculesLoues[0];
     }
+    //activer la premiere commande par defaut
     this.commandeActive[0] = true;
     this.choisirCommande(this.data.mission[0]);
   }
@@ -836,6 +844,7 @@ export class AffecterChauffeur implements OnInit {
     this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
   }
 
+  // permet d'avoir les chauffeurs compatibles ave le vehicule
   verifierCompatibiliteChauffeur() {
     let categorie = this.data.vehiculesPrives[0].vehicule.categories.split('/');
     let chauffeurs: any = [];
@@ -846,15 +855,7 @@ export class AffecterChauffeur implements OnInit {
         }
       });
     });
-    console.log(chauffeurs);
     this.chauffeurs = chauffeurs;
-  }
-
-  changerCommandeActive(i: number) {
-    this.commandeActive[i] = true;
-    for (let j = 0; j < this.commandeActive.length; j++) {
-      j === i ? '' : (this.commandeActive[j] = false);
-    }
   }
 
   async getListeColis(idCommande: any) {
@@ -899,9 +900,19 @@ export class AffecterChauffeur implements OnInit {
   }
 
   async choisirCommande(commande: any) {
+    this.listeColis = undefined;
     await this.getListeColis(commande.id);
   }
 
+  // permet de changer la commande active lors du selection d'une commande
+  changerCommandeActive(i: number) {
+    this.commandeActive[i] = true;
+    for (let j = 0; j < this.commandeActive.length; j++) {
+      j === i ? '' : (this.commandeActive[j] = false);
+    }
+  }
+
+  //tester si toutes les conditions sont valides pour activer le bouton valider
   get toutValide() {
     let estValide = true;
     this.chauffeurSelectionne === undefined || this.chauffeurSelectionne === ''
@@ -916,8 +927,7 @@ export class AffecterChauffeur implements OnInit {
     let commandes: any = [];
     for (let i = 0; i < this.data.mission.length; i++) {
       const commande = this.data.mission[i];
-      await this.getListeColis(commande.id)
-      console.log(this.listeColis);
+      await this.getListeColis(commande.id);
       commandes.push({
         commande: commande,
         colis: this.listeColis,
@@ -926,7 +936,7 @@ export class AffecterChauffeur implements OnInit {
     if (this.typeVehicule === 'prive') {
       couplesVehiculeChauffeurPrive = [
         {
-          vehicule: this.vehicule,
+          vehicule: this.vehicule.vehicule,
           chauffeur: this.chauffeurSelectionne,
           commandes: commandes,
         },
@@ -936,7 +946,7 @@ export class AffecterChauffeur implements OnInit {
       couplesVehiculeChauffeurPrive = [];
       couplesVehiculeChauffeurLoue = [
         {
-          vehicule: this.vehicule,
+          vehicule: this.vehicule.vehicule,
           chauffeur: this.chauffeurSelectionne,
           commandes: commandes,
         },
@@ -998,7 +1008,6 @@ export class DetailComponent implements OnInit {
   }
 
   async refresh() {
-    console.log(this.data.mission);
     let idChauffeurs = this.data.mission.idChauffeur.split('/');
     this.matricule = this.data.mission.matricule.split('/');
     for (let i = 0; i < idChauffeurs.length; i++) {
@@ -1030,7 +1039,6 @@ export class DetailComponent implements OnInit {
         await this.serviceMission.commande(idCommande).toPromise()
       );
     }
-    console.log(this.commandes);
   }
 
   supprimerCommande(id: any) {
@@ -1110,7 +1118,6 @@ export class PositionComponent implements OnInit {
     this.lat = Number(position.latitude);
     this.lng = Number(position.longitude);
     this.adresse = position.adresse;
-    console.log(position);
   }
 }
 
@@ -1139,7 +1146,6 @@ export class DetailCommande implements OnInit {
     this.listeColis = listeColisParMission.filter(
       (colis: any) => colis.idCommande == this.data.idCommande
     );
-    console.log(listeColisParMission);
   }
   // retourne le nombre d'emballages total
   get nombrePackTotal() {

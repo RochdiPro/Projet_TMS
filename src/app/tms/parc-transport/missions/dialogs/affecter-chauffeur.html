@@ -1,5 +1,6 @@
-<h1 mat-dialog-title>Vehicule: 100TUN1000</h1>
+<h1 mat-dialog-title>{{vehicule.vehicule.matricule}}</h1>
 <div style="padding-left: 20px;">
+    <!-- bloc de selection du chauffeur -->
     <div class="chauffeur">
         <i class="fas fa-user"></i>
         <mat-form-field *ngIf="typeVehicule === 'prive'">
@@ -16,8 +17,10 @@
             <mat-icon matSuffix>mode_edit</mat-icon>
         </mat-form-field>
     </div>
+    <!-- bloc d'information commandes -->
     <h2>Commandes</h2>
     <div class="commandes">
+        <!-- liste des commandes -->
         <div class="liste-commandes scrollbar">
             <ul>
                 <li class="list" *ngFor="let commande of data.mission; let i = index;" [attr.data-selected]="false"
@@ -27,68 +30,56 @@
                 </li>
             </ul>
         </div>
+        <!-- bloc ou s'affiche le table colisage -->
         <div class="container-colis scrollbar">
-            <table class="table table-bordered" *ngIf="this.listeColis">
-                <thead>
-                    <tr>
-                        <th scope="col">id</th>
-                        <th scope="col">Produit</th>
-                        <th scope="col">Pack</th>
-                        <th scope="col">Qte</th>
-                        <th scope="col">Nbr. Pack</th>
-                        <th scope="col">LxlxH (cm)</th>
-                        <th scope="col">Volume (m³)</th>
-                        <th scope="col">Poids net (kg)</th>
-                        <th scope="col">Poids brut (kg)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let colis of this.listeColis">
-                        <th scope="row">{{colis.idProduit}}</th>
-                        <td>{{colis.produit}}</td>
-                        <td>{{colis.emballage}}</td>
-                        <td>{{colis.quantite}}</td>
-                        <td>{{colis.nombrePack}}</td>
-                        <td>{{colis.dimensions}}</td>
-                        <td>{{colis.volume}}</td>
-                        <td>{{colis.poidsNet}}</td>
-                        <td>{{colis.poidsBrut}}</td>
-                    </tr>
-                    <tr *ngFor="let colis of this.listeColis">
-                        <th scope="row">{{colis.idProduit}}</th>
-                        <td>{{colis.produit}}</td>
-                        <td>{{colis.emballage}}</td>
-                        <td>{{colis.quantite}}</td>
-                        <td>{{colis.nombrePack}}</td>
-                        <td>{{colis.dimensions}}</td>
-                        <td>{{colis.volume}}</td>
-                        <td>{{colis.poidsNet}}</td>
-                        <td>{{colis.poidsBrut}}</td>
-                    </tr>
-                    <tr *ngFor="let colis of this.listeColis">
-                        <th scope="row">{{colis.idProduit}}</th>
-                        <td>{{colis.produit}}</td>
-                        <td>{{colis.emballage}}</td>
-                        <td>{{colis.quantite}}</td>
-                        <td>{{colis.nombrePack}}</td>
-                        <td>{{colis.dimensions}}</td>
-                        <td>{{colis.volume}}</td>
-                        <td>{{colis.poidsNet}}</td>
-                        <td>{{colis.poidsBrut}}</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th scope="row" colspan="3"></th>
-                        <td>Total</td>
-                        <td>{{nombrePackTotal}}</td>
-                        <td></td>
-                        <td>{{volumeTotal}}</td>
-                        <td>{{poidsTotalNet}}</td>
-                        <td>{{poidsTotalBrut}}</td>
-                    </tr>
-                </tfoot>
-            </table>
+            <ng-container *ngIf="this.listeColis; else elseTemplate">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">id</th>
+                            <th scope="col">Produit</th>
+                            <th scope="col">Pack</th>
+                            <th scope="col">Qte</th>
+                            <th scope="col">Nbr. Pack</th>
+                            <th scope="col">LxlxH (cm)</th>
+                            <th scope="col">Volume (m³)</th>
+                            <th scope="col">Poids net (kg)</th>
+                            <th scope="col">Poids brut (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let colis of this.listeColis">
+                            <th scope="row">{{colis.idProduit}}</th>
+                            <td>{{colis.produit}}</td>
+                            <td>{{colis.emballage}}</td>
+                            <td>{{colis.quantite}}</td>
+                            <td>{{colis.nombrePack}}</td>
+                            <td>{{colis.dimensions}}</td>
+                            <td>{{colis.volume}}</td>
+                            <td>{{colis.poidsNet}}</td>
+                            <td>{{colis.poidsBrut}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="row" colspan="3"></th>
+                            <td>Total</td>
+                            <td>{{nombrePackTotal}}</td>
+                            <td></td>
+                            <td>{{volumeTotal}}</td>
+                            <td>{{poidsTotalNet}}</td>
+                            <td>{{poidsTotalBrut}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+            </ng-container>
+            <ng-template #elseTemplate>
+                <div class="spinner">
+                    <div class="loader"></div>
+                </div>
+            </ng-template>
+            
         </div>
     </div>
 </div>

@@ -4,7 +4,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
 import { VehiculeService } from '../../vehicule/services/vehicule.service';
-import { AffecterChauffeur, AffecterMultiChauffeur } from '../dialogs/dialogs.component';
+import {
+  AffecterChauffeur,
+  AffecterMultiChauffeur,
+} from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
 @Component({
@@ -13,6 +16,7 @@ import { MissionsService } from '../services/missions.service';
   styleUrls: ['./ajout-mission.component.scss'],
 })
 export class AjoutMissionComponent implements OnInit {
+  // liste des regions avec leurs villes
   regions: any = [
     {
       nom: 'Nord-Est',
@@ -32,12 +36,7 @@ export class AjoutMissionComponent implements OnInit {
     { nom: 'Sud-Est', ville: ['Sfax', 'Gabes', 'Mednine', 'Tataouine'] },
     { nom: 'Sud-Ouest', ville: ['Gafsa', 'Tozeur', 'Kebili'] },
   ];
-  commandesNonAffecteSelectionne: String[];
-  listeFactures: any;
-  listeBLs: any;
-  client: any;
   commandes: any;
-  listeCommandes: Object[] = [];
   commandesNordEst: any = [];
   commandesNordOuest: any = [];
   commandesCentreEst: any = [];
@@ -46,18 +45,18 @@ export class AjoutMissionComponent implements OnInit {
   commandesSudOuest: any = [];
   formVehicule: FormGroup; //from des controles utilisées pour choisir une vehicule
   formDate: FormGroup; //from des controles utilisées pour choisir la date du mission
-  listeVehiculesAffiches: any = [];
+  listeVehiculesAffiches: any = []; //liste des vehicules prive a afficher (etat dispo)
   listeVehiculesLoues: any;
   mission: any[] = [];
-  checkBoxVehicules: any[] = [];
-  checkBoxVehiculesLoues: any[] = [];
-  vehiculesSelectionnes: any[] = [];
+  checkBoxVehicules: any[] = []; //liste valeur des chackBoxes vehicules prives
+  checkBoxVehiculesLoues: any[] = []; //liste valeur des chackBoxes vehicules loues
+  vehiculesSelectionnes: any[] = []; //liste des vehicules Selectionnés
   vehiculeEstSelectionne = false;
-  vehiculesPriveSelectionnes: any = [];
+  vehiculesPriveSelectionnes: any = []; //liste vehicules prives selectionnés avec la liste des chauffeurs compatibles pour chage vehicule
   vehiculesLoueSelectionnes: any = [];
   copieVehiculesPrive: any = [];
-  fileAttente: any = [];
-  vehiculesMemeCategorieSelectionne: any = [];
+  fileAttente: any = []; //liste des mission affectées dans la file d'attente
+  vehiculesMemeChauffeursSelectionne: any = []; //liste des vehicules selectionnées qui on le meme chauffeur
   minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
   aujoudhui: Date = new Date(); //date d'aujourd'hui
   listeFilesAttentes: any = []; //contient la liste des files d'attente crée
@@ -74,14 +73,15 @@ export class AjoutMissionComponent implements OnInit {
   async ngOnInit() {
     this.creerForm();
     await this.getListeCommande();
-    this.affecterCommandeAuRegion();
+    this.affecterCommandeAuRegion(); //specifier a quelle region appartienne une commande
+    // creation des listes des commandes divisées par region
     this.setCommandesNordEst();
     this.setCommandesNordOuest();
     this.setCommandesCentreEst();
     this.setCommandesCentreOuest();
     this.setCommandesSudEst();
     this.setCommandesSudOuest();
-    await this.getVehiculesChauffeurs();
+    await this.getVehiculesChauffeurs(); // recuperation de la liste des vehicules et leurs chauffeurs
     await this.getVehiculeLoueDisponibles();
     this.creerCheckBoxsVehicules();
     this.creerCheckBoxsVehiculesLoues();
@@ -124,7 +124,6 @@ export class AjoutMissionComponent implements OnInit {
     if (fileAttente === undefined) {
       this.fileAttente = [];
     } else {
-      console.log(fileAttente);
       this.fileAttente = fileAttente.fileAttente;
     }
   }
@@ -388,7 +387,6 @@ export class AjoutMissionComponent implements OnInit {
       let index = this.copieVehiculesPrive.findIndex(
         (v: any) => v.vehicule.id === vehicule.vehicule.id
       );
-      console.log(index);
       // pour chaque vehicule si il s'agit d'un vehicule different du vehicule selectionné en supprime le chauffeur du vehicule
       // selectionné de la liste des chauffeurs de cet vehicule
       for (let i = 0; i < this.copieVehiculesPrive.length; i++) {
@@ -402,23 +400,7 @@ export class AjoutMissionComponent implements OnInit {
               this.copieVehiculesPrive[i].chauffeurs[j] ===
               vehicule.chauffeurs[0]
             ) {
-              // enlever le chauffeur de la liste des vehicules non selectionnées
-              // let index = this.vehiculesPriveAvecChauffeurSupprime.findIndex(
-              //   (v: any) => copieVehiculesPrive[i].vehicule === v.vehicule
-              // );
-              // if (index >= 0) {
-              //   console.log(true)
-              //   this.vehiculesPriveAvecChauffeurSupprime[index].chauffeurs.push(
-              //     copieVehiculesPrive[i].chauffeurs.splice(j, 1)
-              //   );
-              // } else {
-              //   this.vehiculesPriveAvecChauffeurSupprime.push(
-              //     copieVehiculesPrive[i]
-              //   );
-              // }
               this.copieVehiculesPrive[i].chauffeurs.splice(j, 1);
-              console.log(this.copieVehiculesPrive);
-              console.log(this.listeVehiculesAffiches);
             }
           }
         }
@@ -426,19 +408,18 @@ export class AjoutMissionComponent implements OnInit {
     } else {
       this.vehiculesPriveSelectionnes.forEach((v: any) => {
         if (vehicule.chauffeurs === v.chauffeurs) {
-          this.vehiculesMemeCategorieSelectionne.push(v);
+          this.vehiculesMemeChauffeursSelectionne.push(v);
           if (
-            this.vehiculesMemeCategorieSelectionne.length >=
+            this.vehiculesMemeChauffeursSelectionne.length >=
             vehicule.chauffeurs.length
           ) {
             vehicule.chauffeurs.forEach((chauffeur: any) => {
               this.copieVehiculesPrive.forEach((ve: any) => {
                 if (
-                  (this.vehiculesMemeCategorieSelectionne.filter(
+                  (this.vehiculesMemeChauffeursSelectionne.filter(
                     (v: any) => v.vehicule.id === ve.vehicule.id
                   ).length = 0)
                 ) {
-                  console.log(ve.chauffeurs);
                   let k = ve.chauffeurs.findIndex(
                     (ch: any) => ch.id_Employe === chauffeur.id_Employe
                   );
@@ -475,23 +456,26 @@ export class AjoutMissionComponent implements OnInit {
           this.copieVehiculesPrive[i].chauffeurs.push(ch);
         }
       }
-      console.log(this.copieVehiculesPrive);
     });
     // this.vehiculesPriveAvecChauffeurSupprime = []
   }
 
   // disable checkbox vehicule si le poids ou le volume est inverieur au poids ou volume de la liste des commandes selectionnées
   disableCheckBoxsVehiculePoidsVolumeInferieur() {
+    if (this.mission.length === 0) return; // s'il n'ya aucune commande affectée dans mission on annule cette fonction
     if (!this.formVehicule.get('multiVehicule').value) {
+      //si multi vehicule n'est pas selectionné on execute le disable des vehicules necessaire si non on active toute les vehicules
       for (let i = 0; i < this.listeVehiculesAffiches.length; i++) {
         let volume =
           this.listeVehiculesAffiches[i].vehicule.longueur *
           this.listeVehiculesAffiches[i].vehicule.largeur *
           this.listeVehiculesAffiches[i].vehicule.hauteur;
         if (
-          this.listeVehiculesAffiches[i].vehicule.charge_utile <=
+          this.listeVehiculesAffiches[i].vehicule.charge_utile *
+            this.formVehicule.get('nombreVoyages').value <=
             this.calculerPoidsMission() ||
-          volume <= this.calculerVolumeMission()
+          volume * this.formVehicule.get('nombreVoyages').value <=
+            this.calculerVolumeMission()
         ) {
           this.checkBoxVehicules[i].disable = true;
         } else {
@@ -504,9 +488,11 @@ export class AjoutMissionComponent implements OnInit {
           this.listeVehiculesLoues[i].largeur *
           this.listeVehiculesLoues[i].hauteur;
         if (
-          this.listeVehiculesLoues[i].charge_utile <=
+          this.listeVehiculesLoues[i].charge_utile *
+            this.formVehicule.get('nombreVoyages').value <=
             this.calculerPoidsMission() ||
-          volume <= this.calculerVolumeMission()
+          volume * this.formVehicule.get('nombreVoyages').value <=
+            this.calculerVolumeMission()
         ) {
           this.checkBoxVehiculesLoues[i].disable = true;
         } else {
@@ -515,13 +501,13 @@ export class AjoutMissionComponent implements OnInit {
       }
     } else {
       for (let i = 0; i < this.listeVehiculesAffiches.length; i++) {
-          this.checkBoxVehicules[i].disable = false;
+        this.checkBoxVehicules[i].disable = false;
       }
       for (let i = 0; i < this.listeVehiculesLoues.length; i++) {
-          this.checkBoxVehiculesLoues[i].disable = false;
-        }
+        this.checkBoxVehiculesLoues[i].disable = false;
       }
     }
+  }
 
   //affecter chaque commande a une region selon sa ville
   affecterCommandeAuRegion() {
@@ -790,11 +776,14 @@ export class AjoutMissionComponent implements OnInit {
     let volumeMission: any = [];
     let poidsMission: any = [];
     let commandesAffectees: any = [];
-    console.log(this.vehiculesPriveSelectionnes);
-    console.log(this.vehiculesLoueSelectionnes);
     // ouvrir boite dialogue d'affectation chauffeur
-    let dialogRef
-    if (this.formVehicule.get('multiVehicule').value || this.formVehicule.get('nombreVoyages').value > 1) {
+    let dialogRef;
+    // si on selectionne multi vehicules oubin le nombre de voyages > 1 on ouvre la boite dialogue affectar multi chauffeur
+    // sinon on ouvre la boite dialogue affecter chauffeur simple
+    if (
+      this.formVehicule.get('multiVehicule').value ||
+      this.formVehicule.get('nombreVoyages').value > 1
+    ) {
       dialogRef = this.dialog.open(AffecterMultiChauffeur, {
         width: '2000px',
         minHeight: '500px',
@@ -803,10 +792,10 @@ export class AjoutMissionComponent implements OnInit {
           vehiculesPrives: this.vehiculesPriveSelectionnes,
           vehiculesLoues: this.vehiculesLoueSelectionnes,
           mission: this.mission,
+          nombreVoyages: this.formVehicule.get('nombreVoyages').value,
         },
         autoFocus: false,
       });
-      
     } else {
       dialogRef = this.dialog.open(AffecterChauffeur, {
         width: '1500px',
@@ -820,10 +809,10 @@ export class AjoutMissionComponent implements OnInit {
         autoFocus: false,
       });
     }
+    // aprés la fermeture des des boites dialogues on ajoutes les mission dans la file d'attente
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         result.prive.forEach((element: any) => {
-          console.log(element);
           vehicules.push(element.vehicule);
           chauffeurs.push(element.chauffeur);
           commandesAffectees.push(element.commandes);
@@ -862,11 +851,7 @@ export class AjoutMissionComponent implements OnInit {
           volume: volumeMission,
           poids: poidsMission,
         });
-        console.log(this.fileAttente);
         this.mission = [];
-        console.log(vehiculesLoues);
-        console.log(this.vehiculesSelectionnes);
-
         this.checkBoxVehicules.forEach((checkBox) => {
           checkBox.value = false;
         });
@@ -883,11 +868,9 @@ export class AjoutMissionComponent implements OnInit {
         let dateFileAttente = new Date(
           this.formDate.get('date').value.getTime()
         );
-        console.log(typeof dateFileAttente);
         let fileAttente = this.listeFilesAttentes.filter(
           (f: any) => f.date.getTime() === dateFileAttente.getTime()
         );
-        console.log(this.fileAttente);
         let copieFileAttente: any = [];
         this.fileAttente.forEach((mission: any) => {
           copieFileAttente.push({
@@ -909,10 +892,8 @@ export class AjoutMissionComponent implements OnInit {
           let index = this.listeFilesAttentes.findIndex(
             (f: any) => f.date.getTime() === dateFileAttente.getTime()
           );
-          console.log(index);
           this.listeFilesAttentes[index].fileAttente = copieFileAttente;
         }
-        console.log(this.listeFilesAttentes);
       }
     });
   }
@@ -975,7 +956,6 @@ export class AjoutMissionComponent implements OnInit {
       (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
     );
     this.listeFilesAttentes[index].fileAttente.splice(i, 1);
-    console.log(this.listeFilesAttentes);
   }
 
   // si on clique le bouton enlever-tous-missions en supprime toutes les missions de la file d'attente
@@ -1032,7 +1012,6 @@ export class AjoutMissionComponent implements OnInit {
       (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
     );
     this.listeFilesAttentes.splice(index, 1);
-    console.log(this.listeFilesAttentes);
   }
 
   get fileAttenteEstVide() {
@@ -1059,7 +1038,6 @@ export class AjoutMissionComponent implements OnInit {
 
   // enregistrement des missions
   async enregistrer() {
-    console.log(this.listeFilesAttentes);
     for (let i = 0; i < this.listeFilesAttentes.length; i++) {
       for (let j = 0; j < this.listeFilesAttentes[i].fileAttente.length; j++) {
         for (
@@ -1093,7 +1071,6 @@ export class AjoutMissionComponent implements OnInit {
           formData.append('region', '');
           formData.append('etat', 'En attente');
           formData.append('date', this.listeFilesAttentes[i].date);
-          console.log(formData.get('date'));
           let newMission = await this.serviceMission
             .creerMission(formData)
             .toPromise();
@@ -1119,7 +1096,6 @@ export class AjoutMissionComponent implements OnInit {
               listeColisage.append('volume', col.volume);
               listeColisage.append('poidsNet', col.poidsNet);
               listeColisage.append('poidsBrut', col.poidsBrut);
-              console.log(col);
               await this.serviceMission
                 .creerListeColisMission(listeColisage)
                 .toPromise();

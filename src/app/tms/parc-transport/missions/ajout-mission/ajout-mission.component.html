@@ -1,13 +1,17 @@
 <div class="container">
     <div class="date-mission" [formGroup]="formDate">
-        <button mat-icon-button (click)="datePrecedente()"><mat-icon>navigate_before</mat-icon></button>
+        <button mat-icon-button (click)="datePrecedente()">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
         <mat-form-field>
             <mat-label>Date du mission</mat-label>
             <input matInput formControlName="date" [min]="minDate" [matDatepicker]="picker1" (focus)="picker1.open()">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
             <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
-        <button mat-icon-button (click)="dateSuivante()"><mat-icon>navigate_next</mat-icon></button>
+        <button mat-icon-button (click)="dateSuivante()">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
     </div>
     <div class="row">
         <!-- liste des Commandes pretes a construire un Mission -->
@@ -82,7 +86,9 @@
                 <div class="entete" [formGroup]="formVehicule">
                     <span>
                         <label for="nb-voyages">Nb voyages</label>
-                        <input type="number" autocomplete="off" min="1" id="nb-voyages" formControlName="nombreVoyages">
+                        <input type="number" autocomplete="off" min="1" id="nb-voyages" formControlName="nombreVoyages"
+                            (change)="disableCheckBoxsVehiculePoidsVolumeInferieur()"
+                            (keyup)="disableCheckBoxsVehiculePoidsVolumeInferieur()">
                     </span>
                     <span>
                         <label for="multiple-vehicules">Multi véhicules</label>
@@ -499,14 +505,18 @@
         </div>
     </div>
     <div class="date-mission" [formGroup]="formDate">
-        <button mat-icon-button (click)="datePrecedente()"><mat-icon>navigate_before</mat-icon></button>
+        <button mat-icon-button (click)="datePrecedente()">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
         <mat-form-field>
             <mat-label>Date du mission</mat-label>
             <input matInput formControlName="date" [min]="minDate" [matDatepicker]="picker2" (focus)="picker2.open()">
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
             <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
-        <button mat-icon-button (click)="dateSuivante()"><mat-icon>navigate_next</mat-icon></button>
+        <button mat-icon-button (click)="dateSuivante()">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
     </div>
     <div class="row" id="file-attente">
         <!-- liste des commandes dans la file d'attente -->

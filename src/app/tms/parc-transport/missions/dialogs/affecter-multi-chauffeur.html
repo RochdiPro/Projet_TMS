@@ -1,4 +1,5 @@
 <div *ngIf="true" style="height: 500px; width: 100%; display: flex; position: relative">
+    <!-- section liste des commandes -->
     <div class="liste-commandes">
         <ul>
             <li class="list" *ngFor="let commande of data.mission; let i = index;" [attr.data-selected]="false"
@@ -9,6 +10,7 @@
         </ul>
     </div>
     <div class="container">
+        <!-- section ou les colis d'une commande selectionnée va etres affichée  -->
         <div class="container-colis">
             <h2>Colis</h2>
             <div class="info-commande" *ngIf="listeColis">
@@ -16,7 +18,8 @@
                 <div class="volume">Volume commande: {{volumeCommandeSelectionne}}m³</div>
             </div>
             <div class="selectionner-tous" *ngIf="listeColis">
-                <a role="button" (click)="selectionnerTouteLaCommande()" [ngClass]="{'disabled': !commandePeutEtreTotalementAffectee}">
+                <a role="button" (click)="selectionnerTouteLaCommande()"
+                    [ngClass]="{'disabled': !commandePeutEtreTotalementAffectee}">
                     <mat-icon>library_add_check</mat-icon> Séléctionner toute la commande
                 </a>
             </div>
@@ -30,30 +33,44 @@
                 </ul>
             </div>
         </div>
+        <!-- section pour interagir avec le vehicule -->
         <div class="container-vehicule">
+            <!-- section d'ajout chauffeur pour vehicule -->
             <div class="chauffeur">
                 <i class="fas fa-user"></i>
-                <mat-form-field *ngIf="typeVehicule === 'prive'">
-                    <mat-label>Chauffeur</mat-label>
-                    <mat-select placeholder="Chauffeur" name="chauffeur" (selectionChange)="rafraichirListeChauffeur()"
-                        [(ngModel)]="couplesVehiculeChauffeurPrive[index].chauffeur">
-                        <mat-option *ngFor="let chauffeur of vehiculeChauffeurs.chauffeurs" [value]="chauffeur">
-                            {{chauffeur.nom}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
+                <ng-container
+                    *ngIf="index < this.couplesVehiculeChauffeurPrive.length / this.data.nombreVoyages; else chauffeurDejaAffecte">
+                    <mat-form-field *ngIf="typeVehicule === 'prive'">
+                        <mat-label>Chauffeur</mat-label>
+                        <mat-select placeholder="Chauffeur" name="chauffeur"
+                            (selectionChange)="rafraichirListeChauffeur()"
+                            [(ngModel)]="couplesVehiculeChauffeurPrive[index].chauffeur">
+                            <mat-option *ngFor="let chauffeur of vehiculeChauffeurs.chauffeurs" [value]="chauffeur">
+                                {{chauffeur.nom}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </ng-container>
+                <ng-template #chauffeurDejaAffecte>
+                    <div *ngIf="typeVehicule === 'prive'">
+                        {{couplesVehiculeChauffeurPrive[index].chauffeur.nom}}
+                    </div>
+                </ng-template>
                 <mat-form-field *ngIf="typeVehicule === 'loue'">
                     <mat-label>Chauffeur</mat-label>
                     <input matInput placeholder="nom chauffeur"
                         [(ngModel)]="this.couplesVehiculeChauffeurLoue[index - this.couplesVehiculeChauffeursPrives.length].chauffeur">
                     <mat-icon matSuffix>mode_edit</mat-icon>
                 </mat-form-field>
+
             </div>
+            <!-- section pour afficher le poids et le volume du vehicule -->
             <div class="info-vehicule"
                 *ngIf="couplesVehiculeChauffeurPrive[index] || couplesVehiculeChauffeurLoue[index - this.couplesVehiculeChauffeursPrives.length]">
                 <div class="poids"><b>Charge vehicule: </b> {{poidsVehicule}}kg</div>
                 <div class="volume"><b>Volume vehicule: </b> {{volumeVehicule}}m³</div>
             </div>
+            <!-- liste des commandes affectées dans le vehicule -->
             <div class="commandes"
                 *ngIf="couplesVehiculeChauffeurPrive[index] || couplesVehiculeChauffeurLoue[index - this.couplesVehiculeChauffeursPrives.length]">
                 <div class="entete">
@@ -64,6 +81,7 @@
                 <div class="liste-commande scrollbar">
                     <ul>
                         <li class="list" *ngFor="let commande of listeCommandes">
+                            <!-- liste des commandes -->
                             <div style="display: flex; align-items: center;" *ngIf="!commandeDansVehiculeSelectionne">
                                 <a role="button"
                                     (click)="afficherListeColis(commande.commande); choisirCommande(commande.commande)">Commande:
@@ -72,6 +90,7 @@
                                     <mat-icon style="color: tomato;">delete</mat-icon>
                                 </button>
                             </div>
+                            <!-- liste des colis dans une commande -->
                             <div class="colis scrollbar" [@statusDetailCommande]="statusDetailCommande"
                                 *ngIf="commandeDansVehiculeSelectionne && commandeDansVehiculeSelectionne.id === commande.commande.id">
                                 <div class="entete">
@@ -101,12 +120,14 @@
                             </div>
                         </li>
                     </ul>
+                    <!-- liste vide est affichée quand on n'a pas de commande affectée -->
                     <div class="liste-vide" *ngIf="listeCommandes.length === 0">Vide</div>
                 </div>
             </div>
         </div>
     </div>
     <div class="liste-vehicules">
+        <!-- liste des vehicules -->
         <ul class="scrollbar">
             <li class="list" *ngFor="let vehicule of vehiculesTot; let i=index" [attr.data-selected]="false"
                 [class.active]="vehiculeActive[i]">
@@ -114,6 +135,7 @@
                     (click)="changerVehiculeActive(i); choisirVehicule(i); boutonFermerListeColis()"><span>{{vehicule.matricule}}</span></a>
             </li>
         </ul>
+        <!-- bouton valider -->
         <div class="valider">
             <a role="button" [ngClass]="{'active': toutValide}"
                 *ngIf="listeColisTot && couplesVehiculeChauffeurPrive && couplesVehiculeChauffeurLoue"
