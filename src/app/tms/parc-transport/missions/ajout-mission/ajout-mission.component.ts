@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
+import Swal from 'sweetalert2';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
 import { VehiculeService } from '../../vehicule/services/vehicule.service';
 import {
@@ -60,6 +61,7 @@ export class AjoutMissionComponent implements OnInit {
   minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
   aujoudhui: Date = new Date(); //date d'aujourd'hui
   listeFilesAttentes: any = []; //contient la liste des files d'attente crée
+  boutonEnregistrerEstActive = true;
 
   constructor(
     private fb: FormBuilder,
@@ -267,6 +269,13 @@ export class AjoutMissionComponent implements OnInit {
   // tester si le volume de vehicule inferieur a volume commandes selectionnées
   get volumeVehiculeInferieurVolumeCommande() {
     return this.volumeUtileVehiculesSelectionnes < this.calculerVolumeMission();
+  }
+
+  // retourne type de la commande
+  getTypeCommande(commande: any) {
+    let type;
+    commande.type === 'Facture' ? (type = 'F') : (type = 'BL');
+    return type;
   }
 
   // fonction qui s'execute on changeant l'etat du checkbox multiVehicules
@@ -1038,6 +1047,7 @@ export class AjoutMissionComponent implements OnInit {
 
   // enregistrement des missions
   async enregistrer() {
+    this.boutonEnregistrerEstActive = false;
     for (let i = 0; i < this.listeFilesAttentes.length; i++) {
       for (let j = 0; j < this.listeFilesAttentes[i].fileAttente.length; j++) {
         for (
@@ -1057,8 +1067,8 @@ export class AjoutMissionComponent implements OnInit {
           nomChauffeur = mission.chauffeur[k].nom;
           matriculeVehicule = mission.vehicule[k].matricule;
 
-          mission.commandes.forEach((commande: any) => {
-            idCommandes += commande.id + '/';
+          mission.commandesAffectees[k].forEach((commande: any) => {
+            idCommandes += commande.commande.id + '/';
           });
           idCommandes = idCommandes.slice(0, -1);
           formData.append('idChauffeur', idChauffeur);
@@ -1115,5 +1125,12 @@ export class AjoutMissionComponent implements OnInit {
     }
     this.listeFilesAttentes = [];
     this.fileAttente = [];
+    Swal.fire({
+      icon: 'success',
+      title: 'Missions enregistées avec succés!',
+      showConfirmButton: false,
+      timer: 1500
+    })
+    this.boutonEnregistrerEstActive = true;
   }
 }

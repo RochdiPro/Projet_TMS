@@ -54,7 +54,7 @@
                         <tbody>
                             <tr *ngFor="let commande of mission; let i=index;">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -189,7 +189,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesNordEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -246,7 +246,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesNordOuest; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -305,7 +305,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesCentreEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -362,7 +362,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesCentreOuest; let i=index;">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -421,7 +421,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesSudEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -478,7 +478,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesSudOuest; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -532,9 +532,9 @@
                                 <th>Chauffeur</th>
                                 <th>Sc/G</th>
                                 <th>Volume V</th>
-                                <th>Volume</th>
+                                <th>Volume CMD</th>
                                 <th>Poids V</th>
-                                <th>Poids</th>
+                                <th>Poids CMD</th>
                                 <th>
                                     <button mat-icon-button color="warn" matTooltip="Annuler tous"
                                         matTooltipPosition="above" (click)="annulerAjoutTousMissionsDansFileAttente()"
@@ -616,6 +616,10 @@
         <!-- bouton Annuler -->
         <button mat-button color="warn" class="mb-2 mr-2">Annuler</button>
         <!-- Bouton Enregistrer -->
-        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()">Enregistrer</button>
+        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()" [disabled]="listeFilesAttentes.length === 0">
+            <span *ngIf="boutonEnregistrerEstActive">Enregistrer</span>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                *ngIf="!boutonEnregistrerEstActive"></span>
+        </button>
     </div>
 </div>

@@ -15,7 +15,9 @@ import { MissionsService } from '../services/missions.service';
   styleUrls: ['./lister-missions.component.scss'],
 })
 export class ListerMissionsComponent implements OnInit, AfterViewInit {
+  // date d'aujourdhui
   today = new Date();
+  // date initialisée a 00:00 pour eviter le decalage dans le back
   date = new Date(
     this.today.getFullYear(),
     this.today.getMonth(),
@@ -92,6 +94,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
         this.filtreEtatMission
       )
       .toPromise();
+    // si on active le filtrage par date
     if (this.check) {
       this.date = new Date(this.form.get('dateL').value);
       this.dateRecherche = this.datepipe.transform(this.date, 'yyyy-MM-dd');
@@ -99,9 +102,9 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
         (mission) => mission.date === this.dateRecherche
       );
     }
+    // trie et mise a jour du paginator
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-    console.log(this.dataSource.data);
   }
   disableEnableDate() {
     //pour activer et desactiver le filtrage par date
@@ -110,16 +113,6 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     } else {
       this.form.controls['dateL'].disable();
     }
-  }
-
-  getNomChauffeur(chauffeurs: string) {
-    let listeChauffeurs = chauffeurs.split('/');
-    return listeChauffeurs;
-  }
-
-  getMatricule(matricules: string) {
-    let listeMatricule = matricules.split('/');
-    return listeMatricule;
   }
 
   // diminuer la date dans le date picker par un jour
@@ -138,21 +131,6 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     this.filtrerMission();
   }
 
-  supprimmerMission(id: any) {}
-
-  ouvrirAffecterCommande() {
-    // ouvrir la boite de dialogue d'affectation des commandes
-    // localStorage.setItem('date', this.form.get('dateL').value);
-    // const dialogRef = this.dialog.open(AffecterCommande, {
-    //   width: '450px',
-    //   panelClass: 'custom-dialog',
-    //   autoFocus: false,
-    // });
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   this.filtrerMission();
-    // });
-  }
-
   detailDialog(mission: any): void {
     // ouvrir la boite de dialogue de détail d'une mission
     const dialogRef = this.dialog.open(DetailComponent, {
@@ -164,6 +142,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
       data: { mission: mission },
     });
   }
+  
   ouvrirMap(id: any, type: any) {
     // ouvrir google map avec le trajet
     this.serviceMission.mission(id).subscribe((res) => {

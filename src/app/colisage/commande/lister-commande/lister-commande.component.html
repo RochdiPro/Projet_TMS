@@ -48,8 +48,8 @@
                 <button mat-icon-button disableRipple style="color: #24a0ed;" (click)="ouvrirBoiteDialogueInformationCommande(element)">
                     <mat-icon>info</mat-icon>
                 </button>
-                <button mat-icon-button disableRipple (click)="annulerCommande(element)" *ngIf="wms >= 4">
-                    <mat-icon color="warn">cancel</mat-icon>
+                <button mat-icon-button color="warn" disableRipple (click)="annulerCommande(element)" *ngIf="wms >= 4" [disabled]="element.etat != 'En cours de traitement'">
+                    <mat-icon>cancel</mat-icon>
                 </button>
             </mat-cell>
         </ng-container>

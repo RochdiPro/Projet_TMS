@@ -116,7 +116,7 @@ a {
 .liste-vehicules {
   position: relative;
   height: 100%;
-  width: 160px;
+  width: 210px;
   background-image: radial-gradient(
     circle farthest-corner at 12.3% 19.3%,
     rgba(85, 88, 218, 1) 0%,
@@ -316,15 +316,22 @@ h2 {
   color: white !important;
 }
 
+.chauffeur ::ng-deep .mat-form-field-wrapper, .chauffeur ::ng-deep .mat-form-field-infix {
+  padding-bottom: 0;
+}
+
 .chauffeur {
   padding: 40px;
   padding-left: 60px;
-  padding-bottom: 0px;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .chauffeur i {
   margin-right: 10px;
-  font-size: 2rem;
+  font-size: 2.2rem;
 }
 
 // liste des commandes dans le container-vehicule
@@ -421,6 +428,7 @@ h2 {
 .liste-commande .colis .contenue .list .qte {
   display: flex;
   align-items: center;
+  margin-left: auto;
 }
 
 .liste-commande .colis .contenue .list .qte input {
@@ -520,6 +528,7 @@ b {
   padding-left: 60px;
   padding-top: 20px;
   align-items: center;
+  gap: 20px;
 }
 
 .commandes > .entete b {
@@ -533,6 +542,7 @@ b {
 
 .commandes > .entete .poids {
   padding-left: 20px;
+  width: 25%;
 }
 
 .liste-vide {
@@ -552,6 +562,11 @@ b {
   font-weight: 500;
   font-size: 0.9em;
   color: #1f2041;
+  gap: 20px;
+}
+
+.info-commande .poids {
+  width: 40%;
 }
 
 // bouton selectionner tous

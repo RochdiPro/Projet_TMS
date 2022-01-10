@@ -2,24 +2,23 @@
   overflow: hidden;
 }
 
+//style info chauffeur
 .info {
   padding-top: 20px;
 }
 
+// image chauffeur
 img {
   width: 100%;
   object-fit: cover;
 }
 
-table {
-  width: 100%;
-}
-th.mat-sort-header-sorted {
-  color: black;
-}
 .row {
   width: 100%;
+  margin: 0;
 }
+
+// couleur etat mission
 .attente {
   color: #f7b924;
 }
@@ -34,10 +33,6 @@ table {
   width: 100%;
 }
 
-.example-element-row td {
-  border-bottom-width: 0;
-}
-
 .container-commande,
 .container-info-mission {
   display: grid;
@@ -48,35 +43,7 @@ table {
   padding: 0 28.8px;
 }
 
-.example-element-diagram {
-  min-width: 80px;
-  border: 2px solid black;
-  padding: 8px;
-  font-weight: lighter;
-  margin: 8px 0;
-  height: 104px;
-}
-
-.example-element-symbol {
-  font-weight: bold;
-  font-size: 40px;
-  line-height: normal;
-}
-
-.example-element-description {
-  padding: 16px;
-}
-
-.example-element-description-attribution {
-  opacity: 0.5;
-}
-.row {
-  margin: 0;
-}
-.btn {
-  margin: 0;
-  padding: 0;
-}
+// style des element dans le td du tableau
 h1 {
   text-transform: uppercase;
 }
@@ -117,6 +84,7 @@ tr ~ tr {
   }
 }
 
+// a voir
 .container-info-chauffeurs {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -130,6 +98,7 @@ tr ~ tr {
   grid-auto-rows: 130px;
 }
 
+// style bouton d'affichage position
 .position{
   display: none;
 }

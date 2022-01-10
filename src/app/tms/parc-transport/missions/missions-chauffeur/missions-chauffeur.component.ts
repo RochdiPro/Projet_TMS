@@ -68,13 +68,16 @@ import {
   ],
 })
 export class MissionsChauffeurComponent implements OnInit {
+  // boutons de filtrage par etat (en cours, en attente, terminée)
   enCoursEstClique = false;
   enAttenteEstClique = false;
   termineEstClique = false;
+
   tableMissionsEstAffiche = true;
   detailMissionEstAffiche = false;
   commandesAffiche = false;
 
+  // cette valeur va se changer statiquement selon le profile connéctée
   idChauffeur = 20;
   missions: any;
   missionsFiltree: any;
@@ -94,6 +97,7 @@ export class MissionsChauffeurComponent implements OnInit {
 
   async ngOnInit() {
     await this.getMissionsParIdChauffeur();
+    // selon la valeur de l'état initiale on affiche initialement la tab convenable
     if (this.etatInitiale === 'En cours') {
       this.missionsFiltree = this.filtrerMissionsParEtat('En cours');
       this.enCoursEstClique = true;
@@ -203,6 +207,7 @@ export class MissionsChauffeurComponent implements OnInit {
     return mission.volume;
   }
 
+  // get liste des commande dans une mission puis on les divises par commandes livrées et commandes non livrées
   async getCommandesMission(mission: any) {
     this.commandes = []
     this.missionSelectionnee = mission;
@@ -221,10 +226,13 @@ export class MissionsChauffeurComponent implements OnInit {
     );
   }
 
+  // fonction qui permet de commancer une mission
   async lancerMission(id: number) {
     await this.serviceMission.modifierEtatMission(id, 'En cours').toPromise();
     await this.getMissionsParIdChauffeur();
+    // pour refraichir la mission selectionnée aprés qu'on a modifié l'etat du mission
     this.missionSelectionnee = this.filtrerMissionsParEtat('En cours')[0];
+    // on change la tab active vers celle en cours
     this.cliquerEnCours();
   }
 

@@ -53,7 +53,7 @@
         <tr *ngFor="let commande of commandes" class="card">
             <td scope="row">
                 <div style="width: 100%; display: flex; align-items: center;">
-                    <h3 (click)="ouvrirDetailCommande(commande.id)">Référence: {{commande.referenceDocument}}</h3>
+                    <h3 (click)="ouvrirDetailCommande(commande.id)" style="text-transform: uppercase;">{{commande.type}} numéro {{commande.referenceDocument}}</h3>
                     <button mat-icon-button style="margin-left: auto; color: tomato;" class="position" (click)="ouvrirMap(commande)">
                         <mat-icon>place</mat-icon>
                     </button>
@@ -117,7 +117,7 @@
                         Etat :
                     </p>
                     <div style="font-weight: bold;">
-                        <p class="attente" *ngIf="commande.etat === 'En Cours'">En cours de livraison</p>
+                        <p class="attente" *ngIf="commande.etat === 'Affectée'">En cours de livraison</p>
                         <p class="termine" *ngIf="commande.etat === 'Done'">Livrée</p>
                     </div>
                 </div>
