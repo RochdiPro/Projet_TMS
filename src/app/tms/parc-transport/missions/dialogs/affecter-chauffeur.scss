@@ -38,7 +38,7 @@ div {
   width: 100%;
 }
 .mat-form-field {
-  width: 25%;
+  width: 15%;
 }
 
 // style du title (matricule vehicule)
@@ -67,6 +67,8 @@ h1 {
   padding: 0px;
   padding-bottom: 0px;
   color: white;
+  display: flex;
+  gap: 20px;
 }
 
 .chauffeur i {

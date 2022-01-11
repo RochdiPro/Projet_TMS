@@ -1,10 +1,14 @@
 <h1 mat-dialog-title>Informations du mission</h1>
 <!-- Info Chauffeur -->
 <h2>Informations du chauffeur</h2>
-<div [ngClass]="chauffeurs.length === 1 ? 'container-info-chauffeur' : 'container-info-chauffeurs'">
-    <div class="card info-chauffeur" style="height: 100%;" *ngFor="let chauffeur of chauffeurs; let i=index;">
+<div class="container-info-chauffeur">
+    <div class="card info-chauffeur" style="height: 100%;">
         <div class="row">
-            <div class="col-4 image" style="padding: 0">
+            <div class="col-4 image" style="padding: 0" *ngIf="!chauffeur.image">
+                <img src="data:image/jpeg;base64,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"
+                    alt="photo chauffeur indisponible">
+            </div>
+            <div class="col-4 image" style="padding: 0" *ngIf="chauffeur.image">
                 <img src="data:image/png;base64,{{chauffeur.image}}" alt="Photo du chauffeur" width="76%" height="76%">
             </div>
             <div class="col info">
@@ -22,7 +26,7 @@
                 </div>
                 <div class="row">
                     <div class="col">
-                        <h5>Matricule Du Vehicule: <span style="font-weight: bold;">{{matricule[i]}} </span></h5>
+                        <h5>Matricule Du Vehicule: <span style="font-weight: bold;">{{matricule}} </span></h5>
                     </div>
                 </div>
             </div>
@@ -53,8 +57,10 @@
         <tr *ngFor="let commande of commandes" class="card">
             <td scope="row">
                 <div style="width: 100%; display: flex; align-items: center;">
-                    <h3 (click)="ouvrirDetailCommande(commande.id)" style="text-transform: uppercase;">{{commande.type}} numéro {{commande.referenceDocument}}</h3>
-                    <button mat-icon-button style="margin-left: auto; color: tomato;" class="position" (click)="ouvrirMap(commande)">
+                    <h3 (click)="ouvrirDetailCommande(commande.id)" style="text-transform: uppercase;">{{commande.type}}
+                        numéro {{commande.referenceDocument}}</h3>
+                    <button mat-icon-button style="margin-left: auto; color: tomato;" class="position"
+                        (click)="ouvrirMap(commande)">
                         <mat-icon>place</mat-icon>
                     </button>
                 </div>

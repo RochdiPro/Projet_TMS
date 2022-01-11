@@ -838,7 +838,7 @@ export class AjoutMissionComponent implements OnInit {
         });
         result.loue.forEach((element: any) => {
           vehicules.push(element.vehicule);
-          chauffeurs.push({ nom: element.chauffeur });
+          chauffeurs.push({ nom: element.chauffeur.nom, tel: element.chauffeur.tel });
           commandesAffectees.push(element.commandes);
           let volumeTotal = 0;
           let poidsTotal = 0;
@@ -1059,20 +1059,22 @@ export class AjoutMissionComponent implements OnInit {
           let formData = new FormData();
           let idChauffeur = '';
           let nomChauffeur = '';
+          let telephoneChauffeur = '';
           let matriculeVehicule = '';
           let idCommandes = '';
           mission.chauffeur[k].id_Employe === undefined
             ? (idChauffeur = null)
             : (idChauffeur = mission.chauffeur[k].id_Employe);
           nomChauffeur = mission.chauffeur[k].nom;
+          telephoneChauffeur = mission.chauffeur[k].tel
           matriculeVehicule = mission.vehicule[k].matricule;
-
           mission.commandesAffectees[k].forEach((commande: any) => {
             idCommandes += commande.commande.id + '/';
           });
           idCommandes = idCommandes.slice(0, -1);
           formData.append('idChauffeur', idChauffeur);
           formData.append('nomChauffeur', nomChauffeur);
+          formData.append('telephoneChauffeur', telephoneChauffeur);
           formData.append('matricule', matriculeVehicule);
           formData.append('idCommandes', idCommandes);
           formData.append('volume', mission.volume[k]);

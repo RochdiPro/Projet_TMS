@@ -1,0 +1,90 @@
+// backgroud du boite dilaogue
+::ng-deep .custom-dialog-modifier-mission {
+  mat-dialog-container {
+    background-color: #ececec;
+  }
+}
+
+// style type vehicule
+.type-vehicule {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.type-vehicule h2 {
+  margin: 0;
+}
+
+// style des boutons
+.type-vehicule a {
+  height: 40px;
+  width: 80px;
+  box-shadow: -2px -2px 3px rgba(255, 255, 255, 0.5),
+    2px 2px 3px rgba(70, 70, 70, 0.12);
+  border-radius: 10px;
+  border: 2px solid #ececec;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.type-vehicule .active {
+  box-shadow: -2px -2px 3px rgba(255, 255, 255, 0.5),
+    2px 2px 3px rgba(70, 70, 70, 0.12),
+    inset -2px -2px 3px rgba(255, 255, 255, 0.5),
+    inset 2px 2px 3px rgba(70, 70, 70, 0.12);
+  color: #15e38a;
+}
+
+// style des icons
+i {
+  font-size: 20px;
+}
+
+// style div modifier-vehicule
+.modifier-vehicule, .modifier-chauffeur {
+  margin: auto;
+  margin-top: 30px;
+  height: 45px;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, 0.5),
+    inset 2px 2px 3px rgba(70, 70, 70, 0.12);
+  border-radius: 100px;
+  border: 2px solid #ececec;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// style du select vehicule
+.mat-form-field, input {
+    width: calc(100% - 60px);
+    background: transparent;
+    outline: none;
+    border: none;
+    padding-left: 20px;
+}
+
+// enlever le underline du select
+.modifier-vehicule ::ng-deep .mat-form-field-underline, .modifier-chauffeur ::ng-deep .mat-form-field-underline {
+    display: none;
+  }
+
+//   style des boutons
+.boutons {
+    width: 100%;
+    margin-top: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+button:first-child {
+    margin-left: auto;
+}

@@ -6,7 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { DetailComponent } from '../dialogs/dialogs.component';
+import { DetailComponent, ModifierMission } from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
 @Component({
@@ -143,29 +143,15 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
   
-  ouvrirMap(id: any, type: any) {
-    // ouvrir google map avec le trajet
-    this.serviceMission.mission(id).subscribe((res) => {
-      this.mission = res;
-      this.trajet = this.mission.trajet.split('/'); //recuperation du trajet
-      var origine = this.trajet[0].split(':');
-      origine = origine[1]; //definitionde l'origine
-      var finChemin = this.trajet[this.trajet.length - 1].split(':');
-      finChemin = finChemin[1]; //definition du fin de chemin
-      var pointStop = '';
-      for (let i = 1; i < this.trajet.length - 1; i++) {
-        var x = this.trajet[i].split(':');
-        pointStop += x[1] + '%7C';
-      }
-      pointStop = pointStop.slice(0, -3); //definition des points de stop
-      window.open(
-        'https://www.google.com/maps/dir/?api=1&origin=' +
-          origine +
-          '&destination=' +
-          finChemin +
-          '&travelmode=driving&waypoints=' +
-          pointStop
-      ); //affichage du map avec le trajet
+  ouvrirDialogModifierMission(mission: any) {
+    // ouvrir la boite de dialogue modifier mission
+    const dialogRef = this.dialog.open(ModifierMission, {
+      width: '500px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'custom-dialog-modifier-mission',
+      autoFocus: false,
+      data: { mission: mission },
     });
   }
 }

@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>{{vehicule.vehicule.matricule}}</h1>
+<h1 mat-dialog-title>{{vehicule.matricule}}</h1>
 <div style="padding-left: 20px;">
     <!-- bloc de selection du chauffeur -->
     <div class="chauffeur">
@@ -13,8 +13,14 @@
         </mat-form-field>
         <mat-form-field *ngIf="typeVehicule === 'loue'">
             <mat-label>Chauffeur</mat-label>
-            <input matInput placeholder="nom chauffeur" [(ngModel)]="chauffeurSelectionne">
+            <input matInput placeholder="nom chauffeur" [(ngModel)]="chauffeurSelectionne.nom">
             <mat-icon matSuffix>mode_edit</mat-icon>
+        </mat-form-field>
+        <mat-form-field *ngIf="typeVehicule === 'loue'">
+            <mat-label>Téléphone</mat-label>
+            <input matInput placeholder="nom chauffeur"
+                [(ngModel)]="chauffeurSelectionne.tel">
+            <mat-icon matSuffix>phone_enabled</mat-icon>
         </mat-form-field>
     </div>
     <!-- bloc d'information commandes -->

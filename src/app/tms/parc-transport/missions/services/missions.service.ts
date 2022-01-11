@@ -158,8 +158,8 @@ export class MissionsService {
   // livrer commande
   public livrerCommande(qrCode: string, idMaission: any) {
     let formData = new FormData();
-    formData.append("qrCode", qrCode)
-    formData.append("idMission", idMaission)
+    formData.append('qrCode', qrCode);
+    formData.append('idMission', idMaission);
     return this.httpClient
       .put(erp + 'livrer-commande', formData)
       .pipe(catchError(this.handleError));
@@ -167,9 +167,40 @@ export class MissionsService {
 
   //creer liste colisage par mission
   public creerListeColisMission(colis: any) {
-    return this.httpClient.post(erp + 'creer-colis-mission', colis).pipe(catchError(this.handleError));
+    return this.httpClient
+      .post(erp + 'creer-colis-mission', colis)
+      .pipe(catchError(this.handleError));
   }
 
+  // get liste vehicules prives
+  public vehicules() {
+    return this.httpClient.get(erp + 'vehicules');
+  }
+
+  //filtrer vehicule
+  public filtrerVehiculeLoues(champ: any, valeur: any) {
+    return this.httpClient
+      .get(erp + 'filtre-vehicule-loue', {
+        params: {
+          champ: champ,
+          valeur: valeur,
+        },
+        observe: 'body',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  //get liste des chauffeurs
+  public getChauffeurs() {
+    return this.httpClient
+      .get(infonet + 'Filtre_Employee', {
+        params: {
+          Champ: 'role',
+          Valeur: 'chauffeur',
+        },
+      })
+      .pipe(catchError(this.handleError));
+  }
   public majEtat(id: any, formData: any) {
     this.httpClient.put(erp + 'miseajouretat/' + id, formData).subscribe(
       (response) => console.log(response),
