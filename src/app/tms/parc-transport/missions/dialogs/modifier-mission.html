@@ -26,14 +26,14 @@
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <input type="text" name="nom-chauffeur" id="nom-chauffeur" *ngIf="!typeEstPrive" [(ngModel)]="chauffeurSelectionne">
+        <input type="text" name="nom-chauffeur" id="nom-chauffeur" *ngIf="!typeEstPrive" [(ngModel)]="chauffeurSelectionne.nom">
     </div>
     <div class="modifier-chauffeur" *ngIf="!typeEstPrive">
         <i class="fas fa-phone-alt"></i>
-        <input type="text" name="tel-chauffeur" id="tel-chauffeur" [(ngModel)]="chauffeurSelectionne">
+        <input type="text" name="tel-chauffeur" id="tel-chauffeur" [(ngModel)]="chauffeurSelectionne.tel">
     </div>
 </div>
 <div class="boutons">
-    <button mat-button color="warn">Annuler</button>
-    <button mat-button color="primary">Enregistrer</button>
+    <button mat-button color="warn" mat-dialog-close>Annuler</button>
+    <button mat-button color="primary" (click)="enregistrer()">Enregistrer</button>
 </div>

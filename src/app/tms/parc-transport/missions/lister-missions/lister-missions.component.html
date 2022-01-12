@@ -101,6 +101,9 @@
                 <button class="mb-2  btn " matTooltip="Afficher détail" matTooltipPosition="after"
                     matTooltipShowDelay="600"><i class="fas fa-info-circle" (click)='detailDialog(element)'
                         style="color: #3f6ad8;"></i></button>
+                <button class="mb-2  btn " matTooltip="Annuler" matTooltipPosition="after"
+                    matTooltipShowDelay="600" [disabled]="element.etat !== 'En attente'" (click)='annulerMission(element)'><i class="fas fa-times-circle"
+                        style="color: tomato;"></i></button>
 
             </mat-cell>
         </ng-container>

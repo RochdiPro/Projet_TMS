@@ -6,7 +6,12 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { DetailComponent, ModifierMission } from '../dialogs/dialogs.component';
+import Swal from 'sweetalert2';
+import {
+  ConfirmationAnnulationMission,
+  DetailComponent,
+  ModifierMission,
+} from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
 @Component({
@@ -142,7 +147,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
       data: { mission: mission },
     });
   }
-  
+
   ouvrirDialogModifierMission(mission: any) {
     // ouvrir la boite de dialogue modifier mission
     const dialogRef = this.dialog.open(ModifierMission, {
@@ -153,6 +158,29 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
       autoFocus: false,
       data: { mission: mission },
     });
+  }
+
+  annulerMission(mission: any) {
+    let missionsPasAnnule: any = [];
+    let missions = this.dataSource.data.filter(
+      (mis) => mis.idMissionsLiees === mission.idMissionsLiees
+    );
+    let idMissionsLiees = mission.idMissionsLiees.split('/');
+    let index = idMissionsLiees.indexOf(mission.id);
+    idMissionsLiees.splice(index, 1);
+    missions.forEach((mis) => {
+      mis.etat !== 'En attente' ? missionsPasAnnule.push(mis) : '';
+    });
+    const dialogRef = this.dialog.open(ConfirmationAnnulationMission, {
+      width: '600px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      data: { missions: missions, missionsPasAnnule: missionsPasAnnule },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.filtrerMission();
+    })
   }
 }
 
@@ -169,4 +197,5 @@ export interface tableMissions {
   region: String;
   etat: String;
   date: Date;
+  idMissionsLiees: String;
 }

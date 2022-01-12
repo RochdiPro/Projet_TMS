@@ -37,6 +37,11 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
+  // get la derniére mission enregistrée
+  public derniereMission() {
+    return this.httpClient.get(erp + "derniere-mission").pipe(catchError(this.handleError));
+  }
+
   // supprimer une mission
   public deleteMission(id: any) {
     return this.httpClient
@@ -52,8 +57,7 @@ export class MissionsService {
   // mise a jour mission
   public updateMission(formData: any) {
     return this.httpClient
-      .put(erp + 'mise-a-jour-mission', formData)
-      .pipe(catchError(this.handleError));
+      .put(erp + 'mise-a-jour-mission', formData);
   }
 
   //filtrer les missions
@@ -162,6 +166,13 @@ export class MissionsService {
     formData.append('idMission', idMaission);
     return this.httpClient
       .put(erp + 'livrer-commande', formData)
+      .pipe(catchError(this.handleError));
+  }
+
+  //modifier l'etat du commande
+  public affecterCommande(formData: any) {
+    return this.httpClient
+      .put(erp + 'affecter-commande', formData)
       .pipe(catchError(this.handleError));
   }
 

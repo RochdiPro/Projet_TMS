@@ -1292,7 +1292,7 @@ export class ModifierMission implements OnInit {
   listeChauffeurs: any;
   listeChauffeursCompatibles: any;
   vehiculeSelectionne: any;
-  chauffeurSelectionne: any;
+  chauffeurSelectionne: any = { nom: '', tel: '' };
   constructor(
     private dialogRef: MatDialogRef<ModifierMission>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -1303,7 +1303,7 @@ export class ModifierMission implements OnInit {
     this.getTypeVehicule();
     await this.getListeVehicule();
     this.getVehiculeInitiale();
-    this.getChauffeurInitial()
+    this.getChauffeurInitial();
   }
 
   // specifier le type du vehicule
@@ -1317,15 +1317,32 @@ export class ModifierMission implements OnInit {
   async getListeVehicule() {
     this.listeVehicules = [];
     this.listeChauffeursCompatibles = [];
+    this.chauffeurSelectionne = { nom: '', tel: '' };
     if (this.typeEstPrive) {
-      this.listeVehicules = await this.serviceMission.vehicules().toPromise();
+      let vehicules: any = await this.serviceMission.vehicules().toPromise();
       this.listeChauffeurs = await this.serviceMission
         .getChauffeurs()
         .toPromise();
+      vehicules.forEach((vehicule: any) => {
+        let volumeUtile =
+          vehicule.longueur * vehicule.largeur * vehicule.hauteur;
+        vehicule.charge_utile > this.data.mission.poids &&
+        volumeUtile > this.data.mission.volume
+          ? this.listeVehicules.push(vehicule)
+          : '';
+      });
     } else {
-      this.listeVehicules = await this.serviceMission
+      let vehicules: any = await this.serviceMission
         .filtrerVehiculeLoues('etat_vehicule', 'Disponible')
         .toPromise();
+      vehicules.forEach((vehicule: any) => {
+        let volumeUtile =
+          vehicule.longueur * vehicule.largeur * vehicule.hauteur;
+        vehicule.charge_utile > this.data.mission.poids &&
+        volumeUtile > this.data.mission.volume
+          ? this.listeVehicules.push(vehicule)
+          : '';
+      });
     }
   }
 
@@ -1354,12 +1371,87 @@ export class ModifierMission implements OnInit {
   // permet d'avoir le chauffeur qui est deja enregistré avec la mission initialement
   getChauffeurInitial() {
     if (this.typeEstPrive) {
+      this.getChauffeursCompatibles();
       let index = this.listeChauffeursCompatibles.findIndex(
-        (chauffeur: any) => chauffeur.id === Number(this.data.mission.idChauffeur)
+        (chauffeur: any) =>
+          chauffeur.id_Employe === Number(this.data.mission.idChauffeur)
       );
       this.chauffeurSelectionne = this.listeChauffeursCompatibles[index];
     } else {
-      this.chauffeurSelectionne = this.data.mission.nomChauffeur
+      this.chauffeurSelectionne.nom = this.data.mission.nomChauffeur;
+      this.chauffeurSelectionne.tel = this.data.mission.telephoneChauffeur;
     }
+  }
+
+  // enregistrer les modifications
+  enregistrer() {
+    if (this.typeEstPrive) {
+      this.data.mission.nomChauffeur = this.chauffeurSelectionne.nom;
+      this.data.mission.telephoneChauffeur = this.chauffeurSelectionne.tel;
+      this.data.mission.idChauffeur = this.chauffeurSelectionne.id;
+      this.data.mission.matricule = this.vehiculeSelectionne.matricule;
+    } else {
+      this.data.mission.nomChauffeur = this.chauffeurSelectionne.nom;
+      this.data.mission.telephoneChauffeur = this.chauffeurSelectionne.tel;
+      this.data.mission.idChauffeur = 'null';
+      this.data.mission.matricule = this.vehiculeSelectionne.matricule;
+    }
+    this.serviceMission.updateMission(this.data.mission).subscribe((result) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Modification enregistrée',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      this.dialogRef.close();
+    });
+  }
+}
+
+// ******************************************* confirmation annulation mission ********************************
+
+@Component({
+  templateUrl: 'confirmation-annulation-mission.html',
+})
+export class ConfirmationAnnulationMission implements OnInit {
+  dataSource = new MatTableDataSource();
+  displayedColumns: string[] = [
+    'id',
+    'nom',
+    'matricule',
+    'dateLivraison',
+    'etatMission',
+  ];
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private serviceMission: MissionsService, private dialogRef: MatDialogRef<ConfirmationAnnulationMission>) {}
+
+  ngOnInit() {
+    this.data.missionsPasAnnule.length === 0
+      ? (this.dataSource.data = this.data.missions)
+      : (this.dataSource.data = this.data.missionsPasAnnule);
+  }
+
+  async annulerLesMissions() {
+    for (let i = 0; i < this.data.missions.length; i++) {
+      const mission = this.data.missions[i];
+      let idCommandes = mission.idCommandes.split("/")
+      for (let j = 0; j < idCommandes.length; j++) {
+        let formDataCommande: any = new FormData();
+            formDataCommande.append('id', Number(idCommandes[j]));
+            formDataCommande.append('etat', 'En cours de traitement');
+            formDataCommande.append('idMission', 0);
+            await this.serviceMission
+              .affecterCommande(formDataCommande)
+              .toPromise();
+        
+      }
+      await this.serviceMission.deleteMission(mission.id).toPromise();
+    }
+    Swal.fire({
+      icon: 'success',
+      title: 'Mission annulée',
+      showConfirmButton: false,
+      timer: 1500
+    })
+    this.dialogRef.close();
   }
 }

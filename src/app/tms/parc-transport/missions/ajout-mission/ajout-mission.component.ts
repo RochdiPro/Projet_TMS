@@ -838,7 +838,10 @@ export class AjoutMissionComponent implements OnInit {
         });
         result.loue.forEach((element: any) => {
           vehicules.push(element.vehicule);
-          chauffeurs.push({ nom: element.chauffeur.nom, tel: element.chauffeur.tel });
+          chauffeurs.push({
+            nom: element.chauffeur.nom,
+            tel: element.chauffeur.tel,
+          });
           commandesAffectees.push(element.commandes);
           let volumeTotal = 0;
           let poidsTotal = 0;
@@ -892,6 +895,7 @@ export class AjoutMissionComponent implements OnInit {
             poids: mission.poids,
           });
         });
+        console.log(copieFileAttente);
         if (fileAttente.length === 0) {
           this.listeFilesAttentes.push({
             date: dateFileAttente,
@@ -1047,9 +1051,24 @@ export class AjoutMissionComponent implements OnInit {
 
   // enregistrement des missions
   async enregistrer() {
+    if (!this.boutonEnregistrerEstActive) return
     this.boutonEnregistrerEstActive = false;
+    let derniereMission = await this.serviceMission
+      .derniereMission()
+      .toPromise();
+    let idMissionLiees = '';
+    console.log(this.listeFilesAttentes);
+    return
     for (let i = 0; i < this.listeFilesAttentes.length; i++) {
       for (let j = 0; j < this.listeFilesAttentes[i].fileAttente.length; j++) {
+        for (
+          let k = 0;
+          k < this.listeFilesAttentes[i].fileAttente[j].vehicule.length;
+          k++
+        ) {
+          derniereMission !== null ? idMissionLiees += derniereMission.id + k + 1 + '/' : idMissionLiees += k + 1 + '/';
+        }
+        idMissionLiees = idMissionLiees.slice(0, -1);
         for (
           let k = 0;
           k < this.listeFilesAttentes[i].fileAttente[j].vehicule.length;
@@ -1066,8 +1085,9 @@ export class AjoutMissionComponent implements OnInit {
             ? (idChauffeur = null)
             : (idChauffeur = mission.chauffeur[k].id_Employe);
           nomChauffeur = mission.chauffeur[k].nom;
-          telephoneChauffeur = mission.chauffeur[k].tel
+          telephoneChauffeur = mission.chauffeur[k].tel;
           matriculeVehicule = mission.vehicule[k].matricule;
+          console.log(mission.commandesAffectees[k]);
           mission.commandesAffectees[k].forEach((commande: any) => {
             idCommandes += commande.commande.id + '/';
           });
@@ -1083,6 +1103,7 @@ export class AjoutMissionComponent implements OnInit {
           formData.append('region', '');
           formData.append('etat', 'En attente');
           formData.append('date', this.listeFilesAttentes[i].date);
+          formData.append('idMissionsLiees', idMissionLiees);
           let newMission = await this.serviceMission
             .creerMission(formData)
             .toPromise();
@@ -1131,8 +1152,8 @@ export class AjoutMissionComponent implements OnInit {
       icon: 'success',
       title: 'Missions enregistées avec succés!',
       showConfirmButton: false,
-      timer: 1500
-    })
+      timer: 1500,
+    });
     this.boutonEnregistrerEstActive = true;
   }
 }
