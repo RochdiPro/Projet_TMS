@@ -39,7 +39,9 @@ export class MissionsService {
 
   // get la derniére mission enregistrée
   public derniereMission() {
-    return this.httpClient.get(erp + "derniere-mission").pipe(catchError(this.handleError));
+    return this.httpClient
+      .get(erp + 'derniere-mission')
+      .pipe(catchError(this.handleError));
   }
 
   // supprimer une mission
@@ -56,8 +58,7 @@ export class MissionsService {
 
   // mise a jour mission
   public updateMission(formData: any) {
-    return this.httpClient
-      .put(erp + 'mise-a-jour-mission', formData);
+    return this.httpClient.put(erp + 'mise-a-jour-mission', formData);
   }
 
   //filtrer les missions
@@ -212,6 +213,19 @@ export class MissionsService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  //get position by id
+  public getPositionById(id: any) {
+    return this.httpClient
+      .get(erp + 'position-client', {
+        params: {
+          id: id,
+        },
+        observe: 'body',
+      })
+      .pipe(catchError(this.handleError));
+  }
+  
   public majEtat(id: any, formData: any) {
     this.httpClient.put(erp + 'miseajouretat/' + id, formData).subscribe(
       (response) => console.log(response),

@@ -10,7 +10,7 @@
     <div class="modifier-vehicule">
         <i class="fas fa-truck"></i>
         <mat-form-field>
-            <mat-select (selectionChange)="getChauffeursCompatibles()" [(ngModel)]="vehiculeSelectionne">
+            <mat-select (selectionChange)="getChauffeursCompatibles()" [(ngModel)]="vehiculeSelectionne" required>
                 <mat-option *ngFor="let vehicule of listeVehicules" [value]="vehicule">
                     {{vehicule.matricule}}
                 </mat-option>
@@ -20,20 +20,20 @@
     <div class="modifier-chauffeur">
         <i class="fas fa-user"></i>
         <mat-form-field *ngIf="typeEstPrive">
-            <mat-select [(ngModel)]="chauffeurSelectionne">
+            <mat-select [(ngModel)]="chauffeurSelectionne" required>
                 <mat-option *ngFor="let chauffeur of listeChauffeursCompatibles" [value]="chauffeur">
                     {{chauffeur.nom}}
                 </mat-option>
             </mat-select>
         </mat-form-field>
-        <input type="text" name="nom-chauffeur" id="nom-chauffeur" *ngIf="!typeEstPrive" [(ngModel)]="chauffeurSelectionne.nom">
+        <input type="text" name="nom-chauffeur" id="nom-chauffeur" *ngIf="!typeEstPrive" [(ngModel)]="chauffeurSelectionne.nom" required>
     </div>
     <div class="modifier-chauffeur" *ngIf="!typeEstPrive">
         <i class="fas fa-phone-alt"></i>
-        <input type="text" name="tel-chauffeur" id="tel-chauffeur" [(ngModel)]="chauffeurSelectionne.tel">
+        <input type="text" name="tel-chauffeur" id="tel-chauffeur" [(ngModel)]="chauffeurSelectionne.tel" required>
     </div>
 </div>
 <div class="boutons">
     <button mat-button color="warn" mat-dialog-close>Annuler</button>
-    <button mat-button color="primary" (click)="enregistrer()">Enregistrer</button>
+    <button mat-button color="primary" (click)="enregistrer()" [disabled]="!valide">Enregistrer</button>
 </div>

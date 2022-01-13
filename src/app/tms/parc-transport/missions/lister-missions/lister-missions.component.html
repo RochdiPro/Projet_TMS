@@ -95,6 +95,10 @@
             <mat-header-cell mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
             <mat-cell mat-cell *matCellDef="let element">
                 <button class="mb-2  btn ">
+                    <i class="fas fa-route" matTooltip="Trajet" matTooltipPosition="after"
+                        matTooltipShowDelay="600" (click)="ouvrirBoiteDialogTrajet(element)"></i>
+                </button>
+                <button class="mb-2  btn ">
                     <i class="fas fa-edit" matTooltip="modifier" matTooltipPosition="after"
                         matTooltipShowDelay="600" (click)="ouvrirDialogModifierMission(element)"></i>
                 </button>

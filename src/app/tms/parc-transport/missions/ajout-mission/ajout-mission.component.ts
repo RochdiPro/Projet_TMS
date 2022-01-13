@@ -887,7 +887,7 @@ export class AjoutMissionComponent implements OnInit {
         this.fileAttente.forEach((mission: any) => {
           copieFileAttente.push({
             commandes: [...mission.commandes],
-            commandesAffectees: [...commandesAffectees],
+            commandesAffectees: [...mission.commandesAffectees],
             vehicule: [...mission.vehicule],
             chauffeur: [...mission.chauffeur],
             score: mission.score,
@@ -1057,8 +1057,6 @@ export class AjoutMissionComponent implements OnInit {
       .derniereMission()
       .toPromise();
     let idMissionLiees = '';
-    console.log(this.listeFilesAttentes);
-    return
     for (let i = 0; i < this.listeFilesAttentes.length; i++) {
       for (let j = 0; j < this.listeFilesAttentes[i].fileAttente.length; j++) {
         for (

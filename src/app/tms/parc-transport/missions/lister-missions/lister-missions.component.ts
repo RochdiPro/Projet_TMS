@@ -11,6 +11,7 @@ import {
   ConfirmationAnnulationMission,
   DetailComponent,
   ModifierMission,
+  Trajet,
 } from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
@@ -180,7 +181,18 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
     dialogRef.afterClosed().subscribe(() => {
       this.filtrerMission();
-    })
+    });
+  }
+
+  ouvrirBoiteDialogTrajet(mission: any) {
+    const dialogRef = this.dialog.open(Trajet, {
+      width: '1000px',
+      height: '554px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      data: { mission: mission },
+    });
   }
 }
 

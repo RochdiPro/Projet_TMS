@@ -1,0 +1,7 @@
+    <!-- map qui contient traget de la mission -->
+    <iframe class="trajet" width="100%" height="500" frameborder="0" [src]="lien | safe: 'resourceUrl'" loading="lazy"
+        style="border:0;" *ngIf="mapEstAffiche">
+    </iframe>
+    <div class="spinner" *ngIf="!mapEstAffiche">
+        <div class="loader"></div>
+    </div>

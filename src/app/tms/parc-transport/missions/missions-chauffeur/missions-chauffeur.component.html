@@ -52,11 +52,12 @@
     <!-- toggle qui cache le détail de la mission -->
     <div class="slide-here" (click)="toggleDetailMission()"></div>
     <!-- map qui contient traget de la mission -->
-    <iframe
-        src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d52449.39840968706!2d10.744501199999984!3d34.7533911!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2stn!4v1639649629800!5m2!1sfr!2stn"
-        style="border:0;" loading="lazy"></iframe>
+    <iframe class="trajet" width="100%" height="500" frameborder="0" [src]="lien | safe: 'resourceUrl'" loading="lazy"
+        style="border:0;">
+    </iframe>
     <!-- les détails d'une mission -->
-    <div class="details" [@statusAfficherCommandes]="statusAfficherCommandes" *ngIf="missionSelectionnee && commandesNonLivrees">
+    <div class="details" [@statusAfficherCommandes]="statusAfficherCommandes"
+        *ngIf="missionSelectionnee && commandesNonLivrees">
         <!-- nombre commandes non livrées -->
         <div class="compteur-commandes">
             {{commandesNonLivrees.length}} commandes non livrées
@@ -88,15 +89,16 @@
             <ng-template #elseTemplate>
                 <ng-container *ngIf="missionSelectionnee.etat === 'En attente'; else elseTemplate2">
                     <!-- si l'etat du mission est 'en attente' on affiche le bouton 'Lancer' -->
-                    <a href="javascript:void(0);" (click)="lancerMission(missionSelectionnee.id)" [ngClass]="{'disable': missionEnCoursExiste}">Lancer</a>
+                    <a href="javascript:void(0);" (click)="lancerMission(missionSelectionnee.id)"
+                        [ngClass]="{'disable': missionEnCoursExiste}">Lancer</a>
                 </ng-container>
                 <ng-template #elseTemplate2>
                     <!-- si l'etat du mission est 'Terminée' on affiche le bouton 'Terminée' est qui est desactivé -->
                     <a href="javascript:void(0);" class="disable">Terminée</a>
                 </ng-template>
-                
+
             </ng-template>
-            
+
         </div>
         <!-- une séparation entre les infos générales mission et liste des commandes -->
         <div id="separateur"></div>
