@@ -225,6 +225,16 @@ export class MissionsService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  // modifier les id des commandes dans une mission
+  public modifierIdCommandesDansMission(id: number, idCommandes: string) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    formData.append('idCommandes', idCommandes);
+    return this.httpClient
+      .put(erp + 'modifier-id-commandes', formData)
+      .pipe(catchError(this.handleError));
+  }
   
   public majEtat(id: any, formData: any) {
     this.httpClient.put(erp + 'miseajouretat/' + id, formData).subscribe(

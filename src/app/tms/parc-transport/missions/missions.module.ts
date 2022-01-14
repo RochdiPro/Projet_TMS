@@ -25,6 +25,7 @@ import { AffecterMultiChauffeur, AffecterChauffeur, DetailComponent, PositionCom
 import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
 import { DirectionsMapDirective } from './directions-map.directive';
 import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauffeur.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 
 
@@ -75,7 +76,8 @@ import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauff
     MatButtonModule,
     MatCheckboxModule,
     MatListModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    DragDropModule
   ],
   providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 

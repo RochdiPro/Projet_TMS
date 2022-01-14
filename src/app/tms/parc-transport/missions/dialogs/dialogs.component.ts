@@ -5,6 +5,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import {
   Component,
   HostListener,
@@ -1384,13 +1385,17 @@ export class ModifierMission implements OnInit {
   }
 
   get valide() {
-    let valide
-    if (this.chauffeurSelectionne.nom === '' || this.chauffeurSelectionne.tel === '' || !this.vehiculeSelectionne) {
-      valide = false
+    let valide;
+    if (
+      this.chauffeurSelectionne.nom === '' ||
+      this.chauffeurSelectionne.tel === '' ||
+      !this.vehiculeSelectionne
+    ) {
+      valide = false;
     } else {
-      valide = true
+      valide = true;
     }
-    return valide
+    return valide;
   }
 
   // enregistrer les modifications
@@ -1472,7 +1477,7 @@ export class ConfirmationAnnulationMission implements OnInit {
 // ************************************** Trajet ***********************************
 @Component({
   templateUrl: 'trajet.html',
-  styleUrls: ['trajet.scss']
+  styleUrls: ['trajet.scss'],
 })
 export class Trajet implements OnInit {
   // les coordonnées actuelles prise depuis le navigateur
@@ -1484,31 +1489,24 @@ export class Trajet implements OnInit {
 
   // afficher map ou non
   mapEstAffiche = false;
-  constructor(@Inject(MAT_DIALOG_DATA) private data: any, private serviceMission: MissionsService ) {}
 
-  ngOnInit() {
+  // liste des commandes a afficher dans le drag and drop
+  commandes: any = [];
+  constructor(
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private serviceMission: MissionsService
+  ) {}
+
+  async ngOnInit() {
     this.afficherTrajet();
-  }
-
-  // calculer la distance entre deux points
-  getDistanceFromLatLonInKm(lat1: any, lon1: any, lat2: any, lon2: any) {
-    var R = 6371; // Rayon de la terre en km
-    var dLat = this.deg2rad(lat2 - lat1);
-    var dLon = this.deg2rad(lon2 - lon1);
-    var a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.deg2rad(lat1)) *
-        Math.cos(this.deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance en km
-    return d;
-  }
-
-  deg2rad(deg: any) {
-    //changement du deg vers rad
-    return deg * (Math.PI / 180);
+    let idCommandes = this.data.mission.idCommandes.split('/');
+    for (let i = 0; i < idCommandes.length; i++) {
+      const idCommande = Number(idCommandes[i]);
+      this.commandes.push(
+        await this.serviceMission.commande(idCommande).toPromise()
+      );
+    }
+    console.log(this.commandes);
   }
 
   // avoir la position de début depuis le navigateur
@@ -1536,6 +1534,7 @@ export class Trajet implements OnInit {
     this.chercherMoi();
     let positions: any = [];
     let idCommandes = this.data.mission.idCommandes.split('/');
+    console.log(idCommandes);
     for (let i = 0; i < idCommandes.length; i++) {
       const idCommande = Number(idCommandes[i]);
       const commande = await this.serviceMission
@@ -1543,37 +1542,15 @@ export class Trajet implements OnInit {
         .toPromise();
       positions.push(await this.getPosition(commande.idPosition));
     }
-    let destinationsOptimise: any = [];
-    var origine = { latitude: this.currentLat, longitude: this.currentLong };
-    while (positions.length > 0) {
-      var des = '';
-      var distance = 6371;
-      var indice = 0;
-      for (let i = 0; i < positions.length; i++) {
-        var x = origine;
-        var lat1 = Number(x.latitude);
-        var long1 = Number(x.longitude);
-        var y = positions[i];
-        var lat2 = Number(y.latitude);
-        var long2 = Number(y.longitude);
-        if (
-          this.getDistanceFromLatLonInKm(lat1, long1, lat2, long2) < distance
-        ) {
-          distance = this.getDistanceFromLatLonInKm(lat1, long1, lat2, long2);
-          des = positions[i];
-          indice = i;
-        }
-      }
-      destinationsOptimise.push(des);
-      positions.splice(indice, 1);
-    }
-    var debutChemin = origine;
-    var finChemin = destinationsOptimise[destinationsOptimise.length - 1];
+    var debutChemin = {
+      latitude: this.currentLat,
+      longitude: this.currentLong,
+    };
+    var finChemin = positions[positions.length - 1];
     let pointStop = [];
-    for (let i = 0; i < destinationsOptimise.length - 1; i++) {
-      pointStop.push(destinationsOptimise[i]);
+    for (let i = 0; i < positions.length - 1; i++) {
+      pointStop.push(positions[i]);
     }
-    destinationsOptimise = [];
     return {
       debutChemin: debutChemin,
       finChemin: finChemin,
@@ -1590,7 +1567,11 @@ export class Trajet implements OnInit {
       trajet.finChemin.latitude + '/' + trajet.finChemin.longitude;
     var pointStop = '';
     for (let i = 0; i < trajet.pointStop.length; i++) {
-      pointStop += trajet.pointStop[i] + '%7C';
+      pointStop +=
+        trajet.pointStop[i].latitude +
+        '/' +
+        trajet.pointStop[i].longitude +
+        '%7C';
     }
     pointStop = pointStop.slice(0, -3); //définir les points de stop
     if (pointStop === '') {
@@ -1610,5 +1591,20 @@ export class Trajet implements OnInit {
         pointStop;
     }
     this.mapEstAffiche = true;
+  }
+
+  //changer l'ordre du trajet lors du drop
+  async drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.commandes, event.previousIndex, event.currentIndex);
+    let idCommandes = ''
+    for (let i = 0; i < this.commandes.length; i++) {
+      const commande = this.commandes[i];
+      idCommandes += commande.id + "/"
+    }
+    idCommandes = idCommandes.slice(0, -1);
+    this.data.mission.idCommandes = idCommandes;
+    console.log(idCommandes);
+    await this.serviceMission.modifierIdCommandesDansMission(this.data.mission.id, idCommandes).toPromise();
+    this.afficherTrajet();
   }
 }

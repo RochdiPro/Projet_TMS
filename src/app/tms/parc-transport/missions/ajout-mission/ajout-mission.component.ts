@@ -63,6 +63,10 @@ export class AjoutMissionComponent implements OnInit {
   listeFilesAttentes: any = []; //contient la liste des files d'attente crée
   boutonEnregistrerEstActive = true;
 
+  // coordonnées de la position actuelle
+  currentLat: any
+  currentLong: any
+
   constructor(
     private fb: FormBuilder,
     private serviceMission: MissionsService,
@@ -73,6 +77,7 @@ export class AjoutMissionComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.chercherMoi();
     this.creerForm();
     await this.getListeCommande();
     this.affecterCommandeAuRegion(); //specifier a quelle region appartienne une commande
@@ -895,7 +900,6 @@ export class AjoutMissionComponent implements OnInit {
             poids: mission.poids,
           });
         });
-        console.log(copieFileAttente);
         if (fileAttente.length === 0) {
           this.listeFilesAttentes.push({
             date: dateFileAttente,
@@ -1049,9 +1053,50 @@ export class AjoutMissionComponent implements OnInit {
     return Number(pourcentageScore.toFixed(3));
   }
 
+   // retourne la position de destination d'une commande
+   async getPosition(idPosition: any) {
+    let position = await this.serviceMission
+      .getPositionById(idPosition)
+      .toPromise();
+    return position;
+  }
+
+    // calculer la distance entre deux points
+    getDistanceFromLatLonInKm(lat1: any, lon1: any, lat2: any, lon2: any) {
+      var R = 6371; // Rayon de la terre en km
+      var dLat = this.deg2rad(lat2 - lat1);
+      var dLon = this.deg2rad(lon2 - lon1);
+      var a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(this.deg2rad(lat1)) *
+          Math.cos(this.deg2rad(lat2)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      var d = R * c; // Distance en km
+      return d;
+    }
+  
+    deg2rad(deg: any) {
+      //changement du deg vers rad
+      return deg * (Math.PI / 180);
+    }
+  
+    // avoir la position de début depuis le navigateur
+    chercherMoi() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          this.currentLat = position.coords.latitude;
+          this.currentLong = position.coords.longitude;
+        });
+      } else {
+        alert('Geolocation is not supported by this browser.');
+      }
+    }
+
   // enregistrement des missions
   async enregistrer() {
-    if (!this.boutonEnregistrerEstActive) return
+    if (!this.boutonEnregistrerEstActive) return;
     this.boutonEnregistrerEstActive = false;
     let derniereMission = await this.serviceMission
       .derniereMission()
@@ -1064,7 +1109,9 @@ export class AjoutMissionComponent implements OnInit {
           k < this.listeFilesAttentes[i].fileAttente[j].vehicule.length;
           k++
         ) {
-          derniereMission !== null ? idMissionLiees += derniereMission.id + k + 1 + '/' : idMissionLiees += k + 1 + '/';
+          derniereMission !== null
+            ? (idMissionLiees += derniereMission.id + k + 1 + '/')
+            : (idMissionLiees += k + 1 + '/');
         }
         idMissionLiees = idMissionLiees.slice(0, -1);
         for (
@@ -1085,10 +1132,55 @@ export class AjoutMissionComponent implements OnInit {
           nomChauffeur = mission.chauffeur[k].nom;
           telephoneChauffeur = mission.chauffeur[k].tel;
           matriculeVehicule = mission.vehicule[k].matricule;
-          console.log(mission.commandesAffectees[k]);
-          mission.commandesAffectees[k].forEach((commande: any) => {
-            idCommandes += commande.commande.id + '/';
-          });
+          
+          let commandes: any = []
+          let positions: any = [];
+          for (let l = 0; l < mission.commandesAffectees[k].length; l++) {
+            const commande = mission.commandesAffectees[k][l];
+            commandes.push(commande.commande);
+            positions.push(await this.getPosition(commande.commande.idPosition));
+          }
+
+          let commandeOrdonnees: any = [];
+          let destinationsOptimise: any = [];
+          var origine = {
+            latitude: this.currentLat,
+            longitude: this.currentLong,
+          };
+          while (positions.length > 0) {
+            var des;
+            var distance = 6371;
+            var indice = 0;
+            for (let i = 0; i < positions.length; i++) {
+              var x;
+              destinationsOptimise.length === 0 ? x = origine : x = destinationsOptimise[destinationsOptimise.length-1];
+              var lat1 = Number(x.latitude);
+              var long1 = Number(x.longitude);
+              var y = positions[i];
+              var lat2 = Number(y.latitude);
+              var long2 = Number(y.longitude);
+              if (
+                this.getDistanceFromLatLonInKm(lat1, long1, lat2, long2) <
+                distance
+              ) {
+                distance = this.getDistanceFromLatLonInKm(
+                  lat1,
+                  long1,
+                  lat2,
+                  long2
+                );
+                des = positions[i];
+                indice = i;
+              }
+            }
+            commandeOrdonnees.push(commandes[indice]);
+            destinationsOptimise.push(des);
+            commandes.splice(indice, 1);
+            positions.splice(indice, 1);
+          }
+          for (let i = 0; i < destinationsOptimise.length; i++) {
+            idCommandes += commandeOrdonnees[i].id + "/";
+          }
           idCommandes = idCommandes.slice(0, -1);
           formData.append('idChauffeur', idChauffeur);
           formData.append('nomChauffeur', nomChauffeur);

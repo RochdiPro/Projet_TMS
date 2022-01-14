@@ -98,9 +98,9 @@
                     <i class="fas fa-route" matTooltip="Trajet" matTooltipPosition="after"
                         matTooltipShowDelay="600" (click)="ouvrirBoiteDialogTrajet(element)"></i>
                 </button>
-                <button class="mb-2  btn ">
+                <button class="mb-2  btn " [disabled]="element.etat !== 'En attente'" (click)="ouvrirDialogModifierMission(element)">
                     <i class="fas fa-edit" matTooltip="modifier" matTooltipPosition="after"
-                        matTooltipShowDelay="600" (click)="ouvrirDialogModifierMission(element)"></i>
+                        matTooltipShowDelay="600"></i>
                 </button>
                 <button class="mb-2  btn " matTooltip="Afficher détail" matTooltipPosition="after"
                     matTooltipShowDelay="600"><i class="fas fa-info-circle" (click)='detailDialog(element)'
