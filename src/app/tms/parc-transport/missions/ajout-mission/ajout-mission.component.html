@@ -54,7 +54,7 @@
                         <tbody>
                             <tr *ngFor="let commande of mission; let i=index;">
                                 <!-- colonne reference -->
-                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -189,7 +189,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesNordEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -199,8 +199,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesNordEst)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -246,7 +245,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesNordOuest; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -256,8 +255,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesNordOuest)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -305,7 +303,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesCentreEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -315,8 +313,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesCentreEst)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -362,7 +359,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesCentreOuest; let i=index;">
                                 <!-- colonne reference -->
-                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -372,8 +369,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesCentreOuest)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -421,7 +417,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesSudEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -431,8 +427,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesSudEst)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -478,7 +473,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesSudOuest; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{getTypeCommande(commande)}} {{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -488,8 +483,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesSudOuest)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"

@@ -37,7 +37,7 @@ export class AjoutMissionComponent implements OnInit {
     { nom: 'Sud-Est', ville: ['Sfax', 'Gabes', 'Mednine', 'Tataouine'] },
     { nom: 'Sud-Ouest', ville: ['Gafsa', 'Tozeur', 'Kebili'] },
   ];
-  commandes: any;
+  commandes: any = [];
   commandesNordEst: any = [];
   commandesNordOuest: any = [];
   commandesCentreEst: any = [];
@@ -64,8 +64,8 @@ export class AjoutMissionComponent implements OnInit {
   boutonEnregistrerEstActive = true;
 
   // coordonnées de la position actuelle
-  currentLat: any
-  currentLong: any
+  currentLat: any;
+  currentLong: any;
 
   constructor(
     private fb: FormBuilder,
@@ -277,10 +277,18 @@ export class AjoutMissionComponent implements OnInit {
   }
 
   // retourne type de la commande
-  getTypeCommande(commande: any) {
-    let type;
-    commande.type === 'Facture' ? (type = 'F') : (type = 'BL');
-    return type;
+  getReference(commande: any) {
+    let type = commande.type.split('/');
+    let referenceCommandes = commande.referenceDocument.split('/');
+    let referances = '';
+    for (let i = 0; i < type.length; i++) {
+      const typ = type[i];
+      typ === 'Facture'
+        ? (referances += 'F ' + referenceCommandes[i] + '/')
+        : (referances += 'BL ' + referenceCommandes[i] + '/');
+    }
+    referances = referances.slice(0, -1);
+    return referances;
   }
 
   // fonction qui s'execute on changeant l'etat du checkbox multiVehicules
@@ -333,9 +341,91 @@ export class AjoutMissionComponent implements OnInit {
 
   // charger la liste des commandes
   async getListeCommande() {
-    this.commandes = await this.serviceMission
+    let commandes = await this.serviceMission
       .getCommandesParEtat('En cours de traitement')
       .toPromise();
+    while (commandes.length > 0) {
+      let adresse;
+      let categorieClient;
+      let contact;
+      let dateCreation;
+      let email;
+      let etat;
+      let id = '';
+      let idClient;
+      let idMission;
+      let idPosition;
+      let nomClient;
+      let nomFichier;
+      let numPieceIdentite;
+      let poids = 0;
+      let referenceDocument = '';
+      let score = 0;
+      let telephone;
+      let trackingNumber = '';
+      let type = '';
+      let typePieceIdentite;
+      let ville;
+      let volume = 0;
+      let commandesAvecMemePosition = commandes.filter(
+        (cmd: any) => cmd.idPosition === commandes[0].idPosition
+      );
+      commandesAvecMemePosition.forEach((cmdPos: any) => {
+        let i = commandes.findIndex((c: any) => c.id === cmdPos.id);
+        commandes.splice(i, 1);
+        adresse = cmdPos.adresse;
+        categorieClient = cmdPos.categorieClient;
+        contact = cmdPos.contact;
+        dateCreation = cmdPos.dateCreation;
+        email = cmdPos.email;
+        etat = cmdPos.etat;
+        id += cmdPos.id + '/';
+        idClient = cmdPos.idClient;
+        idMission = cmdPos.idMission;
+        idPosition = cmdPos.idPosition;
+        nomClient = cmdPos.nomClient;
+        nomFichier = cmdPos.nomFichier;
+        numPieceIdentite = cmdPos.numPieceIdentite;
+        poids += cmdPos.poids;
+        referenceDocument += cmdPos.referenceDocument + '/';
+        score += cmdPos.score;
+        telephone = cmdPos.telephone;
+        trackingNumber += cmdPos.trackingNumber + '/';
+        type += cmdPos.type + '/';
+        typePieceIdentite = cmdPos.typePieceIdentite;
+        ville = cmdPos.ville;
+        volume += cmdPos.volume;
+      });
+      id = id.slice(0, -1);
+      referenceDocument = referenceDocument.slice(0, -1);
+      trackingNumber = trackingNumber.slice(0, -1);
+      type = type.slice(0, -1);
+      let commande = {
+        adresse: adresse,
+        categorieClient: categorieClient,
+        contact: contact,
+        dateCreation: dateCreation,
+        email: email,
+        etat: etat,
+        id: id,
+        idClient: idClient,
+        idMission: idMission,
+        idPosition: idPosition,
+        nomClient: nomClient,
+        nomFichier: nomFichier,
+        numPieceIdentite: numPieceIdentite,
+        poids: poids,
+        referenceDocument: referenceDocument,
+        score: score,
+        telephone: telephone,
+        trackingNumber: trackingNumber,
+        type: type,
+        typePieceIdentite: typePieceIdentite,
+        ville: ville,
+        volume: volume,
+      };
+      this.commandes.push(commande);
+    }
   }
 
   // get tous les vehicules avec l'état disponible
@@ -618,13 +708,20 @@ export class AjoutMissionComponent implements OnInit {
     }
     return Number(scoreTotal.toFixed(4));
   }
+  // calculer le score des commandes total
+  calculerScoreTotal() {
+    let scoreTotal = 0;
+    this.commandes.forEach((commande: any) => {
+      scoreTotal += commande.score;
+    });
+    return Number(scoreTotal.toFixed(4));
+  }
   // permet de calculer le pourcentage score d'une commande par rapport au score total de la region
-  convertirScoreEnPourcentageParRapportScoreRegion(
-    scoreCommande: any,
-    commandesParRegion: any
+  convertirScoreEnPourcentageParRapportScoreTotal(
+    scoreCommande: any
   ) {
-    let scoreRegion = this.calculerScoreCommandeParRegion(commandesParRegion);
-    let pourcentageScore = (100 / scoreRegion) * scoreCommande;
+    let scoreTotal = this.calculerScoreTotal();
+    let pourcentageScore = (100 / scoreTotal) * scoreCommande;
     return Number(pourcentageScore.toFixed(3));
   }
   // calculer le poids des commandes selectionnées et affectées dans un mission
@@ -790,6 +887,16 @@ export class AjoutMissionComponent implements OnInit {
     let volumeMission: any = [];
     let poidsMission: any = [];
     let commandesAffectees: any = [];
+    let mission = [];
+    for (let i = 0; i < this.mission.length; i++) {
+      const mis = this.mission[i];
+      let ids = mis.id.split('/');
+      for (let j = 0; j < ids.length; j++) {
+        mission.push(
+          await this.serviceMission.commande(Number(ids[j])).toPromise()
+        );
+      }
+    }
     // ouvrir boite dialogue d'affectation chauffeur
     let dialogRef;
     // si on selectionne multi vehicules oubin le nombre de voyages > 1 on ouvre la boite dialogue affectar multi chauffeur
@@ -805,7 +912,7 @@ export class AjoutMissionComponent implements OnInit {
         data: {
           vehiculesPrives: this.vehiculesPriveSelectionnes,
           vehiculesLoues: this.vehiculesLoueSelectionnes,
-          mission: this.mission,
+          mission: mission,
           nombreVoyages: this.formVehicule.get('nombreVoyages').value,
         },
         autoFocus: false,
@@ -818,7 +925,7 @@ export class AjoutMissionComponent implements OnInit {
         data: {
           vehiculesPrives: this.vehiculesPriveSelectionnes,
           vehiculesLoues: this.vehiculesLoueSelectionnes,
-          mission: this.mission,
+          mission: mission,
         },
         autoFocus: false,
       });
@@ -1053,46 +1160,46 @@ export class AjoutMissionComponent implements OnInit {
     return Number(pourcentageScore.toFixed(3));
   }
 
-   // retourne la position de destination d'une commande
-   async getPosition(idPosition: any) {
+  // retourne la position de destination d'une commande
+  async getPosition(idPosition: any) {
     let position = await this.serviceMission
       .getPositionById(idPosition)
       .toPromise();
     return position;
   }
 
-    // calculer la distance entre deux points
-    getDistanceFromLatLonInKm(lat1: any, lon1: any, lat2: any, lon2: any) {
-      var R = 6371; // Rayon de la terre en km
-      var dLat = this.deg2rad(lat2 - lat1);
-      var dLon = this.deg2rad(lon2 - lon1);
-      var a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(this.deg2rad(lat1)) *
-          Math.cos(this.deg2rad(lat2)) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
-      var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      var d = R * c; // Distance en km
-      return d;
+  // calculer la distance entre deux points
+  getDistanceFromLatLonInKm(lat1: any, lon1: any, lat2: any, lon2: any) {
+    var R = 6371; // Rayon de la terre en km
+    var dLat = this.deg2rad(lat2 - lat1);
+    var dLon = this.deg2rad(lon2 - lon1);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.deg2rad(lat1)) *
+        Math.cos(this.deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance en km
+    return d;
+  }
+
+  deg2rad(deg: any) {
+    //changement du deg vers rad
+    return deg * (Math.PI / 180);
+  }
+
+  // avoir la position de début depuis le navigateur
+  chercherMoi() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.currentLat = position.coords.latitude;
+        this.currentLong = position.coords.longitude;
+      });
+    } else {
+      alert('Geolocation is not supported by this browser.');
     }
-  
-    deg2rad(deg: any) {
-      //changement du deg vers rad
-      return deg * (Math.PI / 180);
-    }
-  
-    // avoir la position de début depuis le navigateur
-    chercherMoi() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition((position) => {
-          this.currentLat = position.coords.latitude;
-          this.currentLong = position.coords.longitude;
-        });
-      } else {
-        alert('Geolocation is not supported by this browser.');
-      }
-    }
+  }
 
   // enregistrement des missions
   async enregistrer() {
@@ -1102,6 +1209,7 @@ export class AjoutMissionComponent implements OnInit {
       .derniereMission()
       .toPromise();
     let idMissionLiees = '';
+    console.log(this.fileAttente);
     for (let i = 0; i < this.listeFilesAttentes.length; i++) {
       for (let j = 0; j < this.listeFilesAttentes[i].fileAttente.length; j++) {
         for (
@@ -1132,13 +1240,15 @@ export class AjoutMissionComponent implements OnInit {
           nomChauffeur = mission.chauffeur[k].nom;
           telephoneChauffeur = mission.chauffeur[k].tel;
           matriculeVehicule = mission.vehicule[k].matricule;
-          
-          let commandes: any = []
+
+          let commandes: any = [];
           let positions: any = [];
           for (let l = 0; l < mission.commandesAffectees[k].length; l++) {
             const commande = mission.commandesAffectees[k][l];
             commandes.push(commande.commande);
-            positions.push(await this.getPosition(commande.commande.idPosition));
+            positions.push(
+              await this.getPosition(commande.commande.idPosition)
+            );
           }
 
           let commandeOrdonnees: any = [];
@@ -1153,7 +1263,9 @@ export class AjoutMissionComponent implements OnInit {
             var indice = 0;
             for (let i = 0; i < positions.length; i++) {
               var x;
-              destinationsOptimise.length === 0 ? x = origine : x = destinationsOptimise[destinationsOptimise.length-1];
+              destinationsOptimise.length === 0
+                ? (x = origine)
+                : (x = destinationsOptimise[destinationsOptimise.length - 1]);
               var lat1 = Number(x.latitude);
               var long1 = Number(x.longitude);
               var y = positions[i];
@@ -1179,7 +1291,7 @@ export class AjoutMissionComponent implements OnInit {
             positions.splice(indice, 1);
           }
           for (let i = 0; i < destinationsOptimise.length; i++) {
-            idCommandes += commandeOrdonnees[i].id + "/";
+            idCommandes += commandeOrdonnees[i].id + '/';
           }
           idCommandes = idCommandes.slice(0, -1);
           formData.append('idChauffeur', idChauffeur);
@@ -1200,6 +1312,7 @@ export class AjoutMissionComponent implements OnInit {
 
           for (let l = 0; l < mission.commandesAffectees[k].length; l++) {
             const colis = mission.commandesAffectees[k][l].colis;
+            const commande = mission.commandesAffectees[k][l].commande;
             for (let m = 0; m < colis.length; m++) {
               const col = colis[m];
               let listeColisage: any = new FormData();
@@ -1223,10 +1336,8 @@ export class AjoutMissionComponent implements OnInit {
                 .creerListeColisMission(listeColisage)
                 .toPromise();
             }
-          }
-          for (let i = 0; i < mission.commandes.length; i++) {
             let formDataCommande = new FormData();
-            formDataCommande.append('id', mission.commandes[i].id);
+            formDataCommande.append('id', commande.id);
             formDataCommande.append('etat', 'Affectée');
             formDataCommande.append('idMission', newMission.id);
             await this.serviceCommande

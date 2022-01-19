@@ -1,6 +1,6 @@
 {
     "/ERP/*":{
-        "target":"http://127.0.0.1:8080",
+        "target":"http://192.168.0.137:8080",
         "secure":false,
         "logLevel":"debug",
         "pathRewrite":
@@ -9,7 +9,7 @@
         }
     },
     "/INFONET/*":{
-        "target":"http://192.168.1.5:3333",
+        "target":"http://41.228.33.200:3333",
         "secure":false,
         "logLevel":"debug",
         "pathRewrite":
