@@ -12,6 +12,7 @@ import {
   ConfirmerLivraison,
   DetailCommande,
 } from '../dialogs/dialogs.component';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-missions-chauffeur',
@@ -80,7 +81,8 @@ export class MissionsChauffeurComponent implements OnInit {
   // cette valeur va se changer statiquement selon le profile connéctée
   idChauffeur = 20;
   missions: any;
-  missionsFiltree: any;
+  missionsFiltreeParEtat: any;
+  missionsAffiche: any;
   missionSelectionnee: any;
 
   commandes: any = [];
@@ -97,23 +99,51 @@ export class MissionsChauffeurComponent implements OnInit {
 
   // lien map
   lien: any;
+
+  //from des controles utilisées pour choisir la date du mission
+  formDate: FormGroup; 
+
+  //date d'aujourd'hui
+  aujoudhui: Date = new Date(); 
+
+  // afficher le filtre date ou non
+  filtreDateAffiche = false;
+
+   // point de depart
+   origine: any;
+
+   // point finale 
+   finChemin: any;
+ 
+   // les points de stops
+   pointStop: any;
+
   constructor(
+    private fb: FormBuilder,
     private serviceMission: MissionsService,
     private dialog: MatDialog
   ) {}
 
   async ngOnInit() {
+    this.formDate = this.fb.group({
+      date: [this.aujoudhui, [Validators.required]],
+    });
     this.chercherMoi();
     await this.getMissionsParIdChauffeur();
     // selon la valeur de l'état initiale on affiche initialement la tab convenable
     if (this.etatInitiale === 'En cours') {
-      this.missionsFiltree = this.filtrerMissionsParEtat('En cours');
+      this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('En cours');
+      this.missionsAffiche = this.missionsFiltreeParEtat;
       this.enCoursEstClique = true;
     } else if (this.etatInitiale === 'En attente') {
-      this.missionsFiltree = this.filtrerMissionsParEtat('En attente');
+      this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('En attente');
+      this.missionsAffiche =  this.missionsFiltreeParEtat;
       this.enAttenteEstClique = true;
+      this.filtreDateAffiche = true;
+      this.filtrerMissionsParDate()
     } else {
-      this.missionsFiltree = this.filtrerMissionsParEtat('Terminée');
+      this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('Terminée');
+      this.missionsAffiche =  this.missionsFiltreeParEtat;
       this.termineEstClique = true;
     }
 
@@ -138,6 +168,28 @@ export class MissionsChauffeurComponent implements OnInit {
   // filtrer la liste des missions par leurs Etat
   filtrerMissionsParEtat(etat: string) {
     return this.missions.filter((mission: any) => mission.etat === etat);
+  }
+  // filtrer la liste des missions par date
+  filtrerMissionsParDate() {
+    this.missionsAffiche = this.missionsFiltreeParEtat.filter(
+      (f: any) => new Date(f.date).getDate() === this.formDate.get('date').value.getDate()
+    )
+  }
+
+  // diminuer la date dans le date picker par un jour
+  datePrecedente() {
+    let dateChoisi = this.formDate.get('date').value;
+    dateChoisi.setDate(dateChoisi.getDate() - 1);
+    this.formDate.get('date').setValue(dateChoisi);
+    this.filtrerMissionsParDate()
+  }
+
+  // augmenter le date dans le date picker par un jour
+  dateSuivante() {
+    let dateChoisi = this.formDate.get('date').value;
+    dateChoisi.setDate(dateChoisi.getDate() + 1);
+    this.formDate.get('date').setValue(dateChoisi);
+    this.filtrerMissionsParDate()
   }
 
   // pour avoir l'etat initiale. On verifie si on a une mission en cours pour donner un etat initiale = En cours si non l'etatInitiale = En attente
@@ -166,12 +218,15 @@ export class MissionsChauffeurComponent implements OnInit {
   cliquerEnCours() {
     if (this.filtrerMissionsParEtat('En cours').length === 0) return;
     if (this.enCoursEstClique) return;
+    this.formDate.get('date').setValue(new Date());
     this.enCoursEstClique = true;
     this.enAttenteEstClique = false;
     this.termineEstClique = false;
     this.toggleTableMissions();
     setTimeout(() => {
-      this.missionsFiltree = this.filtrerMissionsParEtat('En cours');
+      this.filtreDateAffiche = false;
+      this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('En cours');
+      this.missionsAffiche = this.missionsFiltreeParEtat;
     }, 300);
     setTimeout(() => {
       this.toggleTableMissions();
@@ -182,12 +237,15 @@ export class MissionsChauffeurComponent implements OnInit {
   cliquerEnAttente() {
     if (this.filtrerMissionsParEtat('En attente').length === 0) return;
     if (this.enAttenteEstClique) return;
+    this.formDate.get('date').setValue(new Date());
     this.enCoursEstClique = false;
     this.enAttenteEstClique = true;
     this.termineEstClique = false;
     this.toggleTableMissions();
     setTimeout(() => {
-      this.missionsFiltree = this.filtrerMissionsParEtat('En attente');
+      this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('En attente');
+      this.filtreDateAffiche = true;
+      this.filtrerMissionsParDate()
     }, 300);
     setTimeout(() => {
       this.toggleTableMissions();
@@ -198,12 +256,15 @@ export class MissionsChauffeurComponent implements OnInit {
   cliquerTerminee() {
     if (this.filtrerMissionsParEtat('Terminée').length === 0) return;
     if (this.termineEstClique) return;
+    this.formDate.get('date').setValue(new Date());
     this.enCoursEstClique = false;
     this.enAttenteEstClique = false;
     this.termineEstClique = true;
     this.toggleTableMissions();
     setTimeout(() => {
-      this.missionsFiltree = this.filtrerMissionsParEtat('Terminée');
+      this.filtreDateAffiche = false;
+      this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('Terminée');
+      this.missionsAffiche = this.missionsFiltreeParEtat;
     }, 300);
     setTimeout(() => {
       this.toggleTableMissions();
@@ -381,34 +442,38 @@ export class MissionsChauffeurComponent implements OnInit {
   //afficher le trajet
   async afficherTrajet() {
     let trajet = await this.createTrajet();
-    var origine =
+    this.origine =
       trajet.debutChemin.latitude + '/' + trajet.debutChemin.longitude;
-    var finChemin =
+    this.finChemin =
       trajet.finChemin.latitude + '/' + trajet.finChemin.longitude;
-    var pointStop = '';
+    this.pointStop = '';
     for (let i = 0; i < trajet.pointStop.length; i++) {
-      pointStop +=
+      this.pointStop +=
         trajet.pointStop[i].latitude +
         '/' +
         trajet.pointStop[i].longitude +
         '%7C';
     }
-    pointStop = pointStop.slice(0, -3); //définir les points de stop
-    if (pointStop === '') {
+    this.pointStop = this.pointStop.slice(0, -3); //définir les points de stop
+    if (this.pointStop === '') {
       //afficher le map avec le trajet
       this.lien =
         'https://www.google.com/maps/embed/v1/directions?key=AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8&origin=' +
-        origine +
+        this.origine +
         '&destination=' +
-        finChemin;
+        this.finChemin;
     } else {
       this.lien =
         'https://www.google.com/maps/embed/v1/directions?key=AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8&origin=' +
-        origine +
+        this.origine +
         '&destination=' +
-        finChemin +
+        this.finChemin +
         '&waypoints=' +
-        pointStop;
+        this.pointStop;
     }
   }
+
+  ouvrirMap() { //ouvrir le trajet dans google maps
+    window.open("https://www.google.com/maps/dir/?api=1&origin=" + this.origine + "&destination=" + this.finChemin + "&travelmode=driving&waypoints=" + this.pointStop);
+}
 }

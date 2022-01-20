@@ -30,6 +30,7 @@ a:focus {
 
 table {
   width: 100%;
+  margin-bottom: 20px;
 }
 
 tr {
@@ -328,11 +329,35 @@ iframe {
   cursor: not-allowed;
   opacity: 0.5;
   color: currentColor;
-  display: inline-block;  /* For IE11/ MS Edge bug */
+  display: inline-block; /* For IE11/ MS Edge bug */
   pointer-events: none;
   text-decoration: none;
 }
 
-a, a:hover, a:active, a:visited, a:link{
+a,
+a:hover,
+a:active,
+a:visited,
+a:link {
   text-decoration: none;
+}
+
+// style du input date
+.date {
+  width: 110px;
+}
+
+// style du filtre date
+.filtre-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-naviguer {
+  position: absolute;
+  bottom: 320px;
+  right: 10px;
+  font-size: 40px;
+  cursor: pointer;
 }

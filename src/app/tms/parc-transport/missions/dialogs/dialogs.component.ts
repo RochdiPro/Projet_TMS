@@ -1492,6 +1492,16 @@ export class Trajet implements OnInit {
 
   // liste des commandes a afficher dans le drag and drop
   commandes: any = [];
+
+  // point de depart
+  origine: any;
+
+  // point finale
+  finChemin: any;
+
+  // les points de stops
+  pointStop: any;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: any,
     private serviceMission: MissionsService
@@ -1540,7 +1550,9 @@ export class Trajet implements OnInit {
       const commande = await this.serviceMission
         .commande(idCommande)
         .toPromise();
-      positions.push(await this.getPosition(commande.idPosition));
+      commande.etat !== 'Livrée'
+        ? positions.push(await this.getPosition(commande.idPosition))
+        : '';
     }
     var debutChemin = {
       latitude: this.currentLat,
@@ -1561,34 +1573,34 @@ export class Trajet implements OnInit {
   //afficher le trajet
   async afficherTrajet() {
     let trajet = await this.createTrajet();
-    var origine =
+    this.origine =
       trajet.debutChemin.latitude + '/' + trajet.debutChemin.longitude;
-    var finChemin =
+    this.finChemin =
       trajet.finChemin.latitude + '/' + trajet.finChemin.longitude;
-    var pointStop = '';
+    this.pointStop = '';
     for (let i = 0; i < trajet.pointStop.length; i++) {
-      pointStop +=
+      this.pointStop +=
         trajet.pointStop[i].latitude +
         '/' +
         trajet.pointStop[i].longitude +
         '%7C';
     }
-    pointStop = pointStop.slice(0, -3); //définir les points de stop
-    if (pointStop === '') {
+    this.pointStop = this.pointStop.slice(0, -3); //définir les points de stop
+    if (this.pointStop === '') {
       //afficher le map avec le trajet
       this.lien =
         'https://www.google.com/maps/embed/v1/directions?key=AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8&origin=' +
-        origine +
+        this.origine +
         '&destination=' +
-        finChemin;
+        this.finChemin;
     } else {
       this.lien =
         'https://www.google.com/maps/embed/v1/directions?key=AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8&origin=' +
-        origine +
+        this.origine +
         '&destination=' +
-        finChemin +
+        this.finChemin +
         '&waypoints=' +
-        pointStop;
+        this.pointStop;
     }
     this.mapEstAffiche = true;
   }
@@ -1596,15 +1608,29 @@ export class Trajet implements OnInit {
   //changer l'ordre du trajet lors du drop
   async drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.commandes, event.previousIndex, event.currentIndex);
-    let idCommandes = ''
+    let idCommandes = '';
     for (let i = 0; i < this.commandes.length; i++) {
       const commande = this.commandes[i];
-      idCommandes += commande.id + "/"
+      idCommandes += commande.id + '/';
     }
     idCommandes = idCommandes.slice(0, -1);
     this.data.mission.idCommandes = idCommandes;
     console.log(idCommandes);
-    await this.serviceMission.modifierIdCommandesDansMission(this.data.mission.id, idCommandes).toPromise();
+    await this.serviceMission
+      .modifierIdCommandesDansMission(this.data.mission.id, idCommandes)
+      .toPromise();
     this.afficherTrajet();
+  }
+
+  ouvrirMap() {
+    //ouvrir le trajet dans google maps
+    window.open(
+      'https://www.google.com/maps/dir/?api=1&origin=' +
+        this.origine +
+        '&destination=' +
+        this.finChemin +
+        '&travelmode=driving&waypoints=' +
+        this.pointStop
+    );
   }
 }

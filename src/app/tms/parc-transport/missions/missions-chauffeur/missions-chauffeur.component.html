@@ -12,8 +12,21 @@
 </div>
 <!-- table des missions qui va se changer selon l'état séléctionnée -->
 <div class="missions">
+    <div class="filtre-date" [@statusTableMissions]="statusTableMissions" [formGroup]="formDate" *ngIf="filtreDateAffiche">
+        <button mat-icon-button (click)="datePrecedente()">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
+        <mat-form-field class="date">
+            <input matInput [matDatepicker]="picker" formControlName="date" (focus)="picker.open()" (dateChange)="filtrerMissionsParDate()">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <button mat-icon-button (click)="dateSuivante()">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
+    </div>
     <table [@statusTableMissions]="statusTableMissions">
-        <tr *ngFor="let mission of missionsFiltree" class="card">
+        <tr *ngFor="let mission of this.missionsAffiche" class="card">
             <td scope="row" (click)="getCommandesMission(mission); this.toggleDetailMission();">
                 <div class="entete">
                     <div class="temps">
@@ -51,6 +64,9 @@
 <div class="mission" [@statusDetailMission]="statusDetailMission">
     <!-- toggle qui cache le détail de la mission -->
     <div class="slide-here" (click)="toggleDetailMission()"></div>
+    <div class="btn-naviguer">
+        <i class="fas fa-directions" (click)="ouvrirMap()"></i>
+    </div>
     <!-- map qui contient traget de la mission -->
     <iframe class="trajet" width="100%" height="500" frameborder="0" [src]="lien | safe: 'resourceUrl'" loading="lazy"
         style="border:0;">
