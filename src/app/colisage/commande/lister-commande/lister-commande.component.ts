@@ -33,7 +33,7 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   nom: any;
   acces: any;
   wms: any;
-  estManuel = false;
+  estManuel = true;
   constructor(
     public serviceCommande: CommandeService,
     public dialog: MatDialog
