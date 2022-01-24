@@ -1519,6 +1519,12 @@ export class Trajet implements OnInit {
     console.log(this.commandes);
   }
 
+  get dragDropeActive() {
+    let estActive = false;
+    this.data.mission.etat !== "En attente" ? estActive = false : estActive = true;
+    return estActive
+  }
+
   // avoir la position de début depuis le navigateur
   chercherMoi() {
     if (navigator.geolocation) {

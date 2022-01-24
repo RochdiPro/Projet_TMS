@@ -7,7 +7,7 @@ import { PlanChargementComponent } from './plan-chargement/plan-chargement.compo
 const routes: Routes = [
   { path: 'home', component: MenuTmsComponent },
   { path: 'Parc', component: ParcTransportComponent, loadChildren: () => import('./parc-transport/parc-transport.module').then(m => m.ParcTransportModule) },
-  { path: 'Plan_Chargement', component: PlanChargementComponent, loadChildren: () => import('./plan-chargement/plan-chargement.module').then(m => m.PlanChargementModule) }
+  { path: 'plan-chargement', loadChildren: () => import('./plan-chargement/plan-chargement.module').then(m => m.PlanChargementModule) }
 ];
 
 @NgModule({

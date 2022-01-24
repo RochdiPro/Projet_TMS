@@ -1,154 +1,267 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MissionsService } from '../parc-transport/missions/services/missions.service';
 import { VehiculeService } from '../parc-transport/vehicule/services/vehicule.service';
-import { fabric } from "fabric";
+import { fabric } from 'fabric';
+import { FormControl, FormGroup } from '@angular/forms';
+import { MatTableDataSource } from '@angular/material/table';
+import { DatePipe } from '@angular/common';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { PlanChargementService } from './services/plan-chargement.service';
 
 @Component({
   selector: 'app-plan-chargement',
   templateUrl: './plan-chargement.component.html',
-  styleUrls: ['./plan-chargement.component.scss']
+  styleUrls: ['./plan-chargement.component.scss'],
 })
 export class PlanChargementComponent implements OnInit {
+  // date d'aujourdhui
+  today = new Date();
+  // date initialisée a 00:00 pour eviter le decalage dans le back
+  date = new Date(
+    this.today.getFullYear(),
+    this.today.getMonth(),
+    this.today.getDate(),
+    0,
+    0,
+    0
+  );
+  form = new FormGroup({
+    dateL: new FormControl(this.date),
+    nom: new FormControl(''),
+    matricule: new FormControl(''),
+  });
+  filtreEtatMission = ''; //utilisée dans le filtrage par etat mission
+  nomFiltre = false; //utilisée pour l'activation ou désactivation du filtrage par nom
+  matriculeFiltre = false; //utilisée pour l'activation ou désactivation du filtrage par matricule
+  dateFiltre = false; //utilisée pour l'activation ou désactivation du filtrage par date
+  etatMissionFiltre = false; //utilisée pour l'activation ou désactivation du filtrage par etatMission
+  displayedColumns: string[] = [
+    'id',
+    'nom',
+    'matricule',
+    'dateLivraison',
+    'etatMission',
+  ]; //les colonne du tableau mission
+  dataSource = new MatTableDataSource<tableMissions>();
+  dateRecherche: any;
+  check = true;
+  mission: any;
+  trajet: any;
+  destinations: any = [];
+  destinationsOptimise: any = [];
+  commande: any;
 
   longueur_restant: any;
   largeur_restant: any;
-  commande: any;
+  // commande: any;
   top: any = 0;
   left: any = 0;
   longueur_commande_max: any = 0;
   numCouleur = 0;
   vehicule: any;
-  mission: any;
+  // mission: any;
   canvas: any;
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
+  ngAfterViewInit() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
   constructor(
-    private serviceVehicule: VehiculeService,
-    private serviceMission: MissionsService
-  ) { }
+    private servicePlanChargement: PlanChargementService,
+    public datepipe: DatePipe
+  ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
+    await this.filtrerMission();
   }
 
-  getRandomColor() { //pour les couleurs des articles de chaque client
-    var color: any = {
-      1: "#e53935",
-      2: "#3949AB",
-      3: "#00897B",
-      4: "#FDD835",
-      5: "#546E7A",
-      6: "#C2185B",
-      7: "#1976D2",
-      8: "#388E3C",
-      9: "#FFA000",
-      10: "#616161"
-    };
-    this.numCouleur++;
-    if (this.numCouleur > 10) { this.numCouleur = 1; }
-    return color[this.numCouleur];
+  viderNom() {
+    //pour vider le champs de filtrage par chauffeur
+    this.nomFiltre = false;
+    this.form.controls['nom'].setValue('');
+    this.filtrerMission();
+  }
+  viderMatricule() {
+    //pour vider le champs de filtrage par matricule
+    this.matriculeFiltre = false;
+    this.form.controls['matricule'].setValue('');
+    this.filtrerMission();
+  }
+  async filtrerMission() {
+    //pour faire le filtrage des missions
+    if (this.filtreEtatMission === undefined) this.filtreEtatMission = '';
+    this.dataSource.data = await this.servicePlanChargement
+      .filtrerMissions(
+        this.form.get('nom').value,
+        this.form.get('matricule').value,
+        this.filtreEtatMission
+      )
+      .toPromise();
+    // si on active le filtrage par date
+    if (this.check) {
+      this.date = new Date(this.form.get('dateL').value);
+      this.dateRecherche = this.datepipe.transform(this.date, 'yyyy-MM-dd');
+      this.dataSource.data = this.dataSource.data.filter(
+        (mission) => mission.date === this.dateRecherche
+      );
+    }
+    // trie et mise a jour du paginator
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+  }
+  disableEnableDate() {
+    //pour activer et desactiver le filtrage par date
+    if (this.check) {
+      this.form.controls['dateL'].enable();
+    } else {
+      this.form.controls['dateL'].disable();
+    }
   }
 
-  selectionPlanChargement() { //realiser et dessiner le plan de chargement
-    let container = document.getElementById("container"); //définition du conteneur du canvas
-    this.serviceVehicule.vehicules().subscribe((res: any) => {
-      this.vehicule = res.filter((x: any) => x.matricule == this.mission.matricule);
-      let h: Number = this.vehicule[0].longueur * 2.7 + 270; //conversion du longueur du véhicule vers pixel avec mise en echelle
-      container.style.height = h + "px"; //definission du hauteur du contenaire
-      this.serviceMission.mission(this.mission.id).subscribe((res: any) => {
-        let affectation = res;
+  // diminuer la date dans le date picker par un jour
+  datePrecedente() {
+    let dateChoisi = this.form.get('dateL').value;
+    dateChoisi.setDate(dateChoisi.getDate() - 1);
+    this.form.get('dateL').setValue(dateChoisi);
+    this.filtrerMission();
+  }
 
-        let canva: any = document.getElementById("canva");
-        while (canva.firstChild) { //reinitialiser le canva avant de dessiner
+  // augmenter le date dans le date picker par un jour
+  dateSuivante() {
+    let dateChoisi = this.form.get('dateL').value;
+    dateChoisi.setDate(dateChoisi.getDate() + 1);
+    this.form.get('dateL').setValue(dateChoisi);
+    this.filtrerMission();
+  }
+
+  selectionnerMission(mission: any) {
+    this.mission = mission;
+    this.selectionPlanChargement();
+  }
+
+  getRandomColor() {
+    //pour les couleurs des articles de chaque client
+    var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    return '#' + randomColor;
+  }
+
+  async selectionPlanChargement() {
+    //realiser et dessiner le plan de chargement
+    let container = document.getElementById('container'); //définition du conteneur du canvas
+    this.servicePlanChargement
+      .vehicule(this.mission.matricule)
+      .subscribe((res: any) => {
+        this.vehicule = res;
+        let h: Number = this.vehicule.longueur * 2.7 + 270; //conversion du longueur du véhicule vers pixel avec mise en echelle
+        container.style.height = h + 'px'; //definission du hauteur du contenaire
+
+        let canva: any = document.getElementById('canva');
+        while (canva.firstChild) {
+          //reinitialiser le canva avant de dessiner
           canva.removeChild(canva.firstChild);
         }
-        let legend = document.getElementById("legend");
-        while (legend.firstChild) { //reinitialiser le legend avant de dessiner
+        let legend = document.getElementById('legend');
+        while (legend.firstChild) {
+          //reinitialiser le legend avant de dessiner
           legend.removeChild(legend.firstChild);
         }
-        this.numCouleur = 0; //reinitialisation du numero de couleur
-        var pos: any = [];
-        var dest: any = [];
-        var trajet = affectation.trajet;
-        trajet = trajet.split("/");
-        trajet = trajet.reverse();
+        let idCommandes = this.mission.idCommandes;
+        idCommandes = idCommandes.split('/');
+        idCommandes = idCommandes.reverse();
         this.top = 0;
         this.left = 0;
         this.longueur_commande_max = 0;
-        this.longueur_restant = this.vehicule[0].longueur * 2.7; //reinitialisation du longueur et largeur restants
-        this.largeur_restant = this.vehicule[0].largeur * 2.7;
-        let div = document.getElementById("canva");
+        this.longueur_restant = this.vehicule.longueur * 2.7; //reinitialisation du longueur et largeur restants
+        this.largeur_restant = this.vehicule.largeur * 2.7;
+        let div = document.getElementById('canva');
         canva = document.createElement('canvas'); //creation du canva
-        canva.id = "canvas";
+        canva.id = 'canvas';
         canva.style.zIndex = 8;
-        canva.style.border = "4px solid";
+        canva.style.border = '4px solid';
         div.appendChild(canva);
-        this.canvas = new fabric.StaticCanvas('canvas', { //definition du hauteur et largeur du canva
-          width: this.vehicule[0].largeur * 2.7,
-          height: this.vehicule[0].longueur * 2.7
+        this.canvas = new fabric.StaticCanvas('canvas', {
+          //definition du hauteur et largeur du canva
+          width: this.vehicule.largeur * 2.7,
+          height: this.vehicule.longueur * 2.7,
         });
-        this.serviceMission.commandes().subscribe((res: any) => {
-          for (let i = 0; i < trajet.length-1; i++) {
-            pos.push(trajet[i].split(":")[1]);
-            dest.push(trajet[i].split(":")[0]);
-
-            this.commande = res.filter((x: any) => x.idMission === affectation.id);
-            this.commande = this.commande.filter((x: any) => x.positionDest === trajet[i].split(":")[1]);
-            let articles = this.commande[0].articles.split(",");
-            let couleur = this.getRandomColor();
-            let legend = document.getElementById("legend"); //creation du legend
-            let titre = document.createElement("div");
-            titre.style.position = "relative";
-            let carreau: any = document.createElement('div');
-            carreau.style.height = "14px";
-            carreau.style.width = "14px";
-            carreau.style.background = couleur;
-            carreau.style.margin = "5px 5px";
-            let text = document.createElement("div");
-            text.style.width = "100px"
-            text.style.position = "absolute";
-            text.style.top = "-3px";
-            text.style.left = "26px";
-            text.style.fontSize = "medium";
-            text.innerHTML = trajet[i].split(":")[0];
-            titre.appendChild(carreau);
-            titre.appendChild(text);
-            legend.appendChild(titre);
-            articles.forEach((element: any) => { //placement des articles dans le canva
-              let article = element.split("/")
-              let dimensions = article[1].split(":")[1].split("x");
-              let nbrArticles = article[0].split("x")[0];
-              for (let j = 0; j < nbrArticles; j++) {
-                this.largeur_restant -= Number(dimensions[1]) * 2.7;
-                if (this.largeur_restant < 0) {
-                  this.largeur_restant = (this.vehicule[0].largeur * 2.7 - Number(dimensions[1]) * 2.7);
-                  this.left = 0;
-                  this.top += this.longueur_commande_max;
-                  this.longueur_restant -= this.longueur_commande_max;
-                  this.longueur_commande_max = 0;
+        this.servicePlanChargement
+          .listeColisParMission(this.mission.id)
+          .subscribe(async (listeColis) => {
+            for (let i = 0; i < idCommandes.length; i++) {
+              this.commande = await this.servicePlanChargement.commande(idCommandes[i]).toPromise()
+              let articles = listeColis.filter((colis: any) => colis.idCommande == idCommandes[i]);
+              let couleur = this.getRandomColor();
+              let legend = document.getElementById('legend'); //creation du legend
+              let titre = document.createElement('div');
+              titre.style.position = 'relative';
+              let carreau: any = document.createElement('div');
+              carreau.style.height = '14px';
+              carreau.style.width = '14px';
+              carreau.style.background = couleur;
+              carreau.style.margin = '5px 5px';
+              let text = document.createElement('div');
+              text.style.width = '100px';
+              text.style.position = 'absolute';
+              text.style.top = '-3px';
+              text.style.left = '26px';
+              text.style.fontSize = 'medium';
+              text.innerHTML = this.commande.nomClient;
+              titre.appendChild(carreau);
+              titre.appendChild(text);
+              legend.appendChild(titre);
+              articles.forEach((article: any) => {
+                //placement des articles dans le canva
+                let dimensions = article.dimensions.split('x');
+                let nbrArticles = article.nombrePack;
+                for (let j = 0; j < nbrArticles; j++) {
+                  this.largeur_restant -= Number(dimensions[1]) * 2.7;
+                  if (this.largeur_restant < 0) {
+                    this.largeur_restant =
+                      this.vehicule.largeur * 2.7 -
+                      Number(dimensions[1]) * 2.7;
+                    this.left = 0;
+                    this.top += this.longueur_commande_max;
+                    this.longueur_restant -= this.longueur_commande_max;
+                    this.longueur_commande_max = 0;
+                  }
+                  const rect = new fabric.Rect({
+                    top: this.top,
+                    left: this.left,
+                    width: Number(dimensions[1]) * 2.7,
+                    height: Number(dimensions[0]) * 2.7,
+                    fill: couleur,
+                    stroke: 'black',
+                    strokeWidth: 1,
+                  });
+                  this.canvas.add(rect);
+                  this.left += Number(dimensions[1]) * 2.7;
+                  if (Number(dimensions[0]) * 2.7 > this.longueur_commande_max)
+                    this.longueur_commande_max = Number(dimensions[0]) * 2.7;
                 }
-                const rect = new fabric.Rect({
-                  top: this.top,
-                  left: this.left,
-                  width: Number(dimensions[1]) * 2.7,
-                  height: Number(dimensions[0]) * 2.7,
-                  fill: couleur,
-                  stroke: 'black',
-                  strokeWidth: 1
-                });
-                this.canvas.add(rect);
-                this.left += Number(dimensions[1]) * 2.7;
-                if (Number(dimensions[0]) * 2.7 > this.longueur_commande_max) this.longueur_commande_max = Number(dimensions[0]) * 2.7;
-              }
-
-            });
-
-
-
-
-          }
-        });
+              });
+            }
+          });
       });
-    });
-
-
   }
+}
+
+export interface tableMissions {
+  //inteface pour charger le table mission
+  id: number;
+  idChauffeur: String;
+  nomChauffeur: string;
+  matricule: String;
+  idCommandes: String;
+  volume: number;
+  poids: number;
+  score: number;
+  region: String;
+  etat: String;
+  date: Date;
+  idMissionsLiees: String;
 }

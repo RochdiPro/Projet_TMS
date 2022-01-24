@@ -5,9 +5,19 @@
    </iframe>
    <div class="container-card">
       <div class="card">
-         <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+         <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)" *ngIf="dragDropeActive">
             <div class="example-box" *ngFor="let commande of commandes; let last = last" cdkDrag cdkDragLockAxis="y">
                <div class="example-handle" cdkDragHandle>
+                  <i [ngClass]="{'fa fa-ellipsis-v pos': !last , 'fas fa-map-marker-alt': last}"></i>
+                  <div class="position">
+                     {{commande.nomClient}}: {{commande.adresse}}, {{commande.ville}}.
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="example-list" *ngIf="!dragDropeActive">
+            <div class="example-box" *ngFor="let commande of commandes; let last = last">
+               <div class="example-handle">
                   <i [ngClass]="{'fa fa-ellipsis-v pos': !last , 'fas fa-map-marker-alt': last}"></i>
                   <div class="position">
                      {{commande.nomClient}}: {{commande.adresse}}, {{commande.ville}}.
