@@ -93,8 +93,7 @@
                             <!-- liste des commandes -->
                             <div style="display: flex; align-items: center;" *ngIf="!commandeDansVehiculeSelectionne">
                                 <a role="button"
-                                    (click)="afficherListeColis(commande.commande); choisirCommande(commande.commande)">Commande:
-                                    {{commande.commande.id}}</a>
+                                    (click)="afficherListeColis(commande.commande); choisirCommande(commande.commande)">{{commande.commande.type}} {{commande.commande.referenceDocument}}</a>
                                 <button mat-icon-button (click)="annulerAffectationCommande(commande)">
                                     <mat-icon style="color: tomato;">delete</mat-icon>
                                 </button>
@@ -103,7 +102,7 @@
                             <div class="colis scrollbar" [@statusDetailCommande]="statusDetailCommande"
                                 *ngIf="commandeDansVehiculeSelectionne && commandeDansVehiculeSelectionne.id === commande.commande.id">
                                 <div class="entete">
-                                    <h3>Commande {{commande.commande.id}}</h3>
+                                    <h3>{{commande.commande.type}} {{commande.commande.referenceDocument}}</h3>
                                     <mat-icon class="close" (click)="boutonFermerListeColis()">close</mat-icon>
                                 </div>
                                 <div class="contenue">

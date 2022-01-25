@@ -31,8 +31,8 @@
             <ul>
                 <li class="list" *ngFor="let commande of data.mission; let i = index;" [attr.data-selected]="false"
                     [class.active]="commandeActive[i]">
-                    <a role="button" (click)="changerCommandeActive(i); choisirCommande(commande)">commande
-                        {{commande.id}}</a>
+                    <a role="button" (click)="changerCommandeActive(i); choisirCommande(commande)">{{commande.type}}
+                        {{commande.referenceDocument}}</a>
                 </li>
             </ul>
         </div>

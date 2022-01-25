@@ -1,18 +1,46 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MissionsService } from '../parc-transport/missions/services/missions.service';
-import { VehiculeService } from '../parc-transport/vehicule/services/vehicule.service';
-import { fabric } from 'fabric';
-import { FormControl, FormGroup } from '@angular/forms';
-import { MatTableDataSource } from '@angular/material/table';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { DatePipe } from '@angular/common';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { fabric } from 'fabric';
 import { PlanChargementService } from './services/plan-chargement.service';
 
 @Component({
   selector: 'app-plan-chargement',
   templateUrl: './plan-chargement.component.html',
   styleUrls: ['./plan-chargement.component.scss'],
+  animations: [
+    trigger('statusVehicule', [
+      state(
+        'show',
+        style({
+          height: 'auto',
+          minHeight: '900px',
+          opacity: 1,
+          overflow: 'auto',
+        })
+      ),
+      state(
+        'hide',
+        style({
+          overflow: 'hidden',
+          opacity: 0,
+          height: '0',
+          minHeight: '0',
+        })
+      ),
+      transition('show <=> hide', animate('500ms')),
+    ]),
+  ],
 })
 export class PlanChargementComponent implements OnInit {
   // date d'aujourdhui
@@ -62,6 +90,9 @@ export class PlanChargementComponent implements OnInit {
   vehicule: any;
   // mission: any;
   canvas: any;
+
+  // utilisée pour afficher le div vehicule
+  vehiculeEstAffiche = false;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -146,107 +177,250 @@ export class PlanChargementComponent implements OnInit {
 
   getRandomColor() {
     //pour les couleurs des articles de chaque client
-    var randomColor = Math.floor(Math.random() * 16777215).toString(16);
+    var randomColor = ((Math.random() * 0xffffff) << 0)
+      .toString(16)
+      .padStart(6, '0');
     return '#' + randomColor;
   }
 
   async selectionPlanChargement() {
     //realiser et dessiner le plan de chargement
     let container = document.getElementById('container'); //définition du conteneur du canvas
-    this.servicePlanChargement
-      .vehicule(this.mission.matricule)
-      .subscribe((res: any) => {
-        this.vehicule = res;
-        let h: Number = this.vehicule.longueur * 2.7 + 270; //conversion du longueur du véhicule vers pixel avec mise en echelle
-        container.style.height = h + 'px'; //definission du hauteur du contenaire
+    if (this.mission.idChauffeur !== 'null') {
+      this.servicePlanChargement
+        .vehicule(this.mission.matricule)
+        .subscribe((res: any) => {
+          this.vehicule = res;
+          let h: Number = this.vehicule.longueur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
+          container.style.height = h + 'px'; //definission du hauteur du contenaire
 
-        let canva: any = document.getElementById('canva');
-        while (canva.firstChild) {
-          //reinitialiser le canva avant de dessiner
-          canva.removeChild(canva.firstChild);
-        }
-        let legend = document.getElementById('legend');
-        while (legend.firstChild) {
-          //reinitialiser le legend avant de dessiner
-          legend.removeChild(legend.firstChild);
-        }
-        let idCommandes = this.mission.idCommandes;
-        idCommandes = idCommandes.split('/');
-        idCommandes = idCommandes.reverse();
-        this.top = 0;
-        this.left = 0;
-        this.longueur_commande_max = 0;
-        this.longueur_restant = this.vehicule.longueur * 2.7; //reinitialisation du longueur et largeur restants
-        this.largeur_restant = this.vehicule.largeur * 2.7;
-        let div = document.getElementById('canva');
-        canva = document.createElement('canvas'); //creation du canva
-        canva.id = 'canvas';
-        canva.style.zIndex = 8;
-        canva.style.border = '4px solid';
-        div.appendChild(canva);
-        this.canvas = new fabric.StaticCanvas('canvas', {
-          //definition du hauteur et largeur du canva
-          width: this.vehicule.largeur * 2.7,
-          height: this.vehicule.longueur * 2.7,
-        });
-        this.servicePlanChargement
-          .listeColisParMission(this.mission.id)
-          .subscribe(async (listeColis) => {
-            for (let i = 0; i < idCommandes.length; i++) {
-              this.commande = await this.servicePlanChargement.commande(idCommandes[i]).toPromise()
-              let articles = listeColis.filter((colis: any) => colis.idCommande == idCommandes[i]);
-              let couleur = this.getRandomColor();
-              let legend = document.getElementById('legend'); //creation du legend
-              let titre = document.createElement('div');
-              titre.style.position = 'relative';
-              let carreau: any = document.createElement('div');
-              carreau.style.height = '14px';
-              carreau.style.width = '14px';
-              carreau.style.background = couleur;
-              carreau.style.margin = '5px 5px';
-              let text = document.createElement('div');
-              text.style.width = '100px';
-              text.style.position = 'absolute';
-              text.style.top = '-3px';
-              text.style.left = '26px';
-              text.style.fontSize = 'medium';
-              text.innerHTML = this.commande.nomClient;
-              titre.appendChild(carreau);
-              titre.appendChild(text);
-              legend.appendChild(titre);
-              articles.forEach((article: any) => {
-                //placement des articles dans le canva
-                let dimensions = article.dimensions.split('x');
-                let nbrArticles = article.nombrePack;
-                for (let j = 0; j < nbrArticles; j++) {
-                  this.largeur_restant -= Number(dimensions[1]) * 2.7;
-                  if (this.largeur_restant < 0) {
-                    this.largeur_restant =
-                      this.vehicule.largeur * 2.7 -
-                      Number(dimensions[1]) * 2.7;
-                    this.left = 0;
-                    this.top += this.longueur_commande_max;
-                    this.longueur_restant -= this.longueur_commande_max;
-                    this.longueur_commande_max = 0;
-                  }
-                  const rect = new fabric.Rect({
-                    top: this.top,
-                    left: this.left,
-                    width: Number(dimensions[1]) * 2.7,
-                    height: Number(dimensions[0]) * 2.7,
-                    fill: couleur,
-                    stroke: 'black',
-                    strokeWidth: 1,
-                  });
-                  this.canvas.add(rect);
-                  this.left += Number(dimensions[1]) * 2.7;
-                  if (Number(dimensions[0]) * 2.7 > this.longueur_commande_max)
-                    this.longueur_commande_max = Number(dimensions[0]) * 2.7;
-                }
-              });
-            }
+          let canva: any = document.getElementById('canva');
+          while (canva.firstChild) {
+            //reinitialiser le canva avant de dessiner
+            canva.removeChild(canva.firstChild);
+          }
+          let legend = document.getElementById('legend');
+          while (legend.firstChild) {
+            //reinitialiser le legend avant de dessiner
+            legend.removeChild(legend.firstChild);
+          }
+          let idCommandes = this.mission.idCommandes;
+          idCommandes = idCommandes.split('/');
+          idCommandes = idCommandes.reverse();
+          this.top = 0;
+          this.left = 0;
+          this.longueur_commande_max = 0;
+          this.longueur_restant = this.vehicule.longueur * 2.7; //reinitialisation du longueur et largeur restants
+          this.largeur_restant = this.vehicule.largeur * 2.7;
+          let div = document.getElementById('canva');
+          canva = document.createElement('canvas'); //creation du canva
+          canva.id = 'canvas';
+          canva.style.zIndex = 8;
+          canva.style.border = '4px solid';
+          div.appendChild(canva);
+          this.canvas = new fabric.StaticCanvas('canvas', {
+            //definition du hauteur et largeur du canva
+            width: this.vehicule.largeur * 2.7,
+            height: this.vehicule.longueur * 2.7,
           });
-      });
+          this.servicePlanChargement
+            .listeColisParMission(this.mission.id)
+            .subscribe(async (listeColis) => {
+              for (let i = 0; i < idCommandes.length; i++) {
+                this.commande = await this.servicePlanChargement
+                  .commande(idCommandes[i])
+                  .toPromise();
+                let articles = listeColis.filter(
+                  (colis: any) => colis.idCommande == idCommandes[i]
+                );
+                let couleur = this.getRandomColor();
+                let legend = document.getElementById('legend'); //creation du legend
+                legend.style.padding = '20px';
+                legend.style.border = '4px solid';
+                let titre = document.createElement('div');
+                titre.style.position = 'relative';
+                titre.style.display = 'flex';
+                let carreau: any = document.createElement('div');
+                carreau.style.height = '14px';
+                carreau.style.width = '14px';
+                carreau.style.background = couleur;
+                carreau.style.margin = '5px 5px';
+                let text = document.createElement('div');
+                text.style.width = '100px';
+                text.style.position = 'relative';
+                // text.style.top = '-3px';
+                // text.style.left = '26px';
+                text.style.fontSize = 'medium';
+                text.innerHTML = this.commande.nomClient;
+                titre.appendChild(carreau);
+                titre.appendChild(text);
+                legend.appendChild(titre);
+                articles.forEach((article: any) => {
+                  //placement des articles dans le canva
+                  let dimensions = article.dimensions.split('x');
+                  let nbrArticles = article.nombrePack;
+                  for (let j = 0; j < nbrArticles; j++) {
+                    this.largeur_restant -= Number(dimensions[1]) * 2.7;
+                    if (this.largeur_restant < 0) {
+                      this.largeur_restant =
+                        this.vehicule.largeur * 2.7 -
+                        Number(dimensions[1]) * 2.7;
+                      this.left = 0;
+                      this.top += this.longueur_commande_max;
+                      this.longueur_restant -= this.longueur_commande_max;
+                      this.longueur_commande_max = 0;
+                    }
+                    const rect = new fabric.Rect({
+                      top: this.top,
+                      left: this.left,
+                      width: Number(dimensions[1]) * 2.7,
+                      height: Number(dimensions[0]) * 2.7,
+                      fill: couleur,
+                      stroke: 'black',
+                      strokeWidth: 1,
+                    });
+                    this.canvas.add(rect);
+                    this.left += Number(dimensions[1]) * 2.7;
+                    if (
+                      Number(dimensions[0]) * 2.7 >
+                      this.longueur_commande_max
+                    )
+                      this.longueur_commande_max = Number(dimensions[0]) * 2.7;
+                  }
+                });
+              }
+            });
+        });
+    } else {
+      this.servicePlanChargement
+        .vehiculeLoue(this.mission.matricule)
+        .subscribe((res: any) => {
+          this.vehicule = res;
+          let h: Number = this.vehicule.longueur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
+          container.style.height = h + 'px'; //definission du hauteur du contenaire
+
+          let canva: any = document.getElementById('canva');
+          while (canva.firstChild) {
+            //reinitialiser le canva avant de dessiner
+            canva.removeChild(canva.firstChild);
+          }
+          let legend = document.getElementById('legend');
+          while (legend.firstChild) {
+            //reinitialiser le legend avant de dessiner
+            legend.removeChild(legend.firstChild);
+          }
+          let idCommandes = this.mission.idCommandes;
+          idCommandes = idCommandes.split('/');
+          idCommandes = idCommandes.reverse();
+          this.top = 0;
+          this.left = 0;
+          this.longueur_commande_max = 0;
+          this.longueur_restant = this.vehicule.longueur * 2.7; //reinitialisation du longueur et largeur restants
+          this.largeur_restant = this.vehicule.largeur * 2.7;
+          let div = document.getElementById('canva');
+          canva = document.createElement('canvas'); //creation du canva
+          canva.id = 'canvas';
+          canva.style.zIndex = 8;
+          canva.style.border = '4px solid';
+          div.appendChild(canva);
+          this.canvas = new fabric.StaticCanvas('canvas', {
+            //definition du hauteur et largeur du canva
+            width: this.vehicule.largeur * 2.7,
+            height: this.vehicule.longueur * 2.7,
+          });
+          this.servicePlanChargement
+            .listeColisParMission(this.mission.id)
+            .subscribe(async (listeColis) => {
+              for (let i = 0; i < idCommandes.length; i++) {
+                this.commande = await this.servicePlanChargement
+                  .commande(idCommandes[i])
+                  .toPromise();
+                let articles = listeColis.filter(
+                  (colis: any) => colis.idCommande == idCommandes[i]
+                );
+                let couleur = this.getRandomColor();
+                let legend = document.getElementById('legend'); //creation du legend
+                legend.style.padding = '20px';
+                legend.style.border = '4px solid';
+                let titre = document.createElement('div');
+                titre.style.position = 'relative';
+                titre.style.display = 'flex';
+                let carreau: any = document.createElement('div');
+                carreau.style.height = '14px';
+                carreau.style.width = '14px';
+                carreau.style.background = couleur;
+                carreau.style.margin = '5px 5px';
+                let text = document.createElement('div');
+                text.style.width = '100px';
+                text.style.position = 'relative';
+                // text.style.top = '-3px';
+                // text.style.left = '26px';
+                text.style.fontSize = 'medium';
+                text.innerHTML = this.commande.nomClient;
+                titre.appendChild(carreau);
+                titre.appendChild(text);
+                legend.appendChild(titre);
+                articles.forEach((article: any) => {
+                  //placement des articles dans le canva
+                  let dimensions = article.dimensions.split('x');
+                  let nbrArticles = article.nombrePack;
+                  for (let j = 0; j < nbrArticles; j++) {
+                    this.largeur_restant -= Number(dimensions[1]) * 2.7;
+                    if (this.largeur_restant < 0) {
+                      this.largeur_restant =
+                        this.vehicule.largeur * 2.7 -
+                        Number(dimensions[1]) * 2.7;
+                      this.left = 0;
+                      this.top += this.longueur_commande_max;
+                      this.longueur_restant -= this.longueur_commande_max;
+                      this.longueur_commande_max = 0;
+                    }
+                    const rect = new fabric.Rect({
+                      top: this.top,
+                      left: this.left,
+                      width: Number(dimensions[1]) * 2.7,
+                      height: Number(dimensions[0]) * 2.7,
+                      fill: couleur,
+                      stroke: 'black',
+                      strokeWidth: 1,
+                    });
+                    this.canvas.add(rect);
+                    this.left += Number(dimensions[1]) * 2.7;
+                    if (
+                      Number(dimensions[0]) * 2.7 >
+                      this.longueur_commande_max
+                    )
+                      this.longueur_commande_max = Number(dimensions[0]) * 2.7;
+                  }
+                });
+              }
+            });
+        });
+    }
+    let premierChargement;
+    this.vehiculeEstAffiche
+      ? (premierChargement = false)
+      : (premierChargement = true);
+    this.vehiculeEstAffiche = true;
+    let vehicule = document.getElementById('vehicule');
+    premierChargement
+      ? setTimeout(() => {
+          this.scroll(vehicule);
+        }, 500)
+      : this.scroll(vehicule);
+  }
+
+  scroll(el: HTMLElement) {
+    el.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest',
+    });
+  }
+
+  // etat du div qui contient liste des colis dans voiture "show" pour afficher, "hide" pour cacher
+  get statusVehicule() {
+    return this.vehiculeEstAffiche ? 'show' : 'hide';
   }
 }
 
