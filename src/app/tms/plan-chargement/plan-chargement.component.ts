@@ -13,6 +13,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { fabric } from 'fabric';
 import { PlanChargementService } from './services/plan-chargement.service';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-plan-chargement',
@@ -90,6 +91,8 @@ export class PlanChargementComponent implements OnInit {
   vehicule: any;
   // mission: any;
   canvas: any;
+
+  listeCommandes: any = [];
 
   // utilisée pour afficher le div vehicule
   vehiculeEstAffiche = false;
@@ -184,6 +187,7 @@ export class PlanChargementComponent implements OnInit {
   }
 
   async selectionPlanChargement() {
+    this.listeCommandes = [];
     //realiser et dessiner le plan de chargement
     let container = document.getElementById('container'); //définition du conteneur du canvas
     if (this.mission.idChauffeur !== 'null') {
@@ -191,18 +195,14 @@ export class PlanChargementComponent implements OnInit {
         .vehicule(this.mission.matricule)
         .subscribe((res: any) => {
           this.vehicule = res;
-          let h: Number = this.vehicule.longueur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
+          let h: Number =
+            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
           container.style.height = h + 'px'; //definission du hauteur du contenaire
 
           let canva: any = document.getElementById('canva');
           while (canva.firstChild) {
             //reinitialiser le canva avant de dessiner
             canva.removeChild(canva.firstChild);
-          }
-          let legend = document.getElementById('legend');
-          while (legend.firstChild) {
-            //reinitialiser le legend avant de dessiner
-            legend.removeChild(legend.firstChild);
           }
           let idCommandes = this.mission.idCommandes;
           idCommandes = idCommandes.split('/');
@@ -217,11 +217,26 @@ export class PlanChargementComponent implements OnInit {
           canva.id = 'canvas';
           canva.style.zIndex = 8;
           canva.style.border = '4px solid';
+          canva.style.transform =
+            'translate(0, + ' + this.vehicule.longueur * 2.7 + ')'; // reset where 0,0 is located
+          canva.style.transform = 'scale(1, -1)'; // invert
           div.appendChild(canva);
+
+          let row = document.createElement('canvas'); //creation du canva
+          row.id = 'row';
+          row.style.zIndex = '8';
+          row.style.border = '4px solid';
+
+          div.appendChild(row);
           this.canvas = new fabric.StaticCanvas('canvas', {
             //definition du hauteur et largeur du canva
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.longueur * 2.7,
+          });
+          let rows = new fabric.StaticCanvas('row', {
+            //definition du hauteur et largeur du canva
+            width: this.vehicule.largeur * 2.7,
+            height: this.vehicule.hauteur * 2.7,
           });
           this.servicePlanChargement
             .listeColisParMission(this.mission.id)
@@ -233,28 +248,40 @@ export class PlanChargementComponent implements OnInit {
                 let articles = listeColis.filter(
                   (colis: any) => colis.idCommande == idCommandes[i]
                 );
+                articles = articles.sort((a: any, b: any) =>
+                  Number(a.dimensions.split('x')[0]) *
+                    Number(a.dimensions.split('x')[1]) *
+                    Number(a.dimensions.split('x')[2]) >
+                  Number(b.dimensions.split('x')[0]) *
+                    Number(b.dimensions.split('x')[1]) *
+                    Number(b.dimensions.split('x')[2])
+                    ? 1
+                    : -1
+                );
                 let couleur = this.getRandomColor();
+                this.commande.couleur = couleur;
+                this.listeCommandes.push(this.commande);
                 let legend = document.getElementById('legend'); //creation du legend
                 legend.style.padding = '20px';
                 legend.style.border = '4px solid';
-                let titre = document.createElement('div');
-                titre.style.position = 'relative';
-                titre.style.display = 'flex';
-                let carreau: any = document.createElement('div');
-                carreau.style.height = '14px';
-                carreau.style.width = '14px';
-                carreau.style.background = couleur;
-                carreau.style.margin = '5px 5px';
-                let text = document.createElement('div');
-                text.style.width = '100px';
-                text.style.position = 'relative';
+                // let titre = document.createElement('div');
+                // titre.style.position = 'relative';
+                // titre.style.display = 'flex';
+                // let carreau: any = document.createElement('div');
+                // carreau.style.height = '14px';
+                // carreau.style.width = '14px';
+                // carreau.style.background = couleur;
+                // carreau.style.margin = '5px 5px';
+                // let text = document.createElement('div');
+                // text.style.width = '100px';
+                // text.style.position = 'relative';
                 // text.style.top = '-3px';
                 // text.style.left = '26px';
-                text.style.fontSize = 'medium';
-                text.innerHTML = this.commande.nomClient;
-                titre.appendChild(carreau);
-                titre.appendChild(text);
-                legend.appendChild(titre);
+                // text.style.fontSize = 'medium';
+                // text.innerHTML = this.commande.nomClient;
+                // titre.appendChild(carreau);
+                // titre.appendChild(text);
+                // legend.appendChild(titre);
                 articles.forEach((article: any) => {
                   //placement des articles dans le canva
                   let dimensions = article.dimensions.split('x');
@@ -296,7 +323,8 @@ export class PlanChargementComponent implements OnInit {
         .vehiculeLoue(this.mission.matricule)
         .subscribe((res: any) => {
           this.vehicule = res;
-          let h: Number = this.vehicule.longueur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
+          let h: Number =
+            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
           container.style.height = h + 'px'; //definission du hauteur du contenaire
 
           let canva: any = document.getElementById('canva');
@@ -305,10 +333,10 @@ export class PlanChargementComponent implements OnInit {
             canva.removeChild(canva.firstChild);
           }
           let legend = document.getElementById('legend');
-          while (legend.firstChild) {
-            //reinitialiser le legend avant de dessiner
-            legend.removeChild(legend.firstChild);
-          }
+          // while (legend.firstChild) {
+          //   //reinitialiser le legend avant de dessiner
+          //   legend.removeChild(legend.firstChild);
+          // }
           let idCommandes = this.mission.idCommandes;
           idCommandes = idCommandes.split('/');
           idCommandes = idCommandes.reverse();
@@ -328,72 +356,143 @@ export class PlanChargementComponent implements OnInit {
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.longueur * 2.7,
           });
+
+          let row = document.createElement('canvas'); //creation du canva
+          row.id = 'row';
+          row.style.zIndex = '8';
+          row.style.border = '4px solid';
+          row.style.transform =
+            'translate(0, + ' + this.vehicule.longueur * 2.7 + ')'; // reset where 0,0 is located
+          row.style.transform = 'scale(1, -1)'; // invert
+          div.appendChild(row);
+          let rows = new fabric.StaticCanvas('row', {
+            //definition du hauteur et largeur du canva
+            width: this.vehicule.largeur * 2.7,
+            height: this.vehicule.hauteur * 2.7,
+          });
+          let lignes: any = [
+            {
+              longueur: 0,
+              largeur: this.vehicule.largeur * 2.7,
+              hauteur: this.vehicule.hauteur * 2.7,
+              articles: [],
+            },
+          ];
           this.servicePlanChargement
             .listeColisParMission(this.mission.id)
             .subscribe(async (listeColis) => {
+              let colis: any = [];
               for (let i = 0; i < idCommandes.length; i++) {
                 this.commande = await this.servicePlanChargement
                   .commande(idCommandes[i])
                   .toPromise();
+
                 let articles = listeColis.filter(
                   (colis: any) => colis.idCommande == idCommandes[i]
                 );
+                articles = articles.sort((a: any, b: any) =>
+                  Number(a.dimensions.split('x')[0]) *
+                    Number(a.dimensions.split('x')[1]) *
+                    Number(a.dimensions.split('x')[2]) <
+                  Number(b.dimensions.split('x')[0]) *
+                    Number(b.dimensions.split('x')[1]) *
+                    Number(b.dimensions.split('x')[2])
+                    ? 1
+                    : -1
+                );
                 let couleur = this.getRandomColor();
+                this.commande.couleur = couleur;
+                this.listeCommandes.push(this.commande);
                 let legend = document.getElementById('legend'); //creation du legend
                 legend.style.padding = '20px';
                 legend.style.border = '4px solid';
-                let titre = document.createElement('div');
-                titre.style.position = 'relative';
-                titre.style.display = 'flex';
-                let carreau: any = document.createElement('div');
-                carreau.style.height = '14px';
-                carreau.style.width = '14px';
-                carreau.style.background = couleur;
-                carreau.style.margin = '5px 5px';
-                let text = document.createElement('div');
-                text.style.width = '100px';
-                text.style.position = 'relative';
+                // let carreau = document.getElementById(this.commande.id);
+                // carreau.style.height = '14px';
+                // carreau.style.width = '14px';
+                // carreau.style.background = couleur;
+                // carreau.style.margin = '5px 5px';
+                console.log(this.listeCommandes);
+                // let text = document.createElement('div');
+                // text.style.width = '100px';
+                // text.style.position = 'relative';
                 // text.style.top = '-3px';
                 // text.style.left = '26px';
-                text.style.fontSize = 'medium';
-                text.innerHTML = this.commande.nomClient;
-                titre.appendChild(carreau);
-                titre.appendChild(text);
-                legend.appendChild(titre);
+                // text.style.fontSize = 'medium';
+                // text.innerHTML = this.commande.nomClient;
                 articles.forEach((article: any) => {
                   //placement des articles dans le canva
                   let dimensions = article.dimensions.split('x');
+                  let longueur = Number(dimensions[0]) * 2.7;
+                  let largeur = Number(dimensions[1]) * 2.7;
+                  let hauteur = Number(dimensions[2]) * 2.7;
+                  article.longueur = longueur;
+                  article.largeur = largeur;
+                  article.hauteur = hauteur;
+                  article.couleur = couleur;
                   let nbrArticles = article.nombrePack;
                   for (let j = 0; j < nbrArticles; j++) {
-                    this.largeur_restant -= Number(dimensions[1]) * 2.7;
-                    if (this.largeur_restant < 0) {
-                      this.largeur_restant =
-                        this.vehicule.largeur * 2.7 -
-                        Number(dimensions[1]) * 2.7;
-                      this.left = 0;
-                      this.top += this.longueur_commande_max;
-                      this.longueur_restant -= this.longueur_commande_max;
-                      this.longueur_commande_max = 0;
-                    }
-                    const rect = new fabric.Rect({
-                      top: this.top,
-                      left: this.left,
-                      width: Number(dimensions[1]) * 2.7,
-                      height: Number(dimensions[0]) * 2.7,
-                      fill: couleur,
-                      stroke: 'black',
-                      strokeWidth: 1,
-                    });
-                    this.canvas.add(rect);
-                    this.left += Number(dimensions[1]) * 2.7;
-                    if (
-                      Number(dimensions[0]) * 2.7 >
-                      this.longueur_commande_max
-                    )
-                      this.longueur_commande_max = Number(dimensions[0]) * 2.7;
+                    colis.push(Object.assign({}, article));
                   }
                 });
+                console.log(colis);
               }
+              let i = 0;
+              while (colis.length > 0) {
+                if (!lignes[i]) {
+                  lignes.push({
+                    longueur: 0,
+                    largeur: this.vehicule.largeur * 2.7,
+                    hauteur: this.vehicule.hauteur * 2.7,
+                    articles: [],
+                  });
+                }
+                var packer = new (charger as any)(
+                  lignes[i].largeur,
+                  lignes[i].hauteur
+                );
+                packer.fit(colis, lignes[i]);
+                lignes[i].articles.forEach((article: any) => {
+                  let index = colis.findIndex(
+                    (coli: any) => coli.id === article.id
+                  );
+                  colis.splice(index, 1);
+                });
+                i++;
+              }
+              console.log(lignes);
+              lignes[1].articles.forEach((article: any) => {
+                const rect = new fabric.Rect({
+                  top: article.fit.y,
+                  left: article.fit.x,
+                  width: article.largeur,
+                  height: article.hauteur,
+                  fill: article.couleur,
+                  stroke: 'black',
+                  strokeWidth: 1,
+                });
+                rows.add(rect);
+              });
+              let top = 0
+              lignes.forEach((ligne: any) => {
+                let longueur = 0;
+                ligne.articles.forEach((article: any) => {
+                  if (longueur < article.longueur) {
+                    longueur = article.longueur;
+                  }
+                  const rect = new fabric.Rect({
+                    top: top,
+                    left: article.fit.x,
+                    width: article.largeur,
+                    height: article.longueur,
+                    fill: article.couleur,
+                    stroke: 'black',
+                    strokeWidth: 1,
+                  });
+                  this.canvas.add(rect);
+                });
+                ligne.longueur = longueur;
+                top += longueur;
+              });
             });
         });
     }
@@ -422,7 +521,76 @@ export class PlanChargementComponent implements OnInit {
   get statusVehicule() {
     return this.vehiculeEstAffiche ? 'show' : 'hide';
   }
+
+  async drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(
+      this.listeCommandes,
+      event.previousIndex,
+      event.currentIndex
+    );
+    let idCommandes = '';
+    for (let i = 0; i < this.listeCommandes.length; i++) {
+      const commande = this.listeCommandes[i];
+      idCommandes = commande.id + '/' + idCommandes;
+    }
+    idCommandes = idCommandes.slice(0, -1);
+    this.mission.idCommandes = idCommandes;
+    console.log(idCommandes);
+    await this.servicePlanChargement
+      .modifierIdCommandesDansMission(this.mission.id, idCommandes)
+      .toPromise();
+  }
 }
+
+function charger(this: any, largeur: number, hauteur: number) {
+  this.init(largeur, hauteur);
+}
+
+charger.prototype = {
+  init: function (largeur: number, hauteur: number) {
+    this.root = { x: 0, y: 0, largeur: largeur, hauteur: hauteur };
+  },
+
+  fit: function (blocks: any, ligne: any) {
+    var n, node, block;
+    for (n = 0; n < blocks.length; n++) {
+      block = blocks[n];
+      if (
+        (node = this.chercherNoeud(this.root, block.largeur, block.hauteur))
+      ) {
+        block.fit = this.diviserNoeud(node, block.largeur, block.hauteur);
+        ligne.articles.push(block);
+      }
+    }
+  },
+
+  chercherNoeud: function (root: any, largeur: number, hauteur: number) {
+    if (root.used)
+      return (
+        this.chercherNoeud(root.right, largeur, hauteur) ||
+        this.chercherNoeud(root.down, largeur, hauteur)
+      );
+    else if (largeur <= root.largeur && hauteur <= root.hauteur) return root;
+    else return null;
+  },
+
+  diviserNoeud: function (node: any, largeur: number, hauteur: number) {
+    node.used = true;
+    node.down = {
+      x: node.x,
+      y: node.y + hauteur,
+      largeur: node.largeur,
+      hauteur: node.hauteur - hauteur,
+    };
+    node.right = {
+      x: node.x + largeur,
+      y: node.y,
+      largeur: node.largeur - largeur,
+      hauteur: hauteur,
+    };
+    return node;
+  },
+};
 
 export interface tableMissions {
   //inteface pour charger le table mission

@@ -71,11 +71,84 @@ p {
 .legend {
   position: absolute;
   top: 100px;
-  right: 75px;
+  left: 75px;
 }
 
 .mat-row {
   cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.position {
+  width: 100%;
+}
+.example-list {
+  min-height: 55px;
+  display: block;
+  overflow: hidden;
+}
+
+.example-box {
+  padding: 5px 0px;
+  border-bottom: solid 1px #cce0fa;
+  color: #cce0fa(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  font-size: 13px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  color: #d7e6fb;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.example-handle {
+  position: relative;
+  color: black;
+  cursor: grab;
+  margin-left: 10px;
+  font-size: 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+#canva {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 //pour mobile
