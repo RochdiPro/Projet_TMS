@@ -94,6 +94,10 @@ export class PlanChargementComponent implements OnInit {
 
   listeCommandes: any = [];
 
+  lignes: any;
+
+  indexLigne = 0;
+
   // utilisée pour afficher le div vehicule
   vehiculeEstAffiche = false;
 
@@ -199,10 +203,15 @@ export class PlanChargementComponent implements OnInit {
             this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
           container.style.height = h + 'px'; //definission du hauteur du contenaire
 
-          let canva: any = document.getElementById('canva');
-          while (canva.firstChild) {
+          let divTop: any = document.getElementById('vueTop');
+          while (divTop.firstChild) {
             //reinitialiser le canva avant de dessiner
-            canva.removeChild(canva.firstChild);
+            divTop.removeChild(divTop.firstChild);
+          }
+          let divLigne: any = document.getElementById('vueLigne');
+          while (divLigne.firstChild) {
+            //reinitialiser le canva avant de dessiner
+            divLigne.removeChild(divLigne.firstChild);
           }
           let idCommandes = this.mission.idCommandes;
           idCommandes = idCommandes.split('/');
@@ -212,35 +221,41 @@ export class PlanChargementComponent implements OnInit {
           this.longueur_commande_max = 0;
           this.longueur_restant = this.vehicule.longueur * 2.7; //reinitialisation du longueur et largeur restants
           this.largeur_restant = this.vehicule.largeur * 2.7;
-          let div = document.getElementById('canva');
-          canva = document.createElement('canvas'); //creation du canva
+          let canva = document.createElement('canvas'); //creation du canva
           canva.id = 'canvas';
-          canva.style.zIndex = 8;
+          canva.style.zIndex = '8';
           canva.style.border = '4px solid';
-          canva.style.transform =
-            'translate(0, + ' + this.vehicule.longueur * 2.7 + ')'; // reset where 0,0 is located
-          canva.style.transform = 'scale(1, -1)'; // invert
-          div.appendChild(canva);
+          divTop.appendChild(canva);
+          this.canvas = new fabric.Canvas('canvas', {
+            //definition du hauteur et largeur du canva
+            width: this.vehicule.largeur * 2.7,
+            height: this.vehicule.longueur * 2.7,
+            selection: false,
+          });
 
           let row = document.createElement('canvas'); //creation du canva
           row.id = 'row';
           row.style.zIndex = '8';
           row.style.border = '4px solid';
-
-          div.appendChild(row);
-          this.canvas = new fabric.StaticCanvas('canvas', {
-            //definition du hauteur et largeur du canva
-            width: this.vehicule.largeur * 2.7,
-            height: this.vehicule.longueur * 2.7,
-          });
-          let rows = new fabric.StaticCanvas('row', {
+          divLigne.appendChild(row);
+          let rows = new fabric.Canvas('row', {
             //definition du hauteur et largeur du canva
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.hauteur * 2.7,
+            selection: false,
           });
+          let lignes: any = [
+            {
+              longueur: 0,
+              largeur: this.vehicule.largeur * 2.7,
+              hauteur: this.vehicule.hauteur * 2.7,
+              articles: [],
+            },
+          ];
           this.servicePlanChargement
             .listeColisParMission(this.mission.id)
             .subscribe(async (listeColis) => {
+              let colis: any = [];
               for (let i = 0; i < idCommandes.length; i++) {
                 this.commande = await this.servicePlanChargement
                   .commande(idCommandes[i])
@@ -285,37 +300,126 @@ export class PlanChargementComponent implements OnInit {
                 articles.forEach((article: any) => {
                   //placement des articles dans le canva
                   let dimensions = article.dimensions.split('x');
+                  let longueur = Number(dimensions[0]) * 2.7;
+                  let largeur = Number(dimensions[1]) * 2.7;
+                  let hauteur = Number(dimensions[2]) * 2.7;
+                  article.longueur = longueur;
+                  article.largeur = largeur;
+                  article.hauteur = hauteur;
+                  article.couleur = couleur;
                   let nbrArticles = article.nombrePack;
                   for (let j = 0; j < nbrArticles; j++) {
-                    this.largeur_restant -= Number(dimensions[1]) * 2.7;
-                    if (this.largeur_restant < 0) {
-                      this.largeur_restant =
-                        this.vehicule.largeur * 2.7 -
-                        Number(dimensions[1]) * 2.7;
-                      this.left = 0;
-                      this.top += this.longueur_commande_max;
-                      this.longueur_restant -= this.longueur_commande_max;
-                      this.longueur_commande_max = 0;
-                    }
-                    const rect = new fabric.Rect({
-                      top: this.top,
-                      left: this.left,
-                      width: Number(dimensions[1]) * 2.7,
-                      height: Number(dimensions[0]) * 2.7,
-                      fill: couleur,
-                      stroke: 'black',
-                      strokeWidth: 1,
-                    });
-                    this.canvas.add(rect);
-                    this.left += Number(dimensions[1]) * 2.7;
-                    if (
-                      Number(dimensions[0]) * 2.7 >
-                      this.longueur_commande_max
-                    )
-                      this.longueur_commande_max = Number(dimensions[0]) * 2.7;
+                    colis.push(Object.assign({}, article));
                   }
                 });
+                console.log(colis);
               }
+              let i = 0;
+              while (colis.length > 0) {
+                if (!lignes[i]) {
+                  lignes.push({
+                    longueur: 0,
+                    largeur: this.vehicule.largeur * 2.7,
+                    hauteur: this.vehicule.hauteur * 2.7,
+                    articles: [],
+                  });
+                }
+                var packer = new (charger as any)(
+                  lignes[i].largeur,
+                  lignes[i].hauteur
+                );
+                packer.fit(colis, lignes[i]);
+                lignes[i].articles.forEach((article: any) => {
+                  let index = colis.findIndex(
+                    (coli: any) => coli.id === article.id
+                  );
+                  colis.splice(index, 1);
+                });
+                i++;
+              }
+              this.lignes = lignes;
+              this.indexLigne = 0;
+              lignes[0].articles.forEach((article: any) => {
+                const rect = new fabric.Rect({
+                  originX: 'center',
+                  originY: 'center',
+                  width: article.largeur,
+                  height: article.hauteur,
+                  fill: article.couleur,
+                  stroke: 'black',
+                  strokeWidth: 1,
+                  lockUniScaling: true,
+                });
+                var text = new fabric.Text(article.emballage, {
+                  fontSize: 10,
+                  originX: 'center',
+                  originY: 'center',
+                });
+
+                var group = new fabric.Group([rect, text], {
+                  top:
+                    this.vehicule.hauteur * 2.7 -
+                    article.hauteur -
+                    article.fit.y,
+                  left: article.fit.x,
+                });
+                group.controls = {
+                  ...fabric.Group.prototype.controls,
+                  mtr: new fabric.Control({ visible: false }),
+                  mt: new fabric.Control({ visible: false }),
+                  mb: new fabric.Control({ visible: false }),
+                  ml: new fabric.Control({ visible: false }),
+                  mr: new fabric.Control({ visible: false }),
+                  bl: new fabric.Control({ visible: false }),
+                  br: new fabric.Control({ visible: false }),
+                  tl: new fabric.Control({ visible: false }),
+                  tr: new fabric.Control({ visible: false }),
+                };
+                rows.add(group);
+              });
+              let top = 0;
+              lignes.forEach((ligne: any) => {
+                let longueur = 0;
+                ligne.articles.forEach((article: any) => {
+                  if (longueur < article.longueur) {
+                    longueur = article.longueur;
+                  }
+                  const rect = new fabric.Rect({
+                    originX: 'center',
+                    originY: 'center',
+                    width: article.largeur,
+                    height: article.longueur,
+                    fill: article.couleur,
+                    stroke: 'black',
+                    strokeWidth: 1,
+                  });
+                  var text = new fabric.Text(article.emballage, {
+                    fontSize: 10,
+                    originX: 'center',
+                    originY: 'center',
+                  });
+
+                  var group = new fabric.Group([rect, text], {
+                    top: top,
+                    left: article.fit.x,
+                  });
+                  group.controls = {
+                    ...fabric.Rect.prototype.controls,
+                    mtr: new fabric.Control({ visible: false }),
+                    mt: new fabric.Control({ visible: false }),
+                    mb: new fabric.Control({ visible: false }),
+                    ml: new fabric.Control({ visible: false }),
+                    mr: new fabric.Control({ visible: false }),
+                    bl: new fabric.Control({ visible: false }),
+                    br: new fabric.Control({ visible: false }),
+                    tl: new fabric.Control({ visible: false }),
+                    tr: new fabric.Control({ visible: false }),
+                  };
+                  this.canvas.add(group);
+                });
+                ligne.longueur = longueur;
+                top += longueur;
+              });
             });
         });
     } else {
@@ -327,10 +431,15 @@ export class PlanChargementComponent implements OnInit {
             this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
           container.style.height = h + 'px'; //definission du hauteur du contenaire
 
-          let canva: any = document.getElementById('canva');
-          while (canva.firstChild) {
+          let divTop: any = document.getElementById('vueTop');
+          while (divTop.firstChild) {
             //reinitialiser le canva avant de dessiner
-            canva.removeChild(canva.firstChild);
+            divTop.removeChild(divTop.firstChild);
+          }
+          let divLigne: any = document.getElementById('vueLigne');
+          while (divLigne.firstChild) {
+            //reinitialiser le canva avant de dessiner
+            divLigne.removeChild(divLigne.firstChild);
           }
           let legend = document.getElementById('legend');
           // while (legend.firstChild) {
@@ -345,30 +454,28 @@ export class PlanChargementComponent implements OnInit {
           this.longueur_commande_max = 0;
           this.longueur_restant = this.vehicule.longueur * 2.7; //reinitialisation du longueur et largeur restants
           this.largeur_restant = this.vehicule.largeur * 2.7;
-          let div = document.getElementById('canva');
-          canva = document.createElement('canvas'); //creation du canva
+          let canva = document.createElement('canvas'); //creation du canva
           canva.id = 'canvas';
-          canva.style.zIndex = 8;
+          canva.style.zIndex = '8';
           canva.style.border = '4px solid';
-          div.appendChild(canva);
-          this.canvas = new fabric.StaticCanvas('canvas', {
+          divTop.appendChild(canva);
+          this.canvas = new fabric.Canvas('canvas', {
             //definition du hauteur et largeur du canva
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.longueur * 2.7,
+            selection: false,
           });
 
           let row = document.createElement('canvas'); //creation du canva
           row.id = 'row';
           row.style.zIndex = '8';
           row.style.border = '4px solid';
-          row.style.transform =
-            'translate(0, + ' + this.vehicule.longueur * 2.7 + ')'; // reset where 0,0 is located
-          row.style.transform = 'scale(1, -1)'; // invert
-          div.appendChild(row);
-          let rows = new fabric.StaticCanvas('row', {
+          divLigne.appendChild(row);
+          let rows = new fabric.Canvas('row', {
             //definition du hauteur et largeur du canva
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.hauteur * 2.7,
+            selection: false,
           });
           let lignes: any = [
             {
@@ -459,20 +566,47 @@ export class PlanChargementComponent implements OnInit {
                 });
                 i++;
               }
-              console.log(lignes);
-              lignes[1].articles.forEach((article: any) => {
+              this.lignes = lignes;
+              this.indexLigne = 0;
+              lignes[0].articles.forEach((article: any) => {
                 const rect = new fabric.Rect({
-                  top: article.fit.y,
-                  left: article.fit.x,
+                  originX: 'center',
+                  originY: 'center',
                   width: article.largeur,
                   height: article.hauteur,
                   fill: article.couleur,
                   stroke: 'black',
                   strokeWidth: 1,
+                  lockUniScaling: true,
                 });
-                rows.add(rect);
+                var text = new fabric.Text(article.emballage, {
+                  fontSize: 12,
+                  originX: 'center',
+                  originY: 'center',
+                });
+
+                var group = new fabric.Group([rect, text], {
+                  top:
+                    this.vehicule.hauteur * 2.7 -
+                    article.hauteur -
+                    article.fit.y,
+                  left: article.fit.x,
+                });
+                group.controls = {
+                  ...fabric.Group.prototype.controls,
+                  mtr: new fabric.Control({ visible: false }),
+                  mt: new fabric.Control({ visible: false }),
+                  mb: new fabric.Control({ visible: false }),
+                  ml: new fabric.Control({ visible: false }),
+                  mr: new fabric.Control({ visible: false }),
+                  bl: new fabric.Control({ visible: false }),
+                  br: new fabric.Control({ visible: false }),
+                  tl: new fabric.Control({ visible: false }),
+                  tr: new fabric.Control({ visible: false }),
+                };
+                rows.add(group);
               });
-              let top = 0
+              let top = 0;
               lignes.forEach((ligne: any) => {
                 let longueur = 0;
                 ligne.articles.forEach((article: any) => {
@@ -480,15 +614,37 @@ export class PlanChargementComponent implements OnInit {
                     longueur = article.longueur;
                   }
                   const rect = new fabric.Rect({
-                    top: top,
-                    left: article.fit.x,
+                    originX: 'center',
+                    originY: 'center',
                     width: article.largeur,
                     height: article.longueur,
                     fill: article.couleur,
                     stroke: 'black',
                     strokeWidth: 1,
                   });
-                  this.canvas.add(rect);
+                  var text = new fabric.Text(article.emballage, {
+                    fontSize: 12,
+                    originX: 'center',
+                    originY: 'center',
+                  });
+
+                  var group = new fabric.Group([rect, text], {
+                    top: top,
+                    left: article.fit.x,
+                  });
+                  group.controls = {
+                    ...fabric.Rect.prototype.controls,
+                    mtr: new fabric.Control({ visible: false }),
+                    mt: new fabric.Control({ visible: false }),
+                    mb: new fabric.Control({ visible: false }),
+                    ml: new fabric.Control({ visible: false }),
+                    mr: new fabric.Control({ visible: false }),
+                    bl: new fabric.Control({ visible: false }),
+                    br: new fabric.Control({ visible: false }),
+                    tl: new fabric.Control({ visible: false }),
+                    tr: new fabric.Control({ visible: false }),
+                  };
+                  this.canvas.add(group);
                 });
                 ligne.longueur = longueur;
                 top += longueur;
@@ -507,6 +663,62 @@ export class PlanChargementComponent implements OnInit {
           this.scroll(vehicule);
         }, 500)
       : this.scroll(vehicule);
+  }
+
+  changerLigne() {
+    let divLigne: any = document.getElementById('vueLigne');
+    while (divLigne.firstChild) {
+      //reinitialiser le canva avant de dessiner
+      divLigne.removeChild(divLigne.firstChild);
+    }
+    let row = document.createElement('canvas'); //creation du canva
+    row.id = 'row';
+    row.style.zIndex = '8';
+    row.style.border = '4px solid';
+    divLigne.appendChild(row);
+    let rows = new fabric.Canvas('row', {
+      //definition du hauteur et largeur du canva
+      width: this.vehicule.largeur * 2.7,
+      height: this.vehicule.hauteur * 2.7,
+      selection: false,
+    });
+    this.lignes[this.indexLigne].articles.forEach((article: any) => {
+      const rect = new fabric.Rect({
+        originX: 'center',
+        originY: 'center',
+        width: article.largeur,
+        height: article.hauteur,
+        fill: article.couleur,
+        stroke: 'black',
+        strokeWidth: 1,
+        lockUniScaling: true,
+      });
+      var text = new fabric.Text(article.emballage, {
+        fontSize: 12,
+        originX: 'center',
+        originY: 'center',
+      });
+
+      var group = new fabric.Group([rect, text], {
+        top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
+        left: article.fit.x,
+      });
+      group.controls = {
+        ...fabric.Group.prototype.controls,
+        mtr: new fabric.Control({ visible: false }),
+        mt: new fabric.Control({ visible: false }),
+        mb: new fabric.Control({ visible: false }),
+        ml: new fabric.Control({ visible: false }),
+        mr: new fabric.Control({ visible: false }),
+        bl: new fabric.Control({ visible: false }),
+        br: new fabric.Control({ visible: false }),
+        tl: new fabric.Control({ visible: false }),
+        tr: new fabric.Control({ visible: false }),
+      };
+
+      rows.add(group);
+    });
+    this.scroll(divLigne);
   }
 
   scroll(el: HTMLElement) {
@@ -539,6 +751,7 @@ export class PlanChargementComponent implements OnInit {
     await this.servicePlanChargement
       .modifierIdCommandesDansMission(this.mission.id, idCommandes)
       .toPromise();
+    this.selectionPlanChargement();
   }
 }
 

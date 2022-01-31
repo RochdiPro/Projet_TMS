@@ -128,10 +128,21 @@
          </div>
       </div>
    </div>
+   <mat-form-field appearance="fill">
+      <mat-label>ligne</mat-label>
+      <mat-select (selectionChange)="changerLigne()" [(value)]="indexLigne">
+         <mat-option *ngFor="let ligne of lignes; let i = index" [value]="i">
+            {{i + 1}}
+         </mat-option>
+      </mat-select>
+   </mat-form-field>
    <img src="assets\images\Layer 0.png">
    <div class="container" id="container">
       <div id="canva">
-         <!-- <canvas id="canvas"></canvas> -->
+         <div id="vueTop">
+         </div>
+         <div id="vueLigne">
+         </div>
       </div>
    </div>
 </div>
