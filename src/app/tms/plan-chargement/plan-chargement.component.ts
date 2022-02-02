@@ -44,6 +44,8 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
   ],
 })
 export class PlanChargementComponent implements OnInit {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
   // date d'aujourdhui
   today = new Date();
   // date initialisée a 00:00 pour eviter le decalage dans le back
@@ -73,36 +75,22 @@ export class PlanChargementComponent implements OnInit {
     'etatMission',
   ]; //les colonne du tableau mission
   dataSource = new MatTableDataSource<tableMissions>();
-  dateRecherche: any;
-  check = true;
-  mission: any;
-  trajet: any;
-  destinations: any = [];
-  destinationsOptimise: any = [];
-  commande: any;
+  dateRecherche: any; //date utilisé dans le filtrage par date
+  check = true; //valeur du checkbox d'activation/desactivation filtrage par date
+  mission: any; //variable qi contient la mission selectionnée
+  vehicule: any; //vehicule selectionnée
 
-  longueur_restant: any;
-  largeur_restant: any;
-  // commande: any;
-  top: any = 0;
-  left: any = 0;
-  longueur_commande_max: any = 0;
-  numCouleur = 0;
-  vehicule: any;
-  // mission: any;
-  canvas: any;
+  listeCommandes: any = []; //liste des commandes qui contient l'info de chaque commande dans une mission
 
-  listeCommandes: any = [];
+  lignes: any; //liste des lignes dans le vehicule (une ligne c'est l'ensemble des articles de guache vers la droite qu'on oeur les voir depuis la vue top)
 
-  lignes: any;
-
-  indexLigne = 0;
+  indexLigne = 0; //index d'une ligne dans la liste des lignes
 
   // utilisée pour afficher le div vehicule
   vehiculeEstAffiche = false;
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  root: { x: number; y: number; largeur: number; hauteur: number }; //le root represente le rectangle que
+  canvas: fabric.StaticCanvas;
+  rows: fabric.Canvas;
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -177,9 +165,10 @@ export class PlanChargementComponent implements OnInit {
     this.filtrerMission();
   }
 
+  // fonction qui permet de selectionner une mission qh'on va afficher son plan de chargement
   selectionnerMission(mission: any) {
     this.mission = mission;
-    this.selectionPlanChargement();
+    this.initialiserCanva();
   }
 
   getRandomColor() {
@@ -190,237 +179,349 @@ export class PlanChargementComponent implements OnInit {
     return '#' + randomColor;
   }
 
-  async selectionPlanChargement() {
-    this.listeCommandes = [];
-    //realiser et dessiner le plan de chargement
-    let container = document.getElementById('container'); //définition du conteneur du canvas
+  // créer canva vide
+  initialiserCanva() {
+    this.lignes = [];
+    let container = document.getElementById('container'); //recuperer le div container qui va contenir notre canva
+    // on teste si c'est une mission avec vehicule privé
     if (this.mission.idChauffeur !== 'null') {
+      // recupérer les données de notre vehicule privée par son matricule
       this.servicePlanChargement
         .vehicule(this.mission.matricule)
         .subscribe((res: any) => {
           this.vehicule = res;
           let h: Number =
-            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
+            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 50; //hauteur du container
+          //(le container va avoir deux canvas un pour la vue du top du camion et l'autre pour la vue de l'arriere).
+          // le hauteur du container c'est la longueur du camion => longueur vue top +
+          // hauteur du camion => longueur du vue arriée + 50 px pour mettre un peut d'espace pour que le canva soit claire
+          // on multiplie les dimensions du vehicule par 2.7 pour convertir du cm ver pixels
           container.style.height = h + 'px'; //definission du hauteur du contenaire
 
-          let divTop: any = document.getElementById('vueTop');
+          let divTop: any = document.getElementById('vueTop'); //recuperer le div 'vueTop'
           while (divTop.firstChild) {
-            //reinitialiser le canva avant de dessiner
+            //supprimer le contenu du div top pour l'initialiser
             divTop.removeChild(divTop.firstChild);
           }
-          let divLigne: any = document.getElementById('vueLigne');
+          let divLigne: any = document.getElementById('vueLigne'); //recuperer le div 'vueTop' ('vueLigne' est la vue de l'arriére)
           while (divLigne.firstChild) {
-            //reinitialiser le canva avant de dessiner
+            //supprimer le contenu du div vueLigne pour l'initialiser
             divLigne.removeChild(divLigne.firstChild);
           }
-          let idCommandes = this.mission.idCommandes;
-          idCommandes = idCommandes.split('/');
-          idCommandes = idCommandes.reverse();
-          this.top = 0;
-          this.left = 0;
-          this.longueur_commande_max = 0;
-          this.longueur_restant = this.vehicule.longueur * 2.7; //reinitialisation du longueur et largeur restants
-          this.largeur_restant = this.vehicule.largeur * 2.7;
-          let canva = document.createElement('canvas'); //creation du canva
-          canva.id = 'canvas';
-          canva.style.zIndex = '8';
-          canva.style.border = '4px solid';
-          divTop.appendChild(canva);
-          this.canvas = new fabric.Canvas('canvas', {
-            //definition du hauteur et largeur du canva
+          let canvaTop = document.createElement('canvas'); //creation du canva du vue top
+          canvaTop.id = 'canvas';
+          canvaTop.style.zIndex = '8';
+          canvaTop.style.border = '4px solid';
+          divTop.appendChild(canvaTop); //on ajoute le canva créé dans le divTop
+          this.canvas = new fabric.StaticCanvas('canvas', {
+            //creation de l'objet canva du vueTop a l'aide du biblio fabric js
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.longueur * 2.7,
             selection: false,
           });
 
-          let row = document.createElement('canvas'); //creation du canva
+          let row = document.createElement('canvas'); //creation du canva vue ligne
           row.id = 'row';
           row.style.zIndex = '8';
           row.style.border = '4px solid';
           divLigne.appendChild(row);
-          let rows = new fabric.Canvas('row', {
-            //definition du hauteur et largeur du canva
+          this.rows = new fabric.Canvas('row', {
+            //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.hauteur * 2.7,
             selection: false,
           });
-          let lignes: any = [
-            {
-              longueur: 0,
-              largeur: this.vehicule.largeur * 2.7,
-              hauteur: this.vehicule.hauteur * 2.7,
-              articles: [],
-            },
-          ];
-          this.servicePlanChargement
-            .listeColisParMission(this.mission.id)
-            .subscribe(async (listeColis) => {
-              let colis: any = [];
-              for (let i = 0; i < idCommandes.length; i++) {
-                this.commande = await this.servicePlanChargement
-                  .commande(idCommandes[i])
-                  .toPromise();
-                let articles = listeColis.filter(
-                  (colis: any) => colis.idCommande == idCommandes[i]
-                );
-                articles = articles.sort((a: any, b: any) =>
-                  Number(a.dimensions.split('x')[0]) *
-                    Number(a.dimensions.split('x')[1]) *
-                    Number(a.dimensions.split('x')[2]) >
-                  Number(b.dimensions.split('x')[0]) *
-                    Number(b.dimensions.split('x')[1]) *
-                    Number(b.dimensions.split('x')[2])
-                    ? 1
-                    : -1
-                );
-                let couleur = this.getRandomColor();
-                this.commande.couleur = couleur;
-                this.listeCommandes.push(this.commande);
-                let legend = document.getElementById('legend'); //creation du legend
-                legend.style.padding = '20px';
-                legend.style.border = '4px solid';
-                // let titre = document.createElement('div');
-                // titre.style.position = 'relative';
-                // titre.style.display = 'flex';
-                // let carreau: any = document.createElement('div');
-                // carreau.style.height = '14px';
-                // carreau.style.width = '14px';
-                // carreau.style.background = couleur;
-                // carreau.style.margin = '5px 5px';
-                // let text = document.createElement('div');
-                // text.style.width = '100px';
-                // text.style.position = 'relative';
-                // text.style.top = '-3px';
-                // text.style.left = '26px';
-                // text.style.fontSize = 'medium';
-                // text.innerHTML = this.commande.nomClient;
-                // titre.appendChild(carreau);
-                // titre.appendChild(text);
-                // legend.appendChild(titre);
-                articles.forEach((article: any) => {
-                  //placement des articles dans le canva
-                  let dimensions = article.dimensions.split('x');
-                  let longueur = Number(dimensions[0]) * 2.7;
-                  let largeur = Number(dimensions[1]) * 2.7;
-                  let hauteur = Number(dimensions[2]) * 2.7;
-                  article.longueur = longueur;
-                  article.largeur = largeur;
-                  article.hauteur = hauteur;
-                  article.couleur = couleur;
-                  let nbrArticles = article.nombrePack;
-                  for (let j = 0; j < nbrArticles; j++) {
-                    colis.push(Object.assign({}, article));
-                  }
-                });
-                console.log(colis);
+          let snap = 5; //Pixels to snap
+          let canvasWidth = this.vehicule.largeur * 2.7;
+          let canvasHeight = this.vehicule.hauteur * 2.7;
+          let rows = this.rows;
+          this.rows.on('object:moving', function (options: any) {
+            // Sets corner position coordinates based on current angle, width and height
+            options.target.setCoords();
+
+            // Don't allow objects off the canvas
+            if (options.target.left < snap) {
+              options.target.left = 0;
+            }
+
+            if (options.target.top < snap) {
+              options.target.top = 0;
+            }
+
+            if (
+              options.target.getScaledWidth() + options.target.left >
+              canvasWidth - snap
+            ) {
+              options.target.left =
+                canvasWidth - options.target.getScaledWidth();
+            }
+
+            if (
+              options.target.getScaledHeight() + options.target.top >
+              canvasHeight - snap
+            ) {
+              options.target.top =
+                canvasHeight - options.target.getScaledHeight();
+            }
+
+            // Loop through objects
+            rows.forEachObject(function (obj) {
+              if (obj === options.target) return;
+
+              // If objects intersect
+              if (
+                options.target.isContainedWithinObject(obj) ||
+                options.target.intersectsWithObject(obj) ||
+                obj.isContainedWithinObject(options.target)
+              ) {
+                var distX =
+                  (obj.left + obj.getScaledWidth()) / 2 -
+                  (options.target.left + options.target.getScaledWidth()) / 2;
+                var distY =
+                  (obj.top + obj.getScaledHeight()) / 2 -
+                  (options.target.top + options.target.getScaledHeight()) / 2;
+
+                // Set new position
+                findNewPos(distX, distY, options.target, obj);
               }
-              let i = 0;
-              while (colis.length > 0) {
-                if (!lignes[i]) {
-                  lignes.push({
-                    longueur: 0,
-                    largeur: this.vehicule.largeur * 2.7,
-                    hauteur: this.vehicule.hauteur * 2.7,
-                    articles: [],
-                  });
+
+              // Snap objects to each other horizontally
+
+              // If bottom points are on same Y axis
+              if (
+                Math.abs(
+                  options.target.top +
+                    options.target.getScaledHeight() -
+                    (obj.top + obj.getScaledHeight())
+                ) < snap
+              ) {
+                // Snap target BL to object BR
+                if (
+                  Math.abs(
+                    options.target.left - (obj.left + obj.getScaledWidth())
+                  ) < snap
+                ) {
+                  options.target.left = obj.left + obj.getScaledWidth();
+                  options.target.top =
+                    obj.top +
+                    obj.getScaledHeight() -
+                    options.target.getScaledHeight();
                 }
-                var packer = new (charger as any)(
-                  lignes[i].largeur,
-                  lignes[i].hauteur
-                );
-                packer.fit(colis, lignes[i]);
-                lignes[i].articles.forEach((article: any) => {
-                  let index = colis.findIndex(
-                    (coli: any) => coli.id === article.id
-                  );
-                  colis.splice(index, 1);
-                });
-                i++;
+
+                // Snap target BR to object BL
+                if (
+                  Math.abs(
+                    options.target.left +
+                      options.target.getScaledWidth() -
+                      obj.left
+                  ) < snap
+                ) {
+                  options.target.left =
+                    obj.left - options.target.getScaledWidth();
+                  options.target.top =
+                    obj.top +
+                    obj.getScaledHeight() -
+                    options.target.getScaledHeight();
+                }
               }
-              this.lignes = lignes;
-              this.indexLigne = 0;
-              lignes[0].articles.forEach((article: any) => {
-                const rect = new fabric.Rect({
-                  originX: 'center',
-                  originY: 'center',
-                  width: article.largeur,
-                  height: article.hauteur,
-                  fill: article.couleur,
-                  stroke: 'black',
-                  strokeWidth: 1,
-                  lockUniScaling: true,
-                });
-                var text = new fabric.Text(article.emballage, {
-                  fontSize: 10,
-                  originX: 'center',
-                  originY: 'center',
-                });
 
-                var group = new fabric.Group([rect, text], {
-                  top:
-                    this.vehicule.hauteur * 2.7 -
-                    article.hauteur -
-                    article.fit.y,
-                  left: article.fit.x,
-                });
-                group.controls = {
-                  ...fabric.Group.prototype.controls,
-                  mtr: new fabric.Control({ visible: false }),
-                  mt: new fabric.Control({ visible: false }),
-                  mb: new fabric.Control({ visible: false }),
-                  ml: new fabric.Control({ visible: false }),
-                  mr: new fabric.Control({ visible: false }),
-                  bl: new fabric.Control({ visible: false }),
-                  br: new fabric.Control({ visible: false }),
-                  tl: new fabric.Control({ visible: false }),
-                  tr: new fabric.Control({ visible: false }),
-                };
-                rows.add(group);
-              });
-              let top = 0;
-              lignes.forEach((ligne: any) => {
-                let longueur = 0;
-                ligne.articles.forEach((article: any) => {
-                  if (longueur < article.longueur) {
-                    longueur = article.longueur;
-                  }
-                  const rect = new fabric.Rect({
-                    originX: 'center',
-                    originY: 'center',
-                    width: article.largeur,
-                    height: article.longueur,
-                    fill: article.couleur,
-                    stroke: 'black',
-                    strokeWidth: 1,
-                  });
-                  var text = new fabric.Text(article.emballage, {
-                    fontSize: 10,
-                    originX: 'center',
-                    originY: 'center',
-                  });
+              // If top points are on same Y axis
+              if (Math.abs(options.target.top - obj.top) < snap) {
+                // Snap target TL to object TR
+                if (
+                  Math.abs(
+                    options.target.left - (obj.left + obj.getScaledWidth())
+                  ) < snap
+                ) {
+                  options.target.left = obj.left + obj.getScaledWidth();
+                  options.target.top = obj.top;
+                }
 
-                  var group = new fabric.Group([rect, text], {
-                    top: top,
-                    left: article.fit.x,
-                  });
-                  group.controls = {
-                    ...fabric.Rect.prototype.controls,
-                    mtr: new fabric.Control({ visible: false }),
-                    mt: new fabric.Control({ visible: false }),
-                    mb: new fabric.Control({ visible: false }),
-                    ml: new fabric.Control({ visible: false }),
-                    mr: new fabric.Control({ visible: false }),
-                    bl: new fabric.Control({ visible: false }),
-                    br: new fabric.Control({ visible: false }),
-                    tl: new fabric.Control({ visible: false }),
-                    tr: new fabric.Control({ visible: false }),
-                  };
-                  this.canvas.add(group);
-                });
-                ligne.longueur = longueur;
-                top += longueur;
-              });
+                // Snap target TR to object TL
+                if (
+                  Math.abs(
+                    options.target.left +
+                      options.target.getScaledWidth() -
+                      obj.left
+                  ) < snap
+                ) {
+                  options.target.left =
+                    obj.left - options.target.getScaledWidth();
+                  options.target.top = obj.top;
+                }
+              }
+
+              // Snap objects to each other vertically
+
+              // If right points are on same X axis
+              if (
+                Math.abs(
+                  options.target.left +
+                    options.target.getScaledWidth() -
+                    (obj.left + obj.getScaledWidth())
+                ) < snap
+              ) {
+                // Snap target TR to object BR
+                if (
+                  Math.abs(
+                    options.target.top - (obj.top + obj.getScaledHeight())
+                  ) < snap
+                ) {
+                  options.target.left =
+                    obj.left +
+                    obj.getScaledWidth() -
+                    options.target.getScaledWidth();
+                  options.target.top = obj.top + obj.getScaledHeight();
+                }
+
+                // Snap target BR to object TR
+                if (
+                  Math.abs(
+                    options.target.top +
+                      options.target.getScaledHeight() -
+                      obj.top
+                  ) < snap
+                ) {
+                  options.target.left =
+                    obj.left +
+                    obj.getScaledWidth() -
+                    options.target.getScaledWidth();
+                  options.target.top =
+                    obj.top - options.target.getScaledHeight();
+                }
+              }
+
+              // If left points are on same X axis
+              if (Math.abs(options.target.left - obj.left) < snap) {
+                // Snap target TL to object BL
+                if (
+                  Math.abs(
+                    options.target.top - (obj.top + obj.getScaledHeight())
+                  ) < snap
+                ) {
+                  options.target.left = obj.left;
+                  options.target.top = obj.top + obj.getScaledHeight();
+                }
+
+                // Snap target BL to object TL
+                if (
+                  Math.abs(
+                    options.target.top +
+                      options.target.getScaledHeight() -
+                      obj.top
+                  ) < snap
+                ) {
+                  options.target.left = obj.left;
+                  options.target.top =
+                    obj.top - options.target.getScaledHeight();
+                }
+              }
             });
+
+            options.target.setCoords();
+
+            // If objects still overlap
+
+            var outerAreaLeft: any = null,
+              outerAreaTop: any = null,
+              outerAreaRight: any = null,
+              outerAreaBottom: any = null;
+
+            rows.forEachObject(function (obj) {
+              if (obj === options.target) return;
+
+              if (
+                options.target.isContainedWithinObject(obj) ||
+                options.target.intersectsWithObject(obj) ||
+                obj.isContainedWithinObject(options.target)
+              ) {
+                var intersectLeft = null,
+                  intersectTop = null,
+                  intersectWidth = null,
+                  intersectHeight = null,
+                  intersectSize = null,
+                  targetLeft = options.target.left,
+                  targetRight = targetLeft + options.target.getScaledWidth(),
+                  targetTop = options.target.top,
+                  targetBottom = targetTop + options.target.getScaledHeight(),
+                  objectLeft = obj.left,
+                  objectRight = objectLeft + obj.getScaledWidth(),
+                  objectTop = obj.top,
+                  objectBottom = objectTop + obj.getScaledHeight();
+
+                // Find intersect information for X axis
+                if (targetLeft >= objectLeft && targetLeft <= objectRight) {
+                  intersectLeft = targetLeft;
+                  intersectWidth =
+                    obj.getScaledWidth() - (intersectLeft - objectLeft);
+                } else if (
+                  objectLeft >= targetLeft &&
+                  objectLeft <= targetRight
+                ) {
+                  intersectLeft = objectLeft;
+                  intersectWidth =
+                    options.target.getScaledWidth() -
+                    (intersectLeft - targetLeft);
+                }
+
+                // Find intersect information for Y axis
+                if (targetTop >= objectTop && targetTop <= objectBottom) {
+                  intersectTop = targetTop;
+                  intersectHeight =
+                    obj.getScaledHeight() - (intersectTop - objectTop);
+                } else if (
+                  objectTop >= targetTop &&
+                  objectTop <= targetBottom
+                ) {
+                  intersectTop = objectTop;
+                  intersectHeight =
+                    options.target.getScaledHeight() -
+                    (intersectTop - targetTop);
+                }
+
+                // Find intersect size (this will be 0 if objects are touching but not overlapping)
+                if (intersectWidth > 0 && intersectHeight > 0) {
+                  intersectSize = intersectWidth * intersectHeight;
+                }
+
+                // Set outer snapping area
+                if (obj.left < outerAreaLeft || outerAreaLeft == null) {
+                  outerAreaLeft = obj.left;
+                }
+
+                if (obj.top < outerAreaTop || outerAreaTop == null) {
+                  outerAreaTop = obj.top;
+                }
+
+                if (
+                  obj.left + obj.getScaledWidth() > outerAreaRight ||
+                  outerAreaRight == null
+                ) {
+                  outerAreaRight = obj.left + obj.getScaledWidth();
+                }
+
+                if (
+                  obj.top + obj.getScaledHeight() > outerAreaBottom ||
+                  outerAreaBottom == null
+                ) {
+                  outerAreaBottom = obj.top + obj.getScaledHeight();
+                }
+
+                // If objects are intersecting, reposition outside all shapes which touch
+                if (intersectSize) {
+                  var distX =
+                    outerAreaRight / 2 -
+                    (options.target.left + options.target.getScaledWidth()) / 2;
+                  var distY =
+                    outerAreaBottom / 2 -
+                    (options.target.top + options.target.getScaledHeight()) / 2;
+
+                  // Set new position
+                  findNewPos(distX, distY, options.target, obj);
+                }
+              }
+            });
+          });
         });
     } else {
       this.servicePlanChargement
@@ -441,25 +542,12 @@ export class PlanChargementComponent implements OnInit {
             //reinitialiser le canva avant de dessiner
             divLigne.removeChild(divLigne.firstChild);
           }
-          let legend = document.getElementById('legend');
-          // while (legend.firstChild) {
-          //   //reinitialiser le legend avant de dessiner
-          //   legend.removeChild(legend.firstChild);
-          // }
-          let idCommandes = this.mission.idCommandes;
-          idCommandes = idCommandes.split('/');
-          idCommandes = idCommandes.reverse();
-          this.top = 0;
-          this.left = 0;
-          this.longueur_commande_max = 0;
-          this.longueur_restant = this.vehicule.longueur * 2.7; //reinitialisation du longueur et largeur restants
-          this.largeur_restant = this.vehicule.largeur * 2.7;
           let canva = document.createElement('canvas'); //creation du canva
           canva.id = 'canvas';
           canva.style.zIndex = '8';
           canva.style.border = '4px solid';
           divTop.appendChild(canva);
-          this.canvas = new fabric.Canvas('canvas', {
+          this.canvas = new fabric.StaticCanvas('canvas', {
             //definition du hauteur et largeur du canva
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.longueur * 2.7,
@@ -471,185 +559,303 @@ export class PlanChargementComponent implements OnInit {
           row.style.zIndex = '8';
           row.style.border = '4px solid';
           divLigne.appendChild(row);
-          let rows = new fabric.Canvas('row', {
+          this.rows = new fabric.Canvas('row', {
             //definition du hauteur et largeur du canva
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.hauteur * 2.7,
             selection: false,
           });
-          let lignes: any = [
-            {
-              longueur: 0,
-              largeur: this.vehicule.largeur * 2.7,
-              hauteur: this.vehicule.hauteur * 2.7,
-              articles: [],
-            },
-          ];
-          this.servicePlanChargement
-            .listeColisParMission(this.mission.id)
-            .subscribe(async (listeColis) => {
-              let colis: any = [];
-              for (let i = 0; i < idCommandes.length; i++) {
-                this.commande = await this.servicePlanChargement
-                  .commande(idCommandes[i])
-                  .toPromise();
+          let snap = 5; //Pixels to snap
+          let canvasWidth = this.vehicule.largeur * 2.7;
+          let canvasHeight = this.vehicule.hauteur * 2.7;
+          let rows = this.rows;
+          this.rows.on('object:moving', function (options) {
+            // Sets corner position coordinates based on current angle, width and height
+            options.target.setCoords();
 
-                let articles = listeColis.filter(
-                  (colis: any) => colis.idCommande == idCommandes[i]
-                );
-                articles = articles.sort((a: any, b: any) =>
-                  Number(a.dimensions.split('x')[0]) *
-                    Number(a.dimensions.split('x')[1]) *
-                    Number(a.dimensions.split('x')[2]) <
-                  Number(b.dimensions.split('x')[0]) *
-                    Number(b.dimensions.split('x')[1]) *
-                    Number(b.dimensions.split('x')[2])
-                    ? 1
-                    : -1
-                );
-                let couleur = this.getRandomColor();
-                this.commande.couleur = couleur;
-                this.listeCommandes.push(this.commande);
-                let legend = document.getElementById('legend'); //creation du legend
-                legend.style.padding = '20px';
-                legend.style.border = '4px solid';
-                // let carreau = document.getElementById(this.commande.id);
-                // carreau.style.height = '14px';
-                // carreau.style.width = '14px';
-                // carreau.style.background = couleur;
-                // carreau.style.margin = '5px 5px';
-                console.log(this.listeCommandes);
-                // let text = document.createElement('div');
-                // text.style.width = '100px';
-                // text.style.position = 'relative';
-                // text.style.top = '-3px';
-                // text.style.left = '26px';
-                // text.style.fontSize = 'medium';
-                // text.innerHTML = this.commande.nomClient;
-                articles.forEach((article: any) => {
-                  //placement des articles dans le canva
-                  let dimensions = article.dimensions.split('x');
-                  let longueur = Number(dimensions[0]) * 2.7;
-                  let largeur = Number(dimensions[1]) * 2.7;
-                  let hauteur = Number(dimensions[2]) * 2.7;
-                  article.longueur = longueur;
-                  article.largeur = largeur;
-                  article.hauteur = hauteur;
-                  article.couleur = couleur;
-                  let nbrArticles = article.nombrePack;
-                  for (let j = 0; j < nbrArticles; j++) {
-                    colis.push(Object.assign({}, article));
-                  }
-                });
-                console.log(colis);
+            // Don't allow objects off the canvas
+            if (options.target.left < snap) {
+              options.target.left = 0;
+            }
+
+            if (options.target.top < snap) {
+              options.target.top = 0;
+            }
+
+            if (
+              options.target.getScaledWidth() + options.target.left >
+              canvasWidth - snap
+            ) {
+              options.target.left =
+                canvasWidth - options.target.getScaledWidth();
+            }
+
+            if (
+              options.target.getScaledHeight() + options.target.top >
+              canvasHeight - snap
+            ) {
+              options.target.top =
+                canvasHeight - options.target.getScaledHeight();
+            }
+
+            // Loop through objects
+            rows.forEachObject(function (obj) {
+              if (obj === options.target) return;
+
+              // If objects intersect
+              if (
+                options.target.isContainedWithinObject(obj) ||
+                options.target.intersectsWithObject(obj) ||
+                obj.isContainedWithinObject(options.target)
+              ) {
+                var distX =
+                  (obj.left + obj.getScaledWidth()) / 2 -
+                  (options.target.left + options.target.getScaledWidth()) / 2;
+                var distY =
+                  (obj.top + obj.getScaledHeight()) / 2 -
+                  (options.target.top + options.target.getScaledHeight()) / 2;
+
+                // Set new position
+                findNewPos(distX, distY, options.target, obj);
               }
-              let i = 0;
-              while (colis.length > 0) {
-                if (!lignes[i]) {
-                  lignes.push({
-                    longueur: 0,
-                    largeur: this.vehicule.largeur * 2.7,
-                    hauteur: this.vehicule.hauteur * 2.7,
-                    articles: [],
-                  });
+
+              // Snap objects to each other horizontally
+
+              // If bottom points are on same Y axis
+              if (
+                Math.abs(
+                  options.target.top +
+                    options.target.getScaledHeight() -
+                    (obj.top + obj.getScaledHeight())
+                ) < snap
+              ) {
+                // Snap target BL to object BR
+                if (
+                  Math.abs(
+                    options.target.left - (obj.left + obj.getScaledWidth())
+                  ) < snap
+                ) {
+                  options.target.left = obj.left + obj.getScaledWidth();
+                  options.target.top =
+                    obj.top +
+                    obj.getScaledHeight() -
+                    options.target.getScaledHeight();
                 }
-                var packer = new (charger as any)(
-                  lignes[i].largeur,
-                  lignes[i].hauteur
-                );
-                packer.fit(colis, lignes[i]);
-                lignes[i].articles.forEach((article: any) => {
-                  let index = colis.findIndex(
-                    (coli: any) => coli.id === article.id
-                  );
-                  colis.splice(index, 1);
-                });
-                i++;
+
+                // Snap target BR to object BL
+                if (
+                  Math.abs(
+                    options.target.left +
+                      options.target.getScaledWidth() -
+                      obj.left
+                  ) < snap
+                ) {
+                  options.target.left =
+                    obj.left - options.target.getScaledWidth();
+                  options.target.top =
+                    obj.top +
+                    obj.getScaledHeight() -
+                    options.target.getScaledHeight();
+                }
               }
-              this.lignes = lignes;
-              this.indexLigne = 0;
-              lignes[0].articles.forEach((article: any) => {
-                const rect = new fabric.Rect({
-                  originX: 'center',
-                  originY: 'center',
-                  width: article.largeur,
-                  height: article.hauteur,
-                  fill: article.couleur,
-                  stroke: 'black',
-                  strokeWidth: 1,
-                  lockUniScaling: true,
-                });
-                var text = new fabric.Text(article.emballage, {
-                  fontSize: 12,
-                  originX: 'center',
-                  originY: 'center',
-                });
 
-                var group = new fabric.Group([rect, text], {
-                  top:
-                    this.vehicule.hauteur * 2.7 -
-                    article.hauteur -
-                    article.fit.y,
-                  left: article.fit.x,
-                });
-                group.controls = {
-                  ...fabric.Group.prototype.controls,
-                  mtr: new fabric.Control({ visible: false }),
-                  mt: new fabric.Control({ visible: false }),
-                  mb: new fabric.Control({ visible: false }),
-                  ml: new fabric.Control({ visible: false }),
-                  mr: new fabric.Control({ visible: false }),
-                  bl: new fabric.Control({ visible: false }),
-                  br: new fabric.Control({ visible: false }),
-                  tl: new fabric.Control({ visible: false }),
-                  tr: new fabric.Control({ visible: false }),
-                };
-                rows.add(group);
-              });
-              let top = 0;
-              lignes.forEach((ligne: any) => {
-                let longueur = 0;
-                ligne.articles.forEach((article: any) => {
-                  if (longueur < article.longueur) {
-                    longueur = article.longueur;
-                  }
-                  const rect = new fabric.Rect({
-                    originX: 'center',
-                    originY: 'center',
-                    width: article.largeur,
-                    height: article.longueur,
-                    fill: article.couleur,
-                    stroke: 'black',
-                    strokeWidth: 1,
-                  });
-                  var text = new fabric.Text(article.emballage, {
-                    fontSize: 12,
-                    originX: 'center',
-                    originY: 'center',
-                  });
+              // If top points are on same Y axis
+              if (Math.abs(options.target.top - obj.top) < snap) {
+                // Snap target TL to object TR
+                if (
+                  Math.abs(
+                    options.target.left - (obj.left + obj.getScaledWidth())
+                  ) < snap
+                ) {
+                  options.target.left = obj.left + obj.getScaledWidth();
+                  options.target.top = obj.top;
+                }
 
-                  var group = new fabric.Group([rect, text], {
-                    top: top,
-                    left: article.fit.x,
-                  });
-                  group.controls = {
-                    ...fabric.Rect.prototype.controls,
-                    mtr: new fabric.Control({ visible: false }),
-                    mt: new fabric.Control({ visible: false }),
-                    mb: new fabric.Control({ visible: false }),
-                    ml: new fabric.Control({ visible: false }),
-                    mr: new fabric.Control({ visible: false }),
-                    bl: new fabric.Control({ visible: false }),
-                    br: new fabric.Control({ visible: false }),
-                    tl: new fabric.Control({ visible: false }),
-                    tr: new fabric.Control({ visible: false }),
-                  };
-                  this.canvas.add(group);
-                });
-                ligne.longueur = longueur;
-                top += longueur;
-              });
+                // Snap target TR to object TL
+                if (
+                  Math.abs(
+                    options.target.left +
+                      options.target.getScaledWidth() -
+                      obj.left
+                  ) < snap
+                ) {
+                  options.target.left =
+                    obj.left - options.target.getScaledWidth();
+                  options.target.top = obj.top;
+                }
+              }
+
+              // Snap objects to each other vertically
+
+              // If right points are on same X axis
+              if (
+                Math.abs(
+                  options.target.left +
+                    options.target.getScaledWidth() -
+                    (obj.left + obj.getScaledWidth())
+                ) < snap
+              ) {
+                // Snap target TR to object BR
+                if (
+                  Math.abs(
+                    options.target.top - (obj.top + obj.getScaledHeight())
+                  ) < snap
+                ) {
+                  options.target.left =
+                    obj.left +
+                    obj.getScaledWidth() -
+                    options.target.getScaledWidth();
+                  options.target.top = obj.top + obj.getScaledHeight();
+                }
+
+                // Snap target BR to object TR
+                if (
+                  Math.abs(
+                    options.target.top +
+                      options.target.getScaledHeight() -
+                      obj.top
+                  ) < snap
+                ) {
+                  options.target.left =
+                    obj.left +
+                    obj.getScaledWidth() -
+                    options.target.getScaledWidth();
+                  options.target.top =
+                    obj.top - options.target.getScaledHeight();
+                }
+              }
+
+              // If left points are on same X axis
+              if (Math.abs(options.target.left - obj.left) < snap) {
+                // Snap target TL to object BL
+                if (
+                  Math.abs(
+                    options.target.top - (obj.top + obj.getScaledHeight())
+                  ) < snap
+                ) {
+                  options.target.left = obj.left;
+                  options.target.top = obj.top + obj.getScaledHeight();
+                }
+
+                // Snap target BL to object TL
+                if (
+                  Math.abs(
+                    options.target.top +
+                      options.target.getScaledHeight() -
+                      obj.top
+                  ) < snap
+                ) {
+                  options.target.left = obj.left;
+                  options.target.top =
+                    obj.top - options.target.getScaledHeight();
+                }
+              }
             });
+
+            options.target.setCoords();
+
+            // If objects still overlap
+
+            var outerAreaLeft: any = null,
+              outerAreaTop: any = null,
+              outerAreaRight: any = null,
+              outerAreaBottom: any = null;
+
+            rows.forEachObject(function (obj) {
+              if (obj === options.target) return;
+
+              if (
+                options.target.isContainedWithinObject(obj) ||
+                options.target.intersectsWithObject(obj) ||
+                obj.isContainedWithinObject(options.target)
+              ) {
+                var intersectLeft = null,
+                  intersectTop = null,
+                  intersectWidth = null,
+                  intersectHeight = null,
+                  intersectSize = null,
+                  targetLeft = options.target.left,
+                  targetRight = targetLeft + options.target.getScaledWidth(),
+                  targetTop = options.target.top,
+                  targetBottom = targetTop + options.target.getScaledHeight(),
+                  objectLeft = obj.left,
+                  objectRight = objectLeft + obj.getScaledWidth(),
+                  objectTop = obj.top,
+                  objectBottom = objectTop + obj.getScaledHeight();
+
+                // Find intersect information for X axis
+                if (targetLeft >= objectLeft && targetLeft <= objectRight) {
+                  intersectLeft = targetLeft;
+                  intersectWidth =
+                    obj.getScaledWidth() - (intersectLeft - objectLeft);
+                } else if (
+                  objectLeft >= targetLeft &&
+                  objectLeft <= targetRight
+                ) {
+                  intersectLeft = objectLeft;
+                  intersectWidth =
+                    options.target.getScaledWidth() -
+                    (intersectLeft - targetLeft);
+                }
+
+                // Find intersect information for Y axis
+                if (targetTop >= objectTop && targetTop <= objectBottom) {
+                  intersectTop = targetTop;
+                  intersectHeight =
+                    obj.getScaledHeight() - (intersectTop - objectTop);
+                } else if (
+                  objectTop >= targetTop &&
+                  objectTop <= targetBottom
+                ) {
+                  intersectTop = objectTop;
+                  intersectHeight =
+                    options.target.getScaledHeight() -
+                    (intersectTop - targetTop);
+                }
+
+                // Find intersect size (this will be 0 if objects are touching but not overlapping)
+                if (intersectWidth > 0 && intersectHeight > 0) {
+                  intersectSize = intersectWidth * intersectHeight;
+                }
+
+                // Set outer snapping area
+                if (obj.left < outerAreaLeft || outerAreaLeft == null) {
+                  outerAreaLeft = obj.left;
+                }
+
+                if (obj.top < outerAreaTop || outerAreaTop == null) {
+                  outerAreaTop = obj.top;
+                }
+
+                if (
+                  obj.left + obj.getScaledWidth() > outerAreaRight ||
+                  outerAreaRight == null
+                ) {
+                  outerAreaRight = obj.left + obj.getScaledWidth();
+                }
+
+                if (
+                  obj.top + obj.getScaledHeight() > outerAreaBottom ||
+                  outerAreaBottom == null
+                ) {
+                  outerAreaBottom = obj.top + obj.getScaledHeight();
+                }
+
+                // If objects are intersecting, reposition outside all shapes which touch
+                if (intersectSize) {
+                  var distX =
+                    outerAreaRight / 2 -
+                    (options.target.left + options.target.getScaledWidth()) / 2;
+                  var distY =
+                    outerAreaBottom / 2 -
+                    (options.target.top + options.target.getScaledHeight()) / 2;
+
+                  // Set new position
+                  findNewPos(distX, distY, options.target, obj);
+                }
+              }
+            });
+          });
         });
     }
     let premierChargement;
@@ -665,36 +871,220 @@ export class PlanChargementComponent implements OnInit {
       : this.scroll(vehicule);
   }
 
+  // créer plan chargement mode automatique
+  createPlanChargementAuto() {
+    this.listeCommandes = []; //reinitialiser la liste des commandes
+    this.lignes = [];
+    let idCommandes = this.mission.idCommandes;
+    idCommandes = idCommandes.split('/'); //liste des id de commandes dans une mission
+    idCommandes = idCommandes.reverse(); //on inverse la liste car la derniére commande a livrer va etre la premiére a charger
+    // liste des ligne qui contient chaque ligne comme objet
+    // la liste est initialisé avec une seule ligne qui a longueur de 0 et comme largeur le largeur du vehicule converti en pixels et comme longueur la longuer du vehicule en pixels
+    let lignes: any = [
+      {
+        longueur: 0,
+        largeur: this.vehicule.largeur * 2.7,
+        hauteur: this.vehicule.hauteur * 2.7,
+        articles: [],
+      },
+    ];
+    // recupérer la liste des colis dans une mission
+    this.servicePlanChargement
+      .listeColisParMission(this.mission.id)
+      .subscribe(async (listeColis) => {
+        let colis: any = [];
+        for (let i = 0; i < idCommandes.length; i++) {
+          // pour chaque commande on récupére ses informations
+          let commande = await this.servicePlanChargement
+            .commande(idCommandes[i])
+            .toPromise();
+          //recupérer la liste des article pour chaque commande
+          let articles = listeColis.filter(
+            (colis: any) => colis.idCommande == idCommandes[i]
+          );
+          // on trie les articles d'une commande par leur volume descendant
+          articles = articles.sort((a: any, b: any) =>
+            Number(a.dimensions.split('x')[0]) *
+              Number(a.dimensions.split('x')[1]) *
+              Number(a.dimensions.split('x')[2]) >
+            Number(b.dimensions.split('x')[0]) *
+              Number(b.dimensions.split('x')[1]) *
+              Number(b.dimensions.split('x')[2])
+              ? -1
+              : 1
+          );
+          // donner un couleur pour chaque commande
+          //le couleur va être utiliser pour identifier les articles de chaque commande
+          let couleur = this.getRandomColor();
+          commande.couleur = couleur;
+          this.listeCommandes.push(commande);
+          articles.forEach((article: any) => {
+            //pour chaque article on identifie ses dimensions
+            let dimensions = article.dimensions.split('x');
+            let longueur = Number(dimensions[0]) * 2.7;
+            let largeur = Number(dimensions[1]) * 2.7;
+            let hauteur = Number(dimensions[2]) * 2.7;
+            // on enregistre ces dimensions dans l'objet article
+            article.longueur = longueur;
+            article.largeur = largeur;
+            article.hauteur = hauteur;
+            article.couleur = couleur;
+            let nbrArticles = article.nombrePack; //quantité d'un article dans une commande
+            for (let j = 0; j < nbrArticles; j++) {
+              //pour chaque colis on ajoute ces informations d'article
+              colis.push(Object.assign({}, article)); //on push une copie de l'article car si on push l'objet article, une simple modification dans ce dernier affecte toute la liste
+            }
+          });
+        }
+        // indice du ligne
+        let i = 0;
+        // ce bloc permet de place chaque colis dans la bonne position dans une ligne
+        // tant que la liste des colis n'est pas vide cette boucle s'execute
+        while (colis.length > 0) {
+          // si la ligne avec cet indice n'existe pas on ajoute une nouvelle ligne
+          if (!lignes[i]) {
+            lignes.push({
+              longueur: 0,
+              largeur: this.vehicule.largeur * 2.7,
+              hauteur: this.vehicule.hauteur * 2.7,
+              articles: [],
+            });
+          }
+          // on initialise le root
+          this.initialiserRoot(lignes[i].largeur, lignes[i].hauteur);
+          // on place les colis dans leurs places
+          this.fit(colis, lignes[i]);
+          // pour chaque colis affectée dans une ligne en supprime se colis de la liste des colis non affectées
+          lignes[i].articles.forEach((article: any) => {
+            let index = colis.findIndex((coli: any) => coli.id === article.id);
+            colis.splice(index, 1);
+          });
+          i++;
+        }
+        this.lignes = lignes;
+        // index ligne a afficher
+        this.indexLigne = 0;
+        this.afficherPlanChargement();
+      });
+  }
+
+  // afficher le plan de chargement specifique a une mission
+  afficherPlanChargement() {
+    this.canvas.clear();
+    this.rows.clear();
+    // afficher la premiere ligne
+    this.lignes[0].articles.forEach((article: any) => {
+      // création du rectangle qui presente un colis
+      const rect = new fabric.Rect({
+        originX: 'center',
+        originY: 'center',
+        width: article.largeur - 1,
+        height: article.hauteur - 1,
+        fill: article.couleur,
+        stroke: 'black',
+        strokeWidth: 1,
+        lockUniScaling: true,
+      });
+      // creation du texte qui presente le nom du colis
+      var text = new fabric.Text(article.emballage, {
+        fontSize: 10,
+        originX: 'center',
+        originY: 'center',
+      });
+      // on groupe le retangle et le texte
+      var group = new fabric.Group([rect, text], {
+        top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
+        left: article.fit.x,
+      });
+      group.controls = {
+        ...fabric.Group.prototype.controls,
+        mtr: new fabric.Control({ visible: false }),
+        mt: new fabric.Control({ visible: false }),
+        mb: new fabric.Control({ visible: false }),
+        ml: new fabric.Control({ visible: false }),
+        mr: new fabric.Control({ visible: false }),
+        bl: new fabric.Control({ visible: false }),
+        br: new fabric.Control({ visible: false }),
+        tl: new fabric.Control({ visible: false }),
+        tr: new fabric.Control({ visible: false }),
+      };
+      this.rows.add(group);
+    });
+    let top = 0;
+    this.lignes.forEach((ligne: any) => {
+      let longueur = 0;
+      ligne.articles.forEach((article: any) => {
+        if (longueur < article.longueur) {
+          longueur = article.longueur;
+        }
+        const rect = new fabric.Rect({
+          originX: 'center',
+          originY: 'center',
+          width: article.largeur,
+          height: article.longueur,
+          fill: article.couleur,
+          stroke: 'black',
+          strokeWidth: 1,
+        });
+        var text = new fabric.Text(article.emballage, {
+          fontSize: 10,
+          originX: 'center',
+          originY: 'center',
+        });
+
+        var group = new fabric.Group([rect, text], {
+          top: top,
+          left: article.fit.x,
+        });
+        group.controls = {
+          ...fabric.Rect.prototype.controls,
+          mtr: new fabric.Control({ visible: false }),
+          mt: new fabric.Control({ visible: false }),
+          mb: new fabric.Control({ visible: false }),
+          ml: new fabric.Control({ visible: false }),
+          mr: new fabric.Control({ visible: false }),
+          bl: new fabric.Control({ visible: false }),
+          br: new fabric.Control({ visible: false }),
+          tl: new fabric.Control({ visible: false }),
+          tr: new fabric.Control({ visible: false }),
+        };
+        this.canvas.add(group);
+      });
+      ligne.longueur = longueur;
+      ligne.top = top;
+      top += longueur;
+      ligne.largeur = this.vehicule.largeur * 2.7;
+    });
+
+    let premierChargement;
+    this.vehiculeEstAffiche
+      ? (premierChargement = false)
+      : (premierChargement = true);
+    this.vehiculeEstAffiche = true;
+    let vehicule = document.getElementById('vehicule');
+    premierChargement
+      ? setTimeout(() => {
+          this.scroll(vehicule);
+        }, 500)
+      : this.scroll(vehicule);
+  }
+
   changerLigne() {
     let divLigne: any = document.getElementById('vueLigne');
-    while (divLigne.firstChild) {
-      //reinitialiser le canva avant de dessiner
-      divLigne.removeChild(divLigne.firstChild);
-    }
-    let row = document.createElement('canvas'); //creation du canva
-    row.id = 'row';
-    row.style.zIndex = '8';
-    row.style.border = '4px solid';
-    divLigne.appendChild(row);
-    let rows = new fabric.Canvas('row', {
-      //definition du hauteur et largeur du canva
-      width: this.vehicule.largeur * 2.7,
-      height: this.vehicule.hauteur * 2.7,
-      selection: false,
-    });
+    this.rows.clear();
     this.lignes[this.indexLigne].articles.forEach((article: any) => {
       const rect = new fabric.Rect({
         originX: 'center',
         originY: 'center',
-        width: article.largeur,
-        height: article.hauteur,
+        width: article.largeur - 1,
+        height: article.hauteur - 1,
         fill: article.couleur,
         stroke: 'black',
         strokeWidth: 1,
         lockUniScaling: true,
       });
       var text = new fabric.Text(article.emballage, {
-        fontSize: 12,
+        fontSize: 10,
         originX: 'center',
         originY: 'center',
       });
@@ -716,7 +1106,7 @@ export class PlanChargementComponent implements OnInit {
         tr: new fabric.Control({ visible: false }),
       };
 
-      rows.add(group);
+      this.rows.add(group);
     });
     this.scroll(divLigne);
   }
@@ -751,20 +1141,14 @@ export class PlanChargementComponent implements OnInit {
     await this.servicePlanChargement
       .modifierIdCommandesDansMission(this.mission.id, idCommandes)
       .toPromise();
-    this.selectionPlanChargement();
+    this.createPlanChargementAuto();
   }
-}
 
-function charger(this: any, largeur: number, hauteur: number) {
-  this.init(largeur, hauteur);
-}
-
-charger.prototype = {
-  init: function (largeur: number, hauteur: number) {
+  initialiserRoot(largeur: number, hauteur: number) {
     this.root = { x: 0, y: 0, largeur: largeur, hauteur: hauteur };
-  },
+  }
 
-  fit: function (blocks: any, ligne: any) {
+  fit(blocks: any, ligne: any) {
     var n, node, block;
     for (n = 0; n < blocks.length; n++) {
       block = blocks[n];
@@ -775,9 +1159,9 @@ charger.prototype = {
         ligne.articles.push(block);
       }
     }
-  },
+  }
 
-  chercherNoeud: function (root: any, largeur: number, hauteur: number) {
+  chercherNoeud(root: any, largeur: number, hauteur: number): any {
     if (root.used)
       return (
         this.chercherNoeud(root.right, largeur, hauteur) ||
@@ -785,9 +1169,9 @@ charger.prototype = {
       );
     else if (largeur <= root.largeur && hauteur <= root.hauteur) return root;
     else return null;
-  },
+  }
 
-  diviserNoeud: function (node: any, largeur: number, hauteur: number) {
+  diviserNoeud(node: any, largeur: number, hauteur: number) {
     node.used = true;
     node.down = {
       x: node.x,
@@ -802,8 +1186,18 @@ charger.prototype = {
       hauteur: hauteur,
     };
     return node;
-  },
-};
+  }
+
+  boucle() {
+    for (let i = 0; i < 540; i++) {
+      for (let j = 0; j < 540; j++) {
+        if (j === 539) {
+        }
+        console.log('object');
+      }
+    }
+  }
+}
 
 export interface tableMissions {
   //inteface pour charger le table mission
@@ -819,4 +1213,21 @@ export interface tableMissions {
   etat: String;
   date: Date;
   idMissionsLiees: String;
+}
+
+function findNewPos(distX: any, distY: any, target: any, obj: any) {
+  // See whether to focus on X or Y axis
+  if (Math.abs(distX) > Math.abs(distY)) {
+    if (distX > 0) {
+      target.left = obj.left - target.getScaledWidth();
+    } else {
+      target.left = obj.left + obj.getScaledWidth();
+    }
+  } else {
+    if (distY > 0) {
+      target.top = obj.top - target.getScaledHeight();
+    } else {
+      target.top = obj.top + obj.getScaledHeight();
+    }
+  }
 }
