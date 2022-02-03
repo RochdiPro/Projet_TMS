@@ -89,7 +89,7 @@ export class PlanChargementComponent implements OnInit {
   // utilisée pour afficher le div vehicule
   vehiculeEstAffiche = false;
   root: { x: number; y: number; largeur: number; hauteur: number }; //le root represente le rectangle que
-  canvas: fabric.StaticCanvas;
+  canvas: fabric.Canvas;
   rows: fabric.Canvas;
 
   ngAfterViewInit() {
@@ -213,7 +213,7 @@ export class PlanChargementComponent implements OnInit {
           canvaTop.style.zIndex = '8';
           canvaTop.style.border = '4px solid';
           divTop.appendChild(canvaTop); //on ajoute le canva créé dans le divTop
-          this.canvas = new fabric.StaticCanvas('canvas', {
+          this.canvas = new fabric.Canvas('canvas', {
             //creation de l'objet canva du vueTop a l'aide du biblio fabric js
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.longueur * 2.7,
@@ -231,10 +231,11 @@ export class PlanChargementComponent implements OnInit {
             height: this.vehicule.hauteur * 2.7,
             selection: false,
           });
-          let snap = 5; //Pixels to snap
+          let snap = 2; //Pixels to snap
           let canvasWidth = this.vehicule.largeur * 2.7;
           let canvasHeight = this.vehicule.hauteur * 2.7;
           let rows = this.rows;
+          let canvas = this.canvas;
           this.rows.on('object:moving', function (options: any) {
             // Sets corner position coordinates based on current angle, width and height
             options.target.setCoords();
@@ -521,6 +522,13 @@ export class PlanChargementComponent implements OnInit {
                 }
               }
             });
+            let canvasObject =
+              canvas.getObjects()[
+                (rows.getActiveObject() as unknown as IObjectWithId).id
+              ];
+            canvasObject.left = options.target.left;
+            canvasObject.setCoords();
+            canvas.renderAll();
           });
         });
     } else {
@@ -547,7 +555,7 @@ export class PlanChargementComponent implements OnInit {
           canva.style.zIndex = '8';
           canva.style.border = '4px solid';
           divTop.appendChild(canva);
-          this.canvas = new fabric.StaticCanvas('canvas', {
+          this.canvas = new fabric.Canvas('canvas', {
             //definition du hauteur et largeur du canva
             width: this.vehicule.largeur * 2.7,
             height: this.vehicule.longueur * 2.7,
@@ -565,10 +573,11 @@ export class PlanChargementComponent implements OnInit {
             height: this.vehicule.hauteur * 2.7,
             selection: false,
           });
-          let snap = 5; //Pixels to snap
+          let snap = 2; //Pixels to snap
           let canvasWidth = this.vehicule.largeur * 2.7;
           let canvasHeight = this.vehicule.hauteur * 2.7;
           let rows = this.rows;
+          let canvas = this.canvas;
           this.rows.on('object:moving', function (options) {
             // Sets corner position coordinates based on current angle, width and height
             options.target.setCoords();
@@ -855,6 +864,13 @@ export class PlanChargementComponent implements OnInit {
                 }
               }
             });
+            let canvasObject =
+              canvas.getObjects()[
+                (rows.getActiveObject() as unknown as IObjectWithId).id
+              ];
+            canvasObject.left = options.target.left;
+            canvasObject.setCoords();
+            canvas.renderAll();
           });
         });
     }
@@ -972,6 +988,7 @@ export class PlanChargementComponent implements OnInit {
   afficherPlanChargement() {
     this.canvas.clear();
     this.rows.clear();
+    let idArticleRow = 0;
     // afficher la premiere ligne
     this.lignes[0].articles.forEach((article: any) => {
       // création du rectangle qui presente un colis
@@ -995,7 +1012,8 @@ export class PlanChargementComponent implements OnInit {
       var group = new fabric.Group([rect, text], {
         top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
         left: article.fit.x,
-      });
+        id: idArticleRow,
+      } as IGroupWithId);
       group.controls = {
         ...fabric.Group.prototype.controls,
         mtr: new fabric.Control({ visible: false }),
@@ -1009,8 +1027,10 @@ export class PlanChargementComponent implements OnInit {
         tr: new fabric.Control({ visible: false }),
       };
       this.rows.add(group);
+      idArticleRow++;
     });
     let top = 0;
+    let idArticleCanva = 0;
     this.lignes.forEach((ligne: any) => {
       let longueur = 0;
       ligne.articles.forEach((article: any) => {
@@ -1035,7 +1055,8 @@ export class PlanChargementComponent implements OnInit {
         var group = new fabric.Group([rect, text], {
           top: top,
           left: article.fit.x,
-        });
+          id: idArticleCanva,
+        } as IGroupWithId);
         group.controls = {
           ...fabric.Rect.prototype.controls,
           mtr: new fabric.Control({ visible: false }),
@@ -1049,6 +1070,7 @@ export class PlanChargementComponent implements OnInit {
           tr: new fabric.Control({ visible: false }),
         };
         this.canvas.add(group);
+        idArticleCanva++;
       });
       ligne.longueur = longueur;
       ligne.top = top;
@@ -1072,6 +1094,11 @@ export class PlanChargementComponent implements OnInit {
   changerLigne() {
     let divLigne: any = document.getElementById('vueLigne');
     this.rows.clear();
+    let nombreArticleDansLignesPrecedentes = 0;
+    for (let i = 0; i < this.indexLigne; i++) {
+      nombreArticleDansLignesPrecedentes += this.lignes[i].articles.length;
+    }
+    let idArticle = nombreArticleDansLignesPrecedentes;
     this.lignes[this.indexLigne].articles.forEach((article: any) => {
       const rect = new fabric.Rect({
         originX: 'center',
@@ -1092,7 +1119,9 @@ export class PlanChargementComponent implements OnInit {
       var group = new fabric.Group([rect, text], {
         top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
         left: article.fit.x,
-      });
+        id: idArticle,
+        centeredRotation: true,
+      } as IGroupWithId);
       group.controls = {
         ...fabric.Group.prototype.controls,
         mtr: new fabric.Control({ visible: false }),
@@ -1107,6 +1136,7 @@ export class PlanChargementComponent implements OnInit {
       };
 
       this.rows.add(group);
+      idArticle++;
     });
     this.scroll(divLigne);
   }
@@ -1188,14 +1218,23 @@ export class PlanChargementComponent implements OnInit {
     return node;
   }
 
-  boucle() {
-    for (let i = 0; i < 540; i++) {
-      for (let j = 0; j < 540; j++) {
-        if (j === 539) {
-        }
-        console.log('object');
-      }
-    }
+  rotation() {
+    let objet: any = this.rows.getActiveObject();
+    const width = objet._objects[0].width;
+    const height = objet._objects[0].height;
+    objet._objects[0].width = height;
+    objet._objects[0].height = width;
+    objet._objects[1].angle += 90;
+    objet.addWithUpdate();
+    this.rows.renderAll();
+
+    let objetTop: any = this.canvas.getObjects()[
+      (this.rows.getActiveObject() as unknown as IObjectWithId).id
+    ];;
+    objetTop._objects[0].width = height;
+    objetTop._objects[1].angle += 90;
+    objetTop.addWithUpdate();
+    this.canvas.renderAll();
   }
 }
 
@@ -1230,4 +1269,11 @@ function findNewPos(distX: any, distY: any, target: any, obj: any) {
       target.top = obj.top + obj.getScaledHeight();
     }
   }
+}
+
+interface IGroupWithId extends fabric.IGroupOptions {
+  id: number;
+}
+interface IObjectWithId extends fabric.IObjectOptions {
+  id: number;
 }
