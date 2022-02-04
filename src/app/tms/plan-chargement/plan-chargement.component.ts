@@ -191,7 +191,7 @@ export class PlanChargementComponent implements OnInit {
         .subscribe((res: any) => {
           this.vehicule = res;
           let h: Number =
-            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 50; //hauteur du container
+            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 80; //hauteur du container
           //(le container va avoir deux canvas un pour la vue du top du camion et l'autre pour la vue de l'arriere).
           // le hauteur du container c'est la longueur du camion => longueur vue top +
           // hauteur du camion => longueur du vue arriée + 50 px pour mettre un peut d'espace pour que le canva soit claire
@@ -522,13 +522,36 @@ export class PlanChargementComponent implements OnInit {
                 }
               }
             });
-            let canvasObject =
-              canvas.getObjects()[
+            for (let i = 0; i < canvas.getObjects().length; i++) {
+              const obj: any = canvas.getObjects()[i];
+              if (
+                obj.id ===
                 (rows.getActiveObject() as unknown as IObjectWithId).id
-              ];
+              ) {
+                canvas.setActiveObject(obj);
+              }
+            }
+            let canvasObject = canvas.getActiveObject();
             canvasObject.left = options.target.left;
+
+            let listeObjTrie = rows
+              .getObjects()
+              .sort((a: any, b: any) => (a.top > b.top ? -1 : 1));
+            let objCanvas = canvas.getObjects();
+            for (let j = 0; j < listeObjTrie.length; j++) {
+              const objFiltre: any = listeObjTrie[j];
+              for (let i = 0; i < objCanvas.length; i++) {
+                const obj: any = objCanvas[i];
+                if (obj.id === objFiltre.id) {
+                  canvas.setActiveObject(obj);
+                }
+              }
+              let canvasObject = canvas.getActiveObject();
+              canvas.bringToFront(canvasObject);
+            }
+
             canvasObject.setCoords();
-            canvas.renderAll();
+            canvas.discardActiveObject().renderAll();
           });
         });
     } else {
@@ -537,7 +560,7 @@ export class PlanChargementComponent implements OnInit {
         .subscribe((res: any) => {
           this.vehicule = res;
           let h: Number =
-            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 50; //conversion du longueur du véhicule vers pixel avec mise en echelle
+            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 80; //conversion du longueur du véhicule vers pixel avec mise en echelle
           container.style.height = h + 'px'; //definission du hauteur du contenaire
 
           let divTop: any = document.getElementById('vueTop');
@@ -864,13 +887,35 @@ export class PlanChargementComponent implements OnInit {
                 }
               }
             });
-            let canvasObject =
-              canvas.getObjects()[
+            for (let i = 0; i < canvas.getObjects().length; i++) {
+              const obj: any = canvas.getObjects()[i];
+              if (
+                obj.id ===
                 (rows.getActiveObject() as unknown as IObjectWithId).id
-              ];
+              ) {
+                canvas.setActiveObject(obj);
+              }
+            }
+            let canvasObject = canvas.getActiveObject();
             canvasObject.left = options.target.left;
+
+            let listeObjTrie = rows
+              .getObjects()
+              .sort((a: any, b: any) => (a.top > b.top ? -1 : 1));
+            let objCanvas = canvas.getObjects();
+            for (let j = 0; j < listeObjTrie.length; j++) {
+              const objFiltre: any = listeObjTrie[j];
+              for (let i = 0; i < objCanvas.length; i++) {
+                const obj: any = objCanvas[i];
+                if (obj.id === objFiltre.id) {
+                  canvas.setActiveObject(obj);
+                }
+              }
+              let canvasObject = canvas.getActiveObject();
+              canvas.bringToFront(canvasObject);
+            }
             canvasObject.setCoords();
-            canvas.renderAll();
+            canvas.discardActiveObject().renderAll();
           });
         });
     }
@@ -1218,23 +1263,83 @@ export class PlanChargementComponent implements OnInit {
     return node;
   }
 
-  rotation() {
+  rotation(angle: number) {
     let objet: any = this.rows.getActiveObject();
     const width = objet._objects[0].width;
     const height = objet._objects[0].height;
     objet._objects[0].width = height;
     objet._objects[0].height = width;
-    objet._objects[1].angle += 90;
+    objet._objects[1].angle += angle;
     objet.addWithUpdate();
     this.rows.renderAll();
 
-    let objetTop: any = this.canvas.getObjects()[
-      (this.rows.getActiveObject() as unknown as IObjectWithId).id
-    ];;
+    for (let i = 0; i < this.canvas.getObjects().length; i++) {
+      const obj: any = this.canvas.getObjects()[i];
+      if (
+        obj.id === (this.rows.getActiveObject() as unknown as IObjectWithId).id
+      ) {
+        this.canvas.setActiveObject(obj);
+      }
+    }
+    let objetTop: any = this.canvas.getActiveObject();
     objetTop._objects[0].width = height;
     objetTop._objects[1].angle += 90;
     objetTop.addWithUpdate();
     this.canvas.renderAll();
+  }
+
+  supprimerObjet() {
+    for (let i = 0; i < this.canvas.getObjects().length; i++) {
+      const obj: any = this.canvas.getObjects()[i];
+      if (
+        obj.id === (this.rows.getActiveObject() as unknown as IObjectWithId).id
+        ) {
+          this.canvas.setActiveObject(obj);
+        }
+      }
+      this.canvas.remove(this.canvas.getActiveObject());
+      this.rows.remove(this.rows.getActiveObject());
+  }
+
+  bringForward() {
+    for (let i = 0; i < this.canvas.getObjects().length; i++) {
+      const obj: any = this.canvas.getObjects()[i];
+      if (
+        obj.id === (this.rows.getActiveObject() as unknown as IObjectWithId).id
+      ) {
+        this.canvas.setActiveObject(obj);
+      }
+    }
+    let objetTop = this.canvas.getActiveObject();
+    this.canvas.bringToFront(objetTop);
+    this.canvas.renderAll();
+  }
+  ajouterRect() {
+    const rect1 = new fabric.Rect({
+      width: 40,
+      height: 40,
+      fill: this.getRandomColor(),
+      stroke: 'black',
+      strokeWidth: 1,
+      lockUniScaling: true,
+      top: 0,
+      left: 0,
+      id: this.rows.getObjects().length,
+    } as IRectWithId);
+    const rect2 = new fabric.Rect({
+      width: 40,
+      height: 40,
+      fill: this.getRandomColor(),
+      stroke: 'black',
+      strokeWidth: 1,
+      lockUniScaling: true,
+      top: 0,
+      left: 0,
+      id: this.rows.getObjects().length,
+    } as IRectWithId);
+
+    this.rows.add(rect1);
+    this.canvas.add(rect2);
   }
 }
 
@@ -1275,5 +1380,8 @@ interface IGroupWithId extends fabric.IGroupOptions {
   id: number;
 }
 interface IObjectWithId extends fabric.IObjectOptions {
+  id: number;
+}
+interface IRectWithId extends fabric.IRectOptions {
   id: number;
 }
