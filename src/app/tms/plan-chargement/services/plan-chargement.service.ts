@@ -75,4 +75,15 @@ export class PlanChargementService {
       .put(erp + 'modifier-id-commandes', formData)
       .pipe(catchError(this.handleError));
   }
+
+  // enregistrer plan chargement
+  public enregistrerPlanChargement(id: number, canvasTop: string, canvasFace: string) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    formData.append('canvasTop', canvasTop);
+    formData.append('canvasFace', canvasFace);
+    return this.httpClient
+      .put(erp + 'enregistrer-canvas', formData)
+      .pipe(catchError(this.handleError));
+  }
 }

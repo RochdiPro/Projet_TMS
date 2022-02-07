@@ -14,6 +14,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { fabric } from 'fabric';
 import { PlanChargementService } from './services/plan-chargement.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { loadavg } from 'os';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-plan-chargement',
@@ -81,10 +83,15 @@ export class PlanChargementComponent implements OnInit {
   vehicule: any; //vehicule selectionnée
 
   listeCommandes: any = []; //liste des commandes qui contient l'info de chaque commande dans une mission
+  commande: any;
+  canvasTopEnregistre: any;
 
   lignes: any; //liste des lignes dans le vehicule (une ligne c'est l'ensemble des articles de guache vers la droite qu'on oeur les voir depuis la vue top)
+  listeCanvasLignesEnregistrees: string[] = [];
+  listeCanvasLignesEnregistreesStr: string;
 
   indexLigne = 0; //index d'une ligne dans la liste des lignes
+  indexLignePrecedent = 0;
 
   // utilisée pour afficher le div vehicule
   vehiculeEstAffiche = false;
@@ -181,7 +188,32 @@ export class PlanChargementComponent implements OnInit {
 
   // créer canva vide
   initialiserCanva() {
+    this.listeCommandes = []; //reinitialiser la liste des commandes
     this.lignes = [];
+    let idCommandes = this.mission.idCommandes;
+    idCommandes = idCommandes.split('/'); //liste des id de commandes dans une mission
+    idCommandes = idCommandes.reverse(); //on inverse la liste car la derniére commande a livrer va etre la premiére a charger
+
+    // recupérer la liste des colis dans une mission
+    this.servicePlanChargement
+      .listeColisParMission(this.mission.id)
+      .subscribe(async (listeColis) => {
+        for (let i = 0; i < idCommandes.length; i++) {
+          // pour chaque commande on récupére ses informations
+          this.commande = await this.servicePlanChargement
+            .commande(idCommandes[i])
+            .toPromise();
+          //recupérer la liste des article pour chaque commande
+          this.commande.articles = listeColis.filter(
+            (colis: any) => colis.idCommande == idCommandes[i]
+          );
+          // donner un couleur pour chaque commande
+          //le couleur va être utiliser pour identifier les articles de chaque commande
+          let couleur = this.getRandomColor();
+          this.commande.couleur = couleur;
+          this.listeCommandes.push(this.commande);
+        }
+      });
     let container = document.getElementById('container'); //recuperer le div container qui va contenir notre canva
     // on teste si c'est une mission avec vehicule privé
     if (this.mission.idChauffeur !== 'null') {
@@ -601,6 +633,7 @@ export class PlanChargementComponent implements OnInit {
           let canvasHeight = this.vehicule.hauteur * 2.7;
           let rows = this.rows;
           let canvas = this.canvas;
+          let canvasEnregistree;
           this.rows.on('object:moving', function (options) {
             // Sets corner position coordinates based on current angle, width and height
             options.target.setCoords();
@@ -934,11 +967,7 @@ export class PlanChargementComponent implements OnInit {
 
   // créer plan chargement mode automatique
   createPlanChargementAuto() {
-    this.listeCommandes = []; //reinitialiser la liste des commandes
     this.lignes = [];
-    let idCommandes = this.mission.idCommandes;
-    idCommandes = idCommandes.split('/'); //liste des id de commandes dans une mission
-    idCommandes = idCommandes.reverse(); //on inverse la liste car la derniére commande a livrer va etre la premiére a charger
     // liste des ligne qui contient chaque ligne comme objet
     // la liste est initialisé avec une seule ligne qui a longueur de 0 et comme largeur le largeur du vehicule converti en pixels et comme longueur la longuer du vehicule en pixels
     let lignes: any = [
@@ -949,130 +978,129 @@ export class PlanChargementComponent implements OnInit {
         articles: [],
       },
     ];
-    // recupérer la liste des colis dans une mission
-    this.servicePlanChargement
-      .listeColisParMission(this.mission.id)
-      .subscribe(async (listeColis) => {
-        let colis: any = [];
-        for (let i = 0; i < idCommandes.length; i++) {
-          // pour chaque commande on récupére ses informations
-          let commande = await this.servicePlanChargement
-            .commande(idCommandes[i])
-            .toPromise();
-          //recupérer la liste des article pour chaque commande
-          let articles = listeColis.filter(
-            (colis: any) => colis.idCommande == idCommandes[i]
-          );
-          // on trie les articles d'une commande par leur volume descendant
-          articles = articles.sort((a: any, b: any) =>
-            Number(a.dimensions.split('x')[0]) *
-              Number(a.dimensions.split('x')[1]) *
-              Number(a.dimensions.split('x')[2]) >
-            Number(b.dimensions.split('x')[0]) *
-              Number(b.dimensions.split('x')[1]) *
-              Number(b.dimensions.split('x')[2])
-              ? -1
-              : 1
-          );
-          // donner un couleur pour chaque commande
-          //le couleur va être utiliser pour identifier les articles de chaque commande
-          let couleur = this.getRandomColor();
-          commande.couleur = couleur;
-          this.listeCommandes.push(commande);
-          articles.forEach((article: any) => {
-            //pour chaque article on identifie ses dimensions
-            let dimensions = article.dimensions.split('x');
-            let longueur = Number(dimensions[0]) * 2.7;
-            let largeur = Number(dimensions[1]) * 2.7;
-            let hauteur = Number(dimensions[2]) * 2.7;
-            // on enregistre ces dimensions dans l'objet article
-            article.longueur = longueur;
-            article.largeur = largeur;
-            article.hauteur = hauteur;
-            article.couleur = couleur;
-            let nbrArticles = article.nombrePack; //quantité d'un article dans une commande
-            for (let j = 0; j < nbrArticles; j++) {
-              //pour chaque colis on ajoute ces informations d'article
-              colis.push(Object.assign({}, article)); //on push une copie de l'article car si on push l'objet article, une simple modification dans ce dernier affecte toute la liste
-            }
-          });
+    let colis: any = [];
+    this.listeCommandes.forEach((commande: any) => {
+      // on trie les articles d'une commande par leur volume descendant
+      let articles = commande.articles.sort((a: any, b: any) =>
+        Number(a.dimensions.split('x')[0]) *
+          Number(a.dimensions.split('x')[1]) *
+          Number(a.dimensions.split('x')[2]) >
+        Number(b.dimensions.split('x')[0]) *
+          Number(b.dimensions.split('x')[1]) *
+          Number(b.dimensions.split('x')[2])
+          ? -1
+          : 1
+      );
+      articles.forEach((article: any) => {
+        //pour chaque article on identifie ses dimensions
+        let dimensions = article.dimensions.split('x');
+        let longueur = Number(dimensions[0]) * 2.7;
+        let largeur = Number(dimensions[1]) * 2.7;
+        let hauteur = Number(dimensions[2]) * 2.7;
+        // on enregistre ces dimensions dans l'objet article
+        article.longueur = longueur;
+        article.largeur = largeur;
+        article.hauteur = hauteur;
+        article.couleur = commande.couleur;
+        let nbrArticles = article.nombrePack; //quantité d'un article dans une commande
+        for (let j = 0; j < nbrArticles; j++) {
+          //pour chaque colis on ajoute ces informations d'article
+          colis.push(Object.assign({}, article)); //on push une copie de l'article car si on push l'objet article, une simple modification dans ce dernier affecte toute la liste
         }
-        // indice du ligne
-        let i = 0;
-        // ce bloc permet de place chaque colis dans la bonne position dans une ligne
-        // tant que la liste des colis n'est pas vide cette boucle s'execute
-        while (colis.length > 0) {
-          // si la ligne avec cet indice n'existe pas on ajoute une nouvelle ligne
-          if (!lignes[i]) {
-            lignes.push({
-              longueur: 0,
-              largeur: this.vehicule.largeur * 2.7,
-              hauteur: this.vehicule.hauteur * 2.7,
-              articles: [],
-            });
-          }
-          // on initialise le root
-          this.initialiserRoot(lignes[i].largeur, lignes[i].hauteur);
-          // on place les colis dans leurs places
-          this.fit(colis, lignes[i]);
-          // pour chaque colis affectée dans une ligne en supprime se colis de la liste des colis non affectées
-          lignes[i].articles.forEach((article: any) => {
-            let index = colis.findIndex((coli: any) => coli.id === article.id);
-            colis.splice(index, 1);
-          });
-          i++;
-        }
-        this.lignes = lignes;
-        // index ligne a afficher
-        this.indexLigne = 0;
-        this.afficherPlanChargement();
       });
-  }
+    });
+    // indice du ligne
+    let i = 0;
+    // ce bloc permet de place chaque colis dans la bonne position dans une ligne
+    // tant que la liste des colis n'est pas vide cette boucle s'execute
+    while (colis.length > 0) {
+      // si la ligne avec cet indice n'existe pas on ajoute une nouvelle ligne
+      if (!lignes[i]) {
+        lignes.push({
+          longueur: 0,
+          largeur: this.vehicule.largeur * 2.7,
+          hauteur: this.vehicule.hauteur * 2.7,
+          articles: [],
+        });
+      }
+      // on initialise le root
+      this.initialiserRoot(lignes[i].largeur, lignes[i].hauteur);
+      // on place les colis dans leurs places
+      this.fit(colis, lignes[i]);
+      // pour chaque colis affectée dans une ligne en supprime se colis de la liste des colis non affectées
+      lignes[i].articles.forEach((article: any) => {
+        let index = colis.findIndex((coli: any) => coli.id === article.id);
+        colis.splice(index, 1);
+      });
+      i++;
+    }
+    this.lignes = lignes;
+    // index ligne a afficher
+    this.indexLigne = 0;
 
-  // afficher le plan de chargement specifique a une mission
-  afficherPlanChargement() {
-    this.canvas.clear();
-    this.rows.clear();
-    let idArticleRow = 0;
-    // afficher la premiere ligne
-    this.lignes[0].articles.forEach((article: any) => {
-      // création du rectangle qui presente un colis
-      const rect = new fabric.Rect({
-        originX: 'center',
-        originY: 'center',
-        width: article.largeur - 1,
-        height: article.hauteur - 1,
-        fill: article.couleur,
-        stroke: 'black',
-        strokeWidth: 1,
-        lockUniScaling: true,
+    // -----------------------------------------------
+    this.listeCanvasLignesEnregistrees = [];
+    for (let j = 0; j < this.lignes.length; j++) {
+      let nombreArticleDansLignesPrecedentes = 0;
+      let rowAEnregistrer = new fabric.Canvas('', {
+        //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
+        width: this.vehicule.largeur * 2.7,
+        height: this.vehicule.hauteur * 2.7,
+        selection: false,
       });
-      // creation du texte qui presente le nom du colis
-      var text = new fabric.Text(article.emballage, {
-        fontSize: 10,
-        originX: 'center',
-        originY: 'center',
+      for (let i = 0; i < j; i++) {
+        nombreArticleDansLignesPrecedentes += this.lignes[i].articles.length;
+      }
+      let idArticle = nombreArticleDansLignesPrecedentes;
+      this.lignes[j].articles.forEach((article: any) => {
+        const rect = new fabric.Rect({
+          originX: 'center',
+          originY: 'center',
+          width: article.largeur - 1,
+          height: article.hauteur - 1,
+          fill: article.couleur,
+          stroke: 'black',
+          strokeWidth: 1,
+          lockUniScaling: true,
+        });
+        var text = new fabric.Text(article.emballage, {
+          fontSize: 10,
+          originX: 'center',
+          originY: 'center',
+        });
+
+        var group = new fabric.Group([rect, text], {
+          top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
+          left: article.fit.x,
+          id: idArticle,
+          centeredRotation: true,
+        } as IGroupWithId);
+        group.setControlsVisibility({
+          tl: false, //top-left
+          mt: false, // middle-top
+          tr: false, //top-right
+          ml: false, //middle-left
+          mr: false, //middle-right
+          bl: false, // bottom-left
+          mb: false, //middle-bottom
+          br: false, //bottom-right
+          mtr: false,
+        });
+
+        rowAEnregistrer.add(group);
+        idArticle++;
       });
-      // on groupe le retangle et le texte
-      var group = new fabric.Group([rect, text], {
-        top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
-        left: article.fit.x,
-        id: idArticleRow,
-      } as IGroupWithId);
-      group.controls = {
-        ...fabric.Group.prototype.controls,
-        mtr: new fabric.Control({ visible: false }),
-        mt: new fabric.Control({ visible: false }),
-        mb: new fabric.Control({ visible: false }),
-        ml: new fabric.Control({ visible: false }),
-        mr: new fabric.Control({ visible: false }),
-        bl: new fabric.Control({ visible: false }),
-        br: new fabric.Control({ visible: false }),
-        tl: new fabric.Control({ visible: false }),
-        tr: new fabric.Control({ visible: false }),
-      };
-      this.rows.add(group);
-      idArticleRow++;
+
+      this.listeCanvasLignesEnregistrees.push(
+        rowAEnregistrer.toJSON(['id', '_controlsVisibility'])
+      );
+    }
+
+    let topAEnregistrer = new fabric.Canvas('', {
+      //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
+      width: this.vehicule.largeur * 2.7,
+      height: this.vehicule.hauteur * 2.7,
+      selection: false,
     });
     let top = 0;
     let idArticleCanva = 0;
@@ -1102,25 +1130,41 @@ export class PlanChargementComponent implements OnInit {
           left: article.fit.x,
           id: idArticleCanva,
         } as IGroupWithId);
-        group.controls = {
-          ...fabric.Rect.prototype.controls,
-          mtr: new fabric.Control({ visible: false }),
-          mt: new fabric.Control({ visible: false }),
-          mb: new fabric.Control({ visible: false }),
-          ml: new fabric.Control({ visible: false }),
-          mr: new fabric.Control({ visible: false }),
-          bl: new fabric.Control({ visible: false }),
-          br: new fabric.Control({ visible: false }),
-          tl: new fabric.Control({ visible: false }),
-          tr: new fabric.Control({ visible: false }),
-        };
-        this.canvas.add(group);
+        group.setControlsVisibility({
+          tl: false, //top-left
+          mt: false, // middle-top
+          tr: false, //top-right
+          ml: false, //middle-left
+          mr: false, //middle-right
+          bl: false, // bottom-left
+          mb: false, //middle-bottom
+          br: false, //bottom-right
+          mtr: false,
+        });
+        topAEnregistrer.add(group);
         idArticleCanva++;
       });
       ligne.longueur = longueur;
       ligne.top = top;
       top += longueur;
       ligne.largeur = this.vehicule.largeur * 2.7;
+    });
+    this.canvasTopEnregistre = JSON.stringify(
+      topAEnregistrer.toJSON(['id', '_controlsVisibility'])
+    );
+
+    this.afficherPlanChargement();
+  }
+
+  // afficher le plan de chargement specifique a une mission
+  afficherPlanChargement() {
+    this.canvas.loadFromJSON(this.canvasTopEnregistre, () => {
+      // making sure to render canvas at the end
+      this.canvas.renderAll();
+    });
+    this.rows.loadFromJSON(this.listeCanvasLignesEnregistrees[0], () => {
+      // making sure to render canvas at the end
+      this.rows.renderAll();
     });
 
     let premierChargement;
@@ -1137,53 +1181,20 @@ export class PlanChargementComponent implements OnInit {
   }
 
   changerLigne() {
+    this.listeCanvasLignesEnregistrees[this.indexLignePrecedent] =
+      this.rows.toJSON(['id', '_controlsVisibility']);
+
     let divLigne: any = document.getElementById('vueLigne');
     this.rows.clear();
-    let nombreArticleDansLignesPrecedentes = 0;
-    for (let i = 0; i < this.indexLigne; i++) {
-      nombreArticleDansLignesPrecedentes += this.lignes[i].articles.length;
-    }
-    let idArticle = nombreArticleDansLignesPrecedentes;
-    this.lignes[this.indexLigne].articles.forEach((article: any) => {
-      const rect = new fabric.Rect({
-        originX: 'center',
-        originY: 'center',
-        width: article.largeur - 1,
-        height: article.hauteur - 1,
-        fill: article.couleur,
-        stroke: 'black',
-        strokeWidth: 1,
-        lockUniScaling: true,
-      });
-      var text = new fabric.Text(article.emballage, {
-        fontSize: 10,
-        originX: 'center',
-        originY: 'center',
-      });
-
-      var group = new fabric.Group([rect, text], {
-        top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
-        left: article.fit.x,
-        id: idArticle,
-        centeredRotation: true,
-      } as IGroupWithId);
-      group.controls = {
-        ...fabric.Group.prototype.controls,
-        mtr: new fabric.Control({ visible: false }),
-        mt: new fabric.Control({ visible: false }),
-        mb: new fabric.Control({ visible: false }),
-        ml: new fabric.Control({ visible: false }),
-        mr: new fabric.Control({ visible: false }),
-        bl: new fabric.Control({ visible: false }),
-        br: new fabric.Control({ visible: false }),
-        tl: new fabric.Control({ visible: false }),
-        tr: new fabric.Control({ visible: false }),
-      };
-
-      this.rows.add(group);
-      idArticle++;
-    });
+    this.rows.loadFromJSON(
+      this.listeCanvasLignesEnregistrees[this.indexLigne],
+      () => {
+        // making sure to render canvas at the end
+        this.rows.renderAll();
+      }
+    );
     this.scroll(divLigne);
+    this.indexLignePrecedent = this.indexLigne;
   }
 
   scroll(el: HTMLElement) {
@@ -1293,12 +1304,12 @@ export class PlanChargementComponent implements OnInit {
       const obj: any = this.canvas.getObjects()[i];
       if (
         obj.id === (this.rows.getActiveObject() as unknown as IObjectWithId).id
-        ) {
-          this.canvas.setActiveObject(obj);
-        }
+      ) {
+        this.canvas.setActiveObject(obj);
       }
-      this.canvas.remove(this.canvas.getActiveObject());
-      this.rows.remove(this.rows.getActiveObject());
+    }
+    this.canvas.remove(this.canvas.getActiveObject());
+    this.rows.remove(this.rows.getActiveObject());
   }
 
   bringForward() {
@@ -1340,6 +1351,40 @@ export class PlanChargementComponent implements OnInit {
 
     this.rows.add(rect1);
     this.canvas.add(rect2);
+  }
+
+  enregistrer() {
+    let listeCanvasLignesEnregistreesStr = '';
+    this.listeCanvasLignesEnregistrees.forEach((ligne) => {
+      listeCanvasLignesEnregistreesStr += JSON.stringify(ligne) + "|"
+    })
+    listeCanvasLignesEnregistreesStr = listeCanvasLignesEnregistreesStr.slice(0, -1)
+    this.servicePlanChargement
+      .enregistrerPlanChargement(
+        this.mission.id,
+        this.canvasTopEnregistre,
+        listeCanvasLignesEnregistreesStr
+      )
+      .subscribe((res) => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Plan chargement enregistré',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      });
+  }
+
+  charger() {
+    this.canvas.loadFromJSON(this.mission.canvasTop, () => {
+      // making sure to render canvas at the end
+      this.canvas.renderAll();
+    });
+    this.listeCanvasLignesEnregistrees = this.mission.canvasFace.split('|');
+    this.rows.loadFromJSON(this.listeCanvasLignesEnregistrees[0], () => {
+      // making sure to render canvas at the end
+      this.rows.renderAll();
+    });
   }
 }
 
