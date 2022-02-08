@@ -83,8 +83,10 @@ export class PlanChargementComponent implements OnInit {
   vehicule: any; //vehicule selectionnée
 
   listeCommandes: any = []; //liste des commandes qui contient l'info de chaque commande dans une mission
+  listeCommandesModeManuel: any = []; //liste des commandes qui contient l'info de chaque commande dans une mission (utilisé dans le mode manuel)
   commande: any;
   canvasTopEnregistre: any;
+  commandeModeAutoSelectionne: any;
 
   lignes: any; //liste des lignes dans le vehicule (une ligne c'est l'ensemble des articles de guache vers la droite qu'on oeur les voir depuis la vue top)
   listeCanvasLignesEnregistrees: string[] = [];
@@ -189,6 +191,7 @@ export class PlanChargementComponent implements OnInit {
   // créer canva vide
   initialiserCanva() {
     this.listeCommandes = []; //reinitialiser la liste des commandes
+    this.listeCommandesModeManuel = []; //reinitialiser la liste des commandes
     this.lignes = [];
     let idCommandes = this.mission.idCommandes;
     idCommandes = idCommandes.split('/'); //liste des id de commandes dans une mission
@@ -212,757 +215,793 @@ export class PlanChargementComponent implements OnInit {
           let couleur = this.getRandomColor();
           this.commande.couleur = couleur;
           this.listeCommandes.push(this.commande);
+          this.listeCommandesModeManuel.push(this.commande);
         }
+        this.listeCommandesModeManuel.forEach((cmd: any) => {
+          cmd.articles.forEach((article: any) => {
+            //pour chaque article on identifie ses dimensions
+            let dimensions = article.dimensions.split('x');
+            let longueur = Number(dimensions[0]) * 2.7;
+            let largeur = Number(dimensions[1]) * 2.7;
+            let hauteur = Number(dimensions[2]) * 2.7;
+            // on enregistre ces dimensions dans l'objet article
+            article.longueur = longueur;
+            article.largeur = largeur;
+            article.hauteur = hauteur;
+          });
+        });
+        console.log(this.listeCommandesModeManuel);
+
+        let container = document.getElementById('container'); //recuperer le div container qui va contenir notre canva
+        // on teste si c'est une mission avec vehicule privé
+        if (this.mission.idChauffeur !== 'null') {
+          // recupérer les données de notre vehicule privée par son matricule
+          this.servicePlanChargement
+            .vehicule(this.mission.matricule)
+            .subscribe((res: any) => {
+              this.vehicule = res;
+              let h: Number =
+                this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 80; //hauteur du container
+              //(le container va avoir deux canvas un pour la vue du top du camion et l'autre pour la vue de l'arriere).
+              // le hauteur du container c'est la longueur du camion => longueur vue top +
+              // hauteur du camion => longueur du vue arriée + 50 px pour mettre un peut d'espace pour que le canva soit claire
+              // on multiplie les dimensions du vehicule par 2.7 pour convertir du cm ver pixels
+              container.style.height = h + 'px'; //definission du hauteur du contenaire
+
+              let divTop: any = document.getElementById('vueTop'); //recuperer le div 'vueTop'
+              while (divTop.firstChild) {
+                //supprimer le contenu du div top pour l'initialiser
+                divTop.removeChild(divTop.firstChild);
+              }
+              let divLigne: any = document.getElementById('vueLigne'); //recuperer le div 'vueTop' ('vueLigne' est la vue de l'arriére)
+              while (divLigne.firstChild) {
+                //supprimer le contenu du div vueLigne pour l'initialiser
+                divLigne.removeChild(divLigne.firstChild);
+              }
+              let canvaTop = document.createElement('canvas'); //creation du canva du vue top
+              canvaTop.id = 'canvas';
+              canvaTop.style.zIndex = '8';
+              canvaTop.style.border = '4px solid';
+              divTop.appendChild(canvaTop); //on ajoute le canva créé dans le divTop
+              this.canvas = new fabric.Canvas('canvas', {
+                //creation de l'objet canva du vueTop a l'aide du biblio fabric js
+                width: this.vehicule.largeur * 2.7,
+                height: this.vehicule.longueur * 2.7,
+                selection: false,
+              });
+
+              let row = document.createElement('canvas'); //creation du canva vue ligne
+              row.id = 'row';
+              row.style.zIndex = '8';
+              row.style.border = '4px solid';
+              divLigne.appendChild(row);
+              this.rows = new fabric.Canvas('row', {
+                //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
+                width: this.vehicule.largeur * 2.7,
+                height: this.vehicule.hauteur * 2.7,
+                selection: false,
+              });
+              let snap = 2; //Pixels to snap
+              let canvasWidth = this.vehicule.largeur * 2.7;
+              let canvasHeight = this.vehicule.hauteur * 2.7;
+              let rows = this.rows;
+              let canvas = this.canvas;
+              this.rows.on('object:moving', function (options: any) {
+                // Sets corner position coordinates based on current angle, width and height
+                options.target.setCoords();
+
+                // Don't allow objects off the canvas
+                if (options.target.left < snap) {
+                  options.target.left = 0;
+                }
+
+                if (options.target.top < snap) {
+                  options.target.top = 0;
+                }
+
+                if (
+                  options.target.getScaledWidth() + options.target.left >
+                  canvasWidth - snap
+                ) {
+                  options.target.left =
+                    canvasWidth - options.target.getScaledWidth();
+                }
+
+                if (
+                  options.target.getScaledHeight() + options.target.top >
+                  canvasHeight - snap
+                ) {
+                  options.target.top =
+                    canvasHeight - options.target.getScaledHeight();
+                }
+
+                // Loop through objects
+                rows.forEachObject(function (obj) {
+                  if (obj === options.target) return;
+
+                  // If objects intersect
+                  if (
+                    options.target.isContainedWithinObject(obj) ||
+                    options.target.intersectsWithObject(obj) ||
+                    obj.isContainedWithinObject(options.target)
+                  ) {
+                    var distX =
+                      (obj.left + obj.getScaledWidth()) / 2 -
+                      (options.target.left + options.target.getScaledWidth()) /
+                        2;
+                    var distY =
+                      (obj.top + obj.getScaledHeight()) / 2 -
+                      (options.target.top + options.target.getScaledHeight()) /
+                        2;
+
+                    // Set new position
+                    findNewPos(distX, distY, options.target, obj);
+                  }
+
+                  // Snap objects to each other horizontally
+
+                  // If bottom points are on same Y axis
+                  if (
+                    Math.abs(
+                      options.target.top +
+                        options.target.getScaledHeight() -
+                        (obj.top + obj.getScaledHeight())
+                    ) < snap
+                  ) {
+                    // Snap target BL to object BR
+                    if (
+                      Math.abs(
+                        options.target.left - (obj.left + obj.getScaledWidth())
+                      ) < snap
+                    ) {
+                      options.target.left = obj.left + obj.getScaledWidth();
+                      options.target.top =
+                        obj.top +
+                        obj.getScaledHeight() -
+                        options.target.getScaledHeight();
+                    }
+
+                    // Snap target BR to object BL
+                    if (
+                      Math.abs(
+                        options.target.left +
+                          options.target.getScaledWidth() -
+                          obj.left
+                      ) < snap
+                    ) {
+                      options.target.left =
+                        obj.left - options.target.getScaledWidth();
+                      options.target.top =
+                        obj.top +
+                        obj.getScaledHeight() -
+                        options.target.getScaledHeight();
+                    }
+                  }
+
+                  // If top points are on same Y axis
+                  if (Math.abs(options.target.top - obj.top) < snap) {
+                    // Snap target TL to object TR
+                    if (
+                      Math.abs(
+                        options.target.left - (obj.left + obj.getScaledWidth())
+                      ) < snap
+                    ) {
+                      options.target.left = obj.left + obj.getScaledWidth();
+                      options.target.top = obj.top;
+                    }
+
+                    // Snap target TR to object TL
+                    if (
+                      Math.abs(
+                        options.target.left +
+                          options.target.getScaledWidth() -
+                          obj.left
+                      ) < snap
+                    ) {
+                      options.target.left =
+                        obj.left - options.target.getScaledWidth();
+                      options.target.top = obj.top;
+                    }
+                  }
+
+                  // Snap objects to each other vertically
+
+                  // If right points are on same X axis
+                  if (
+                    Math.abs(
+                      options.target.left +
+                        options.target.getScaledWidth() -
+                        (obj.left + obj.getScaledWidth())
+                    ) < snap
+                  ) {
+                    // Snap target TR to object BR
+                    if (
+                      Math.abs(
+                        options.target.top - (obj.top + obj.getScaledHeight())
+                      ) < snap
+                    ) {
+                      options.target.left =
+                        obj.left +
+                        obj.getScaledWidth() -
+                        options.target.getScaledWidth();
+                      options.target.top = obj.top + obj.getScaledHeight();
+                    }
+
+                    // Snap target BR to object TR
+                    if (
+                      Math.abs(
+                        options.target.top +
+                          options.target.getScaledHeight() -
+                          obj.top
+                      ) < snap
+                    ) {
+                      options.target.left =
+                        obj.left +
+                        obj.getScaledWidth() -
+                        options.target.getScaledWidth();
+                      options.target.top =
+                        obj.top - options.target.getScaledHeight();
+                    }
+                  }
+
+                  // If left points are on same X axis
+                  if (Math.abs(options.target.left - obj.left) < snap) {
+                    // Snap target TL to object BL
+                    if (
+                      Math.abs(
+                        options.target.top - (obj.top + obj.getScaledHeight())
+                      ) < snap
+                    ) {
+                      options.target.left = obj.left;
+                      options.target.top = obj.top + obj.getScaledHeight();
+                    }
+
+                    // Snap target BL to object TL
+                    if (
+                      Math.abs(
+                        options.target.top +
+                          options.target.getScaledHeight() -
+                          obj.top
+                      ) < snap
+                    ) {
+                      options.target.left = obj.left;
+                      options.target.top =
+                        obj.top - options.target.getScaledHeight();
+                    }
+                  }
+                });
+
+                options.target.setCoords();
+
+                // If objects still overlap
+
+                var outerAreaLeft: any = null,
+                  outerAreaTop: any = null,
+                  outerAreaRight: any = null,
+                  outerAreaBottom: any = null;
+
+                rows.forEachObject(function (obj) {
+                  if (obj === options.target) return;
+
+                  if (
+                    options.target.isContainedWithinObject(obj) ||
+                    options.target.intersectsWithObject(obj) ||
+                    obj.isContainedWithinObject(options.target)
+                  ) {
+                    var intersectLeft = null,
+                      intersectTop = null,
+                      intersectWidth = null,
+                      intersectHeight = null,
+                      intersectSize = null,
+                      targetLeft = options.target.left,
+                      targetRight =
+                        targetLeft + options.target.getScaledWidth(),
+                      targetTop = options.target.top,
+                      targetBottom =
+                        targetTop + options.target.getScaledHeight(),
+                      objectLeft = obj.left,
+                      objectRight = objectLeft + obj.getScaledWidth(),
+                      objectTop = obj.top,
+                      objectBottom = objectTop + obj.getScaledHeight();
+
+                    // Find intersect information for X axis
+                    if (targetLeft >= objectLeft && targetLeft <= objectRight) {
+                      intersectLeft = targetLeft;
+                      intersectWidth =
+                        obj.getScaledWidth() - (intersectLeft - objectLeft);
+                    } else if (
+                      objectLeft >= targetLeft &&
+                      objectLeft <= targetRight
+                    ) {
+                      intersectLeft = objectLeft;
+                      intersectWidth =
+                        options.target.getScaledWidth() -
+                        (intersectLeft - targetLeft);
+                    }
+
+                    // Find intersect information for Y axis
+                    if (targetTop >= objectTop && targetTop <= objectBottom) {
+                      intersectTop = targetTop;
+                      intersectHeight =
+                        obj.getScaledHeight() - (intersectTop - objectTop);
+                    } else if (
+                      objectTop >= targetTop &&
+                      objectTop <= targetBottom
+                    ) {
+                      intersectTop = objectTop;
+                      intersectHeight =
+                        options.target.getScaledHeight() -
+                        (intersectTop - targetTop);
+                    }
+
+                    // Find intersect size (this will be 0 if objects are touching but not overlapping)
+                    if (intersectWidth > 0 && intersectHeight > 0) {
+                      intersectSize = intersectWidth * intersectHeight;
+                    }
+
+                    // Set outer snapping area
+                    if (obj.left < outerAreaLeft || outerAreaLeft == null) {
+                      outerAreaLeft = obj.left;
+                    }
+
+                    if (obj.top < outerAreaTop || outerAreaTop == null) {
+                      outerAreaTop = obj.top;
+                    }
+
+                    if (
+                      obj.left + obj.getScaledWidth() > outerAreaRight ||
+                      outerAreaRight == null
+                    ) {
+                      outerAreaRight = obj.left + obj.getScaledWidth();
+                    }
+
+                    if (
+                      obj.top + obj.getScaledHeight() > outerAreaBottom ||
+                      outerAreaBottom == null
+                    ) {
+                      outerAreaBottom = obj.top + obj.getScaledHeight();
+                    }
+
+                    // If objects are intersecting, reposition outside all shapes which touch
+                    if (intersectSize) {
+                      var distX =
+                        outerAreaRight / 2 -
+                        (options.target.left +
+                          options.target.getScaledWidth()) /
+                          2;
+                      var distY =
+                        outerAreaBottom / 2 -
+                        (options.target.top +
+                          options.target.getScaledHeight()) /
+                          2;
+
+                      // Set new position
+                      findNewPos(distX, distY, options.target, obj);
+                    }
+                  }
+                });
+                for (let i = 0; i < canvas.getObjects().length; i++) {
+                  const obj: any = canvas.getObjects()[i];
+                  if (
+                    obj.id ===
+                    (rows.getActiveObject() as unknown as IObjectWithId).id
+                  ) {
+                    canvas.setActiveObject(obj);
+                  }
+                }
+                let canvasObject = canvas.getActiveObject();
+                canvasObject.left = options.target.left;
+
+                let listeObjTrie = rows
+                  .getObjects()
+                  .sort((a: any, b: any) => (a.top > b.top ? -1 : 1));
+                let objCanvas = canvas.getObjects();
+                for (let j = 0; j < listeObjTrie.length; j++) {
+                  const objFiltre: any = listeObjTrie[j];
+                  for (let i = 0; i < objCanvas.length; i++) {
+                    const obj: any = objCanvas[i];
+                    if (obj.id === objFiltre.id) {
+                      canvas.setActiveObject(obj);
+                    }
+                  }
+                  let canvasObject = canvas.getActiveObject();
+                  canvas.bringToFront(canvasObject);
+                }
+
+                canvasObject.setCoords();
+                canvas.discardActiveObject().renderAll();
+              });
+              if (this.mission.canvasTop && this.mission.canvasFace)
+                this.charger();
+            });
+        } else {
+          this.servicePlanChargement
+            .vehiculeLoue(this.mission.matricule)
+            .subscribe((res: any) => {
+              this.vehicule = res;
+              let h: Number =
+                this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 80; //conversion du longueur du véhicule vers pixel avec mise en echelle
+              container.style.height = h + 'px'; //definission du hauteur du contenaire
+
+              let divTop: any = document.getElementById('vueTop');
+              while (divTop.firstChild) {
+                //reinitialiser le canva avant de dessiner
+                divTop.removeChild(divTop.firstChild);
+              }
+              let divLigne: any = document.getElementById('vueLigne');
+              while (divLigne.firstChild) {
+                //reinitialiser le canva avant de dessiner
+                divLigne.removeChild(divLigne.firstChild);
+              }
+              let canva = document.createElement('canvas'); //creation du canva
+              canva.id = 'canvas';
+              canva.style.zIndex = '8';
+              canva.style.border = '4px solid';
+              divTop.appendChild(canva);
+              this.canvas = new fabric.Canvas('canvas', {
+                //definition du hauteur et largeur du canva
+                width: this.vehicule.largeur * 2.7,
+                height: this.vehicule.longueur * 2.7,
+                selection: false,
+              });
+
+              let row = document.createElement('canvas'); //creation du canva
+              row.id = 'row';
+              row.style.zIndex = '8';
+              row.style.border = '4px solid';
+              divLigne.appendChild(row);
+              this.rows = new fabric.Canvas('row', {
+                //definition du hauteur et largeur du canva
+                width: this.vehicule.largeur * 2.7,
+                height: this.vehicule.hauteur * 2.7,
+                selection: false,
+              });
+              let snap = 2; //Pixels to snap
+              let canvasWidth = this.vehicule.largeur * 2.7;
+              let canvasHeight = this.vehicule.hauteur * 2.7;
+              let rows = this.rows;
+              let canvas = this.canvas;
+              this.rows.on('object:moving', function (options) {
+                // Sets corner position coordinates based on current angle, width and height
+                options.target.setCoords();
+
+                // Don't allow objects off the canvas
+                if (options.target.left < snap) {
+                  options.target.left = 0;
+                }
+
+                if (options.target.top < snap) {
+                  options.target.top = 0;
+                }
+
+                if (
+                  options.target.getScaledWidth() + options.target.left >
+                  canvasWidth - snap
+                ) {
+                  options.target.left =
+                    canvasWidth - options.target.getScaledWidth();
+                }
+
+                if (
+                  options.target.getScaledHeight() + options.target.top >
+                  canvasHeight - snap
+                ) {
+                  options.target.top =
+                    canvasHeight - options.target.getScaledHeight();
+                }
+
+                // Loop through objects
+                rows.forEachObject(function (obj) {
+                  if (obj === options.target) return;
+
+                  // If objects intersect
+                  if (
+                    options.target.isContainedWithinObject(obj) ||
+                    options.target.intersectsWithObject(obj) ||
+                    obj.isContainedWithinObject(options.target)
+                  ) {
+                    var distX =
+                      (obj.left + obj.getScaledWidth()) / 2 -
+                      (options.target.left + options.target.getScaledWidth()) /
+                        2;
+                    var distY =
+                      (obj.top + obj.getScaledHeight()) / 2 -
+                      (options.target.top + options.target.getScaledHeight()) /
+                        2;
+
+                    // Set new position
+                    findNewPos(distX, distY, options.target, obj);
+                  }
+
+                  // Snap objects to each other horizontally
+
+                  // If bottom points are on same Y axis
+                  if (
+                    Math.abs(
+                      options.target.top +
+                        options.target.getScaledHeight() -
+                        (obj.top + obj.getScaledHeight())
+                    ) < snap
+                  ) {
+                    // Snap target BL to object BR
+                    if (
+                      Math.abs(
+                        options.target.left - (obj.left + obj.getScaledWidth())
+                      ) < snap
+                    ) {
+                      options.target.left = obj.left + obj.getScaledWidth();
+                      options.target.top =
+                        obj.top +
+                        obj.getScaledHeight() -
+                        options.target.getScaledHeight();
+                    }
+
+                    // Snap target BR to object BL
+                    if (
+                      Math.abs(
+                        options.target.left +
+                          options.target.getScaledWidth() -
+                          obj.left
+                      ) < snap
+                    ) {
+                      options.target.left =
+                        obj.left - options.target.getScaledWidth();
+                      options.target.top =
+                        obj.top +
+                        obj.getScaledHeight() -
+                        options.target.getScaledHeight();
+                    }
+                  }
+
+                  // If top points are on same Y axis
+                  if (Math.abs(options.target.top - obj.top) < snap) {
+                    // Snap target TL to object TR
+                    if (
+                      Math.abs(
+                        options.target.left - (obj.left + obj.getScaledWidth())
+                      ) < snap
+                    ) {
+                      options.target.left = obj.left + obj.getScaledWidth();
+                      options.target.top = obj.top;
+                    }
+
+                    // Snap target TR to object TL
+                    if (
+                      Math.abs(
+                        options.target.left +
+                          options.target.getScaledWidth() -
+                          obj.left
+                      ) < snap
+                    ) {
+                      options.target.left =
+                        obj.left - options.target.getScaledWidth();
+                      options.target.top = obj.top;
+                    }
+                  }
+
+                  // Snap objects to each other vertically
+
+                  // If right points are on same X axis
+                  if (
+                    Math.abs(
+                      options.target.left +
+                        options.target.getScaledWidth() -
+                        (obj.left + obj.getScaledWidth())
+                    ) < snap
+                  ) {
+                    // Snap target TR to object BR
+                    if (
+                      Math.abs(
+                        options.target.top - (obj.top + obj.getScaledHeight())
+                      ) < snap
+                    ) {
+                      options.target.left =
+                        obj.left +
+                        obj.getScaledWidth() -
+                        options.target.getScaledWidth();
+                      options.target.top = obj.top + obj.getScaledHeight();
+                    }
+
+                    // Snap target BR to object TR
+                    if (
+                      Math.abs(
+                        options.target.top +
+                          options.target.getScaledHeight() -
+                          obj.top
+                      ) < snap
+                    ) {
+                      options.target.left =
+                        obj.left +
+                        obj.getScaledWidth() -
+                        options.target.getScaledWidth();
+                      options.target.top =
+                        obj.top - options.target.getScaledHeight();
+                    }
+                  }
+
+                  // If left points are on same X axis
+                  if (Math.abs(options.target.left - obj.left) < snap) {
+                    // Snap target TL to object BL
+                    if (
+                      Math.abs(
+                        options.target.top - (obj.top + obj.getScaledHeight())
+                      ) < snap
+                    ) {
+                      options.target.left = obj.left;
+                      options.target.top = obj.top + obj.getScaledHeight();
+                    }
+
+                    // Snap target BL to object TL
+                    if (
+                      Math.abs(
+                        options.target.top +
+                          options.target.getScaledHeight() -
+                          obj.top
+                      ) < snap
+                    ) {
+                      options.target.left = obj.left;
+                      options.target.top =
+                        obj.top - options.target.getScaledHeight();
+                    }
+                  }
+                });
+
+                options.target.setCoords();
+
+                // If objects still overlap
+
+                var outerAreaLeft: any = null,
+                  outerAreaTop: any = null,
+                  outerAreaRight: any = null,
+                  outerAreaBottom: any = null;
+
+                rows.forEachObject(function (obj) {
+                  if (obj === options.target) return;
+
+                  if (
+                    options.target.isContainedWithinObject(obj) ||
+                    options.target.intersectsWithObject(obj) ||
+                    obj.isContainedWithinObject(options.target)
+                  ) {
+                    var intersectLeft = null,
+                      intersectTop = null,
+                      intersectWidth = null,
+                      intersectHeight = null,
+                      intersectSize = null,
+                      targetLeft = options.target.left,
+                      targetRight =
+                        targetLeft + options.target.getScaledWidth(),
+                      targetTop = options.target.top,
+                      targetBottom =
+                        targetTop + options.target.getScaledHeight(),
+                      objectLeft = obj.left,
+                      objectRight = objectLeft + obj.getScaledWidth(),
+                      objectTop = obj.top,
+                      objectBottom = objectTop + obj.getScaledHeight();
+
+                    // Find intersect information for X axis
+                    if (targetLeft >= objectLeft && targetLeft <= objectRight) {
+                      intersectLeft = targetLeft;
+                      intersectWidth =
+                        obj.getScaledWidth() - (intersectLeft - objectLeft);
+                    } else if (
+                      objectLeft >= targetLeft &&
+                      objectLeft <= targetRight
+                    ) {
+                      intersectLeft = objectLeft;
+                      intersectWidth =
+                        options.target.getScaledWidth() -
+                        (intersectLeft - targetLeft);
+                    }
+
+                    // Find intersect information for Y axis
+                    if (targetTop >= objectTop && targetTop <= objectBottom) {
+                      intersectTop = targetTop;
+                      intersectHeight =
+                        obj.getScaledHeight() - (intersectTop - objectTop);
+                    } else if (
+                      objectTop >= targetTop &&
+                      objectTop <= targetBottom
+                    ) {
+                      intersectTop = objectTop;
+                      intersectHeight =
+                        options.target.getScaledHeight() -
+                        (intersectTop - targetTop);
+                    }
+
+                    // Find intersect size (this will be 0 if objects are touching but not overlapping)
+                    if (intersectWidth > 0 && intersectHeight > 0) {
+                      intersectSize = intersectWidth * intersectHeight;
+                    }
+
+                    // Set outer snapping area
+                    if (obj.left < outerAreaLeft || outerAreaLeft == null) {
+                      outerAreaLeft = obj.left;
+                    }
+
+                    if (obj.top < outerAreaTop || outerAreaTop == null) {
+                      outerAreaTop = obj.top;
+                    }
+
+                    if (
+                      obj.left + obj.getScaledWidth() > outerAreaRight ||
+                      outerAreaRight == null
+                    ) {
+                      outerAreaRight = obj.left + obj.getScaledWidth();
+                    }
+
+                    if (
+                      obj.top + obj.getScaledHeight() > outerAreaBottom ||
+                      outerAreaBottom == null
+                    ) {
+                      outerAreaBottom = obj.top + obj.getScaledHeight();
+                    }
+
+                    // If objects are intersecting, reposition outside all shapes which touch
+                    if (intersectSize) {
+                      var distX =
+                        outerAreaRight / 2 -
+                        (options.target.left +
+                          options.target.getScaledWidth()) /
+                          2;
+                      var distY =
+                        outerAreaBottom / 2 -
+                        (options.target.top +
+                          options.target.getScaledHeight()) /
+                          2;
+
+                      // Set new position
+                      findNewPos(distX, distY, options.target, obj);
+                    }
+                  }
+                });
+                for (let i = 0; i < canvas.getObjects().length; i++) {
+                  const obj: any = canvas.getObjects()[i];
+                  if (
+                    obj.id ===
+                    (rows.getActiveObject() as unknown as IObjectWithId).id
+                  ) {
+                    canvas.setActiveObject(obj);
+                  }
+                }
+                let canvasObject = canvas.getActiveObject();
+                canvasObject.left = options.target.left;
+
+                let listeObjTrie = rows
+                  .getObjects()
+                  .sort((a: any, b: any) => (a.top > b.top ? -1 : 1));
+                let objCanvas = canvas.getObjects();
+                for (let j = 0; j < listeObjTrie.length; j++) {
+                  const objFiltre: any = listeObjTrie[j];
+                  for (let i = 0; i < objCanvas.length; i++) {
+                    const obj: any = objCanvas[i];
+                    if (obj.id === objFiltre.id) {
+                      canvas.setActiveObject(obj);
+                    }
+                  }
+                  let canvasObject = canvas.getActiveObject();
+                  canvas.bringToFront(canvasObject);
+                }
+                canvasObject.setCoords();
+                canvas.discardActiveObject().renderAll();
+              });
+              if (this.mission.canvasTop && this.mission.canvasFace)
+                this.charger();
+            });
+        }
+
+        let premierChargement;
+        this.vehiculeEstAffiche
+          ? (premierChargement = false)
+          : (premierChargement = true);
+        this.vehiculeEstAffiche = true;
+        let vehicule = document.getElementById('vehicule');
+        premierChargement
+          ? setTimeout(() => {
+              this.scroll(vehicule);
+            }, 500)
+          : this.scroll(vehicule);
       });
-    let container = document.getElementById('container'); //recuperer le div container qui va contenir notre canva
-    // on teste si c'est une mission avec vehicule privé
-    if (this.mission.idChauffeur !== 'null') {
-      // recupérer les données de notre vehicule privée par son matricule
-      this.servicePlanChargement
-        .vehicule(this.mission.matricule)
-        .subscribe((res: any) => {
-          this.vehicule = res;
-          let h: Number =
-            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 80; //hauteur du container
-          //(le container va avoir deux canvas un pour la vue du top du camion et l'autre pour la vue de l'arriere).
-          // le hauteur du container c'est la longueur du camion => longueur vue top +
-          // hauteur du camion => longueur du vue arriée + 50 px pour mettre un peut d'espace pour que le canva soit claire
-          // on multiplie les dimensions du vehicule par 2.7 pour convertir du cm ver pixels
-          container.style.height = h + 'px'; //definission du hauteur du contenaire
-
-          let divTop: any = document.getElementById('vueTop'); //recuperer le div 'vueTop'
-          while (divTop.firstChild) {
-            //supprimer le contenu du div top pour l'initialiser
-            divTop.removeChild(divTop.firstChild);
-          }
-          let divLigne: any = document.getElementById('vueLigne'); //recuperer le div 'vueTop' ('vueLigne' est la vue de l'arriére)
-          while (divLigne.firstChild) {
-            //supprimer le contenu du div vueLigne pour l'initialiser
-            divLigne.removeChild(divLigne.firstChild);
-          }
-          let canvaTop = document.createElement('canvas'); //creation du canva du vue top
-          canvaTop.id = 'canvas';
-          canvaTop.style.zIndex = '8';
-          canvaTop.style.border = '4px solid';
-          divTop.appendChild(canvaTop); //on ajoute le canva créé dans le divTop
-          this.canvas = new fabric.Canvas('canvas', {
-            //creation de l'objet canva du vueTop a l'aide du biblio fabric js
-            width: this.vehicule.largeur * 2.7,
-            height: this.vehicule.longueur * 2.7,
-            selection: false,
-          });
-
-          let row = document.createElement('canvas'); //creation du canva vue ligne
-          row.id = 'row';
-          row.style.zIndex = '8';
-          row.style.border = '4px solid';
-          divLigne.appendChild(row);
-          this.rows = new fabric.Canvas('row', {
-            //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
-            width: this.vehicule.largeur * 2.7,
-            height: this.vehicule.hauteur * 2.7,
-            selection: false,
-          });
-          let snap = 2; //Pixels to snap
-          let canvasWidth = this.vehicule.largeur * 2.7;
-          let canvasHeight = this.vehicule.hauteur * 2.7;
-          let rows = this.rows;
-          let canvas = this.canvas;
-          this.rows.on('object:moving', function (options: any) {
-            // Sets corner position coordinates based on current angle, width and height
-            options.target.setCoords();
-
-            // Don't allow objects off the canvas
-            if (options.target.left < snap) {
-              options.target.left = 0;
-            }
-
-            if (options.target.top < snap) {
-              options.target.top = 0;
-            }
-
-            if (
-              options.target.getScaledWidth() + options.target.left >
-              canvasWidth - snap
-            ) {
-              options.target.left =
-                canvasWidth - options.target.getScaledWidth();
-            }
-
-            if (
-              options.target.getScaledHeight() + options.target.top >
-              canvasHeight - snap
-            ) {
-              options.target.top =
-                canvasHeight - options.target.getScaledHeight();
-            }
-
-            // Loop through objects
-            rows.forEachObject(function (obj) {
-              if (obj === options.target) return;
-
-              // If objects intersect
-              if (
-                options.target.isContainedWithinObject(obj) ||
-                options.target.intersectsWithObject(obj) ||
-                obj.isContainedWithinObject(options.target)
-              ) {
-                var distX =
-                  (obj.left + obj.getScaledWidth()) / 2 -
-                  (options.target.left + options.target.getScaledWidth()) / 2;
-                var distY =
-                  (obj.top + obj.getScaledHeight()) / 2 -
-                  (options.target.top + options.target.getScaledHeight()) / 2;
-
-                // Set new position
-                findNewPos(distX, distY, options.target, obj);
-              }
-
-              // Snap objects to each other horizontally
-
-              // If bottom points are on same Y axis
-              if (
-                Math.abs(
-                  options.target.top +
-                    options.target.getScaledHeight() -
-                    (obj.top + obj.getScaledHeight())
-                ) < snap
-              ) {
-                // Snap target BL to object BR
-                if (
-                  Math.abs(
-                    options.target.left - (obj.left + obj.getScaledWidth())
-                  ) < snap
-                ) {
-                  options.target.left = obj.left + obj.getScaledWidth();
-                  options.target.top =
-                    obj.top +
-                    obj.getScaledHeight() -
-                    options.target.getScaledHeight();
-                }
-
-                // Snap target BR to object BL
-                if (
-                  Math.abs(
-                    options.target.left +
-                      options.target.getScaledWidth() -
-                      obj.left
-                  ) < snap
-                ) {
-                  options.target.left =
-                    obj.left - options.target.getScaledWidth();
-                  options.target.top =
-                    obj.top +
-                    obj.getScaledHeight() -
-                    options.target.getScaledHeight();
-                }
-              }
-
-              // If top points are on same Y axis
-              if (Math.abs(options.target.top - obj.top) < snap) {
-                // Snap target TL to object TR
-                if (
-                  Math.abs(
-                    options.target.left - (obj.left + obj.getScaledWidth())
-                  ) < snap
-                ) {
-                  options.target.left = obj.left + obj.getScaledWidth();
-                  options.target.top = obj.top;
-                }
-
-                // Snap target TR to object TL
-                if (
-                  Math.abs(
-                    options.target.left +
-                      options.target.getScaledWidth() -
-                      obj.left
-                  ) < snap
-                ) {
-                  options.target.left =
-                    obj.left - options.target.getScaledWidth();
-                  options.target.top = obj.top;
-                }
-              }
-
-              // Snap objects to each other vertically
-
-              // If right points are on same X axis
-              if (
-                Math.abs(
-                  options.target.left +
-                    options.target.getScaledWidth() -
-                    (obj.left + obj.getScaledWidth())
-                ) < snap
-              ) {
-                // Snap target TR to object BR
-                if (
-                  Math.abs(
-                    options.target.top - (obj.top + obj.getScaledHeight())
-                  ) < snap
-                ) {
-                  options.target.left =
-                    obj.left +
-                    obj.getScaledWidth() -
-                    options.target.getScaledWidth();
-                  options.target.top = obj.top + obj.getScaledHeight();
-                }
-
-                // Snap target BR to object TR
-                if (
-                  Math.abs(
-                    options.target.top +
-                      options.target.getScaledHeight() -
-                      obj.top
-                  ) < snap
-                ) {
-                  options.target.left =
-                    obj.left +
-                    obj.getScaledWidth() -
-                    options.target.getScaledWidth();
-                  options.target.top =
-                    obj.top - options.target.getScaledHeight();
-                }
-              }
-
-              // If left points are on same X axis
-              if (Math.abs(options.target.left - obj.left) < snap) {
-                // Snap target TL to object BL
-                if (
-                  Math.abs(
-                    options.target.top - (obj.top + obj.getScaledHeight())
-                  ) < snap
-                ) {
-                  options.target.left = obj.left;
-                  options.target.top = obj.top + obj.getScaledHeight();
-                }
-
-                // Snap target BL to object TL
-                if (
-                  Math.abs(
-                    options.target.top +
-                      options.target.getScaledHeight() -
-                      obj.top
-                  ) < snap
-                ) {
-                  options.target.left = obj.left;
-                  options.target.top =
-                    obj.top - options.target.getScaledHeight();
-                }
-              }
-            });
-
-            options.target.setCoords();
-
-            // If objects still overlap
-
-            var outerAreaLeft: any = null,
-              outerAreaTop: any = null,
-              outerAreaRight: any = null,
-              outerAreaBottom: any = null;
-
-            rows.forEachObject(function (obj) {
-              if (obj === options.target) return;
-
-              if (
-                options.target.isContainedWithinObject(obj) ||
-                options.target.intersectsWithObject(obj) ||
-                obj.isContainedWithinObject(options.target)
-              ) {
-                var intersectLeft = null,
-                  intersectTop = null,
-                  intersectWidth = null,
-                  intersectHeight = null,
-                  intersectSize = null,
-                  targetLeft = options.target.left,
-                  targetRight = targetLeft + options.target.getScaledWidth(),
-                  targetTop = options.target.top,
-                  targetBottom = targetTop + options.target.getScaledHeight(),
-                  objectLeft = obj.left,
-                  objectRight = objectLeft + obj.getScaledWidth(),
-                  objectTop = obj.top,
-                  objectBottom = objectTop + obj.getScaledHeight();
-
-                // Find intersect information for X axis
-                if (targetLeft >= objectLeft && targetLeft <= objectRight) {
-                  intersectLeft = targetLeft;
-                  intersectWidth =
-                    obj.getScaledWidth() - (intersectLeft - objectLeft);
-                } else if (
-                  objectLeft >= targetLeft &&
-                  objectLeft <= targetRight
-                ) {
-                  intersectLeft = objectLeft;
-                  intersectWidth =
-                    options.target.getScaledWidth() -
-                    (intersectLeft - targetLeft);
-                }
-
-                // Find intersect information for Y axis
-                if (targetTop >= objectTop && targetTop <= objectBottom) {
-                  intersectTop = targetTop;
-                  intersectHeight =
-                    obj.getScaledHeight() - (intersectTop - objectTop);
-                } else if (
-                  objectTop >= targetTop &&
-                  objectTop <= targetBottom
-                ) {
-                  intersectTop = objectTop;
-                  intersectHeight =
-                    options.target.getScaledHeight() -
-                    (intersectTop - targetTop);
-                }
-
-                // Find intersect size (this will be 0 if objects are touching but not overlapping)
-                if (intersectWidth > 0 && intersectHeight > 0) {
-                  intersectSize = intersectWidth * intersectHeight;
-                }
-
-                // Set outer snapping area
-                if (obj.left < outerAreaLeft || outerAreaLeft == null) {
-                  outerAreaLeft = obj.left;
-                }
-
-                if (obj.top < outerAreaTop || outerAreaTop == null) {
-                  outerAreaTop = obj.top;
-                }
-
-                if (
-                  obj.left + obj.getScaledWidth() > outerAreaRight ||
-                  outerAreaRight == null
-                ) {
-                  outerAreaRight = obj.left + obj.getScaledWidth();
-                }
-
-                if (
-                  obj.top + obj.getScaledHeight() > outerAreaBottom ||
-                  outerAreaBottom == null
-                ) {
-                  outerAreaBottom = obj.top + obj.getScaledHeight();
-                }
-
-                // If objects are intersecting, reposition outside all shapes which touch
-                if (intersectSize) {
-                  var distX =
-                    outerAreaRight / 2 -
-                    (options.target.left + options.target.getScaledWidth()) / 2;
-                  var distY =
-                    outerAreaBottom / 2 -
-                    (options.target.top + options.target.getScaledHeight()) / 2;
-
-                  // Set new position
-                  findNewPos(distX, distY, options.target, obj);
-                }
-              }
-            });
-            for (let i = 0; i < canvas.getObjects().length; i++) {
-              const obj: any = canvas.getObjects()[i];
-              if (
-                obj.id ===
-                (rows.getActiveObject() as unknown as IObjectWithId).id
-              ) {
-                canvas.setActiveObject(obj);
-              }
-            }
-            let canvasObject = canvas.getActiveObject();
-            canvasObject.left = options.target.left;
-
-            let listeObjTrie = rows
-              .getObjects()
-              .sort((a: any, b: any) => (a.top > b.top ? -1 : 1));
-            let objCanvas = canvas.getObjects();
-            for (let j = 0; j < listeObjTrie.length; j++) {
-              const objFiltre: any = listeObjTrie[j];
-              for (let i = 0; i < objCanvas.length; i++) {
-                const obj: any = objCanvas[i];
-                if (obj.id === objFiltre.id) {
-                  canvas.setActiveObject(obj);
-                }
-              }
-              let canvasObject = canvas.getActiveObject();
-              canvas.bringToFront(canvasObject);
-            }
-
-            canvasObject.setCoords();
-            canvas.discardActiveObject().renderAll();
-          });
-        });
-    } else {
-      this.servicePlanChargement
-        .vehiculeLoue(this.mission.matricule)
-        .subscribe((res: any) => {
-          this.vehicule = res;
-          let h: Number =
-            this.vehicule.longueur * 2.7 + this.vehicule.hauteur * 2.7 + 80; //conversion du longueur du véhicule vers pixel avec mise en echelle
-          container.style.height = h + 'px'; //definission du hauteur du contenaire
-
-          let divTop: any = document.getElementById('vueTop');
-          while (divTop.firstChild) {
-            //reinitialiser le canva avant de dessiner
-            divTop.removeChild(divTop.firstChild);
-          }
-          let divLigne: any = document.getElementById('vueLigne');
-          while (divLigne.firstChild) {
-            //reinitialiser le canva avant de dessiner
-            divLigne.removeChild(divLigne.firstChild);
-          }
-          let canva = document.createElement('canvas'); //creation du canva
-          canva.id = 'canvas';
-          canva.style.zIndex = '8';
-          canva.style.border = '4px solid';
-          divTop.appendChild(canva);
-          this.canvas = new fabric.Canvas('canvas', {
-            //definition du hauteur et largeur du canva
-            width: this.vehicule.largeur * 2.7,
-            height: this.vehicule.longueur * 2.7,
-            selection: false,
-          });
-
-          let row = document.createElement('canvas'); //creation du canva
-          row.id = 'row';
-          row.style.zIndex = '8';
-          row.style.border = '4px solid';
-          divLigne.appendChild(row);
-          this.rows = new fabric.Canvas('row', {
-            //definition du hauteur et largeur du canva
-            width: this.vehicule.largeur * 2.7,
-            height: this.vehicule.hauteur * 2.7,
-            selection: false,
-          });
-          let snap = 2; //Pixels to snap
-          let canvasWidth = this.vehicule.largeur * 2.7;
-          let canvasHeight = this.vehicule.hauteur * 2.7;
-          let rows = this.rows;
-          let canvas = this.canvas;
-          let canvasEnregistree;
-          this.rows.on('object:moving', function (options) {
-            // Sets corner position coordinates based on current angle, width and height
-            options.target.setCoords();
-
-            // Don't allow objects off the canvas
-            if (options.target.left < snap) {
-              options.target.left = 0;
-            }
-
-            if (options.target.top < snap) {
-              options.target.top = 0;
-            }
-
-            if (
-              options.target.getScaledWidth() + options.target.left >
-              canvasWidth - snap
-            ) {
-              options.target.left =
-                canvasWidth - options.target.getScaledWidth();
-            }
-
-            if (
-              options.target.getScaledHeight() + options.target.top >
-              canvasHeight - snap
-            ) {
-              options.target.top =
-                canvasHeight - options.target.getScaledHeight();
-            }
-
-            // Loop through objects
-            rows.forEachObject(function (obj) {
-              if (obj === options.target) return;
-
-              // If objects intersect
-              if (
-                options.target.isContainedWithinObject(obj) ||
-                options.target.intersectsWithObject(obj) ||
-                obj.isContainedWithinObject(options.target)
-              ) {
-                var distX =
-                  (obj.left + obj.getScaledWidth()) / 2 -
-                  (options.target.left + options.target.getScaledWidth()) / 2;
-                var distY =
-                  (obj.top + obj.getScaledHeight()) / 2 -
-                  (options.target.top + options.target.getScaledHeight()) / 2;
-
-                // Set new position
-                findNewPos(distX, distY, options.target, obj);
-              }
-
-              // Snap objects to each other horizontally
-
-              // If bottom points are on same Y axis
-              if (
-                Math.abs(
-                  options.target.top +
-                    options.target.getScaledHeight() -
-                    (obj.top + obj.getScaledHeight())
-                ) < snap
-              ) {
-                // Snap target BL to object BR
-                if (
-                  Math.abs(
-                    options.target.left - (obj.left + obj.getScaledWidth())
-                  ) < snap
-                ) {
-                  options.target.left = obj.left + obj.getScaledWidth();
-                  options.target.top =
-                    obj.top +
-                    obj.getScaledHeight() -
-                    options.target.getScaledHeight();
-                }
-
-                // Snap target BR to object BL
-                if (
-                  Math.abs(
-                    options.target.left +
-                      options.target.getScaledWidth() -
-                      obj.left
-                  ) < snap
-                ) {
-                  options.target.left =
-                    obj.left - options.target.getScaledWidth();
-                  options.target.top =
-                    obj.top +
-                    obj.getScaledHeight() -
-                    options.target.getScaledHeight();
-                }
-              }
-
-              // If top points are on same Y axis
-              if (Math.abs(options.target.top - obj.top) < snap) {
-                // Snap target TL to object TR
-                if (
-                  Math.abs(
-                    options.target.left - (obj.left + obj.getScaledWidth())
-                  ) < snap
-                ) {
-                  options.target.left = obj.left + obj.getScaledWidth();
-                  options.target.top = obj.top;
-                }
-
-                // Snap target TR to object TL
-                if (
-                  Math.abs(
-                    options.target.left +
-                      options.target.getScaledWidth() -
-                      obj.left
-                  ) < snap
-                ) {
-                  options.target.left =
-                    obj.left - options.target.getScaledWidth();
-                  options.target.top = obj.top;
-                }
-              }
-
-              // Snap objects to each other vertically
-
-              // If right points are on same X axis
-              if (
-                Math.abs(
-                  options.target.left +
-                    options.target.getScaledWidth() -
-                    (obj.left + obj.getScaledWidth())
-                ) < snap
-              ) {
-                // Snap target TR to object BR
-                if (
-                  Math.abs(
-                    options.target.top - (obj.top + obj.getScaledHeight())
-                  ) < snap
-                ) {
-                  options.target.left =
-                    obj.left +
-                    obj.getScaledWidth() -
-                    options.target.getScaledWidth();
-                  options.target.top = obj.top + obj.getScaledHeight();
-                }
-
-                // Snap target BR to object TR
-                if (
-                  Math.abs(
-                    options.target.top +
-                      options.target.getScaledHeight() -
-                      obj.top
-                  ) < snap
-                ) {
-                  options.target.left =
-                    obj.left +
-                    obj.getScaledWidth() -
-                    options.target.getScaledWidth();
-                  options.target.top =
-                    obj.top - options.target.getScaledHeight();
-                }
-              }
-
-              // If left points are on same X axis
-              if (Math.abs(options.target.left - obj.left) < snap) {
-                // Snap target TL to object BL
-                if (
-                  Math.abs(
-                    options.target.top - (obj.top + obj.getScaledHeight())
-                  ) < snap
-                ) {
-                  options.target.left = obj.left;
-                  options.target.top = obj.top + obj.getScaledHeight();
-                }
-
-                // Snap target BL to object TL
-                if (
-                  Math.abs(
-                    options.target.top +
-                      options.target.getScaledHeight() -
-                      obj.top
-                  ) < snap
-                ) {
-                  options.target.left = obj.left;
-                  options.target.top =
-                    obj.top - options.target.getScaledHeight();
-                }
-              }
-            });
-
-            options.target.setCoords();
-
-            // If objects still overlap
-
-            var outerAreaLeft: any = null,
-              outerAreaTop: any = null,
-              outerAreaRight: any = null,
-              outerAreaBottom: any = null;
-
-            rows.forEachObject(function (obj) {
-              if (obj === options.target) return;
-
-              if (
-                options.target.isContainedWithinObject(obj) ||
-                options.target.intersectsWithObject(obj) ||
-                obj.isContainedWithinObject(options.target)
-              ) {
-                var intersectLeft = null,
-                  intersectTop = null,
-                  intersectWidth = null,
-                  intersectHeight = null,
-                  intersectSize = null,
-                  targetLeft = options.target.left,
-                  targetRight = targetLeft + options.target.getScaledWidth(),
-                  targetTop = options.target.top,
-                  targetBottom = targetTop + options.target.getScaledHeight(),
-                  objectLeft = obj.left,
-                  objectRight = objectLeft + obj.getScaledWidth(),
-                  objectTop = obj.top,
-                  objectBottom = objectTop + obj.getScaledHeight();
-
-                // Find intersect information for X axis
-                if (targetLeft >= objectLeft && targetLeft <= objectRight) {
-                  intersectLeft = targetLeft;
-                  intersectWidth =
-                    obj.getScaledWidth() - (intersectLeft - objectLeft);
-                } else if (
-                  objectLeft >= targetLeft &&
-                  objectLeft <= targetRight
-                ) {
-                  intersectLeft = objectLeft;
-                  intersectWidth =
-                    options.target.getScaledWidth() -
-                    (intersectLeft - targetLeft);
-                }
-
-                // Find intersect information for Y axis
-                if (targetTop >= objectTop && targetTop <= objectBottom) {
-                  intersectTop = targetTop;
-                  intersectHeight =
-                    obj.getScaledHeight() - (intersectTop - objectTop);
-                } else if (
-                  objectTop >= targetTop &&
-                  objectTop <= targetBottom
-                ) {
-                  intersectTop = objectTop;
-                  intersectHeight =
-                    options.target.getScaledHeight() -
-                    (intersectTop - targetTop);
-                }
-
-                // Find intersect size (this will be 0 if objects are touching but not overlapping)
-                if (intersectWidth > 0 && intersectHeight > 0) {
-                  intersectSize = intersectWidth * intersectHeight;
-                }
-
-                // Set outer snapping area
-                if (obj.left < outerAreaLeft || outerAreaLeft == null) {
-                  outerAreaLeft = obj.left;
-                }
-
-                if (obj.top < outerAreaTop || outerAreaTop == null) {
-                  outerAreaTop = obj.top;
-                }
-
-                if (
-                  obj.left + obj.getScaledWidth() > outerAreaRight ||
-                  outerAreaRight == null
-                ) {
-                  outerAreaRight = obj.left + obj.getScaledWidth();
-                }
-
-                if (
-                  obj.top + obj.getScaledHeight() > outerAreaBottom ||
-                  outerAreaBottom == null
-                ) {
-                  outerAreaBottom = obj.top + obj.getScaledHeight();
-                }
-
-                // If objects are intersecting, reposition outside all shapes which touch
-                if (intersectSize) {
-                  var distX =
-                    outerAreaRight / 2 -
-                    (options.target.left + options.target.getScaledWidth()) / 2;
-                  var distY =
-                    outerAreaBottom / 2 -
-                    (options.target.top + options.target.getScaledHeight()) / 2;
-
-                  // Set new position
-                  findNewPos(distX, distY, options.target, obj);
-                }
-              }
-            });
-            for (let i = 0; i < canvas.getObjects().length; i++) {
-              const obj: any = canvas.getObjects()[i];
-              if (
-                obj.id ===
-                (rows.getActiveObject() as unknown as IObjectWithId).id
-              ) {
-                canvas.setActiveObject(obj);
-              }
-            }
-            let canvasObject = canvas.getActiveObject();
-            canvasObject.left = options.target.left;
-
-            let listeObjTrie = rows
-              .getObjects()
-              .sort((a: any, b: any) => (a.top > b.top ? -1 : 1));
-            let objCanvas = canvas.getObjects();
-            for (let j = 0; j < listeObjTrie.length; j++) {
-              const objFiltre: any = listeObjTrie[j];
-              for (let i = 0; i < objCanvas.length; i++) {
-                const obj: any = objCanvas[i];
-                if (obj.id === objFiltre.id) {
-                  canvas.setActiveObject(obj);
-                }
-              }
-              let canvasObject = canvas.getActiveObject();
-              canvas.bringToFront(canvasObject);
-            }
-            canvasObject.setCoords();
-            canvas.discardActiveObject().renderAll();
-          });
-        });
-    }
-    let premierChargement;
-    this.vehiculeEstAffiche
-      ? (premierChargement = false)
-      : (premierChargement = true);
-    this.vehiculeEstAffiche = true;
-    let vehicule = document.getElementById('vehicule');
-    premierChargement
-      ? setTimeout(() => {
-          this.scroll(vehicule);
-        }, 500)
-      : this.scroll(vehicule);
   }
 
   // créer plan chargement mode automatique
@@ -1073,6 +1112,7 @@ export class PlanChargementComponent implements OnInit {
           top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
           left: article.fit.x,
           id: idArticle,
+          idCommande: article.idCommande,
           centeredRotation: true,
         } as IGroupWithId);
         group.setControlsVisibility({
@@ -1092,7 +1132,7 @@ export class PlanChargementComponent implements OnInit {
       });
 
       this.listeCanvasLignesEnregistrees.push(
-        rowAEnregistrer.toJSON(['id', '_controlsVisibility'])
+        rowAEnregistrer.toJSON(['id', '_controlsVisibility', 'idCommande'])
       );
     }
 
@@ -1129,6 +1169,7 @@ export class PlanChargementComponent implements OnInit {
           top: top,
           left: article.fit.x,
           id: idArticleCanva,
+          idCommande: article.idCommande,
         } as IGroupWithId);
         group.setControlsVisibility({
           tl: false, //top-left
@@ -1150,7 +1191,7 @@ export class PlanChargementComponent implements OnInit {
       ligne.largeur = this.vehicule.largeur * 2.7;
     });
     this.canvasTopEnregistre = JSON.stringify(
-      topAEnregistrer.toJSON(['id', '_controlsVisibility'])
+      topAEnregistrer.toJSON(['id', '_controlsVisibility', 'idCommande'])
     );
 
     this.afficherPlanChargement();
@@ -1182,7 +1223,7 @@ export class PlanChargementComponent implements OnInit {
 
   changerLigne() {
     this.listeCanvasLignesEnregistrees[this.indexLignePrecedent] =
-      this.rows.toJSON(['id', '_controlsVisibility']);
+      this.rows.toJSON(['id', '_controlsVisibility', 'idCommande']);
 
     let divLigne: any = document.getElementById('vueLigne');
     this.rows.clear();
@@ -1354,11 +1395,24 @@ export class PlanChargementComponent implements OnInit {
   }
 
   enregistrer() {
+    this.canvasTopEnregistre = JSON.stringify(
+      this.canvas.toJSON(['id', '_controlsVisibility', 'idCommande'])
+    );
+    this.listeCanvasLignesEnregistrees[this.indexLigne] = this.rows.toJSON([
+      'id',
+      '_controlsVisibility',
+      'idCommande',
+    ]);
     let listeCanvasLignesEnregistreesStr = '';
     this.listeCanvasLignesEnregistrees.forEach((ligne) => {
-      listeCanvasLignesEnregistreesStr += JSON.stringify(ligne) + "|"
-    })
-    listeCanvasLignesEnregistreesStr = listeCanvasLignesEnregistreesStr.slice(0, -1)
+      listeCanvasLignesEnregistreesStr += JSON.stringify(ligne) + '|';
+    });
+    listeCanvasLignesEnregistreesStr = listeCanvasLignesEnregistreesStr.slice(
+      0,
+      -1
+    );
+    this.mission.canvasTop = this.canvasTopEnregistre;
+    this.mission.canvasFace = listeCanvasLignesEnregistreesStr;
     this.servicePlanChargement
       .enregistrerPlanChargement(
         this.mission.id,
@@ -1376,11 +1430,62 @@ export class PlanChargementComponent implements OnInit {
   }
 
   charger() {
+    this.lignes = [];
+    this.indexLigne = 0;
+    this.indexLignePrecedent = 0;
     this.canvas.loadFromJSON(this.mission.canvasTop, () => {
+      this.canvas.getObjects().forEach((obj: any) => {
+        let couleur = this.listeCommandes.filter(
+          (cmd: any) => cmd.id === Number(obj.idCommande)
+        )[0].couleur;
+        obj.item(0).set('fill', couleur);
+      });
       // making sure to render canvas at the end
       this.canvas.renderAll();
     });
     this.listeCanvasLignesEnregistrees = this.mission.canvasFace.split('|');
+    for (let i = 0; i < this.listeCanvasLignesEnregistrees.length; i++) {
+      let row = new fabric.Canvas('', {
+        //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
+        width: this.vehicule.largeur * 2.7,
+        height: this.vehicule.hauteur * 2.7,
+        selection: false,
+      });
+      row.loadFromJSON(this.listeCanvasLignesEnregistrees[i], () => {
+        // making sure to render canvas at the end
+        row.getObjects().forEach((obj: any) => {
+          let couleur = this.listeCommandes.filter(
+            (cmd: any) => cmd.id === Number(obj.idCommande)
+          )[0].couleur;
+          obj.item(0).set('fill', couleur);
+        });
+        this.lignes.push({
+          objects: row.getObjects(),
+          longueur: 0,
+          top: 0,
+          largeur: 0,
+        });
+      });
+      this.listeCanvasLignesEnregistrees[i] = row.toJSON([
+        'id',
+        '_controlsVisibility',
+        'idCommande',
+      ]);
+      let canvasTopOjects = this.canvas.getObjects();
+      for (let i = 0; i < this.lignes.length; i++) {
+        this.lignes[i].objects.forEach((obj: any) => {
+          let objet = canvasTopOjects.filter((ob: any) => ob.id === obj.id)[0];
+          if (objet.height > this.lignes[i].longueur) {
+            this.lignes[i].longueur = objet.height;
+          }
+          if (i > 0) {
+            this.lignes[i].top =
+              this.lignes[i - 1].longueur + this.lignes[i - 1].top;
+          }
+          this.lignes[i].largeur = this.canvas.width;
+        });
+      }
+    }
     this.rows.loadFromJSON(this.listeCanvasLignesEnregistrees[0], () => {
       // making sure to render canvas at the end
       this.rows.renderAll();
@@ -1423,9 +1528,11 @@ function findNewPos(distX: any, distY: any, target: any, obj: any) {
 
 interface IGroupWithId extends fabric.IGroupOptions {
   id: number;
+  idCommande: number;
 }
 interface IObjectWithId extends fabric.IObjectOptions {
   id: number;
+  idCommande: number;
 }
 interface IRectWithId extends fabric.IRectOptions {
   id: number;
