@@ -144,23 +144,26 @@
       </div>
    </div>
    <div class="ajout-manuel card" [style.height.px]="vehicule.hauteur * 2.7" *ngIf="vehicule">
-      <mat-form-field class="select-commande">
-         <mat-label>Commande</mat-label>
-         <mat-select [(value)]="commandeModeManuelSelectionne">
-            <mat-option *ngFor="let commande of listeCommandesModeManuel" [value]="commande">
-               {{commande.nomClient}}: {{commande.adresse}}, {{commande.ville}}
-            </mat-option>
-         </mat-select>
-      </mat-form-field>
-      <div *ngIf="commandeModeManuelSelectionne">
-         <div *ngFor="let obj of commandeModeManuelSelectionne.articles" style="display: flex; align-items: center;">
-            {{obj.nombrePack}} x 
-            <div [style.width.px]="obj.largeur" [style.height.px]="obj.hauteur"
-               [style.background]="commandeModeManuelSelectionne.couleur" class="objet" (click)="ajouterColisManuellement(obj)">{{obj.emballage}}</div>
+      <div class="partie-ajout">
+         <mat-form-field class="select-commande">
+            <mat-label>Commande</mat-label>
+            <mat-select [(value)]="commandeModeManuelSelectionne">
+               <mat-option *ngFor="let commande of listeCommandesModeManuel" [value]="commande">
+                  {{commande.nomClient}}: {{commande.adresse}}, {{commande.ville}}
+               </mat-option>
+            </mat-select>
+         </mat-form-field>
+         <div *ngIf="commandeModeManuelSelectionne" id="liste-objets" class="scrollbar">
+            <div *ngFor="let obj of commandeModeManuelSelectionne.articles" style="display: flex; align-items: center;">
+               {{obj.nombrePack}} x
+               <div [style.width.px]="obj.largeur" [style.height.px]="obj.hauteur"
+                  [style.background]="commandeModeManuelSelectionne.couleur" class="objet" (click)="ajouterColisManuellement(obj)">{{obj.emballage}}</div>
+            </div>
          </div>
+         <button mat-raised-button color="primary" style="margin-top: auto; width: 100%;" (click)="ajouterNouvelleLigne()">nouvelle ligne</button>
+         <button mat-raised-button color="warn" style="margin-top: 5px; width: 100%;" (click)="supprimerLigne()"><mat-icon style="transform: scale(0.7);">delete</mat-icon>supprimer dernière ligne</button>
       </div>
-      <button mat-raised-button color="primary" style="margin-top: auto;" (click)="ajouterNouvelleLigne()">nouvelle ligne</button>
-      <button mat-raised-button color="warn" style="margin-top: 5px;"><mat-icon style="transform: scale(0.7);">delete</mat-icon>supprimer ligne</button>
+      <div class="resize"></div>
    </div>
    <div class="boite-outils card">
       <button mat-button (click)="viderCanvas()">nouveau</button>

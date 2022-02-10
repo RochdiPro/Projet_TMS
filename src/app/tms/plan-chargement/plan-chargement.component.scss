@@ -1,3 +1,28 @@
+// pour changer le style du scrollbar
+.scrollbar::-webkit-scrollbar {
+  display: block;
+  width: 3px;
+}
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba($color: #000000, $alpha: 0.3);
+  border-right: none;
+  border-left: none;
+}
+
+.scrollbar::-webkit-scrollbar-track-piece:end {
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+.scrollbar::-webkit-scrollbar-track-piece:start {
+  background: transparent;
+  margin-top: 20px;
+}
+
 // style des filtres
 .filtres {
   width: 15%;
@@ -173,8 +198,21 @@ p {
   position: absolute;
   left: 20px;
   bottom: 85px;
+  display: flex;
+  flex-direction: row;
+}
+
+.partie-ajout{
   width: 250px;
   padding: 20px;
+  height: 100%;
+  display: block;
+}
+
+.resize{
+  height: 100%;
+  width: 50px;
+  background-color: #000000;
 }
 
 .select-commande {
@@ -190,6 +228,11 @@ p {
   justify-content: center;
   margin: 20px;
   cursor: pointer;
+}
+
+#liste-objets {
+  overflow: auto;
+  margin-bottom: 10px;
 }
 //pour mobile
 @media only screen and (max-width: 760px),

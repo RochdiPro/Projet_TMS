@@ -6,7 +6,7 @@ import {
   trigger,
 } from '@angular/animations';
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -100,6 +100,15 @@ export class PlanChargementComponent implements OnInit {
   root: { x: number; y: number; largeur: number; hauteur: number }; //le root represente le rectangle que
   canvas: fabric.Canvas;
   rows: fabric.Canvas;
+
+  mouse: any //variable contient coordonnée du curseur
+  @HostListener('window:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent){
+     this.mouse = {
+        x: event.clientX,
+        y: event.clientY
+     }
+  }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
@@ -1024,7 +1033,7 @@ export class PlanChargementComponent implements OnInit {
         longueur: 0,
         largeur: this.vehicule.largeur * 2.7,
         hauteur: this.vehicule.hauteur * 2.7,
-        articles: [],
+        objects: [],
       },
     ];
     let colis: any = [];
@@ -1069,7 +1078,7 @@ export class PlanChargementComponent implements OnInit {
           longueur: 0,
           largeur: this.vehicule.largeur * 2.7,
           hauteur: this.vehicule.hauteur * 2.7,
-          articles: [],
+          objects: [],
         });
       }
       // on initialise le root
@@ -1077,7 +1086,7 @@ export class PlanChargementComponent implements OnInit {
       // on place les colis dans leurs places
       this.fit(colis, lignes[i]);
       // pour chaque colis affectée dans une ligne en supprime se colis de la liste des colis non affectées
-      lignes[i].articles.forEach((article: any) => {
+      lignes[i].objects.forEach((article: any) => {
         let index = colis.findIndex((coli: any) => coli.id === article.id);
         colis.splice(index, 1);
       });
@@ -1098,10 +1107,10 @@ export class PlanChargementComponent implements OnInit {
         selection: false,
       });
       for (let i = 0; i < j; i++) {
-        nombreArticleDansLignesPrecedentes += this.lignes[i].articles.length;
+        nombreArticleDansLignesPrecedentes += this.lignes[i].objects.length;
       }
       let idArticle = nombreArticleDansLignesPrecedentes;
-      this.lignes[j].articles.forEach((article: any) => {
+      this.lignes[j].objects.forEach((article: any) => {
         const rect = new fabric.Rect({
           originX: 'center',
           originY: 'center',
@@ -1162,7 +1171,7 @@ export class PlanChargementComponent implements OnInit {
     let idArticleCanva = 0;
     this.lignes.forEach((ligne: any) => {
       let longueur = 0;
-      ligne.articles.forEach((article: any) => {
+      ligne.objects.forEach((article: any) => {
         if (longueur < article.longueur) {
           longueur = article.longueur;
         }
@@ -1316,7 +1325,7 @@ export class PlanChargementComponent implements OnInit {
         (node = this.chercherNoeud(this.root, block.largeur, block.hauteur))
       ) {
         block.fit = this.diviserNoeud(node, block.largeur, block.hauteur);
-        ligne.articles.push(block);
+        ligne.objects.push(block);
       }
     }
   }
@@ -1642,7 +1651,7 @@ export class PlanChargementComponent implements OnInit {
     });
   }
 
-  ajouterNouvelleLigne() {
+  ajouterNouvelleLigne() { 
     if (this.lignes[this.lignes.length - 1].objects.length === 0) return;
     let top =
       this.lignes[this.lignes.length - 1].top +
@@ -1702,6 +1711,40 @@ export class PlanChargementComponent implements OnInit {
     article.nombrePack++;
     this.canvas.remove(this.canvas.getActiveObject());
     this.rows.remove(this.rows.getActiveObject());
+  }
+  supprimerLigne() {
+    this.indexLigne = this.lignes.length - 1;
+    this.changerLigne();
+    if (this.lignes[this.indexLigne].objects.length !== 0) {
+      this.rows.getObjects().forEach((obj:any) => {
+        this.rows.setActiveObject(obj);
+        this.supprimerObjet();
+      })
+    }
+    this.lignes.splice(this.indexLigne,1);
+    this.listeCanvasLignesEnregistrees.splice(this.indexLigne,1);
+    this.rows.clear();
+    this.indexLigne = this.lignes.length - 1;
+    this.rows.clear();
+    this.rows.loadFromJSON(
+      this.listeCanvasLignesEnregistrees[this.indexLigne],
+      () => {
+        // making sure to render canvas at the end
+        this.rows.renderAll();
+      }
+    );
+    this.indexLignePrecedent = this.indexLigne;
+    if(this.lignes.length === 0) {
+      this.lignes.push({
+        objects: [],
+        longueur: 0,
+        top: 0,
+        largeur: this.canvas.width,
+      });
+      this.indexLigne = 0;
+      this.indexLignePrecedent = 0;
+    }
+    console.log(this.lignes);
   }
 }
 
