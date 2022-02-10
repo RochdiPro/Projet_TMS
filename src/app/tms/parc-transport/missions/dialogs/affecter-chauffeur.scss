@@ -1,24 +1,236 @@
-.container{
-  padding: 0 20px;
+// backgroud du boite dilaogue
+::ng-deep .affecter-chauffeur {
+  mat-dialog-container {
+    background-image: radial-gradient(
+      circle farthest-corner at 12.3% 19.3%,
+      rgba(85, 88, 218, 1) 0%,
+      rgba(95, 209, 249, 1) 100.2%
+    );
+  }
 }
+
+// pour changer le style du scrollbar
+.scrollbar::-webkit-scrollbar {
+  display: block;
+  width: 3px;
+}
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba($color: #000000, $alpha: 0.3);
+  border-right: none;
+  border-left: none;
+}
+
+.scrollbar::-webkit-scrollbar-track-piece:end {
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+.scrollbar::-webkit-scrollbar-track-piece:start {
+  background: transparent;
+  margin-top: 20px;
+}
+
 div {
   width: 100%;
 }
-.mat-form-field, p {
-  width: 50%;
+.mat-form-field {
+  width: 15%;
 }
 
-td {
-  width: 50%;
+// style du title (matricule vehicule)
+h1 {
+  font-size: 3em;
+  color: white;
+  padding: 20px;
 }
-tbody th {
-    padding-top: 0;
+
+// style div de l'ajout du chauffeur
+.chauffeur ::ng-deep .mat-form-field-underline {
+  display: none;
 }
-.inline-flex {
+
+.chauffeur ::ng-deep .mat-form-field-type-mat-select .mat-form-field-label,
+.chauffeur ::ng-deep .mat-select-value-text {
+  color: white !important;
+}
+
+.chauffeur ::ng-deep .mat-form-field-type-mat-input .mat-form-field-label,
+.chauffeur ::ng-deep .mat-input-value-text {
+  color: white !important;
+}
+
+.chauffeur {
+  padding: 0px;
+  padding-bottom: 0px;
+  color: white;
   display: flex;
-  flex-direction: row;
+  gap: 20px;
+}
+
+.chauffeur i {
+  margin-right: 10px;
+  font-size: 2rem;
+}
+
+// style titre partie commande
+h2 {
+  color: white;
+  font-size: 2em;
+  margin: 0;
+}
+
+// partie info commande
+.commandes {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  display: flex;
+}
+
+// partie liste Commandes
+.liste-commandes {
+  position: relative;
+  height: 100%;
+  width: 183px;
+  overflow: auto;
+}
+
+.liste-commandes ul {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding-left: 15px;
+  padding-top: 15px;
+}
+
+.liste-commandes ul li {
+  position: relative;
+  list-style: none;
+  width: 100%;
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.liste-commandes ul li.active {
+  background: white;
+}
+
+.liste-commandes ul li.active a {
+  color: #2b343b;
+  font-size: 1.1em;
+  font-weight: 600;
+}
+
+.liste-commandes ul li.active a::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow: 15px 15px 0 white;
+}
+
+.liste-commandes ul li.active a::after {
+  content: "";
+  position: absolute;
+  bottom: -30px;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border-radius: 50%;
+  box-shadow: 15px -15px 0 white;
+}
+
+.liste-commandes ul li a {
+  position: relative;
+  display: block;
+  width: 100%;
+  display: flex;
+  text-decoration: none;
+  color: #fff;
+  padding-left: 10px;
+  height: 60px;
+  line-height: 60px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+// partie liste colisage
+
+.container-colis {
+  height: 340px;
+  width: 80%;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: -40px;
+  left: 180px;
+  background: white;
+  border-radius: 20px;
+  overflow: auto;
+}
+
+table {
+  width: calc(100% - 40px);
+  margin: 20px;
+  overflow: auto;
+}
+
+tr ~ tr {
+  margin-top: 10px;
+}
+
+// style du bouton valider
+.actions a {
+  margin: 5px;
+  background: #2b343b;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-align: center;
+  vertical-align: middle;
+  color: white;
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.actions .active:hover {
+  color: #5ec5f6;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+}
+
+.actions .active {
+  opacity: 1;
+  cursor: pointer;
+}
+
+// style du spinner
+.spinner{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
   align-items: center;
 }
-p{
-  font-weight: bold;
+
+.loader {
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

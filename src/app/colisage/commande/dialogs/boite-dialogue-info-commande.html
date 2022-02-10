@@ -3,6 +3,7 @@
 <!-- fin Bouton Fermer -->
 <h1 mat-dialog-title>Information commande</h1>
 <div *ngIf="listeColisage">
+    <!-- informations du client -->
     <div class="client">
         <h2>Client</h2>
         <div class="information-client">
@@ -38,9 +39,11 @@
                 <div class="colonne">{{data.commande.numPieceIdentite}}</div>
             </div>
         </div>
+        <!-- position client -->
         <div class="localisation">
             <div style="display: flex; align-items: center;">
                 <h3>localisation</h3>
+                <!-- bouton modifier position client -->
                 <button mat-icon-button style="margin-left: auto;"
                     (click)="ouvrirBoiteDialogueModifierPosition(this.data.commande)" *ngIf="wms >= 3">
                     <mat-icon>edit</mat-icon>
@@ -56,14 +59,17 @@
             </div>
         </div>
     </div>
+    <!-- liste colisage -->
     <div class="liste-colisage">
         <div style="display: flex; align-items: center;">
             <h2>Liste colisage</h2>
+            <!-- bouton modifier liste colisage -->
             <button mat-icon-button style="margin-left: auto;"
                 (click)="ouvrirBoiteDialogueModifierColisage(this.data.commande)" *ngIf="wms >= 3">
                 <mat-icon>edit</mat-icon>
             </button>
         </div>
+        <!-- table liste colisage -->
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -83,8 +89,8 @@
                     <th scope="row">{{colis.idProduit}}</th>
                     <td>{{colis.produit}}</td>
                     <td>{{colis.emballage}}</td>
-                    <td>{{colis.nombrePack}}</td>
                     <td>{{colis.quantite}}</td>
+                    <td>{{colis.nombrePack}}</td>
                     <td>{{colis.dimensions}}</td>
                     <td>{{colis.volume}}</td>
                     <td>{{colis.poidsNet}}</td>

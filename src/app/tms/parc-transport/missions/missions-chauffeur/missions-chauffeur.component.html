@@ -1,0 +1,184 @@
+<!-- partie de navigation entre les tabs (en attente, en cours, terminée) -->
+<div class="nav-tabs">
+    <div [ngClass]="{'active': enAttenteEstClique}" (click)="cliquerEnAttente()">
+        <a href="javascript:void(0);">En attente</a>
+    </div>
+    <div [ngClass]="{'active': enCoursEstClique}" (click)="cliquerEnCours()">
+        <a href="javascript:void(0);">En cours</a>
+    </div>
+    <div [ngClass]="{'active': termineEstClique}" (click)="cliquerTerminee()">
+        <a href="javascript:void(0);">Terminée</a>
+    </div>
+</div>
+<!-- table des missions qui va se changer selon l'état séléctionnée -->
+<div class="missions">
+    <div class="filtre-date" [@statusTableMissions]="statusTableMissions" [formGroup]="formDate" *ngIf="filtreDateAffiche">
+        <button mat-icon-button (click)="datePrecedente()">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
+        <mat-form-field class="date">
+            <input matInput [matDatepicker]="picker" formControlName="date" (focus)="picker.open()" (dateChange)="filtrerMissionsParDate()">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <button mat-icon-button (click)="dateSuivante()">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
+    </div>
+    <table [@statusTableMissions]="statusTableMissions">
+        <tr *ngFor="let mission of this.missionsAffiche" class="card">
+            <td scope="row" (click)="getCommandesMission(mission); this.toggleDetailMission();">
+                <div class="entete">
+                    <div class="temps">
+                        <i class="fas fa-clock"></i>
+                        ~ _h __m
+                    </div>
+                    <div class="matricule">
+                        <label>Matricule</label>
+                        {{mission.matricule}}
+                    </div>
+                    <div class="id-mission">
+                        <label>ID</label>
+                        {{mission.id}}
+                    </div>
+                </div>
+                <div class="detail">
+                    <div>
+                        <label>Nbr commandes</label>
+                        {{nbrCommandes(mission)}}
+                    </div>
+                    <div>
+                        <label>Poids</label>
+                        {{poidsMission (mission)}} kg
+                    </div>
+                    <div>
+                        <label>Volume</label>
+                        {{volumeMission(mission)}} m³
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- détail d'une mission -->
+<div class="mission" [@statusDetailMission]="statusDetailMission">
+    <!-- toggle qui cache le détail de la mission -->
+    <div class="slide-here" (click)="toggleDetailMission()"></div>
+    <div class="btn-naviguer">
+        <i class="fas fa-directions" (click)="ouvrirMap()"></i>
+    </div>
+    <!-- map qui contient traget de la mission -->
+    <iframe class="trajet" width="100%" height="500" frameborder="0" [src]="lien | safe: 'resourceUrl'" loading="lazy"
+        style="border:0;">
+    </iframe>
+    <!-- les détails d'une mission -->
+    <div class="details" [@statusAfficherCommandes]="statusAfficherCommandes"
+        *ngIf="missionSelectionnee && commandesNonLivrees">
+        <!-- nombre commandes non livrées -->
+        <div class="compteur-commandes">
+            {{commandesNonLivrees.length}} commandes non livrées
+        </div>
+        <!-- id de la mission -->
+        <div id="id-mission">
+            <div class="icon"><i class="fas fa-hashtag"></i></div>
+            {{missionSelectionnee.id}}
+        </div>
+        <!-- matricule et etat mission -->
+        <div class="informations">
+            <div>
+                <label>Matricule</label>
+                {{missionSelectionnee.matricule}}
+            </div>
+            <div>
+                <label>Etat</label>
+                {{missionSelectionnee.etat}}
+            </div>
+        </div>
+        <!-- boutons d'action -->
+        <div class="boutons">
+            <!-- bouton détatil qui affiche la liste des commandes dans une mission -->
+            <a href="javascript:void(0);" (click)=" toggleAfficherCommandes()">Détails</a>
+            <ng-container *ngIf="missionSelectionnee.etat === 'En cours'; else elseTemplate">
+                <!-- si l'etat du mission est 'en cours' on affiche le bouton 'Livrer' -->
+                <a href="javascript:void(0);" (click)="ouvrirConfirmationLivraison(missionSelectionnee)">Livrer</a>
+            </ng-container>
+            <ng-template #elseTemplate>
+                <ng-container *ngIf="missionSelectionnee.etat === 'En attente'; else elseTemplate2">
+                    <!-- si l'etat du mission est 'en attente' on affiche le bouton 'Lancer' -->
+                    <a href="javascript:void(0);" (click)="lancerMission(missionSelectionnee.id)"
+                        [ngClass]="{'disable': missionEnCoursExiste}">Lancer</a>
+                </ng-container>
+                <ng-template #elseTemplate2>
+                    <!-- si l'etat du mission est 'Terminée' on affiche le bouton 'Terminée' est qui est desactivé -->
+                    <a href="javascript:void(0);" class="disable">Terminée</a>
+                </ng-template>
+
+            </ng-template>
+
+        </div>
+        <!-- une séparation entre les infos générales mission et liste des commandes -->
+        <div id="separateur"></div>
+        <div class="details-mission">
+            <!-- table des commandes non Livrées -->
+            <table>
+                <tr *ngFor="let commande of commandesNonLivrees" class="card">
+                    <td scope="row" (click)="ouvrirDetailCommande(commande.id)">
+                        <div class="entete">
+                            <div id="icon-map-marker" class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="adresse">
+                                <label>{{commande.type}} Numéro {{commande.referenceDocument}}</label>
+                                {{commande.adresse}}, {{commande.ville}}
+                            </div>
+                        </div>
+                        <div class="client">
+                            <div>
+                                <i class="fas fa-user-alt"></i>
+                                <div>
+                                    <label>Client</label>
+                                    {{commande.nomClient}}
+                                </div>
+                            </div>
+                            <div>
+                                <i class="fas fa-phone-alt"></i>
+                                <div>
+                                    <label>Téléphone</label>
+                                    {{commande.telephone}}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <!-- table des commandes livrées -->
+            <table>
+                <tr *ngFor="let commande of commandesLivrees" class="card delivered">
+                    <td scope="row" (click)="ouvrirDetailCommande(commande.id)">
+                        <div class="entete">
+                            <div id="icon-map-marker" class="icon"><i class="fas fa-map-marker-alt"></i></div>
+                            <div class="adresse">
+                                <label>{{commande.type}} Numéro {{commande.referenceDocument}}</label>
+                                {{commande.adresse}}, {{commande.ville}}
+                            </div>
+                        </div>
+                        <div class="client">
+                            <div>
+                                <i class="fas fa-user-alt"></i>
+                                <div>
+                                    <label>Client</label>
+                                    {{commande.nomClient}}
+                                </div>
+                            </div>
+                            <div>
+                                <i class="fas fa-phone-alt"></i>
+                                <div>
+                                    <label>Téléphone</label>
+                                    {{commande.telephone}}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

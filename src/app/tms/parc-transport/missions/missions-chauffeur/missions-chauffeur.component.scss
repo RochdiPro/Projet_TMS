@@ -1,0 +1,363 @@
+// style de la barre de navigation entre les tabs
+.nav-tabs {
+  display: flex;
+  border-radius: 5px;
+  background-color: #ececec;
+}
+.nav-tabs > div {
+  width: 33.33%;
+  display: flex;
+}
+a {
+  margin: 5px auto;
+  color: #cdcdcd;
+  font-weight: 500;
+}
+
+a:focus {
+  text-decoration: none;
+}
+
+// style du bouton du tab active
+.active {
+  background-color: #fddc3f;
+  border-radius: 5px;
+}
+
+.active > a {
+  color: black;
+}
+
+table {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+tr {
+  margin-top: 10px;
+}
+
+// style de la partie qui contient les infos générales d'une mission dans le tableau mission
+.entete {
+  display: flex;
+  padding: 15px;
+  align-items: center;
+}
+// style de la partie qui contient le temps estimé
+.temps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #a1a1a1;
+}
+
+.temps > i {
+  font-size: 25px;
+  color: #fddc3f;
+}
+
+// style matricule du vehicule
+.matricule {
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.matricule > label {
+  margin: 0;
+  font-size: 11px;
+  color: #a1a1a1;
+}
+
+// style id mission
+.id-mission {
+  display: flex;
+  flex-direction: column;
+  margin-left: 30px;
+  font-weight: 500;
+  font-size: 18px;
+  margin-left: auto;
+  margin-right: 15px;
+}
+
+.id-mission > label {
+  margin: 0;
+  font-size: 11px;
+  color: #a1a1a1;
+}
+
+// style detail mission qui vas s'afficher dans la card mission dans tables des missions
+.detail {
+  display: flex;
+  padding: 15px;
+  padding-top: 0;
+}
+
+.detail > div {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.detail label {
+  margin: 0;
+  font-size: 10px;
+  color: #a1a1a1;
+}
+
+.detail > div ~ div {
+  border-left: 2px solid #dedede;
+}
+.detail > div:nth-child(2) {
+  margin-left: auto;
+  padding: 0 20px;
+}
+.detail > div:nth-child(3) {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+// le container des details d'une mission
+.mission {
+  height: calc(100vh - 70px);
+  width: 100vw;
+  background-color: white;
+  position: fixed;
+  top: 70px;
+  left: 0;
+  border-radius: 20px 20px 0px 0px;
+  box-shadow: 0px -1px 20px 0px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 16;
+}
+
+// style du toggle qui va cacher les détails d'une mission
+.slide-here {
+  width: 40px;
+  height: 6px;
+  background-color: #a1a1a1;
+  border-radius: 10px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 10px;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  z-index: 5;
+  display: block;
+}
+// style du map
+iframe {
+  height: calc(100% - 200px);
+  width: 100%;
+  z-index: 0;
+}
+// style des détails de la mission
+.details {
+  background-color: white;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+  position: absolute;
+  top: calc(100% - 200px);
+}
+// style des boutons
+.boutons {
+  margin: 15px 0;
+  width: 100%;
+  display: flex;
+  padding: 0 15px;
+  gap: 15px;
+}
+
+.details a {
+  padding: 10px 0;
+  text-align: center;
+  width: 100%;
+  border-radius: 100px;
+  font-size: 12px;
+}
+
+.details a:nth-child(1) {
+  color: white;
+  background-color: black;
+}
+
+.details a:nth-child(2) {
+  color: black;
+  background-color: #fddc3f;
+}
+
+// nombre de commandes non livrées
+.compteur-commandes {
+  background-color: #fddc3f;
+  width: fit-content;
+  padding: 2.5px 10px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 500;
+  margin: 15px 0 5px 15px;
+}
+
+// style des info de la mission
+.informations {
+  display: flex;
+  flex-direction: row;
+}
+
+.informations div {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  padding-left: 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.informations div ~ div {
+  border-left: 2px solid #dedede;
+}
+
+.informations label {
+  margin: 0;
+  font-size: 11px;
+  color: #a1a1a1;
+}
+
+#id-mission {
+  display: flex;
+  font-size: 25px;
+  font-weight: 500;
+  align-items: center;
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  background: #dedede;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border-radius: 100%;
+  margin: 5px 15px;
+}
+
+.details-mission {
+  width: 100%;
+  height: calc(100vh - 285px);
+  overflow-y: auto;
+  background-color: #f1f4f6;
+  padding: 15px 15px;
+  padding-top: 0;
+}
+
+#icon-map-marker {
+  background-color: #fddc3f;
+  margin: 0;
+}
+
+.adresse {
+  display: flex;
+  flex-direction: column;
+  margin-left: 15px;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.adresse > label {
+  margin: 0;
+  font-size: 11px;
+  color: #a1a1a1;
+}
+
+.client {
+  display: flex;
+  padding: 15px;
+  padding-top: 0;
+}
+
+.client > div {
+  display: flex;
+  font-size: 14px;
+  width: 50%;
+  align-items: center;
+}
+
+.client i {
+  font-size: 25px;
+  padding-right: 15px;
+}
+
+.client > div > div {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.client label {
+  margin: 0;
+  font-size: 9px;
+  color: #a1a1a1;
+}
+
+.client > div ~ div {
+  border-left: 2px solid #dedede;
+  padding-left: 15px;
+}
+#separateur {
+  height: 10px;
+  width: 100%;
+  background-color: #f1f4f6;
+}
+// style de la liste des commandes livrées
+.delivered {
+  opacity: 0.5;
+  color: currentColor;
+}
+// disable du bouton terminée
+.disable {
+  cursor: not-allowed;
+  opacity: 0.5;
+  color: currentColor;
+  display: inline-block; /* For IE11/ MS Edge bug */
+  pointer-events: none;
+  text-decoration: none;
+}
+
+a,
+a:hover,
+a:active,
+a:visited,
+a:link {
+  text-decoration: none;
+}
+
+// style du input date
+.date {
+  width: 110px;
+}
+
+// style du filtre date
+.filtre-date {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-naviguer {
+  position: absolute;
+  bottom: 320px;
+  right: 10px;
+  font-size: 40px;
+  cursor: pointer;
+}

@@ -18,12 +18,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { QRCodeModule } from 'angular2-qrcode';
 import { SafePipeModule } from 'safe-pipe';
-import { DirectionsMapDirective } from '../../../directions-map.directive';
 import { AjoutMissionComponent } from './ajout-mission/ajout-mission.component';
 import { MissionsRoutingModule } from './missions-routing.module';
-import { AffecterCommande, DetailComponent, MapsComponent, MissionsComponent, QrCodeComponent } from './missions.component';
-import { AffecterChauffeur } from './dialogs/dialogs.component';
+import { MissionsComponent } from './missions.component';
+import { AffecterMultiChauffeur, AffecterChauffeur, DetailComponent, PositionComponent, DetailCommande, ConfirmerLivraison, ModifierMission, ConfirmationAnnulationMission, Trajet } from './dialogs/dialogs.component';
 import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
+import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauffeur.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 
 
@@ -36,12 +37,16 @@ import { ListerMissionsComponent } from './lister-missions/lister-missions.compo
     MissionsComponent,
     ListerMissionsComponent,
     DetailComponent,
-    MapsComponent,
-    AffecterCommande,
-    QrCodeComponent,
-    DirectionsMapDirective,
+    PositionComponent,
     AjoutMissionComponent,
-    AffecterChauffeur
+    AffecterMultiChauffeur,
+    AffecterChauffeur,
+    MissionsChauffeurComponent,
+    DetailCommande,
+    ConfirmerLivraison,
+    ModifierMission,
+    ConfirmationAnnulationMission,
+    Trajet
 
   ],
   imports: [
@@ -67,7 +72,8 @@ import { ListerMissionsComponent } from './lister-missions/lister-missions.compo
     MatButtonModule,
     MatCheckboxModule,
     MatListModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    DragDropModule
   ],
   providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 

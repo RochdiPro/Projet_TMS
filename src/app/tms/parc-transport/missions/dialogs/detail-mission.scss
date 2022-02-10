@@ -1,0 +1,153 @@
+.card {
+  overflow: hidden;
+}
+
+//style info chauffeur
+.info {
+  padding-top: 20px;
+}
+
+// image chauffeur
+img {
+  object-fit: cover;
+}
+
+.row {
+  width: 100%;
+  margin: 0;
+}
+
+// couleur etat mission
+.attente {
+  color: #f7b924;
+}
+.termine {
+  color: #4bb543;
+}
+
+th {
+  width: 40px;
+}
+table {
+  width: 100%;
+}
+
+.container-commande,
+.container-info-mission {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.container-info-mission{
+  padding: 0 28.8px;
+}
+
+// style des element dans le td du tableau
+h1 {
+  text-transform: uppercase;
+}
+
+h2 {
+  padding-left: 20px;
+  text-transform: uppercase;
+}
+
+h2 ~ h2 {
+  padding-top: 20px;
+}
+
+h3 {
+  display: flex;
+  padding-left: 30px;
+  font-weight: 500;
+  margin: 0;
+  color: #3f6ad8;
+  height: 40px;
+  align-items: center;
+}
+
+p {
+  color: #343a40;
+}
+
+tr {
+  padding: 0 20px;
+}
+
+tr ~ tr {
+  margin-top: 20px;
+}
+::ng-deep .custom-dialog-detail-mission {
+  mat-dialog-container {
+    background-color: #f1f1f1 !important;
+  }
+}
+
+// a voir
+.container-info-chauffeurs {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: 130px;
+  grid-gap: 20px;
+}
+
+.container-info-chauffeur {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 130px;
+}
+
+// style bouton d'affichage position
+.position{
+  display: none;
+}
+
+tr:hover .position {
+  display: inline-block;
+}
+tr:hover {
+  background: #f9f9f9;
+}
+.container-commande:hover, h3:hover {
+  cursor: pointer;
+}
+//pour mobile
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  p, h5 {
+    font-size: 12px;
+  }
+  .container-commande,
+  .container-info-mission {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  h1 {
+    font-size: 18px;
+  }
+
+  h2 {
+    font-size: 14px;
+  }
+
+  h3 {
+    font-size: 14px;
+    padding-left: 0px;
+  }
+  .container-info-chauffeurs,
+  .container-info-chauffeur {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+  .position{
+    display: inline-block;
+  }
+  .container-info-mission{
+    padding: 0 18.8px;
+  }
+  tr {
+    padding: 0 10px;
+  }
+}

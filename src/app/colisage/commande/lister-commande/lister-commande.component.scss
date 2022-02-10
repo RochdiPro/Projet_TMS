@@ -1,17 +1,23 @@
+// on fixe un height max pour eviter le scroll bar au niveau du page 
+// le scroll bar va apparaitre au niveau du tablea
 .mat-table {
   max-height: 45vh;
   overflow-y: auto;
 }
+// media query pour l'affichage mobile
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {
+  // style des boutons
   button {
     width: 50px;
   }
+  // dans l'affichage mobile on elimine le height max 
   .mat-table {
     max-height: none;
     overflow-y: auto;
   }
 
+  // pour l'affichage mobile on force le tableau a ne pas comporter comme un tableau mais comme des blocks
   .mat-table {
     border: 0;
     vertical-align: middle;
@@ -38,6 +44,7 @@
     padding-right: 5%;
     padding-bottom: 4%;
   }
+  // lorsqu'on a changé la nature du tableau, on cache les headers car on ne peut pas les controller comme les cells c'est pourquoi on ajoute des labels avant chaque donnée
   .mat-table .mat-cell:before {
     content: attr(data-label);
     float: left;
@@ -59,6 +66,8 @@
     margin: 0;
     height: 40px;
   }
+
+  // style des icons et des boutons dans le tableau
   .mat-icon,
   .mat-button {
     transform: scale(1.1);
@@ -66,6 +75,8 @@
   .mat-table .mat-cell:first-of-type {
     padding-left: 0;
   }
+
+  // cacher les headers
   .mat-table .mat-header-cell {
     border: 10px solid;
     clip: rect(0 0 0 0);

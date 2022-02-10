@@ -1,38 +1,96 @@
-<h1 mat-dialog-title>Affecter des chauffeurs</h1>
-<div class="container">
-    <div [formGroup]="form">
-        <div class="inline-flex">
-            <p>Vehicule privé</p>
-            <p>Chauffeur</p>
+<h1 mat-dialog-title>{{vehicule.matricule}}</h1>
+<div style="padding-left: 20px;">
+    <!-- bloc de selection du chauffeur -->
+    <div class="chauffeur">
+        <i class="fas fa-user"></i>
+        <mat-form-field *ngIf="typeVehicule === 'prive'">
+            <mat-label>Chauffeur</mat-label>
+            <mat-select placeholder="Chauffeur" name="chauffeur" [(ngModel)]="chauffeurSelectionne">
+                <mat-option *ngFor="let chauffeur of chauffeurs" [value]="chauffeur">
+                    {{chauffeur.nom}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field *ngIf="typeVehicule === 'loue'">
+            <mat-label>Chauffeur</mat-label>
+            <input matInput placeholder="nom chauffeur" [(ngModel)]="chauffeurSelectionne.nom">
+            <mat-icon matSuffix>mode_edit</mat-icon>
+        </mat-form-field>
+        <mat-form-field *ngIf="typeVehicule === 'loue'">
+            <mat-label>Téléphone</mat-label>
+            <input matInput placeholder="nom chauffeur"
+                [(ngModel)]="chauffeurSelectionne.tel">
+            <mat-icon matSuffix>phone_enabled</mat-icon>
+        </mat-form-field>
+    </div>
+    <!-- bloc d'information commandes -->
+    <h2>Commandes</h2>
+    <div class="commandes">
+        <!-- liste des commandes -->
+        <div class="liste-commandes scrollbar">
+            <ul>
+                <li class="list" *ngFor="let commande of data.mission; let i = index;" [attr.data-selected]="false"
+                    [class.active]="commandeActive[i]">
+                    <a role="button" (click)="changerCommandeActive(i); choisirCommande(commande)">{{commande.type}}
+                        {{commande.referenceDocument}}</a>
+                </li>
+            </ul>
         </div>
-        <div formArrayName="chauffeurs">
-            <div class="inline-flex" *ngFor="let couple of couplesVehiculeChauffeursPrives; let i=index" [formGroupName]="i">
-                <p>{{couple.vehicule.matricule}}</p>
-                <mat-form-field appearance="fill">
-                    <mat-select placeholder="Chauffeur" name="chauffeur" formControlName="chauffeur"
-                        (selectionChange)="rafraichirListeChauffeur()">
-                        <mat-option *ngFor="let chauffeur of couple.chauffeurs" [value]="chauffeur">
-                            {{chauffeur.nom}}
-                        </mat-option>
-                    </mat-select>
-                </mat-form-field>
-            </div>
-        </div>
-        <div class="inline-flex">
-            <p>Vehicule loué</p>
-            <p>Chauffeur</p>
-        </div>
-        <div formArrayName="chauffeursLoues">
-            <div class="inline-flex" *ngFor="let vehicule of vehiculesLoues; let i=index" [formGroupName]="i">
-                <p>{{vehicule.matricule}}</p>
-                <mat-form-field appearance="fill">
-                    <input matInput type="text" placeholder="Nom chauffeur" name="chauffeurLoue" formControlName="chauffeurLoue">
-                </mat-form-field>
-            </div>
+        <!-- bloc ou s'affiche le table colisage -->
+        <div class="container-colis scrollbar">
+            <ng-container *ngIf="this.listeColis; else elseTemplate">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">id</th>
+                            <th scope="col">Produit</th>
+                            <th scope="col">Pack</th>
+                            <th scope="col">Qte</th>
+                            <th scope="col">Nbr. Pack</th>
+                            <th scope="col">LxlxH (cm)</th>
+                            <th scope="col">Volume (m³)</th>
+                            <th scope="col">Poids net (kg)</th>
+                            <th scope="col">Poids brut (kg)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let colis of this.listeColis">
+                            <th scope="row">{{colis.idProduit}}</th>
+                            <td>{{colis.produit}}</td>
+                            <td>{{colis.emballage}}</td>
+                            <td>{{colis.quantite}}</td>
+                            <td>{{colis.nombrePack}}</td>
+                            <td>{{colis.dimensions}}</td>
+                            <td>{{colis.volume}}</td>
+                            <td>{{colis.poidsNet}}</td>
+                            <td>{{colis.poidsBrut}}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="row" colspan="3"></th>
+                            <td>Total</td>
+                            <td>{{nombrePackTotal}}</td>
+                            <td></td>
+                            <td>{{volumeTotal}}</td>
+                            <td>{{poidsTotalNet}}</td>
+                            <td>{{poidsTotalBrut}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                
+            </ng-container>
+            <ng-template #elseTemplate>
+                <div class="spinner">
+                    <div class="loader"></div>
+                </div>
+            </ng-template>
+            
         </div>
     </div>
 </div>
-<div mat-dialog-actions>
+<div mat-dialog-actions class="actions">
     <button mat-button mat-dialog-close color="warn" style="margin-left: auto;">Annuler</button>
-    <button mat-raised-button color="primary" cdkFocusInitial (click)="valider()">Ok</button>
+    <a role="button" [ngClass]="{'active': toutValide}" (click)="valider()">Valider</a>
+
 </div>

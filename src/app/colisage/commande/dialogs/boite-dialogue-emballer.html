@@ -1,5 +1,6 @@
 <h1 mat-dialog-title>Produit: {{data.produit.nom}}</h1>
 <div mat-dialog-content>
+    <!-- information quantité a emballer et quantité non emballée -->
     <div id="quantite-non-emballe">
         <h2 class="quantite">Quantité produit demandée: &nbsp;</h2>
         <h2 class="quantite" style="color: #3f51b5; margin-left: 25px;">{{data.produit.qte}}</h2><br>
@@ -8,6 +9,7 @@
             [ngClass]="{'tout-emballee': quantiteNonEmballee === 0 , 'pas-tout-emballe': quantiteNonEmballee > 0}">
             {{quantiteNonEmballee}}</h2>
     </div>
+    <!-- partie des input d'ajout quatité emballages -->
     <div id="emballage">
         <form [formGroup]="form">
             <table class="table">
@@ -44,6 +46,7 @@
         </form>
     </div>
 </div>
+<!-- boutons d'actions -->
 <div mat-dialog-actions style="float: right;">
     <button mat-button (click)="annuler()" color="warn">Annuler</button>
     <button mat-raised-button color="primary" cdkFocusInitial (click)="valider()">Valider</button>

@@ -1,13 +1,17 @@
 <div class="container">
     <div class="date-mission" [formGroup]="formDate">
-        <button mat-icon-button (click)="datePrecedente()"><mat-icon>navigate_before</mat-icon></button>
+        <button mat-icon-button (click)="datePrecedente()">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
         <mat-form-field>
             <mat-label>Date du mission</mat-label>
             <input matInput formControlName="date" [min]="minDate" [matDatepicker]="picker1" (focus)="picker1.open()">
             <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
             <mat-datepicker #picker1></mat-datepicker>
         </mat-form-field>
-        <button mat-icon-button (click)="dateSuivante()"><mat-icon>navigate_next</mat-icon></button>
+        <button mat-icon-button (click)="dateSuivante()">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
     </div>
     <div class="row">
         <!-- liste des Commandes pretes a construire un Mission -->
@@ -50,7 +54,7 @@
                         <tbody>
                             <tr *ngFor="let commande of mission; let i=index;">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -82,7 +86,9 @@
                 <div class="entete" [formGroup]="formVehicule">
                     <span>
                         <label for="nb-voyages">Nb voyages</label>
-                        <input type="number" autocomplete="off" min="1" id="nb-voyages" formControlName="nombreVoyages">
+                        <input type="number" autocomplete="off" min="1" id="nb-voyages" formControlName="nombreVoyages"
+                            (change)="disableCheckBoxsVehiculePoidsVolumeInferieur()"
+                            (keyup)="disableCheckBoxsVehiculePoidsVolumeInferieur()">
                     </span>
                     <span>
                         <label for="multiple-vehicules">Multi véhicules</label>
@@ -118,7 +124,10 @@
                                     <mat-checkbox *ngIf="checkBoxVehicules[i]" color="primary"
                                         [(ngModel)]="checkBoxVehicules[i].value"
                                         [disabled]="checkBoxVehicules[i].disable"
-                                        (change)="selectionnerDeselectionnerVehicule(i, 'privé', vehicule)">
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'privé', vehicule)"
+                                        matTooltip="Séléctionner une commande s'il vous plait"
+                                        [matTooltipDisabled]="!checkBoxVehicules[i].disable"
+                                        matTooltipPosition="before">
                                     </mat-checkbox>
                                 </td>
                             </tr>
@@ -134,7 +143,10 @@
                                 <td style="height: 41px; text-align: center;">
                                     <mat-checkbox color="primary" [(ngModel)]="checkBoxVehiculesLoues[i].value"
                                         [disabled]="checkBoxVehiculesLoues[i].disable"
-                                        (change)="selectionnerDeselectionnerVehicule(i, 'loue', vehiculeLoue)">
+                                        (change)="selectionnerDeselectionnerVehicule(i, 'loue', vehiculeLoue)"
+                                        matTooltip="Séléctionner une commande s'il vous plait"
+                                        [matTooltipDisabled]="!checkBoxVehiculesLoues[i].disable"
+                                        matTooltipPosition="before">
                                     </mat-checkbox>
                                 </td>
                             </tr>
@@ -177,7 +189,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesNordEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -187,8 +199,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesNordEst)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -234,7 +245,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesNordOuest; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -244,8 +255,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesNordOuest)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -293,7 +303,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesCentreEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -303,8 +313,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesCentreEst)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -350,7 +359,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesCentreOuest; let i=index;">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -360,8 +369,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesCentreOuest)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -409,7 +417,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesSudEst; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -419,8 +427,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesSudEst)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -466,7 +473,7 @@
                         <tbody>
                             <tr *ngFor="let commande of commandesSudOuest; let i=index">
                                 <!-- colonne reference -->
-                                <td scope="row">{{commande.referenceDocument}}</td>
+                                <td scope="row">{{getReference(commande)}}</td>
                                 <!-- colonne nom client -->
                                 <td>{{commande.nomClient}}</td>
                                 <!-- colonne ville -->
@@ -476,8 +483,7 @@
                                 <!-- colonne volume -->
                                 <td>{{commande.volume}}</td>
                                 <!-- colonne score -->
-                                <td>{{convertirScoreEnPourcentageParRapportScoreRegion(commande.score,
-                                    commandesSudOuest)}}%</td>
+                                <td>{{convertirScoreEnPourcentageParRapportScoreTotal(commande.score)}}%</td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button name="selectionner-tous" style="color: #2cbb42;"
@@ -493,14 +499,18 @@
         </div>
     </div>
     <div class="date-mission" [formGroup]="formDate">
-        <button mat-icon-button (click)="datePrecedente()"><mat-icon>navigate_before</mat-icon></button>
+        <button mat-icon-button (click)="datePrecedente()">
+            <mat-icon>navigate_before</mat-icon>
+        </button>
         <mat-form-field>
             <mat-label>Date du mission</mat-label>
             <input matInput formControlName="date" [min]="minDate" [matDatepicker]="picker2" (focus)="picker2.open()">
             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
             <mat-datepicker #picker2></mat-datepicker>
         </mat-form-field>
-        <button mat-icon-button (click)="dateSuivante()"><mat-icon>navigate_next</mat-icon></button>
+        <button mat-icon-button (click)="dateSuivante()">
+            <mat-icon>navigate_next</mat-icon>
+        </button>
     </div>
     <div class="row" id="file-attente">
         <!-- liste des commandes dans la file d'attente -->
@@ -516,9 +526,9 @@
                                 <th>Chauffeur</th>
                                 <th>Sc/G</th>
                                 <th>Volume V</th>
-                                <th>Volume</th>
+                                <th>Volume CMD</th>
                                 <th>Poids V</th>
-                                <th>Poids</th>
+                                <th>Poids CMD</th>
                                 <th>
                                     <button mat-icon-button color="warn" matTooltip="Annuler tous"
                                         matTooltipPosition="above" (click)="annulerAjoutTousMissionsDansFileAttente()"
@@ -559,7 +569,13 @@
                                     </ul>
                                 </td>
                                 <!-- colonne volume mission -->
-                                <td>{{mis.volume}}m³</td>
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let volume of mis.volume">
+                                            {{volume}}m³
+                                        </li>
+                                    </ul>
+                                </td>
                                 <!-- colonne poids vehicule -->
                                 <td>
                                     <ul>
@@ -569,7 +585,13 @@
                                     </ul>
                                 </td>
                                 <!-- colonne poids mission -->
-                                <td>{{mis.poids}}kg</td>
+                                <td>
+                                    <ul>
+                                        <li *ngFor="let poids of mis.poids">
+                                            {{poids}}kg
+                                        </li>
+                                    </ul>
+                                </td>
                                 <!-- bouton ajouter -->
                                 <td>
                                     <button mat-icon-button color="warn"
@@ -588,6 +610,10 @@
         <!-- bouton Annuler -->
         <button mat-button color="warn" class="mb-2 mr-2">Annuler</button>
         <!-- Bouton Enregistrer -->
-        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()">Enregistrer</button>
+        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()" [disabled]="listeFilesAttentes.length === 0">
+            <span *ngIf="boutonEnregistrerEstActive">Enregistrer</span>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+                *ngIf="!boutonEnregistrerEstActive"></span>
+        </button>
     </div>
 </div>

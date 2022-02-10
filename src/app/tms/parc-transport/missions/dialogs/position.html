@@ -1,0 +1,10 @@
+<agm-map
+[latitude]="lat"
+  [longitude]="lng"
+         [zoom]="zoom"
+         [disableDefaultUI]="false">
+    <agm-marker [latitude]="lat"
+    [longitude]="lng">
+        <agm-info-window>{{adresse}}</agm-info-window>
+      </agm-marker>
+</agm-map>

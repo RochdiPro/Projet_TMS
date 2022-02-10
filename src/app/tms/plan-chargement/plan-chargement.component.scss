@@ -1,0 +1,327 @@
+// pour changer le style du scrollbar
+.scrollbar::-webkit-scrollbar {
+  display: block;
+  width: 3px;
+}
+.scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba($color: #000000, $alpha: 0.3);
+  border-right: none;
+  border-left: none;
+}
+
+.scrollbar::-webkit-scrollbar-track-piece:end {
+  background: transparent;
+  margin-bottom: 20px;
+}
+
+.scrollbar::-webkit-scrollbar-track-piece:start {
+  background: transparent;
+  margin-top: 20px;
+}
+
+// style des filtres
+.filtres {
+  width: 15%;
+  margin: 0 1%;
+}
+// style du section qui porte les filtres
+section {
+  padding-left: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+// style du filtre par date
+.filtre-date {
+  width: min-content;
+}
+.filtre-date .mat-form-field {
+  width: 55%;
+}
+table {
+  width: 100%;
+}
+th.mat-sort-header-sorted {
+  color: black;
+}
+.row {
+  width: 100%;
+}
+a {
+  text-decoration: none;
+  color: black;
+}
+// style de l'etat de la mission
+.attente {
+  color: #f7b924;
+}
+.termine {
+  color: #4bb543;
+}
+.accorde {
+  color: #3f6ad8;
+}
+p {
+  padding: 0;
+  margin: 0;
+}
+.main-card {
+  height: 610px;
+}
+
+.mat-paginator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.vehicule {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  min-height: 0;
+}
+.container {
+  display: flex;
+  justify-content: center;
+}
+
+.legend {
+  position: absolute;
+  top: 100px;
+  left: 75px;
+}
+
+.mat-row {
+  cursor: pointer;
+}
+
+.position {
+  width: 100%;
+}
+.example-list {
+  min-height: 55px;
+  display: block;
+  overflow: hidden;
+}
+
+.example-box {
+  padding: 5px 0px;
+  border-bottom: solid 1px #cce0fa;
+  color: #cce0fa(0, 0, 0, 0.87);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  font-size: 13px;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 4px;
+  color: #d7e6fb;
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.example-box:last-child {
+  border: none;
+}
+
+.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+.example-handle {
+  position: relative;
+  color: black;
+  cursor: grab;
+  margin-left: 10px;
+  font-size: 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+#canva {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.selecteur {
+  z-index: 90;
+  position: absolute;
+  cursor: pointer;
+}
+
+.selecteur:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.legend {
+  border: 4px solid;
+  padding: 20px;
+}
+
+.label {
+  text-align: center;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.boite-outils {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding: 5px;
+}
+
+.ajout-manuel {
+  position: absolute;
+  left: 20px;
+  bottom: 85px;
+  display: flex;
+  flex-direction: row;
+}
+
+.partie-ajout{
+  width: 250px;
+  padding: 20px;
+  height: 100%;
+  display: block;
+}
+
+.resize{
+  height: 100%;
+  width: 50px;
+  background-color: #000000;
+}
+
+.select-commande {
+  width: 90%;
+  margin: 0 auto;
+}
+
+.objet {
+  border: 1px solid black;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px;
+  cursor: pointer;
+}
+
+#liste-objets {
+  overflow: auto;
+  margin-bottom: 10px;
+}
+//pour mobile
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  section {
+    flex-direction: column;
+    align-items: unset;
+  }
+  .filtres {
+    left: 0;
+    padding: 15px;
+    width: 100%;
+  }
+  .filtre-date {
+    width: 100%;
+  }
+  .filtre-date .mat-form-field {
+    width: calc(100% - 80px);
+  }
+  .mat-table {
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  // modifier affichage du tableau pour l'affichage mobile
+  .mat-table {
+    border: 0;
+    vertical-align: middle;
+  }
+
+  .mat-table caption {
+    font-size: 1em;
+  }
+
+  .mat-table .mat-row {
+    border-bottom: 5px solid #ddd;
+    display: block;
+    min-height: auto;
+  }
+
+  .mat-table .mat-cell {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: 1em;
+    text-align: right;
+    font-weight: bold;
+    height: auto;
+    margin-bottom: 4%;
+    padding-right: 5%;
+    padding-bottom: 4%;
+  }
+  .mat-table .mat-cell:before {
+    content: attr(data-label);
+    float: left;
+    text-transform: uppercase;
+    font-weight: normal;
+    margin-left: 5%;
+
+    font-size: 0.85em;
+  }
+  .mat-table .mat-cell:last-child {
+    border-bottom: 0;
+  }
+  .mat-table .mat-cell:first-child {
+    margin-top: 4%;
+  }
+  .mat-table .mat-cell:last-of-type {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    height: 40px;
+  }
+  .mat-icon,
+  .mat-button {
+    transform: scale(1.1);
+  }
+  .mat-table .mat-cell:first-of-type {
+    padding-left: 0;
+  }
+  .mat-table .mat-header-cell {
+    border: 10px solid;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  .mat-header-row {
+    min-height: 0;
+  }
+}

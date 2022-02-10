@@ -1,0 +1,112 @@
+<ng-container *ngIf="this.data.missionsPasAnnule.length === 0; else elseTemplate">
+    <h2>Etes vous sûr ?</h2>
+    <h3>Vous allez annuler toute les missions suivantes.</h3>
+    <mat-table [dataSource]="dataSource">
+    
+        <!-- Position Column -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef > ID </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Id"> {{element.id}} </mat-cell>
+        </ng-container>
+    
+        <!-- Colonne Nom -->
+        <ng-container matColumnDef="nom">
+            <mat-header-cell mat-header-cell *matHeaderCellDef >
+                Chauffeur
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Chauffeur">
+                {{element.nomChauffeur}}
+            </mat-cell>
+        </ng-container>
+    
+        <!-- Colonne Matricule -->
+        <ng-container matColumnDef="matricule">
+            <mat-header-cell mat-header-cell *matHeaderCellDef >
+                Matricule
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Matricule">
+                {{element.matricule}}
+            </mat-cell>
+        </ng-container>
+    
+        <!-- Colonne Date -->
+        <ng-container matColumnDef="dateLivraison">
+            <mat-header-cell mat-header-cell *matHeaderCellDef > Date de Livraison </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Date de Livraison"> {{element.date |
+                date:'dd-MM-yyyy'}} </mat-cell>
+        </ng-container>
+    
+        <!-- Colonne etat -->
+        <ng-container matColumnDef="etatMission">
+            <mat-header-cell mat-header-cell *matHeaderCellDef  class="ml-1"> Etat Mission
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Etat Mission">
+                <p class="accorde" *ngIf="element.etat === 'En attente'">En attente</p>
+                <p class="attente" *ngIf="element.etat === 'En cours'">En cours</p>
+                <p class="termine" *ngIf="element.etat === 'Terminée'">Terminée</p>
+            </mat-cell>
+        </ng-container>
+    
+        <mat-header-row mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+    <div style="display: flex; gap: 20px; width: 100%; margin-top: 20px;">
+        <button mat-raised-button color="primary" style="margin-left: auto;" (click)="annulerLesMissions()">Oui</button>
+        <button mat-raised-button color="warn" mat-dialog-close>non</button>
+    </div>
+</ng-container>
+<ng-template #elseTemplate>
+    <h2>Annulation pas possible</h2>
+    <h3>Ces missions sont liées à la mission que vous voulez l'annuler et elles ne peuvent pas être annulées</h3>
+    <mat-table [dataSource]="dataSource">
+        <!-- Position Column -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef > ID </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Id"> {{element.id}} </mat-cell>
+        </ng-container>
+    
+        <!-- Colonne Nom -->
+        <ng-container matColumnDef="nom">
+            <mat-header-cell mat-header-cell *matHeaderCellDef >
+                Chauffeur
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Chauffeur">
+                {{element.nomChauffeur}}
+            </mat-cell>
+        </ng-container>
+    
+        <!-- Colonne Matricule -->
+        <ng-container matColumnDef="matricule">
+            <mat-header-cell mat-header-cell *matHeaderCellDef >
+                Matricule
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Matricule">
+                {{element.matricule}}
+            </mat-cell>
+        </ng-container>
+    
+        <!-- Colonne Date -->
+        <ng-container matColumnDef="dateLivraison">
+            <mat-header-cell mat-header-cell *matHeaderCellDef > Date de Livraison </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Date de Livraison"> {{element.date |
+                date:'dd-MM-yyyy'}} </mat-cell>
+        </ng-container>
+    
+        <!-- Colonne etat -->
+        <ng-container matColumnDef="etatMission">
+            <mat-header-cell mat-header-cell *matHeaderCellDef  class="ml-1"> Etat Mission
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let element" data-label="Etat Mission">
+                <p class="accorde" *ngIf="element.etat === 'En attente'">En attente</p>
+                <p class="attente" *ngIf="element.etat === 'En cours'">En cours</p>
+                <p class="termine" *ngIf="element.etat === 'Terminée'">Terminée</p>
+            </mat-cell>
+        </ng-container>
+    
+        <mat-header-row mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+    <div style="display: flex; gap: 20px; width: 100%; margin-top: 20px;">
+        <button mat-raised-button color="primary" style="margin-left: auto;" mat-dialog-close>OK</button>
+    </div>
+</ng-template>

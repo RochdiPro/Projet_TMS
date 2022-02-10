@@ -1,21 +1,21 @@
+// style des filtres
 .filtres {
   width: 15%;
   margin: 0 1%;
 }
+// style du section qui porte les filtres
 section {
   padding-left: 10px;
   display: flex;
   align-items: center;
   flex-direction: row;
 }
+// style du filtre par date
 .filtre-date {
   width: min-content;
 }
 .filtre-date .mat-form-field {
   width: 55%;
-}
-.custom-width2 {
-  width: 25%;
 }
 table {
   width: 100%;
@@ -30,6 +30,7 @@ a {
   text-decoration: none;
   color: black;
 }
+// style de l'etat de la mission
 .attente {
   color: #f7b924;
 }
@@ -39,14 +40,7 @@ a {
 .accorde {
   color: #3f6ad8;
 }
-.qr {
-  color: #575757;
-  margin-left: 21%;
-}
-
-ul,
 p {
-  list-style: none;
   padding: 0;
   margin: 0;
 }
@@ -74,6 +68,7 @@ p {
     overflow-y: auto;
   }
 
+  // modifier affichage du tableau pour l'affichage mobile
   .mat-table {
     border: 0;
     vertical-align: middle;

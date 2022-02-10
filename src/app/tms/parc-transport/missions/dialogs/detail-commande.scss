@@ -1,0 +1,24 @@
+table {
+  width: 100%;
+}
+
+// margin que pour le premier tr
+tr ~ tr {
+  margin-top: 10px;
+}
+div {
+  width: 100%;
+  overflow: auto;
+}
+
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  // pour l'affichage mobile si on hover une ligne de table on change sa couleur de background
+  tbody > tr:hover {
+    background-color: rgba(253, 220, 63, 0.2);
+  }
+  table {
+    width: 700px;
+    font-size: 10px;
+  }
+}

@@ -1,45 +1,55 @@
 <div class="mat-elevation-z8" *ngIf="wms >= 1">
+    <!-- par defaut on fait le trie du tableau par date ascendant -->
     <mat-table #table [dataSource]="dataSource" matSort matSortActive="dateCreation" matSortDirection="asc">
+        <!-- colonne id -->
         <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="ID"> {{element.id}} </mat-cell>
         </ng-container>
+        <!-- colonne reference -->
         <ng-container matColumnDef="referenceDocument">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Reference </mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Reference"> {{element.referenceDocument}} </mat-cell>
         </ng-container>
+        <!-- colonne client -->
         <ng-container matColumnDef="nomClient">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Client </mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Client"> {{element.nomClient}} </mat-cell>
         </ng-container>
+        <!-- colonne ville -->
         <ng-container matColumnDef="ville">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Ville </mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Ville"> {{element.ville}} </mat-cell>
         </ng-container>
+        <!-- colonne adresse -->
         <ng-container matColumnDef="adresse">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Adresse </mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Adresse"> {{element.adresse}} </mat-cell>
         </ng-container>
+        <!-- colonne date -->
         <ng-container matColumnDef="dateCreation">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Date </mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Date"> {{element.dateCreation | date: "dd/MM/yyyy"}} </mat-cell>
         </ng-container>
-        <ng-container matColumnDef="score">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> Score </mat-header-cell>
-            <mat-cell *matCellDef="let element" data-label="Score"> {{element.score}} </mat-cell>
+        <!-- colonne tracking number -->
+        <ng-container matColumnDef="tracking">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Tracking Number </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Tracking Number"> {{formatTrackingNumber(element.trackingNumber)}} </mat-cell>
         </ng-container>
+        <!-- colonne etat -->
         <ng-container matColumnDef="etat">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Etat </mat-header-cell>
             <mat-cell *matCellDef="let element" data-label="Etat"> {{element.etat}} </mat-cell>
         </ng-container>
+        <!-- colonne boutons actions -->
         <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
             <mat-cell *matCellDef="let element">
                 <button mat-icon-button disableRipple style="color: #24a0ed;" (click)="ouvrirBoiteDialogueInformationCommande(element)">
                     <mat-icon>info</mat-icon>
                 </button>
-                <button mat-icon-button disableRipple (click)="annulerCommande(element)" *ngIf="wms >= 4">
-                    <mat-icon color="warn">cancel</mat-icon>
+                <button mat-icon-button color="warn" disableRipple (click)="annulerCommande(element)" *ngIf="wms >= 4" [disabled]="element.etat != 'En cours de traitement'">
+                    <mat-icon>cancel</mat-icon>
                 </button>
             </mat-cell>
         </ng-container>
@@ -47,6 +57,6 @@
         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
     </mat-table>
 
-    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+    <mat-paginator [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons>
     </mat-paginator>
 </div>

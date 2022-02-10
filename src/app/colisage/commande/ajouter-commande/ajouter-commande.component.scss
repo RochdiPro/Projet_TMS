@@ -6,7 +6,7 @@
 .selection-filter {
   font-size: 10.5px;
 }
-.filtre-id {
+.filtre-reference{
   display: flex;
   flex-direction: row;
 }
@@ -20,16 +20,18 @@
   text-align: center;
 }
 
-#champs-filtre-id {
-  width: 130px;
-}
-
-#champs-filtre-id {
+#champs-filtre-reference {
   width: 200px;
 }
 .mat-table {
   max-height: 45vh;
   overflow-y: auto;
+}
+.filtre-date {
+  width: min-content;
+}
+.filtre-date .mat-form-field {
+  width: 55%;
 }
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {
@@ -39,7 +41,7 @@
     flex-direction: column;
   }
 
-  .filtre-id {
+  .filtre-reference {
     width: 100%;
   }
 
@@ -52,7 +54,7 @@
     width: 100%;
   }
   
-  #champs-filtre-id {
+  #champs-filtre-reference {
     width: 74%;
   }
 

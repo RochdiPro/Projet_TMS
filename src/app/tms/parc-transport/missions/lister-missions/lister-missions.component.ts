@@ -6,6 +6,13 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
+import {
+  ConfirmationAnnulationMission,
+  DetailComponent,
+  ModifierMission,
+  Trajet,
+} from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
 @Component({
@@ -14,7 +21,9 @@ import { MissionsService } from '../services/missions.service';
   styleUrls: ['./lister-missions.component.scss'],
 })
 export class ListerMissionsComponent implements OnInit, AfterViewInit {
+  // date d'aujourdhui
   today = new Date();
+  // date initialisée a 00:00 pour eviter le decalage dans le back
   date = new Date(
     this.today.getFullYear(),
     this.today.getMonth(),
@@ -91,6 +100,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
         this.filtreEtatMission
       )
       .toPromise();
+    // si on active le filtrage par date
     if (this.check) {
       this.date = new Date(this.form.get('dateL').value);
       this.dateRecherche = this.datepipe.transform(this.date, 'yyyy-MM-dd');
@@ -98,9 +108,9 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
         (mission) => mission.date === this.dateRecherche
       );
     }
+    // trie et mise a jour du paginator
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
-    console.log(this.dataSource.data);
   }
   disableEnableDate() {
     //pour activer et desactiver le filtrage par date
@@ -111,22 +121,12 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getNomChauffeur(chauffeurs: string) {
-    let listeChauffeurs = chauffeurs.split('/');
-    return listeChauffeurs;
-  }
-
-  getMatricule(matricules: string) {
-    let listeMatricule = matricules.split('/');
-    return listeMatricule;
-  }
-
   // diminuer la date dans le date picker par un jour
   datePrecedente() {
     let dateChoisi = this.form.get('dateL').value;
     dateChoisi.setDate(dateChoisi.getDate() - 1);
     this.form.get('dateL').setValue(dateChoisi);
-    this.filtrerMission()
+    this.filtrerMission();
   }
 
   // augmenter le date dans le date picker par un jour
@@ -134,57 +134,64 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     let dateChoisi = this.form.get('dateL').value;
     dateChoisi.setDate(dateChoisi.getDate() + 1);
     this.form.get('dateL').setValue(dateChoisi);
-    this.filtrerMission()
+    this.filtrerMission();
   }
 
-  supprimmerMission(id: any) {}
-
-  ouvrirAffecterCommande() {
-    // ouvrir la boite de dialogue d'affectation des commandes
-    // localStorage.setItem('date', this.form.get('dateL').value);
-    // const dialogRef = this.dialog.open(AffecterCommande, {
-    //   width: '450px',
-    //   panelClass: 'custom-dialog',
-    //   autoFocus: false,
-    // });
-    // dialogRef.afterClosed().subscribe((result) => {
-    //   this.filtrerMission();
-    // });
-  }
-
-  detailDialog(id: any, idM: any): void {
+  detailDialog(mission: any): void {
     // ouvrir la boite de dialogue de détail d'une mission
-    // localStorage.setItem('idC', id);
-    // localStorage.setItem('idM', idM);
-    // const dialogRef = this.dialog.open(DetailComponent, {
-    //   width: '70vw',
-    //   panelClass: 'custom-dialog-detail',
-    //   autoFocus: false,
-    // });
+    const dialogRef = this.dialog.open(DetailComponent, {
+      width: '1200px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'custom-dialog-detail-mission',
+      autoFocus: false,
+      data: { mission: mission },
+    });
   }
-  ouvrirMap(id: any, type: any) {
-    // ouvrir google map avec le trajet
-    this.serviceMission.mission(id).subscribe((res) => {
-      this.mission = res;
-      this.trajet = this.mission.trajet.split('/'); //recuperation du trajet
-      var origine = this.trajet[0].split(':');
-      origine = origine[1]; //definitionde l'origine
-      var finChemin = this.trajet[this.trajet.length - 1].split(':');
-      finChemin = finChemin[1]; //definition du fin de chemin
-      var pointStop = '';
-      for (let i = 1; i < this.trajet.length - 1; i++) {
-        var x = this.trajet[i].split(':');
-        pointStop += x[1] + '%7C';
-      }
-      pointStop = pointStop.slice(0, -3); //definition des points de stop
-      window.open(
-        'https://www.google.com/maps/dir/?api=1&origin=' +
-          origine +
-          '&destination=' +
-          finChemin +
-          '&travelmode=driving&waypoints=' +
-          pointStop
-      ); //affichage du map avec le trajet
+
+  ouvrirDialogModifierMission(mission: any) {
+    // ouvrir la boite de dialogue modifier mission
+    const dialogRef = this.dialog.open(ModifierMission, {
+      width: '500px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'custom-dialog-modifier-mission',
+      autoFocus: false,
+      data: { mission: mission },
+    });
+  }
+
+  annulerMission(mission: any) {
+    let missionsPasAnnule: any = [];
+    let missions = this.dataSource.data.filter(
+      (mis) => mis.idMissionsLiees === mission.idMissionsLiees
+    );
+    let idMissionsLiees = mission.idMissionsLiees.split('/');
+    let index = idMissionsLiees.indexOf(mission.id);
+    idMissionsLiees.splice(index, 1);
+    missions.forEach((mis) => {
+      mis.etat !== 'En attente' ? missionsPasAnnule.push(mis) : '';
+    });
+    const dialogRef = this.dialog.open(ConfirmationAnnulationMission, {
+      width: '600px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      data: { missions: missions, missionsPasAnnule: missionsPasAnnule },
+    });
+    dialogRef.afterClosed().subscribe(() => {
+      this.filtrerMission();
+    });
+  }
+
+  ouvrirBoiteDialogTrajet(mission: any) {
+    const dialogRef = this.dialog.open(Trajet, {
+      width: '1000px',
+      height: '554px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      autoFocus: false,
+      data: { mission: mission },
     });
   }
 }
@@ -202,4 +209,5 @@ export interface tableMissions {
   region: String;
   etat: String;
   date: Date;
+  idMissionsLiees: String;
 }
