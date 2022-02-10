@@ -143,8 +143,8 @@
          <div class="label">Vue de face</div>
       </div>
    </div>
-   <div class="ajout-manuel card" [style.height.px]="vehicule.hauteur * 2.7" *ngIf="vehicule">
-      <div class="partie-ajout">
+   <div *ngIf="vehicule" class="panneau-ajout-manuel">
+      <div class="ajout-manuel card" [style.height.px]="vehicule.hauteur * 2.7" #box [style.width.px]="width">
          <mat-form-field class="select-commande">
             <mat-label>Commande</mat-label>
             <mat-select [(value)]="commandeModeManuelSelectionne">
@@ -157,22 +157,33 @@
             <div *ngFor="let obj of commandeModeManuelSelectionne.articles" style="display: flex; align-items: center;">
                {{obj.nombrePack}} x
                <div [style.width.px]="obj.largeur" [style.height.px]="obj.hauteur"
-                  [style.background]="commandeModeManuelSelectionne.couleur" class="objet" (click)="ajouterColisManuellement(obj)">{{obj.emballage}}</div>
+                  [style.background]="commandeModeManuelSelectionne.couleur" class="objet"
+                  (click)="ajouterColisManuellement(obj)">{{obj.emballage}}</div>
             </div>
          </div>
-         <button mat-raised-button color="primary" style="margin-top: auto; width: 100%;" (click)="ajouterNouvelleLigne()">nouvelle ligne</button>
-         <button mat-raised-button color="warn" style="margin-top: 5px; width: 100%;" (click)="supprimerLigne()"><mat-icon style="transform: scale(0.7);">delete</mat-icon>supprimer dernière ligne</button>
+         <button mat-raised-button color="primary" style="margin-top: auto;" (click)="ajouterNouvelleLigne()">nouvelle
+            ligne</button>
+         <button mat-raised-button color="warn" style="margin-top: 5px;" (click)="supprimerLigne()">
+            <mat-icon style="transform: scale(0.7);">delete</mat-icon>supprimer dernière ligne
+         </button>
       </div>
-      <div class="resize"></div>
+      <div class="resizer" [style.height.px]="vehicule.hauteur * 2.7" (mousedown)="setStatus($event, 'RESIZE')"
+         (window:mouseup)="setStatus($event, 'OFF')"></div>
    </div>
    <div class="boite-outils card">
-      <button mat-button (click)="viderCanvas()">nouveau</button>
-      <button mat-button (click)="createPlanChargementAuto()">Auto</button>
-      <button mat-button (click)="rotation(90)">+90°</button>
-      <button mat-button (click)="rotation(-90)">-90°</button>
-      <button mat-button (click)="supprimerObjet()">supprimer</button>
-      <button mat-button (click)="bringForward()">Avancer</button>
-      <button mat-button (click)="enregistrer()">enregistrer</button>
-      <button mat-button (click)="charger()">charger</button>
+      <button mat-button (click)="viderCanvas()" matTooltip="Vider le vehicule"
+      matTooltipPosition="above" matTooltipShowDelay="1000">Vider</button>
+      <button mat-button (click)="createPlanChargementAuto()" matTooltip="Réaliser Plan chargement automatiquement"
+      matTooltipPosition="above" matTooltipShowDelay="1000">Auto</button>
+      <button mat-button (click)="rotation(90)" matTooltip="Rotation vers la droite"
+      matTooltipPosition="above" matTooltipShowDelay="1000"><mat-icon>rotate_90_degrees_cw</mat-icon></button>
+      <button mat-button (click)="rotation(-90)" matTooltip="Rotation vers la gauche"
+      matTooltipPosition="above" matTooltipShowDelay="1000"><mat-icon>rotate_90_degrees_ccw</mat-icon></button>
+      <button mat-button (click)="supprimerObjet()" matTooltip="Supprimer un article"
+      matTooltipPosition="above" matTooltipShowDelay="1000"><mat-icon>delete</mat-icon></button>
+      <button mat-button (click)="enregistrer()" matTooltip="Enregistrer"
+      matTooltipPosition="above" matTooltipShowDelay="1000"><mat-icon>save</mat-icon></button>
+      <button mat-button (click)="charger()" matTooltip="Actualiser"
+      matTooltipPosition="above" matTooltipShowDelay="1000"><mat-icon>refresh</mat-icon></button>
    </div>
 </div>

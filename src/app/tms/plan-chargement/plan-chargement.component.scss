@@ -188,31 +188,31 @@ p {
 }
 
 .boite-outils {
-  width: 100%;
   display: flex;
   flex-direction: row;
   padding: 5px;
 }
 
 .ajout-manuel {
+  padding: 20px;
+}
+
+.panneau-ajout-manuel{
   position: absolute;
   left: 20px;
   bottom: 85px;
   display: flex;
   flex-direction: row;
+  z-index: 999;
 }
 
-.partie-ajout{
-  width: 250px;
-  padding: 20px;
-  height: 100%;
-  display: block;
+.resizer {
+  width: 2px;
+  background-color: transparent;
+  cursor: col-resize;
 }
-
-.resize{
-  height: 100%;
-  width: 50px;
-  background-color: #000000;
+.resizer:hover{
+  background-color: rgba($color: #000000, $alpha: 0.1);
 }
 
 .select-commande {

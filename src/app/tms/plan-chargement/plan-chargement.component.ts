@@ -6,7 +6,13 @@ import {
   trigger,
 } from '@angular/animations';
 import { DatePipe } from '@angular/common';
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -48,6 +54,7 @@ import Swal from 'sweetalert2';
 export class PlanChargementComponent implements OnInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('box') public box: ElementRef;
   // date d'aujourdhui
   today = new Date();
   // date initialisée a 00:00 pour eviter le decalage dans le back
@@ -101,13 +108,17 @@ export class PlanChargementComponent implements OnInit {
   canvas: fabric.Canvas;
   rows: fabric.Canvas;
 
-  mouse: any //variable contient coordonnée du curseur
+  mouse: any; //variable contient coordonnée du curseur
+  width = 250; //width du panneau ajout manuel
+  status: any;
   @HostListener('window:mousemove', ['$event'])
-  onMouseMove(event: MouseEvent){
-     this.mouse = {
-        x: event.clientX,
-        y: event.clientY
-     }
+  onMouseMove(event: MouseEvent) {
+    this.mouse = {
+      x: event.clientX,
+      y: event.clientY,
+    };
+
+    if(this.status === "RESIZE") this.resizePanneauAjoutManuel();
   }
 
   ngAfterViewInit() {
@@ -1651,7 +1662,7 @@ export class PlanChargementComponent implements OnInit {
     });
   }
 
-  ajouterNouvelleLigne() { 
+  ajouterNouvelleLigne() {
     if (this.lignes[this.lignes.length - 1].objects.length === 0) return;
     let top =
       this.lignes[this.lignes.length - 1].top +
@@ -1716,13 +1727,13 @@ export class PlanChargementComponent implements OnInit {
     this.indexLigne = this.lignes.length - 1;
     this.changerLigne();
     if (this.lignes[this.indexLigne].objects.length !== 0) {
-      this.rows.getObjects().forEach((obj:any) => {
+      this.rows.getObjects().forEach((obj: any) => {
         this.rows.setActiveObject(obj);
         this.supprimerObjet();
-      })
+      });
     }
-    this.lignes.splice(this.indexLigne,1);
-    this.listeCanvasLignesEnregistrees.splice(this.indexLigne,1);
+    this.lignes.splice(this.indexLigne, 1);
+    this.listeCanvasLignesEnregistrees.splice(this.indexLigne, 1);
     this.rows.clear();
     this.indexLigne = this.lignes.length - 1;
     this.rows.clear();
@@ -1734,7 +1745,7 @@ export class PlanChargementComponent implements OnInit {
       }
     );
     this.indexLignePrecedent = this.indexLigne;
-    if(this.lignes.length === 0) {
+    if (this.lignes.length === 0) {
       this.lignes.push({
         objects: [],
         longueur: 0,
@@ -1745,6 +1756,20 @@ export class PlanChargementComponent implements OnInit {
       this.indexLignePrecedent = 0;
     }
     console.log(this.lignes);
+  }
+
+  resizePanneauAjoutManuel() {
+    const { left, top } = this.box.nativeElement.getBoundingClientRect();
+    let boxPosition = { left, top };
+    this.width = Number(this.mouse.x > boxPosition.left)
+      ? this.mouse.x - boxPosition.left
+      : 0;
+      if(this.width < 250) this.width=250;
+  }
+
+  setStatus(event: MouseEvent, status: string){
+    if(status === "RESIZE") event.stopPropagation();
+    this.status = status;
   }
 }
 
