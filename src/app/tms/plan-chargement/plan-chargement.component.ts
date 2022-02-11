@@ -5,6 +5,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DatePipe } from '@angular/common';
 import {
   Component,
@@ -18,10 +19,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { fabric } from 'fabric';
-import { PlanChargementService } from './services/plan-chargement.service';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { loadavg } from 'os';
 import Swal from 'sweetalert2';
+import { PlanChargementService } from './services/plan-chargement.service';
 
 @Component({
   selector: 'app-plan-chargement',
@@ -70,7 +69,7 @@ export class PlanChargementComponent implements OnInit {
     dateL: new FormControl(this.date),
     nom: new FormControl(''),
     matricule: new FormControl(''),
-  });
+  }); //formGroup des filtres
   filtreEtatMission = ''; //utilisée dans le filtrage par etat mission
   nomFiltre = false; //utilisée pour l'activation ou désactivation du filtrage par nom
   matriculeFiltre = false; //utilisée pour l'activation ou désactivation du filtrage par matricule
@@ -106,11 +105,17 @@ export class PlanChargementComponent implements OnInit {
   vehiculeEstAffiche = false;
   root: { x: number; y: number; largeur: number; hauteur: number }; //le root represente le rectangle que
   canvas: fabric.Canvas;
-  rows: fabric.Canvas;
+  rows: any;
 
   mouse: any; //variable contient coordonnée du curseur
   width = 250; //width du panneau ajout manuel
-  status: any;
+  height: any; //width du panneau ajout manuel
+  status: any; //status de l'evenement de changement taille panneau ajout des colis manuellement (RESIZETOP, RESIZERIGHT)
+  planChargementChange = false; //tester si le plan de chargement est modifié depuis le dernier enregistrement
+
+  missionEstEnAttente = false; //tester si l'etat de la mission selectionnée est "En attente"
+
+  // listener sur la position du souris
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
     this.mouse = {
@@ -118,7 +123,8 @@ export class PlanChargementComponent implements OnInit {
       y: event.clientY,
     };
 
-    if(this.status === "RESIZE") this.resizePanneauAjoutManuel();
+    if (this.status === 'RESIZETOP' || this.status === 'RESIZERIGHT')
+      this.resizePanneauAjoutManuel(this.status);
   }
 
   ngAfterViewInit() {
@@ -197,6 +203,9 @@ export class PlanChargementComponent implements OnInit {
   // fonction qui permet de selectionner une mission qh'on va afficher son plan de chargement
   selectionnerMission(mission: any) {
     this.mission = mission;
+    this.mission.etat === 'En attente'
+      ? (this.missionEstEnAttente = true)
+      : (this.missionEstEnAttente = false);
     this.initialiserCanva();
   }
 
@@ -208,11 +217,11 @@ export class PlanChargementComponent implements OnInit {
     return '#' + randomColor;
   }
 
-  // créer canva vide
+  // créer canva vide si il n'ya aucun plan chargement enregistrée sinon on charge le plan enregistrée
   initialiserCanva() {
     this.listeCommandes = []; //reinitialiser la liste des commandes
     this.listeCommandesModeManuel = []; //reinitialiser la liste des commandes
-    this.lignes = [];
+    this.lignes = []; //reinitialiser la liste des lignes
     let idCommandes = this.mission.idCommandes;
     idCommandes = idCommandes.split('/'); //liste des id de commandes dans une mission
     idCommandes = idCommandes.reverse(); //on inverse la liste car la derniére commande a livrer va etre la premiére a charger
@@ -303,12 +312,24 @@ export class PlanChargementComponent implements OnInit {
               row.style.zIndex = '8';
               row.style.border = '4px solid';
               divLigne.appendChild(row);
-              this.rows = new fabric.Canvas('row', {
-                //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
-                width: this.vehicule.largeur * 2.7,
-                height: this.vehicule.hauteur * 2.7,
-                selection: false,
-              });
+              // si etat mission = "En attente" on crée un canvas dynamique si non on crée un canvas statique
+              if (this.missionEstEnAttente) {
+                this.rows = new fabric.Canvas('row', {
+                  //creation de l'objet canva dynamique du vueLigne a l'aide du biblio fabric js
+                  width: this.vehicule.largeur * 2.7,
+                  height: this.vehicule.hauteur * 2.7,
+                  selection: false,
+                });
+              } else {
+                this.rows = new fabric.StaticCanvas('row', {
+                  //creation de l'objet canva statique du vueLigne a l'aide du biblio fabric js
+                  width: this.vehicule.largeur * 2.7,
+                  height: this.vehicule.hauteur * 2.7,
+                  selection: false,
+                });
+              }
+              this.height = this.vehicule.hauteur * 2.7; //initialiser le height du panneau d'ajout colis manuellement
+              //on affecte les variable globals dans des variables local pour qu'on peut les utiliser dans le listener du fabric
               let snap = 2; //Pixels to snap
               let canvasWidth = this.vehicule.largeur * 2.7;
               let canvasHeight = this.vehicule.hauteur * 2.7;
@@ -344,7 +365,7 @@ export class PlanChargementComponent implements OnInit {
                 }
 
                 // Loop through objects
-                rows.forEachObject(function (obj) {
+                rows.forEachObject(function (obj:any) {
                   if (obj === options.target) return;
 
                   // If objects intersect
@@ -508,7 +529,7 @@ export class PlanChargementComponent implements OnInit {
                   outerAreaRight: any = null,
                   outerAreaBottom: any = null;
 
-                rows.forEachObject(function (obj) {
+                rows.forEachObject(function (obj: any) {
                   if (obj === options.target) return;
 
                   if (
@@ -684,12 +705,13 @@ export class PlanChargementComponent implements OnInit {
                 height: this.vehicule.hauteur * 2.7,
                 selection: false,
               });
+              this.height = this.vehicule.hauteur * 2.7;
               let snap = 2; //Pixels to snap
               let canvasWidth = this.vehicule.largeur * 2.7;
               let canvasHeight = this.vehicule.hauteur * 2.7;
               let rows = this.rows;
               let canvas = this.canvas;
-              this.rows.on('object:moving', function (options) {
+              this.rows.on('object:moving', function (options: any) {
                 // Sets corner position coordinates based on current angle, width and height
                 options.target.setCoords();
 
@@ -719,7 +741,7 @@ export class PlanChargementComponent implements OnInit {
                 }
 
                 // Loop through objects
-                rows.forEachObject(function (obj) {
+                rows.forEachObject(function (obj: any) {
                   if (obj === options.target) return;
 
                   // If objects intersect
@@ -883,7 +905,7 @@ export class PlanChargementComponent implements OnInit {
                   outerAreaRight: any = null,
                   outerAreaBottom: any = null;
 
-                rows.forEachObject(function (obj) {
+                rows.forEachObject(function (obj: any) {
                   if (obj === options.target) return;
 
                   if (
@@ -1034,6 +1056,7 @@ export class PlanChargementComponent implements OnInit {
 
   // créer plan chargement mode automatique
   createPlanChargementAuto() {
+    this.planChargementChange = true;
     this.lignes = [];
     this.indexLigne = 0;
     this.indexLignePrecedent = 0;
@@ -1145,6 +1168,7 @@ export class PlanChargementComponent implements OnInit {
           idCommande: article.idCommande,
           centeredRotation: true,
           idArticle: article.id,
+          borderColor: 'red',
         } as IGroupWithId);
         group.setControlsVisibility({
           tl: false, //top-left
@@ -1168,6 +1192,7 @@ export class PlanChargementComponent implements OnInit {
           '_controlsVisibility',
           'idCommande',
           'idArticle',
+          'borderColor',
         ])
       );
     }
@@ -1207,6 +1232,7 @@ export class PlanChargementComponent implements OnInit {
           id: idArticleCanva,
           idCommande: article.idCommande,
           idArticle: article.id,
+          borderColor: 'red',
         } as IGroupWithId);
         group.setControlsVisibility({
           tl: false, //top-left
@@ -1233,6 +1259,7 @@ export class PlanChargementComponent implements OnInit {
         '_controlsVisibility',
         'idCommande',
         'idArticle',
+        'borderColor',
       ])
     );
 
@@ -1276,6 +1303,7 @@ export class PlanChargementComponent implements OnInit {
         '_controlsVisibility',
         'idCommande',
         'idArticle',
+        'borderColor',
       ]);
 
     let divLigne: any = document.getElementById('vueLigne');
@@ -1369,6 +1397,7 @@ export class PlanChargementComponent implements OnInit {
   }
 
   rotation(angle: number) {
+    this.planChargementChange = true;
     let objet: any = this.rows.getActiveObject();
     const width = objet._objects[0].width;
     const height = objet._objects[0].height;
@@ -1388,32 +1417,37 @@ export class PlanChargementComponent implements OnInit {
     }
     let objetTop: any = this.canvas.getActiveObject();
     objetTop._objects[0].width = height;
-    objetTop._objects[1].angle += 90;
+    objetTop._objects[1].angle += angle;
     objetTop.addWithUpdate();
     this.canvas.renderAll();
   }
 
-  bringForward() {
-    for (let i = 0; i < this.canvas.getObjects().length; i++) {
-      const obj: any = this.canvas.getObjects()[i];
-      if (
-        obj.id === (this.rows.getActiveObject() as unknown as IObjectWithId).id
-      ) {
-        this.canvas.setActiveObject(obj);
-      }
-    }
-    let objetTop = this.canvas.getActiveObject();
-    this.canvas.bringToFront(objetTop);
-    this.canvas.renderAll();
-  }
-
   enregistrer() {
+    let toutesLesArticlesSontAffectees = true;
+    this.listeCommandesModeManuel.forEach((commande: any) => {
+      commande.articles.forEach((article: any) => {
+        if (article.nombrePack !== 0) toutesLesArticlesSontAffectees = false;
+      });
+    });
+    if (!toutesLesArticlesSontAffectees) {
+      Swal.fire({
+        icon: 'error',
+        title: "Il y'a des colis non affecter",
+        text: "S'il vous plait verifier que tout les colis sont placés dans le vehicule!",
+      });
+      return;
+    }
+
+    if (this.lignes[this.lignes.length - 1].objects.length === 0) {
+      this.supprimerLigne();
+    }
     this.canvasTopEnregistre = JSON.stringify(
       this.canvas.toJSON([
         'id',
         '_controlsVisibility',
         'idCommande',
         'idArticle',
+        'borderColor',
       ])
     );
     this.listeCanvasLignesEnregistrees[this.indexLigne] = this.rows.toJSON([
@@ -1421,6 +1455,7 @@ export class PlanChargementComponent implements OnInit {
       '_controlsVisibility',
       'idCommande',
       'idArticle',
+      'borderColor',
     ]);
     let listeCanvasLignesEnregistreesStr = '';
     this.listeCanvasLignesEnregistrees.forEach((ligne) => {
@@ -1446,9 +1481,99 @@ export class PlanChargementComponent implements OnInit {
           timer: 1500,
         });
       });
+    this.planChargementChange = false;
   }
 
   charger() {
+    if (this.planChargementChange) {
+      Swal.fire({
+        title: 'Êtes vous sûr?',
+        text: 'Vos modification ne sont pas enregistrées!\n tous vos modifications seront annulées',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Annuler',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.lignes = [];
+          this.indexLigne = 0;
+          this.indexLignePrecedent = 0;
+          this.canvas.loadFromJSON(this.mission.canvasTop, () => {
+            this.canvas.getObjects().forEach((obj: any) => {
+              let couleur = this.listeCommandes.filter(
+                (cmd: any) => cmd.id === Number(obj.idCommande)
+              )[0].couleur;
+              obj.item(0).set('fill', couleur);
+            });
+            // making sure to render canvas at the end
+            this.canvas.renderAll();
+          });
+          this.listeCanvasLignesEnregistrees =
+            this.mission.canvasFace.split('|');
+          console.log(this.listeCanvasLignesEnregistrees);
+          for (let i = 0; i < this.listeCanvasLignesEnregistrees.length; i++) {
+            let row = new fabric.Canvas('', {
+              //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
+              width: this.vehicule.largeur * 2.7,
+              height: this.vehicule.hauteur * 2.7,
+              selection: false,
+            });
+            row.loadFromJSON(this.listeCanvasLignesEnregistrees[i], () => {
+              // making sure to render canvas at the end
+              row.getObjects().forEach((obj: any) => {
+                let couleur = this.listeCommandes.filter(
+                  (cmd: any) => cmd.id === Number(obj.idCommande)
+                )[0].couleur;
+                obj.item(0).set('fill', couleur);
+              });
+              this.lignes.push({
+                objects: row.getObjects(),
+                longueur: 0,
+                top: 0,
+                largeur: 0,
+              });
+            });
+            this.listeCanvasLignesEnregistrees[i] = row.toJSON([
+              'id',
+              '_controlsVisibility',
+              'idCommande',
+              'idArticle',
+              'borderColor',
+            ]);
+            let canvasTopOjects = this.canvas.getObjects();
+            for (let i = 0; i < this.lignes.length; i++) {
+              this.lignes[i].objects.forEach((obj: any) => {
+                let objet = canvasTopOjects.filter(
+                  (ob: any) => ob.id === obj.id
+                )[0];
+                if (objet.height > this.lignes[i].longueur) {
+                  this.lignes[i].longueur = objet.height;
+                }
+                if (i > 0) {
+                  this.lignes[i].top =
+                    this.lignes[i - 1].longueur + this.lignes[i - 1].top;
+                }
+                this.lignes[i].largeur = this.canvas.width;
+              });
+            }
+          }
+          this.rows.loadFromJSON(this.listeCanvasLignesEnregistrees[0], () => {
+            // making sure to render canvas at the end
+            this.rows.renderAll();
+          });
+          this.listeCommandesModeManuel.forEach((cmd: any) => {
+            // pour chaque article dans liste commande manuel on met le nombre pack a 0
+            cmd.articles.forEach((article: any) => {
+              article.nombrePack = 0;
+            });
+          });
+          this.planChargementChange = false;
+        }
+      });
+      return;
+    }
     this.lignes = [];
     this.indexLigne = 0;
     this.indexLignePrecedent = 0;
@@ -1491,6 +1616,7 @@ export class PlanChargementComponent implements OnInit {
         '_controlsVisibility',
         'idCommande',
         'idArticle',
+        'borderColor',
       ]);
       let canvasTopOjects = this.canvas.getObjects();
       for (let i = 0; i < this.lignes.length; i++) {
@@ -1517,6 +1643,7 @@ export class PlanChargementComponent implements OnInit {
         article.nombrePack = 0;
       });
     });
+    this.planChargementChange = false;
 
     let premierChargement;
     this.vehiculeEstAffiche
@@ -1529,7 +1656,6 @@ export class PlanChargementComponent implements OnInit {
           this.scroll(vehicule);
         }, 500)
       : this.scroll(vehicule);
-    console.log(this.lignes);
   }
 
   viderCanvas() {
@@ -1546,7 +1672,13 @@ export class PlanChargementComponent implements OnInit {
     });
     this.listeCanvasLignesEnregistrees = [];
     this.listeCanvasLignesEnregistrees.push(
-      this.rows.toJSON(['id', '_controlsVisibility', 'idCommande', 'idArticle'])
+      this.rows.toJSON([
+        'id',
+        '_controlsVisibility',
+        'idCommande',
+        'idArticle',
+        'borderColor',
+      ])
     );
     this.listeCommandesModeManuel.forEach((cmd: any) => {
       // pour chaque article dans liste commande manuel on met le nombre pack a 0
@@ -1594,6 +1726,7 @@ export class PlanChargementComponent implements OnInit {
       idCommande: colis.idCommande,
       centeredRotation: true,
       idArticle: colis.id,
+      borderColor: 'red',
     } as IGroupWithId);
     groupFace.setControlsVisibility({
       tl: false, //top-left
@@ -1629,6 +1762,7 @@ export class PlanChargementComponent implements OnInit {
       id: id,
       idCommande: colis.idCommande,
       idArticle: colis.id,
+      borderColor: 'red',
     } as IGroupWithId);
     groupTop.setControlsVisibility({
       tl: false, //top-left
@@ -1644,6 +1778,9 @@ export class PlanChargementComponent implements OnInit {
 
     this.rows.add(groupFace);
     this.canvas.add(groupTop);
+    this.rows.setActiveObject(
+      this.rows.getObjects()[this.rows.getObjects().length - 1]
+    );
 
     this.lignes[this.indexLigne].objects = this.rows.getObjects();
 
@@ -1679,10 +1816,17 @@ export class PlanChargementComponent implements OnInit {
         '_controlsVisibility',
         'idCommande',
         'idArticle',
+        'borderColor',
       ]);
     this.rows.clear();
     this.listeCanvasLignesEnregistrees.push(
-      this.rows.toJSON(['id', '_controlsVisibility', 'idCommande', 'idArticle'])
+      this.rows.toJSON([
+        'id',
+        '_controlsVisibility',
+        'idCommande',
+        'idArticle',
+        'borderColor',
+      ])
     );
     this.indexLigne = this.lignes.length - 1;
     let divLigne: any = document.getElementById('vueLigne');
@@ -1758,17 +1902,26 @@ export class PlanChargementComponent implements OnInit {
     console.log(this.lignes);
   }
 
-  resizePanneauAjoutManuel() {
-    const { left, top } = this.box.nativeElement.getBoundingClientRect();
-    let boxPosition = { left, top };
-    this.width = Number(this.mouse.x > boxPosition.left)
-      ? this.mouse.x - boxPosition.left
-      : 0;
-      if(this.width < 250) this.width=250;
+  resizePanneauAjoutManuel(status: string) {
+    const { left, bottom } = this.box.nativeElement.getBoundingClientRect();
+    let boxPosition = { left, bottom };
+    if (status === 'RESIZERIGHT') {
+      this.width = Number(this.mouse.x > boxPosition.left)
+        ? this.mouse.x - boxPosition.left
+        : 0;
+      if (this.width < 250) this.width = 250;
+    } else if (status === 'RESIZETOP') {
+      this.height = Number(this.mouse.y < boxPosition.bottom)
+        ? boxPosition.bottom - this.mouse.y
+        : 0;
+      if (this.height < this.vehicule.hauteur * 2.7)
+        this.height = this.vehicule.hauteur * 2.7;
+    }
   }
 
-  setStatus(event: MouseEvent, status: string){
-    if(status === "RESIZE") event.stopPropagation();
+  setStatus(event: MouseEvent, status: string) {
+    if (status === 'RESIZETOP' || status === 'RESIZERIGHT')
+      event.stopPropagation();
     this.status = status;
   }
 }

@@ -202,18 +202,29 @@ p {
   left: 20px;
   bottom: 85px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   z-index: 999;
 }
 
-.resizer {
+.resizer-right {
   width: 2px;
   background-color: transparent;
   cursor: col-resize;
 }
-.resizer:hover{
+.resizer-right:hover{
   background-color: rgba($color: #000000, $alpha: 0.1);
 }
+
+.resizer-top {
+  height: 2px;
+  width: 99%;
+  background-color: transparent;
+  cursor: row-resize;
+}
+.resizer-top:hover{
+  background-color: rgba($color: #000000, $alpha: 0.1);
+}
+
 
 .select-commande {
   width: 90%;
