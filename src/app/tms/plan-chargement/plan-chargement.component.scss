@@ -79,6 +79,7 @@ p {
   right: 0;
 }
 
+// div qui contient tout les elements du plan chargement
 .vehicule {
   width: 100%;
   display: flex;
@@ -88,31 +89,40 @@ p {
   position: relative;
   min-height: 0;
 }
+
+// container des canvas
 .container {
   display: flex;
   justify-content: center;
 }
 
+// legend pour savoir a qui appartienne chaque commande
 .legend {
   position: absolute;
   top: 100px;
   left: 75px;
+
+  border: 4px solid;
+  padding: 20px;
 }
 
 .mat-row {
   cursor: pointer;
 }
 
+// adresse et info commande dans legend
 .position {
   width: 100%;
 }
-.example-list {
+
+//style des div qui presente la fonction du drag&drop
+.drag-drop {
   min-height: 55px;
   display: block;
   overflow: hidden;
 }
 
-.example-box {
+.drag-drop-box {
   padding: 5px 0px;
   border-bottom: solid 1px #cce0fa;
   color: #cce0fa(0, 0, 0, 0.87);
@@ -140,14 +150,14 @@ p {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
-.example-box:last-child {
+.drag-drop-box:last-child {
   border: none;
 }
 
-.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
+.drag-drop.cdk-drop-list-dragging .drag-drop-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
-.example-handle {
+.drag-drop-handle {
   position: relative;
   color: black;
   cursor: grab;
@@ -159,6 +169,7 @@ p {
   gap: 20px;
 }
 
+//canvas top
 #canva {
   display: flex;
   flex-direction: column;
@@ -166,6 +177,7 @@ p {
   position: relative;
 }
 
+// les divs qui permet de selectionner les lignes
 .selecteur {
   z-index: 90;
   position: absolute;
@@ -176,11 +188,7 @@ p {
   background: rgba(255, 255, 255, 0.25);
 }
 
-.legend {
-  border: 4px solid;
-  padding: 20px;
-}
-
+//label de chaque canvas
 .label {
   text-align: center;
   font-weight: 500;
@@ -197,7 +205,7 @@ p {
   padding: 20px;
 }
 
-.panneau-ajout-manuel{
+.panneau-ajout-manuel {
   position: absolute;
   left: 20px;
   bottom: 85px;
@@ -206,12 +214,13 @@ p {
   z-index: 999;
 }
 
+//div qui permet le redimentionnement du panneau ajout manuel
 .resizer-right {
   width: 2px;
   background-color: transparent;
   cursor: col-resize;
 }
-.resizer-right:hover{
+.resizer-right:hover {
   background-color: rgba($color: #000000, $alpha: 0.1);
 }
 
@@ -221,10 +230,9 @@ p {
   background-color: transparent;
   cursor: row-resize;
 }
-.resizer-top:hover{
+.resizer-top:hover {
   background-color: rgba($color: #000000, $alpha: 0.1);
 }
-
 
 .select-commande {
   width: 90%;
@@ -248,6 +256,9 @@ p {
 //pour mobile
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {
+  .main-card {
+    height: auto;
+  }
   section {
     flex-direction: column;
     align-items: unset;
@@ -334,5 +345,13 @@ p {
   }
   .mat-header-row {
     min-height: 0;
+  }
+
+  .panneau-ajout-manuel{
+    display: none;
+  }
+
+  .legend {
+    position: unset;
   }
 }

@@ -26,6 +26,7 @@ import { PlanChargementService } from './services/plan-chargement.service';
   selector: 'app-plan-chargement',
   templateUrl: './plan-chargement.component.html',
   styleUrls: ['./plan-chargement.component.scss'],
+  // animation d'affichage du plan chargement
   animations: [
     trigger('statusVehicule', [
       state(
@@ -235,6 +236,7 @@ export class PlanChargementComponent implements OnInit {
           this.commande = await this.servicePlanChargement
             .commande(idCommandes[i])
             .toPromise();
+          // commandeManuel est une copie du commande pour qu'on peut modifier le nombre des articles restant dans la commandeManuel sans le modifier dans l'objet original commande
           const commandeManuel = Object.assign({}, this.commande);
           let listeColisManuel: any = [];
           listeColis.forEach((colis: any) => {
@@ -330,16 +332,16 @@ export class PlanChargementComponent implements OnInit {
               }
               this.height = this.vehicule.hauteur * 2.7; //initialiser le height du panneau d'ajout colis manuellement
               //on affecte les variable globals dans des variables local pour qu'on peut les utiliser dans le listener du fabric
-              let snap = 2; //Pixels to snap
+              let snap = 2; //Pixels a accrocher
               let canvasWidth = this.vehicule.largeur * 2.7;
               let canvasHeight = this.vehicule.hauteur * 2.7;
               let rows = this.rows;
               let canvas = this.canvas;
               this.rows.on('object:moving', function (options: any) {
-                // Sets corner position coordinates based on current angle, width and height
+                // Définir les coordonnées de la position du coin en fonction de l'angle, de la largeur et de la hauteur actuels
                 options.target.setCoords();
 
-                // Don't allow objects off the canvas
+                // Ne laissez pas les objets hors du canvas
                 if (options.target.left < snap) {
                   options.target.left = 0;
                 }
@@ -364,11 +366,11 @@ export class PlanChargementComponent implements OnInit {
                     canvasHeight - options.target.getScaledHeight();
                 }
 
-                // Loop through objects
-                rows.forEachObject(function (obj:any) {
+                // Boucle à travers les objets
+                rows.forEachObject(function (obj: any) {
                   if (obj === options.target) return;
 
-                  // If objects intersect
+                  // Si des objets se croisent
                   if (
                     options.target.isContainedWithinObject(obj) ||
                     options.target.intersectsWithObject(obj) ||
@@ -383,13 +385,13 @@ export class PlanChargementComponent implements OnInit {
                       (options.target.top + options.target.getScaledHeight()) /
                         2;
 
-                    // Set new position
+                    // Définir une nouvelle position
                     findNewPos(distX, distY, options.target, obj);
                   }
 
-                  // Snap objects to each other horizontally
+                  // Accrocher les objets les uns aux autres horizontalement
 
-                  // If bottom points are on same Y axis
+                  // Si les points inférieurs sont sur le même axe Y
                   if (
                     Math.abs(
                       options.target.top +
@@ -397,7 +399,7 @@ export class PlanChargementComponent implements OnInit {
                         (obj.top + obj.getScaledHeight())
                     ) < snap
                   ) {
-                    // Snap target BL to object BR
+                    // Aligner la cible BL sur l'objet BR
                     if (
                       Math.abs(
                         options.target.left - (obj.left + obj.getScaledWidth())
@@ -410,7 +412,7 @@ export class PlanChargementComponent implements OnInit {
                         options.target.getScaledHeight();
                     }
 
-                    // Snap target BR to object BL
+                    // Aligner la cible BR sur l'objet BL
                     if (
                       Math.abs(
                         options.target.left +
@@ -427,9 +429,9 @@ export class PlanChargementComponent implements OnInit {
                     }
                   }
 
-                  // If top points are on same Y axis
+                  // Si les points supérieurs sont sur le même axe Y
                   if (Math.abs(options.target.top - obj.top) < snap) {
-                    // Snap target TL to object TR
+                    // Accrocher la cible TL à l'objet TR
                     if (
                       Math.abs(
                         options.target.left - (obj.left + obj.getScaledWidth())
@@ -439,7 +441,7 @@ export class PlanChargementComponent implements OnInit {
                       options.target.top = obj.top;
                     }
 
-                    // Snap target TR to object TL
+                    // Accrocher la cible TR à l'objet TL
                     if (
                       Math.abs(
                         options.target.left +
@@ -453,9 +455,9 @@ export class PlanChargementComponent implements OnInit {
                     }
                   }
 
-                  // Snap objects to each other vertically
+                  // Accrochez les objets les uns aux autres verticalement
 
-                  // If right points are on same X axis
+                  // Si les points droits sont sur le même axe X
                   if (
                     Math.abs(
                       options.target.left +
@@ -463,7 +465,7 @@ export class PlanChargementComponent implements OnInit {
                         (obj.left + obj.getScaledWidth())
                     ) < snap
                   ) {
-                    // Snap target TR to object BR
+                    // Aligner la cible TR sur l'objet BR
                     if (
                       Math.abs(
                         options.target.top - (obj.top + obj.getScaledHeight())
@@ -476,7 +478,7 @@ export class PlanChargementComponent implements OnInit {
                       options.target.top = obj.top + obj.getScaledHeight();
                     }
 
-                    // Snap target BR to object TR
+                    // Aligner la cible BR sur l'objet TR
                     if (
                       Math.abs(
                         options.target.top +
@@ -493,9 +495,9 @@ export class PlanChargementComponent implements OnInit {
                     }
                   }
 
-                  // If left points are on same X axis
+                  // Si les points de gauche sont sur le même axe X
                   if (Math.abs(options.target.left - obj.left) < snap) {
-                    // Snap target TL to object BL
+                    // Accrocher la cible TL sur l'objet BL
                     if (
                       Math.abs(
                         options.target.top - (obj.top + obj.getScaledHeight())
@@ -505,7 +507,7 @@ export class PlanChargementComponent implements OnInit {
                       options.target.top = obj.top + obj.getScaledHeight();
                     }
 
-                    // Snap target BL to object TL
+                    // Accrocher la cible BL à l'objet TL
                     if (
                       Math.abs(
                         options.target.top +
@@ -522,7 +524,7 @@ export class PlanChargementComponent implements OnInit {
 
                 options.target.setCoords();
 
-                // If objects still overlap
+                // Si les objets se chevauchent encore
 
                 var outerAreaLeft: any = null,
                   outerAreaTop: any = null,
@@ -553,7 +555,7 @@ export class PlanChargementComponent implements OnInit {
                       objectTop = obj.top,
                       objectBottom = objectTop + obj.getScaledHeight();
 
-                    // Find intersect information for X axis
+                    // Rechercher des informations d'intersection pour l'axe X
                     if (targetLeft >= objectLeft && targetLeft <= objectRight) {
                       intersectLeft = targetLeft;
                       intersectWidth =
@@ -568,7 +570,7 @@ export class PlanChargementComponent implements OnInit {
                         (intersectLeft - targetLeft);
                     }
 
-                    // Find intersect information for Y axis
+                    // Rechercher des informations d'intersection pour l'axe Y
                     if (targetTop >= objectTop && targetTop <= objectBottom) {
                       intersectTop = targetTop;
                       intersectHeight =
@@ -583,12 +585,12 @@ export class PlanChargementComponent implements OnInit {
                         (intersectTop - targetTop);
                     }
 
-                    // Find intersect size (this will be 0 if objects are touching but not overlapping)
+                    // Trouver la taille d'intersection (ce sera 0 si les objets se touchent mais ne se chevauchent pas)
                     if (intersectWidth > 0 && intersectHeight > 0) {
                       intersectSize = intersectWidth * intersectHeight;
                     }
 
-                    // Set outer snapping area
+                    // Définir la zone de capture externe
                     if (obj.left < outerAreaLeft || outerAreaLeft == null) {
                       outerAreaLeft = obj.left;
                     }
@@ -611,7 +613,7 @@ export class PlanChargementComponent implements OnInit {
                       outerAreaBottom = obj.top + obj.getScaledHeight();
                     }
 
-                    // If objects are intersecting, reposition outside all shapes which touch
+                    // Si des objets se croisent, repositionnez en dehors de toutes les formes qui se touchent
                     if (intersectSize) {
                       var distX =
                         outerAreaRight / 2 -
@@ -624,11 +626,12 @@ export class PlanChargementComponent implements OnInit {
                           options.target.getScaledHeight()) /
                           2;
 
-                      // Set new position
+                      // Définir une nouvelle position
                       findNewPos(distX, distY, options.target, obj);
                     }
                   }
                 });
+                // selectionner l'objet du canvas top a l'aide de son id
                 for (let i = 0; i < canvas.getObjects().length; i++) {
                   const obj: any = canvas.getObjects()[i];
                   if (
@@ -639,17 +642,19 @@ export class PlanChargementComponent implements OnInit {
                   }
                 }
                 let canvasObject = canvas.getActiveObject();
+                // changer la valeur du left de l'objet en canvas top pour correspondre a la nouvelle valeur du left dans canvas face quand on deplace l'objet
                 canvasObject.left = options.target.left;
 
+                // quand on change la position d'un objet vers le top on l'avance dans le canvas top
                 let listeObjTrie = rows
                   .getObjects()
                   .sort((a: any, b: any) => (a.top > b.top ? -1 : 1));
                 let objCanvas = canvas.getObjects();
                 for (let j = 0; j < listeObjTrie.length; j++) {
-                  const objFiltre: any = listeObjTrie[j];
+                  const objTrie: any = listeObjTrie[j];
                   for (let i = 0; i < objCanvas.length; i++) {
                     const obj: any = objCanvas[i];
-                    if (obj.id === objFiltre.id) {
+                    if (obj.id === objTrie.id) {
                       canvas.setActiveObject(obj);
                     }
                   }
@@ -657,6 +662,7 @@ export class PlanChargementComponent implements OnInit {
                   canvas.bringToFront(canvasObject);
                 }
 
+                // on refraiche le canvas pour afficher les modifications
                 canvasObject.setCoords();
                 canvas.discardActiveObject().renderAll();
               });
@@ -664,6 +670,7 @@ export class PlanChargementComponent implements OnInit {
                 this.charger();
             });
         } else {
+          // recupérer les données de notre vehicule privée par son matricule
           this.servicePlanChargement
             .vehiculeLoue(this.mission.matricule)
             .subscribe((res: any) => {
@@ -706,16 +713,16 @@ export class PlanChargementComponent implements OnInit {
                 selection: false,
               });
               this.height = this.vehicule.hauteur * 2.7;
-              let snap = 2; //Pixels to snap
+              let snap = 2; //Pixels a accrocher
               let canvasWidth = this.vehicule.largeur * 2.7;
               let canvasHeight = this.vehicule.hauteur * 2.7;
               let rows = this.rows;
               let canvas = this.canvas;
               this.rows.on('object:moving', function (options: any) {
-                // Sets corner position coordinates based on current angle, width and height
+                // Définir les coordonnées de la position du coin en fonction de l'angle, de la largeur et de la hauteur actuels
                 options.target.setCoords();
 
-                // Don't allow objects off the canvas
+                // Ne laissez pas les objets hors du canvas
                 if (options.target.left < snap) {
                   options.target.left = 0;
                 }
@@ -740,11 +747,11 @@ export class PlanChargementComponent implements OnInit {
                     canvasHeight - options.target.getScaledHeight();
                 }
 
-                // Loop through objects
+                // Boucle à travers les objets
                 rows.forEachObject(function (obj: any) {
                   if (obj === options.target) return;
 
-                  // If objects intersect
+                  // Si des objets se croisent
                   if (
                     options.target.isContainedWithinObject(obj) ||
                     options.target.intersectsWithObject(obj) ||
@@ -759,13 +766,13 @@ export class PlanChargementComponent implements OnInit {
                       (options.target.top + options.target.getScaledHeight()) /
                         2;
 
-                    // Set new position
+                    // Définir une nouvelle position
                     findNewPos(distX, distY, options.target, obj);
                   }
 
-                  // Snap objects to each other horizontally
+                  // Accrocher les objets les uns aux autres horizontalement
 
-                  // If bottom points are on same Y axis
+                  // Si les points inférieurs sont sur le même axe Y
                   if (
                     Math.abs(
                       options.target.top +
@@ -773,7 +780,7 @@ export class PlanChargementComponent implements OnInit {
                         (obj.top + obj.getScaledHeight())
                     ) < snap
                   ) {
-                    // Snap target BL to object BR
+                    // Aligner la cible BL sur l'objet BR
                     if (
                       Math.abs(
                         options.target.left - (obj.left + obj.getScaledWidth())
@@ -786,7 +793,7 @@ export class PlanChargementComponent implements OnInit {
                         options.target.getScaledHeight();
                     }
 
-                    // Snap target BR to object BL
+                    // Aligner la cible BR sur l'objet BL
                     if (
                       Math.abs(
                         options.target.left +
@@ -803,9 +810,9 @@ export class PlanChargementComponent implements OnInit {
                     }
                   }
 
-                  // If top points are on same Y axis
+                  // Si les points supérieurs sont sur le même axe Y
                   if (Math.abs(options.target.top - obj.top) < snap) {
-                    // Snap target TL to object TR
+                    // Accrocher la cible TL à l'objet TR
                     if (
                       Math.abs(
                         options.target.left - (obj.left + obj.getScaledWidth())
@@ -815,7 +822,7 @@ export class PlanChargementComponent implements OnInit {
                       options.target.top = obj.top;
                     }
 
-                    // Snap target TR to object TL
+                    // Accrocher la cible TR à l'objet TL
                     if (
                       Math.abs(
                         options.target.left +
@@ -829,9 +836,9 @@ export class PlanChargementComponent implements OnInit {
                     }
                   }
 
-                  // Snap objects to each other vertically
+                  // Accrochez les objets les uns aux autres verticalement
 
-                  // If right points are on same X axis
+                  // Si les points droits sont sur le même axe X
                   if (
                     Math.abs(
                       options.target.left +
@@ -839,7 +846,7 @@ export class PlanChargementComponent implements OnInit {
                         (obj.left + obj.getScaledWidth())
                     ) < snap
                   ) {
-                    // Snap target TR to object BR
+                    // Aligner la cible TR sur l'objet BR
                     if (
                       Math.abs(
                         options.target.top - (obj.top + obj.getScaledHeight())
@@ -852,7 +859,7 @@ export class PlanChargementComponent implements OnInit {
                       options.target.top = obj.top + obj.getScaledHeight();
                     }
 
-                    // Snap target BR to object TR
+                    // Aligner la cible BR sur l'objet TR
                     if (
                       Math.abs(
                         options.target.top +
@@ -869,9 +876,9 @@ export class PlanChargementComponent implements OnInit {
                     }
                   }
 
-                  // If left points are on same X axis
+                  // Si les points de gauche sont sur le même axe X
                   if (Math.abs(options.target.left - obj.left) < snap) {
-                    // Snap target TL to object BL
+                    // Accrocher la cible TL sur l'objet BL
                     if (
                       Math.abs(
                         options.target.top - (obj.top + obj.getScaledHeight())
@@ -881,7 +888,7 @@ export class PlanChargementComponent implements OnInit {
                       options.target.top = obj.top + obj.getScaledHeight();
                     }
 
-                    // Snap target BL to object TL
+                    // Accrocher la cible BL à l'objet TL
                     if (
                       Math.abs(
                         options.target.top +
@@ -898,7 +905,7 @@ export class PlanChargementComponent implements OnInit {
 
                 options.target.setCoords();
 
-                // If objects still overlap
+                // Si les objets se chevauchent encore
 
                 var outerAreaLeft: any = null,
                   outerAreaTop: any = null,
@@ -929,7 +936,7 @@ export class PlanChargementComponent implements OnInit {
                       objectTop = obj.top,
                       objectBottom = objectTop + obj.getScaledHeight();
 
-                    // Find intersect information for X axis
+                    // Rechercher des informations d'intersection pour l'axe X
                     if (targetLeft >= objectLeft && targetLeft <= objectRight) {
                       intersectLeft = targetLeft;
                       intersectWidth =
@@ -944,7 +951,7 @@ export class PlanChargementComponent implements OnInit {
                         (intersectLeft - targetLeft);
                     }
 
-                    // Find intersect information for Y axis
+                    // Rechercher des informations d'intersection pour l'axe Y
                     if (targetTop >= objectTop && targetTop <= objectBottom) {
                       intersectTop = targetTop;
                       intersectHeight =
@@ -959,12 +966,12 @@ export class PlanChargementComponent implements OnInit {
                         (intersectTop - targetTop);
                     }
 
-                    // Find intersect size (this will be 0 if objects are touching but not overlapping)
+                    // Trouver la taille d'intersection (ce sera 0 si les objets se touchent mais ne se chevauchent pas)
                     if (intersectWidth > 0 && intersectHeight > 0) {
                       intersectSize = intersectWidth * intersectHeight;
                     }
 
-                    // Set outer snapping area
+                    // Définir la zone de capture externe
                     if (obj.left < outerAreaLeft || outerAreaLeft == null) {
                       outerAreaLeft = obj.left;
                     }
@@ -987,7 +994,7 @@ export class PlanChargementComponent implements OnInit {
                       outerAreaBottom = obj.top + obj.getScaledHeight();
                     }
 
-                    // If objects are intersecting, reposition outside all shapes which touch
+                    // Si des objets se croisent, repositionnez en dehors de toutes les formes qui se touchent
                     if (intersectSize) {
                       var distX =
                         outerAreaRight / 2 -
@@ -1000,11 +1007,12 @@ export class PlanChargementComponent implements OnInit {
                           options.target.getScaledHeight()) /
                           2;
 
-                      // Set new position
+                      // Définir une nouvelle position
                       findNewPos(distX, distY, options.target, obj);
                     }
                   }
                 });
+                // selectionner l'objet du canvas top a l'aide de son id
                 for (let i = 0; i < canvas.getObjects().length; i++) {
                   const obj: any = canvas.getObjects()[i];
                   if (
@@ -1015,8 +1023,10 @@ export class PlanChargementComponent implements OnInit {
                   }
                 }
                 let canvasObject = canvas.getActiveObject();
+                // changer la valeur du left de l'objet en canvas top pour correspondre a la nouvelle valeur du left dans canvas face quand on deplace l'objet
                 canvasObject.left = options.target.left;
 
+                // quand on change la position d'un objet vers le top on l'avance dans le canvas top
                 let listeObjTrie = rows
                   .getObjects()
                   .sort((a: any, b: any) => (a.top > b.top ? -1 : 1));
@@ -1032,6 +1042,8 @@ export class PlanChargementComponent implements OnInit {
                   let canvasObject = canvas.getActiveObject();
                   canvas.bringToFront(canvasObject);
                 }
+
+                // on refraiche le canvas pour afficher les modifications
                 canvasObject.setCoords();
                 canvas.discardActiveObject().renderAll();
               });
@@ -1040,6 +1052,8 @@ export class PlanChargementComponent implements OnInit {
             });
         }
 
+        // affichage du plan chargement
+        // si c'est la premiere fois qu'on affiche le plan chargement on met un délai pour eviter le probleme que le plan chargement s'affiche avant l'initialisation du canvas
         let premierChargement;
         this.vehiculeEstAffiche
           ? (premierChargement = false)
@@ -1130,12 +1144,12 @@ export class PlanChargementComponent implements OnInit {
     // index ligne a afficher
     this.indexLigne = 0;
 
-    // -----------------------------------------------
+    // création des canvas a afficher 
     this.listeCanvasLignesEnregistrees = [];
     for (let j = 0; j < this.lignes.length; j++) {
       let nombreArticleDansLignesPrecedentes = 0;
       let rowAEnregistrer = new fabric.Canvas('', {
-        //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
+        //creation de canva du vueLigne a l'aide du biblio fabric js
         width: this.vehicule.largeur * 2.7,
         height: this.vehicule.hauteur * 2.7,
         selection: false,
@@ -1145,6 +1159,7 @@ export class PlanChargementComponent implements OnInit {
       }
       let idArticle = nombreArticleDansLignesPrecedentes;
       this.lignes[j].objects.forEach((article: any) => {
+        // creation des rectangles qui represente des articles
         const rect = new fabric.Rect({
           originX: 'center',
           originY: 'center',
@@ -1155,12 +1170,13 @@ export class PlanChargementComponent implements OnInit {
           strokeWidth: 1,
           lockUniScaling: true,
         });
+        // nom de l'article
         var text = new fabric.Text(article.emballage, {
           fontSize: 10,
           originX: 'center',
           originY: 'center',
         });
-
+        // on groupe les rectangles et les noms
         var group = new fabric.Group([rect, text], {
           top: this.vehicule.hauteur * 2.7 - article.hauteur - article.fit.y,
           left: article.fit.x,
@@ -1170,6 +1186,7 @@ export class PlanChargementComponent implements OnInit {
           idArticle: article.id,
           borderColor: 'red',
         } as IGroupWithId);
+        // on elimine les controlles qui permet le redimentionnement et la rotation des objet
         group.setControlsVisibility({
           tl: false, //top-left
           mt: false, // middle-top
@@ -1186,6 +1203,7 @@ export class PlanChargementComponent implements OnInit {
         idArticle++;
       });
 
+      // pour chaque ligne on enregistre son canvas
       this.listeCanvasLignesEnregistrees.push(
         rowAEnregistrer.toJSON([
           'id',
@@ -1234,6 +1252,7 @@ export class PlanChargementComponent implements OnInit {
           idArticle: article.id,
           borderColor: 'red',
         } as IGroupWithId);
+        // on elimine les controlles qui permet le redimentionnement et la rotation des objet
         group.setControlsVisibility({
           tl: false, //top-left
           mt: false, // middle-top
@@ -1253,6 +1272,8 @@ export class PlanChargementComponent implements OnInit {
       top += longueur;
       ligne.largeur = this.vehicule.largeur * 2.7;
     });
+
+    // on enregistre le canvas top réalisée automatiquement pour  l'afficher
     this.canvasTopEnregistre = JSON.stringify(
       topAEnregistrer.toJSON([
         'id',
@@ -1283,6 +1304,7 @@ export class PlanChargementComponent implements OnInit {
       this.rows.renderAll();
     });
 
+    // afficher le div qui contient les canvas
     let premierChargement;
     this.vehiculeEstAffiche
       ? (premierChargement = false)
@@ -1296,7 +1318,9 @@ export class PlanChargementComponent implements OnInit {
       : this.scroll(vehicule);
   }
 
+  // fonction pour afficher la ligne selectionnée
   changerLigne() {
+    // enregistrer la ligne avant de passer a la ligne suivante
     this.listeCanvasLignesEnregistrees[this.indexLignePrecedent] =
       this.rows.toJSON([
         'id',
@@ -1319,6 +1343,7 @@ export class PlanChargementComponent implements OnInit {
     this.indexLignePrecedent = this.indexLigne;
   }
 
+  // fonction pour faire le scroll vers le bas
   scroll(el: HTMLElement) {
     el.scrollIntoView({
       behavior: 'smooth',
@@ -1332,6 +1357,8 @@ export class PlanChargementComponent implements OnInit {
     return this.vehiculeEstAffiche ? 'show' : 'hide';
   }
 
+
+  // changer ordre liste commande lors du drag and drop du legend
   async drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(
       this.listeCommandes,
@@ -1352,10 +1379,12 @@ export class PlanChargementComponent implements OnInit {
     this.createPlanChargementAuto();
   }
 
+  // initialiser les racines de l'algorithme qui va placer les articles automatiquement
   initialiserRoot(largeur: number, hauteur: number) {
     this.root = { x: 0, y: 0, largeur: largeur, hauteur: hauteur };
   }
 
+  // fonction qui met les articles dans leurs positions
   fit(blocks: any, ligne: any) {
     var n, node, block;
     for (n = 0; n < blocks.length; n++) {
@@ -1369,6 +1398,7 @@ export class PlanChargementComponent implements OnInit {
     }
   }
 
+  // chercher les noeuds vides
   chercherNoeud(root: any, largeur: number, hauteur: number): any {
     if (root.used)
       return (
@@ -1379,6 +1409,7 @@ export class PlanChargementComponent implements OnInit {
     else return null;
   }
 
+  // diviser le noeuds aprés le placement de l'article
   diviserNoeud(node: any, largeur: number, hauteur: number) {
     node.used = true;
     node.down = {
@@ -1396,6 +1427,7 @@ export class PlanChargementComponent implements OnInit {
     return node;
   }
 
+  // rotation selon l'angle donnée
   rotation(angle: number) {
     this.planChargementChange = true;
     let objet: any = this.rows.getActiveObject();
@@ -1422,6 +1454,8 @@ export class PlanChargementComponent implements OnInit {
     this.canvas.renderAll();
   }
 
+
+  // enregistrer les canvas dans la base des données
   enregistrer() {
     let toutesLesArticlesSontAffectees = true;
     this.listeCommandesModeManuel.forEach((commande: any) => {
@@ -1484,7 +1518,9 @@ export class PlanChargementComponent implements OnInit {
     this.planChargementChange = false;
   }
 
+  // récupérer les canvas depuis la base des données et les afficher
   charger() {
+    // se le plan chargement est modifié depuis le dernier enregistrement
     if (this.planChargementChange) {
       Swal.fire({
         title: 'Êtes vous sûr?',
@@ -1513,6 +1549,7 @@ export class PlanChargementComponent implements OnInit {
           this.listeCanvasLignesEnregistrees =
             this.mission.canvasFace.split('|');
           console.log(this.listeCanvasLignesEnregistrees);
+          // chargement des canvas faces
           for (let i = 0; i < this.listeCanvasLignesEnregistrees.length; i++) {
             let row = new fabric.Canvas('', {
               //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
@@ -1559,6 +1596,7 @@ export class PlanChargementComponent implements OnInit {
               });
             }
           }
+          //afficher la premiére ligne dans la vue face
           this.rows.loadFromJSON(this.listeCanvasLignesEnregistrees[0], () => {
             // making sure to render canvas at the end
             this.rows.renderAll();
@@ -1577,6 +1615,7 @@ export class PlanChargementComponent implements OnInit {
     this.lignes = [];
     this.indexLigne = 0;
     this.indexLignePrecedent = 0;
+    // affichage du canvas top
     this.canvas.loadFromJSON(this.mission.canvasTop, () => {
       this.canvas.getObjects().forEach((obj: any) => {
         let couleur = this.listeCommandes.filter(
@@ -1588,7 +1627,7 @@ export class PlanChargementComponent implements OnInit {
       this.canvas.renderAll();
     });
     this.listeCanvasLignesEnregistrees = this.mission.canvasFace.split('|');
-    console.log(this.listeCanvasLignesEnregistrees);
+    // charger les lignes du canvas faces enregistrées
     for (let i = 0; i < this.listeCanvasLignesEnregistrees.length; i++) {
       let row = new fabric.Canvas('', {
         //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
@@ -1633,6 +1672,7 @@ export class PlanChargementComponent implements OnInit {
         });
       }
     }
+    //affichage premier ligne canvas face
     this.rows.loadFromJSON(this.listeCanvasLignesEnregistrees[0], () => {
       // making sure to render canvas at the end
       this.rows.renderAll();
@@ -1645,6 +1685,7 @@ export class PlanChargementComponent implements OnInit {
     });
     this.planChargementChange = false;
 
+    // afficher le div qui contient le canvas si il n'est pas deja affiché et puis scroll vers le bas
     let premierChargement;
     this.vehiculeEstAffiche
       ? (premierChargement = false)
@@ -1658,6 +1699,7 @@ export class PlanChargementComponent implements OnInit {
       : this.scroll(vehicule);
   }
 
+  //supprimer les canvas et reinitialiser les des listes necessaires et reinitialiser le nombre des pack dans la liste des commandes manuel
   viderCanvas() {
     this.canvas.clear();
     this.rows.clear();
@@ -1700,6 +1742,7 @@ export class PlanChargementComponent implements OnInit {
 
   // ajouter un colis d'une maniére manuelle
   ajouterColisManuellement(colis: any) {
+    // si nombre pack du colis <= 0 on n'execute pas cette fonction
     if (colis.nombrePack <= 0) return;
     colis.nombrePack -= 1;
     let id = this.canvas.getObjects().length;
@@ -1784,6 +1827,7 @@ export class PlanChargementComponent implements OnInit {
 
     this.lignes[this.indexLigne].objects = this.rows.getObjects();
 
+    // changer langueuer du ligne selon le colis le plus long
     let canvasTopOjects = this.canvas.getObjects();
     this.lignes[this.indexLigne].objects.forEach((obj: any) => {
       let objet = canvasTopOjects.filter((ob: any) => ob.id === obj.id)[0];
@@ -1799,7 +1843,9 @@ export class PlanChargementComponent implements OnInit {
     });
   }
 
+  // ajout d'une nouvelle ligne 
   ajouterNouvelleLigne() {
+    //si la gne precedante ne contient aucun objet on n'execute pas cette fonction
     if (this.lignes[this.lignes.length - 1].objects.length === 0) return;
     let top =
       this.lignes[this.lignes.length - 1].top +
@@ -1830,6 +1876,7 @@ export class PlanChargementComponent implements OnInit {
     );
     this.indexLigne = this.lignes.length - 1;
     let divLigne: any = document.getElementById('vueLigne');
+    //afficher la nouvelle ligne (vide)
     this.rows.clear();
     this.rows.loadFromJSON(
       this.listeCanvasLignesEnregistrees[this.indexLigne],
@@ -1842,6 +1889,8 @@ export class PlanChargementComponent implements OnInit {
     this.indexLignePrecedent = this.indexLigne;
   }
 
+
+  //supprimer l'objet selectionné
   supprimerObjet() {
     for (let i = 0; i < this.canvas.getObjects().length; i++) {
       const obj: any = this.canvas.getObjects()[i];
@@ -1867,6 +1916,8 @@ export class PlanChargementComponent implements OnInit {
     this.canvas.remove(this.canvas.getActiveObject());
     this.rows.remove(this.rows.getActiveObject());
   }
+
+  // supprimer le dernier ligne
   supprimerLigne() {
     this.indexLigne = this.lignes.length - 1;
     this.changerLigne();
@@ -1902,6 +1953,8 @@ export class PlanChargementComponent implements OnInit {
     console.log(this.lignes);
   }
 
+
+  //permet la modification du taille du panneau ajout manuel
   resizePanneauAjoutManuel(status: string) {
     const { left, bottom } = this.box.nativeElement.getBoundingClientRect();
     let boxPosition = { left, bottom };
@@ -1919,6 +1972,7 @@ export class PlanChargementComponent implements OnInit {
     }
   }
 
+  // set le type de modification taille panneau ajout manuel
   setStatus(event: MouseEvent, status: string) {
     if (status === 'RESIZETOP' || status === 'RESIZERIGHT')
       event.stopPropagation();
@@ -1942,8 +1996,10 @@ export interface tableMissions {
   idMissionsLiees: String;
 }
 
+// fonction pour chercher nouvelle position de l'objet dans le canvas
+// cette fonction est déclarée a l'exterieur du component pour qu'on peut l'appelée dans la fonction listener sur le deplacement de l'objet dans le canvas
 function findNewPos(distX: any, distY: any, target: any, obj: any) {
-  // See whether to focus on X or Y axis
+  // Voir s'il faut se concentrer sur l'axe X ou Y
   if (Math.abs(distX) > Math.abs(distY)) {
     if (distX > 0) {
       target.left = obj.left - target.getScaledWidth();
@@ -1959,6 +2015,7 @@ function findNewPos(distX: any, distY: any, target: any, obj: any) {
   }
 }
 
+//redefinition des interfaces qui se trouvent dans fabric pour ajouter des nouveaux attributs 
 interface IGroupWithId extends fabric.IGroupOptions {
   id: number;
   idCommande: number;
