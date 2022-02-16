@@ -1,23 +1,25 @@
 <!-- partie de navigation entre les tabs (en attente, en cours, terminée) -->
 <div class="nav-tabs">
     <div [ngClass]="{'active': enAttenteEstClique}" (click)="cliquerEnAttente()">
-        <a href="javascript:void(0);">En attente</a>
+        <a role="button">En attente</a>
     </div>
     <div [ngClass]="{'active': enCoursEstClique}" (click)="cliquerEnCours()">
-        <a href="javascript:void(0);">En cours</a>
+        <a role="button">En cours</a>
     </div>
     <div [ngClass]="{'active': termineEstClique}" (click)="cliquerTerminee()">
-        <a href="javascript:void(0);">Terminée</a>
+        <a role="button">Terminée</a>
     </div>
 </div>
 <!-- table des missions qui va se changer selon l'état séléctionnée -->
 <div class="missions">
-    <div class="filtre-date" [@statusTableMissions]="statusTableMissions" [formGroup]="formDate" *ngIf="filtreDateAffiche">
+    <div class="filtre-date" [@statusTableMissions]="statusTableMissions" [formGroup]="formDate"
+        *ngIf="filtreDateAffiche">
         <button mat-icon-button (click)="datePrecedente()">
             <mat-icon>navigate_before</mat-icon>
         </button>
         <mat-form-field class="date">
-            <input matInput [matDatepicker]="picker" formControlName="date" (focus)="picker.open()" (dateChange)="filtrerMissionsParDate()">
+            <input matInput [matDatepicker]="picker" formControlName="date" (focus)="picker.open()"
+                (dateChange)="filtrerMissionsParDate()">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
@@ -97,25 +99,26 @@
         <!-- boutons d'action -->
         <div class="boutons">
             <!-- bouton détatil qui affiche la liste des commandes dans une mission -->
-            <a href="javascript:void(0);" (click)=" toggleAfficherCommandes()">Détails</a>
+            <a role="button" (click)=" toggleAfficherCommandes()">Détails</a>
             <ng-container *ngIf="missionSelectionnee.etat === 'En cours'; else elseTemplate">
                 <!-- si l'etat du mission est 'en cours' on affiche le bouton 'Livrer' -->
-                <a href="javascript:void(0);" (click)="ouvrirConfirmationLivraison(missionSelectionnee)">Livrer</a>
+                <a role="button" (click)="ouvrirConfirmationLivraison(missionSelectionnee)">Livrer</a>
             </ng-container>
             <ng-template #elseTemplate>
                 <ng-container *ngIf="missionSelectionnee.etat === 'En attente'; else elseTemplate2">
                     <!-- si l'etat du mission est 'en attente' on affiche le bouton 'Lancer' -->
-                    <a href="javascript:void(0);" (click)="lancerMission(missionSelectionnee.id)"
+                    <a role="button" (click)="lancerMission(missionSelectionnee.id)"
                         [ngClass]="{'disable': missionEnCoursExiste}">Lancer</a>
                 </ng-container>
                 <ng-template #elseTemplate2>
                     <!-- si l'etat du mission est 'Terminée' on affiche le bouton 'Terminée' est qui est desactivé -->
-                    <a href="javascript:void(0);" class="disable">Terminée</a>
+                    <a role="button" class="disable">Terminée</a>
                 </ng-template>
 
             </ng-template>
 
         </div>
+        <a role="button" (click)="ouvrirPlanChargement()">plan chargement</a>
         <!-- une séparation entre les infos générales mission et liste des commandes -->
         <div id="separateur"></div>
         <div class="details-mission">

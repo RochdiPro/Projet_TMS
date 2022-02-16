@@ -165,7 +165,7 @@ export class AjouterCommandeComponent implements OnInit {
       .toPromise();
 
     listeFacturesDB.forEach((facture: any) => {
-      this.listeFactures = []
+      this.listeFactures = [];
       // pour chaque facture on recupére le client depuis la liste des clients puis on construit notre objet facture qui contient les informations necessaire
       var client = this.listeClients.filter(
         (client: any) => Number(client.id_Clt) === Number(facture.id_Clt)
@@ -192,7 +192,7 @@ export class AjouterCommandeComponent implements OnInit {
 
   // recuperer la liste des BLs qui ont l'etat validée
   async getListeBLs() {
-    this.listeBonsLivraison= []
+    this.listeBonsLivraison = [];
     const listeBLsDB = await this.serviceCommande
       .filtreBonLivraison('etat', 'Validée')
       .toPromise();
@@ -245,7 +245,7 @@ export class AjouterCommandeComponent implements OnInit {
     let date =
       ('0' + dateChoisi.getDate()).slice(-2) +
       '-' +
-      (dateChoisi.getMonth() + 1) +
+      ('0' + (dateChoisi.getMonth() + 1)).slice(-2) +
       '-' +
       dateChoisi.getFullYear();
     let index = this.datesDispo.findIndex((d) => date === d);
@@ -264,7 +264,7 @@ export class AjouterCommandeComponent implements OnInit {
     let date =
       ('0' + dateChoisi.getDate()).slice(-2) +
       '-' +
-      (dateChoisi.getMonth() + 1) +
+      ('0' + (dateChoisi.getMonth() + 1)).slice(-2) +
       '-' +
       dateChoisi.getFullYear();
     let index = this.datesDispo.findIndex((d) => date === d);

@@ -148,7 +148,7 @@
       </div>
    </div>
    <!-- panneau d'ajout manuel -->
-   <div *ngIf="vehicule && missionEstEnAttente" class="panneau-ajout-manuel">
+   <div *ngIf="vehicule && missionEstEnAttente && this.tms >= 2" class="panneau-ajout-manuel">
       <div class="resizer-top" (mousedown)="setStatus($event, 'RESIZETOP')" (window:mouseup)="setStatus($event, 'OFF')">
       </div>
       <div style="display: flex; flex-direction: row;">
@@ -181,31 +181,47 @@
             (mousedown)="setStatus($event, 'RESIZERIGHT')" (window:mouseup)="setStatus($event, 'OFF')"></div>
       </div>
    </div>
+   <div class="card note" [@statusNote]="statusNote">
+      <ng-container *ngIf="note === '' ; else elseTemplate">
+         <div style="width: 100%; text-align: center; color: lightgray;">Pas de note!</div>
+      </ng-container>
+      <ng-template #elseTemplate>
+         {{note}}
+      </ng-template>
+   </div>
    <!-- boite a outils -->
    <div class="boite-outils card">
       <button mat-button (click)="viderCanvas()" matTooltip="Vider le vehicule" matTooltipPosition="above"
-         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente">Vider</button>
+         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente || this.tms < 2">Vider</button>
       <button mat-button (click)="createPlanChargementAuto()" matTooltip="Réaliser Plan chargement automatiquement"
-         matTooltipPosition="above" matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente">Auto</button>
+         matTooltipPosition="above" matTooltipShowDelay="1000"
+         [disabled]="!missionEstEnAttente || this.tms < 2">Auto</button>
       <button mat-button (click)="rotation(90)" matTooltip="Rotation vers la droite" matTooltipPosition="above"
-         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente">
+         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente || this.tms < 2">
          <mat-icon>rotate_90_degrees_cw</mat-icon>
       </button>
       <button mat-button (click)="rotation(-90)" matTooltip="Rotation vers la gauche" matTooltipPosition="above"
-         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente">
+         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente || this.tms < 2">
          <mat-icon>rotate_90_degrees_ccw</mat-icon>
       </button>
       <button mat-button (click)="supprimerObjet()" matTooltip="Supprimer un article" matTooltipPosition="above"
-         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente">
+         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente || this.tms < 2">
          <mat-icon>delete</mat-icon>
       </button>
       <button mat-button (click)="enregistrer()" matTooltip="Enregistrer" matTooltipPosition="above"
-         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente">
-         <mat-icon>save</mat-icon>
+         matTooltipShowDelay="1000" [disabled]="(!missionEstEnAttente || this.tms < 2) || enregistrementEnCours">
+         <mat-icon *ngIf="!enregistrementEnCours">save
+         </mat-icon>
+         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
+            *ngIf="enregistrementEnCours"></span>
       </button>
       <button mat-button (click)="charger()" matTooltip="Actualiser" matTooltipPosition="above"
-         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente">
+         matTooltipShowDelay="1000" [disabled]="!missionEstEnAttente || this.tms < 2">
          <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-button (click)="noteEstAffiche = !noteEstAffiche" matTooltip="Afficher note"
+         matTooltipPosition="above" matTooltipShowDelay="1000">
+         <mat-icon matBadge="1" matBadgeColor="warn" [matBadgeHidden]="note === ''">sticky_note_2</mat-icon>
       </button>
    </div>
 </div>

@@ -1521,8 +1521,10 @@ export class Trajet implements OnInit {
 
   get dragDropeActive() {
     let estActive = false;
-    this.data.mission.etat !== "En attente" ? estActive = false : estActive = true;
-    return estActive
+    this.data.mission.etat !== 'En attente'
+      ? (estActive = false)
+      : (estActive = true);
+    return estActive;
   }
 
   // avoir la position de début depuis le navigateur
@@ -1638,5 +1640,134 @@ export class Trajet implements OnInit {
         '&travelmode=driving&waypoints=' +
         this.pointStop
     );
+  }
+}
+
+// ------------------------------ boite dialog plan chargement -------------------------------------------
+import { fabric } from 'fabric';
+
+@Component({
+  templateUrl: 'plan-chargement.html',
+  styleUrls: ['plan-chargement.scss'],
+})
+export class PlanChargement implements OnInit {
+  lignes: any = [];
+  indexLigne = 0;
+  note: string;
+  canvas: fabric.StaticCanvas;
+  rows: fabric.StaticCanvas;
+  vehicule: any;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private service: MissionsService
+  ) {}
+
+  ngOnInit() {
+    this.getVehicule();
+  }
+
+  getVehicule() {
+    if (this.data.mission.idChauffeur !== 'null') {
+      this.service
+        .vehicule(this.data.mission.matricule)
+        .subscribe((vehicule) => {
+          this.creerLesCanvas(vehicule);
+        });
+    }
+  }
+
+  creerLesCanvas(vehicule: any) {
+    let divTop: any = document.getElementById('vueTop'); //recuperer le div 'vueTop'
+    while (divTop.firstChild) {
+      //supprimer le contenu du div top pour l'initialiser
+      divTop.removeChild(divTop.firstChild);
+    }
+    let divLigne: any = document.getElementById('vueLigne'); //recuperer le div 'vueTop' ('vueLigne' est la vue de l'arriére)
+    while (divLigne.firstChild) {
+      //supprimer le contenu du div vueLigne pour l'initialiser
+      divLigne.removeChild(divLigne.firstChild);
+    }
+    let canvaTop = document.createElement('canvas'); //creation du canva du vue top
+    canvaTop.id = 'canvas';
+    canvaTop.style.zIndex = '8';
+    canvaTop.style.border = '4px solid';
+    divTop.appendChild(canvaTop); //on ajoute le canva créé dans le divTop
+
+    let row = document.createElement('canvas'); //creation du canva vue ligne
+    row.id = 'row';
+    row.style.zIndex = '8';
+    row.style.border = '4px solid';
+    divLigne.appendChild(row);
+
+    this.canvas = new fabric.Canvas('canvas', {
+      //creation de l'objet canva du vueTop a l'aide du biblio fabric js
+      width: vehicule.largeur * 2.7,
+      height: vehicule.longueur * 2.7,
+      selection: false,
+    });
+    this.rows = new fabric.StaticCanvas('row', {
+      //creation de l'objet canva statique du vueLigne a l'aide du biblio fabric js
+      width: vehicule.largeur * 2.7,
+      height: vehicule.hauteur * 2.7,
+      selection: false,
+    });
+  }
+
+  charger() {
+    this.lignes = [];
+    this.indexLigne = 0;
+    this.note = this.data.mission.note;
+    let listeCanvasLignesEnregistrees;
+    // affichage du canvas top
+    this.canvas.loadFromJSON(this.data.mission.canvasTop, () => {
+      // making sure to render canvas at the end
+      this.canvas.renderAll();
+    });
+    listeCanvasLignesEnregistrees = this.data.mission.canvasFace.split('|');
+    // charger les lignes du canvas faces enregistrées
+    for (let i = 0; i < listeCanvasLignesEnregistrees.length; i++) {
+      let row = new fabric.Canvas('', {
+        //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
+        width: this.data.vehicule.largeur * 2.7,
+        height: this.data.vehicule.hauteur * 2.7,
+        selection: false,
+      });
+      row.loadFromJSON(listeCanvasLignesEnregistrees[i], () => {
+        this.lignes.push({
+          objects: row.getObjects(),
+          longueur: 0,
+          top: 0,
+          largeur: 0,
+        });
+      });
+      listeCanvasLignesEnregistrees[i] = row.toJSON([
+        'id',
+        '_controlsVisibility',
+        'idCommande',
+        'idArticle',
+        'borderColor',
+      ]);
+      //definir longueur et largeur ligne
+      let canvasTopOjects = this.canvas.getObjects();
+      for (let i = 0; i < this.lignes.length; i++) {
+        this.lignes[i].objects.forEach((obj: any) => {
+          let objet = canvasTopOjects.filter((ob: any) => ob.id === obj.id)[0];
+          if (objet.height > this.lignes[i].longueur) {
+            this.lignes[i].longueur = objet.height;
+          }
+          if (i > 0) {
+            this.lignes[i].top =
+              this.lignes[i - 1].longueur + this.lignes[i - 1].top;
+          }
+          this.lignes[i].largeur = this.canvas.getWidth();
+        });
+      }
+    }
+    //affichage premier ligne canvas face
+    this.rows.loadFromJSON(listeCanvasLignesEnregistrees[0], () => {
+      // making sure to render canvas at the end
+      this.rows.renderAll();
+    });
   }
 }

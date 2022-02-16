@@ -268,17 +268,13 @@ export class CommandeService {
   }
 
   // get le fichier xml d'une commande
-  public loadXML(date: string, nomFichier: string) {
+  public loadXML(date: string, nomFichier: string): Observable<any> {
     return this.httpClient
-      .get('assets/DATA/' + date + '/Xmls/' + nomFichier, {
-        headers: new HttpHeaders()
-          .set('Content-Type', 'text/xml')
-          .append('Access-Control-Allow-Methods', 'GET')
-          .append('Access-Control-Allow-Origin', '*')
-          .append(
-            'Access-Control-Allow-Headers',
-            'Access-Control-Allow-Headers, Access-Control-Allow-Origin, Access-Control-Request-Method'
-          ),
+      .get(erp + 'detail-commande-manuel', {
+        params: {
+          date: date,
+          nomFichier: nomFichier
+        },
         responseType: 'blob',
       })
       .pipe(catchError(this.handleError));

@@ -259,4 +259,13 @@ export class MissionsService {
       (error) => console.log(error)
     );
   }
+
+  //get vehicule par sa matricule
+  public vehicule(matricule: string) {
+    return this.httpClient.get(erp + 'vehicule-matricule', {
+      params: {
+        matricule: matricule
+      }, observe: 'body'
+    });
+  }
 }

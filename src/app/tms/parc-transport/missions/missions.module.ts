@@ -21,7 +21,7 @@ import { SafePipeModule } from 'safe-pipe';
 import { AjoutMissionComponent } from './ajout-mission/ajout-mission.component';
 import { MissionsRoutingModule } from './missions-routing.module';
 import { MissionsComponent } from './missions.component';
-import { AffecterMultiChauffeur, AffecterChauffeur, DetailComponent, PositionComponent, DetailCommande, ConfirmerLivraison, ModifierMission, ConfirmationAnnulationMission, Trajet } from './dialogs/dialogs.component';
+import { AffecterMultiChauffeur, AffecterChauffeur, DetailComponent, PositionComponent, DetailCommande, ConfirmerLivraison, ModifierMission, ConfirmationAnnulationMission, Trajet, PlanChargement } from './dialogs/dialogs.component';
 import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
 import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauffeur.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
@@ -46,7 +46,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     ConfirmerLivraison,
     ModifierMission,
     ConfirmationAnnulationMission,
-    Trajet
+    Trajet,
+    PlanChargement
 
   ],
   imports: [

@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {
   ConfirmerLivraison,
   DetailCommande,
+  PlanChargement,
 } from '../dialogs/dialogs.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -101,22 +102,22 @@ export class MissionsChauffeurComponent implements OnInit {
   lien: any;
 
   //from des controles utilisées pour choisir la date du mission
-  formDate: FormGroup; 
+  formDate: FormGroup;
 
   //date d'aujourd'hui
-  aujoudhui: Date = new Date(); 
+  aujoudhui: Date = new Date();
 
   // afficher le filtre date ou non
   filtreDateAffiche = false;
 
-   // point de depart
-   origine: any;
+  // point de depart
+  origine: any;
 
-   // point finale 
-   finChemin: any;
- 
-   // les points de stops
-   pointStop: any;
+  // point finale
+  finChemin: any;
+
+  // les points de stops
+  pointStop: any;
 
   constructor(
     private fb: FormBuilder,
@@ -137,13 +138,13 @@ export class MissionsChauffeurComponent implements OnInit {
       this.enCoursEstClique = true;
     } else if (this.etatInitiale === 'En attente') {
       this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('En attente');
-      this.missionsAffiche =  this.missionsFiltreeParEtat;
+      this.missionsAffiche = this.missionsFiltreeParEtat;
       this.enAttenteEstClique = true;
       this.filtreDateAffiche = true;
-      this.filtrerMissionsParDate()
+      this.filtrerMissionsParDate();
     } else {
       this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('Terminée');
-      this.missionsAffiche =  this.missionsFiltreeParEtat;
+      this.missionsAffiche = this.missionsFiltreeParEtat;
       this.termineEstClique = true;
     }
 
@@ -172,8 +173,9 @@ export class MissionsChauffeurComponent implements OnInit {
   // filtrer la liste des missions par date
   filtrerMissionsParDate() {
     this.missionsAffiche = this.missionsFiltreeParEtat.filter(
-      (f: any) => new Date(f.date).getDate() === this.formDate.get('date').value.getDate()
-    )
+      (f: any) =>
+        new Date(f.date).getDate() === this.formDate.get('date').value.getDate()
+    );
   }
 
   // diminuer la date dans le date picker par un jour
@@ -181,7 +183,7 @@ export class MissionsChauffeurComponent implements OnInit {
     let dateChoisi = this.formDate.get('date').value;
     dateChoisi.setDate(dateChoisi.getDate() - 1);
     this.formDate.get('date').setValue(dateChoisi);
-    this.filtrerMissionsParDate()
+    this.filtrerMissionsParDate();
   }
 
   // augmenter le date dans le date picker par un jour
@@ -189,7 +191,7 @@ export class MissionsChauffeurComponent implements OnInit {
     let dateChoisi = this.formDate.get('date').value;
     dateChoisi.setDate(dateChoisi.getDate() + 1);
     this.formDate.get('date').setValue(dateChoisi);
-    this.filtrerMissionsParDate()
+    this.filtrerMissionsParDate();
   }
 
   // pour avoir l'etat initiale. On verifie si on a une mission en cours pour donner un etat initiale = En cours si non l'etatInitiale = En attente
@@ -245,7 +247,7 @@ export class MissionsChauffeurComponent implements OnInit {
     setTimeout(() => {
       this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('En attente');
       this.filtreDateAffiche = true;
-      this.filtrerMissionsParDate()
+      this.filtrerMissionsParDate();
     }, 300);
     setTimeout(() => {
       this.toggleTableMissions();
@@ -473,7 +475,28 @@ export class MissionsChauffeurComponent implements OnInit {
     }
   }
 
-  ouvrirMap() { //ouvrir le trajet dans google maps
-    window.open("https://www.google.com/maps/dir/?api=1&origin=" + this.origine + "&destination=" + this.finChemin + "&travelmode=driving&waypoints=" + this.pointStop);
-}
+  ouvrirMap() {
+    //ouvrir le trajet dans google maps
+    window.open(
+      'https://www.google.com/maps/dir/?api=1&origin=' +
+        this.origine +
+        '&destination=' +
+        this.finChemin +
+        '&travelmode=driving&waypoints=' +
+        this.pointStop
+    );
+  }
+
+  // ouvrir la boite dialogue plan chargement
+  ouvrirPlanChargement() {
+    const dialogRef = this.dialog.open(PlanChargement, {
+      width: '1200px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'custom-dialog-plan-chargement',
+      data: {
+        mission: this.missionSelectionnee
+      },
+    });
+  }
 }

@@ -53,7 +53,6 @@ export class BoiteDialogueInfo implements OnInit {
       let detail = await this.serviceCommande
         .loadXML(date, nomFichier)
         .toPromise();
-
       //selon le type de la commande on appele la fonction qui permet l'extrait des details depuis le fichier xml
       this.typeDocument === 'Facture'
         ? (this.articles = await getDetail(detail, 'facture'))

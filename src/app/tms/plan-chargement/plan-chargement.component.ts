@@ -49,6 +49,33 @@ import { PlanChargementService } from './services/plan-chargement.service';
       ),
       transition('show <=> hide', animate('500ms')),
     ]),
+    trigger('statusNote', [
+      state(
+        'show',
+        style({
+          width: '300px',
+          position: 'absolute',
+          bottom: '85px',
+          right: '100px',
+          padding: '20px',
+          zIndex: '999',
+          opacity: '1',
+        })
+      ),
+      state(
+        'hide',
+        style({
+          width: '300px',
+          position: 'absolute',
+          bottom: '65px',
+          right: '100px',
+          padding: '20px',
+          zIndex: '999',
+          opacity: '0',
+        })
+      ),
+      transition('show <=> hide', animate('200ms')),
+    ]),
   ],
 })
 export class PlanChargementComponent implements OnInit {
@@ -116,6 +143,15 @@ export class PlanChargementComponent implements OnInit {
 
   missionEstEnAttente = false; //tester si l'etat de la mission selectionnée est "En attente"
 
+  note: string;
+  noteEstAffiche = false;
+
+  enregistrementEnCours = false;
+
+  //pour les droits d'accées
+  nom: string;
+  acces: string;
+  tms: Number;
   // listener sur la position du souris
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
@@ -136,7 +172,19 @@ export class PlanChargementComponent implements OnInit {
   constructor(
     private servicePlanChargement: PlanChargementService,
     public datepipe: DatePipe
-  ) {}
+  ) {
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1004000");
+
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.tms = Number( arrayOfDigits[3])
+  }
 
   async ngOnInit() {
     await this.filtrerMission();
@@ -315,7 +363,7 @@ export class PlanChargementComponent implements OnInit {
               row.style.border = '4px solid';
               divLigne.appendChild(row);
               // si etat mission = "En attente" on crée un canvas dynamique si non on crée un canvas statique
-              if (this.missionEstEnAttente) {
+              if (this.missionEstEnAttente && this.tms >= 2) {
                 this.rows = new fabric.Canvas('row', {
                   //creation de l'objet canva dynamique du vueLigne a l'aide du biblio fabric js
                   width: this.vehicule.largeur * 2.7,
@@ -706,12 +754,21 @@ export class PlanChargementComponent implements OnInit {
               row.style.zIndex = '8';
               row.style.border = '4px solid';
               divLigne.appendChild(row);
-              this.rows = new fabric.Canvas('row', {
-                //definition du hauteur et largeur du canva
-                width: this.vehicule.largeur * 2.7,
-                height: this.vehicule.hauteur * 2.7,
-                selection: false,
-              });
+              if (this.missionEstEnAttente && this.tms >= 2) {
+                this.rows = new fabric.Canvas('row', {
+                  //creation de l'objet canva dynamique du vueLigne a l'aide du biblio fabric js
+                  width: this.vehicule.largeur * 2.7,
+                  height: this.vehicule.hauteur * 2.7,
+                  selection: false,
+                });
+              } else {
+                this.rows = new fabric.StaticCanvas('row', {
+                  //creation de l'objet canva statique du vueLigne a l'aide du biblio fabric js
+                  width: this.vehicule.largeur * 2.7,
+                  height: this.vehicule.hauteur * 2.7,
+                  selection: false,
+                });
+              }
               this.height = this.vehicule.hauteur * 2.7;
               let snap = 2; //Pixels a accrocher
               let canvasWidth = this.vehicule.largeur * 2.7;
@@ -1074,6 +1131,7 @@ export class PlanChargementComponent implements OnInit {
     this.lignes = [];
     this.indexLigne = 0;
     this.indexLignePrecedent = 0;
+    this.note = "";
     // liste des ligne qui contient chaque ligne comme objet
     // la liste est initialisé avec une seule ligne qui a longueur de 0 et comme largeur le largeur du vehicule converti en pixels et comme longueur la longuer du vehicule en pixels
     let lignes: any = [
@@ -1144,7 +1202,7 @@ export class PlanChargementComponent implements OnInit {
     // index ligne a afficher
     this.indexLigne = 0;
 
-    // création des canvas a afficher 
+    // création des canvas a afficher
     this.listeCanvasLignesEnregistrees = [];
     for (let j = 0; j < this.lignes.length; j++) {
       let nombreArticleDansLignesPrecedentes = 0;
@@ -1356,7 +1414,10 @@ export class PlanChargementComponent implements OnInit {
   get statusVehicule() {
     return this.vehiculeEstAffiche ? 'show' : 'hide';
   }
-
+  // etat du div qui contient liste des colis dans voiture "show" pour afficher, "hide" pour cacher
+  get statusNote() {
+    return this.noteEstAffiche ? 'show' : 'hide';
+  }
 
   // changer ordre liste commande lors du drag and drop du legend
   async drop(event: CdkDragDrop<string[]>) {
@@ -1372,7 +1433,6 @@ export class PlanChargementComponent implements OnInit {
     }
     idCommandes = idCommandes.slice(0, -1);
     this.mission.idCommandes = idCommandes;
-    console.log(idCommandes);
     await this.servicePlanChargement
       .modifierIdCommandesDansMission(this.mission.id, idCommandes)
       .toPromise();
@@ -1454,9 +1514,10 @@ export class PlanChargementComponent implements OnInit {
     this.canvas.renderAll();
   }
 
-
   // enregistrer les canvas dans la base des données
-  enregistrer() {
+  async enregistrer() {
+    if (this.enregistrementEnCours) return;
+    this.enregistrementEnCours = true;
     let toutesLesArticlesSontAffectees = true;
     this.listeCommandesModeManuel.forEach((commande: any) => {
       commande.articles.forEach((article: any) => {
@@ -1464,10 +1525,77 @@ export class PlanChargementComponent implements OnInit {
       });
     });
     if (!toutesLesArticlesSontAffectees) {
+      // Swal.fire({
+      //   icon: 'error',
+      //   title: "Il y'a des colis non affecter",
+      //   text: "S'il vous plait verifier que tout les colis sont placés dans le vehicule!",
+      // });
       Swal.fire({
         icon: 'error',
         title: "Il y'a des colis non affecter",
-        text: "S'il vous plait verifier que tout les colis sont placés dans le vehicule!",
+        text: "S'il vous plait verifier que tout les colis sont placés dans le vehicule ou bien laisser une note!",
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'on',
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Enregistrer',
+        showLoaderOnConfirm: true,
+        preConfirm: (note) => {
+          if (note === '') {
+            Swal.showValidationMessage(`Le champ du note est vide!`);
+          }
+          return;
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (this.lignes[this.lignes.length - 1].objects.length === 0) {
+            this.supprimerLigne();
+          }
+          this.canvasTopEnregistre = JSON.stringify(
+            this.canvas.toJSON([
+              'id',
+              '_controlsVisibility',
+              'idCommande',
+              'idArticle',
+              'borderColor',
+            ])
+          );
+          this.listeCanvasLignesEnregistrees[this.indexLigne] =
+            this.rows.toJSON([
+              'id',
+              '_controlsVisibility',
+              'idCommande',
+              'idArticle',
+              'borderColor',
+            ]);
+          let listeCanvasLignesEnregistreesStr = '';
+          this.listeCanvasLignesEnregistrees.forEach((ligne) => {
+            listeCanvasLignesEnregistreesStr += JSON.stringify(ligne) + '|';
+          });
+          listeCanvasLignesEnregistreesStr =
+            listeCanvasLignesEnregistreesStr.slice(0, -1);
+          this.mission.canvasTop = this.canvasTopEnregistre;
+          this.mission.canvasFace = listeCanvasLignesEnregistreesStr;
+          let note: any = result.value;
+          this.servicePlanChargement
+            .enregistrerPlanChargement(
+              this.mission.id,
+              this.canvasTopEnregistre,
+              listeCanvasLignesEnregistreesStr,
+              note
+            )
+            .subscribe((res) => {
+              Swal.fire({
+                icon: 'success',
+                title: 'Plan chargement enregistré',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            });
+          this.planChargementChange = false;
+        }
       });
       return;
     }
@@ -1501,21 +1629,24 @@ export class PlanChargementComponent implements OnInit {
     );
     this.mission.canvasTop = this.canvasTopEnregistre;
     this.mission.canvasFace = listeCanvasLignesEnregistreesStr;
-    this.servicePlanChargement
+    await this.servicePlanChargement
       .enregistrerPlanChargement(
         this.mission.id,
         this.canvasTopEnregistre,
-        listeCanvasLignesEnregistreesStr
+        listeCanvasLignesEnregistreesStr,
+        ''
       )
-      .subscribe((res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Plan chargement enregistré',
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      });
+      .toPromise();
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Plan chargement enregistré',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+
     this.planChargementChange = false;
+    this.enregistrementEnCours = false;
   }
 
   // récupérer les canvas depuis la base des données et les afficher
@@ -1548,7 +1679,6 @@ export class PlanChargementComponent implements OnInit {
           });
           this.listeCanvasLignesEnregistrees =
             this.mission.canvasFace.split('|');
-          console.log(this.listeCanvasLignesEnregistrees);
           // chargement des canvas faces
           for (let i = 0; i < this.listeCanvasLignesEnregistrees.length; i++) {
             let row = new fabric.Canvas('', {
@@ -1615,6 +1745,7 @@ export class PlanChargementComponent implements OnInit {
     this.lignes = [];
     this.indexLigne = 0;
     this.indexLignePrecedent = 0;
+    this.note = this.mission.note;
     // affichage du canvas top
     this.canvas.loadFromJSON(this.mission.canvasTop, () => {
       this.canvas.getObjects().forEach((obj: any) => {
@@ -1706,6 +1837,7 @@ export class PlanChargementComponent implements OnInit {
     this.indexLigne = 0;
     this.indexLignePrecedent = 0;
     this.lignes = [];
+    this.note = ""
     this.lignes.push({
       objects: [],
       longueur: 0,
@@ -1843,7 +1975,7 @@ export class PlanChargementComponent implements OnInit {
     });
   }
 
-  // ajout d'une nouvelle ligne 
+  // ajout d'une nouvelle ligne
   ajouterNouvelleLigne() {
     //si la gne precedante ne contient aucun objet on n'execute pas cette fonction
     if (this.lignes[this.lignes.length - 1].objects.length === 0) return;
@@ -1888,7 +2020,6 @@ export class PlanChargementComponent implements OnInit {
     this.scroll(divLigne);
     this.indexLignePrecedent = this.indexLigne;
   }
-
 
   //supprimer l'objet selectionné
   supprimerObjet() {
@@ -1950,9 +2081,7 @@ export class PlanChargementComponent implements OnInit {
       this.indexLigne = 0;
       this.indexLignePrecedent = 0;
     }
-    console.log(this.lignes);
   }
-
 
   //permet la modification du taille du panneau ajout manuel
   resizePanneauAjoutManuel(status: string) {
@@ -2015,7 +2144,7 @@ function findNewPos(distX: any, distY: any, target: any, obj: any) {
   }
 }
 
-//redefinition des interfaces qui se trouvent dans fabric pour ajouter des nouveaux attributs 
+//redefinition des interfaces qui se trouvent dans fabric pour ajouter des nouveaux attributs
 interface IGroupWithId extends fabric.IGroupOptions {
   id: number;
   idCommande: number;
