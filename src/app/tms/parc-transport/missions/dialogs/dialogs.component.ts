@@ -1656,7 +1656,8 @@ export class PlanChargement implements OnInit {
   note: string;
   canvas: fabric.StaticCanvas;
   rows: fabric.StaticCanvas;
-  vehicule: any;
+  listeCanvasLignesEnregistrees: any;
+  listeCommandes: any = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private data: any,
@@ -1677,6 +1678,32 @@ export class PlanChargement implements OnInit {
     }
   }
 
+  getCommandes() {
+    let commande: any;
+    let idCommandes = this.data.mission.idCommandes;
+    idCommandes = idCommandes.split('/'); //liste des id de commandes dans une mission
+    idCommandes = idCommandes.reverse(); //on inverse la liste car la derniére commande a livrer va etre la premiére a charger
+    // recupérer la liste des colis dans une mission
+    this.service
+      .getColisParIdMission(this.data.mission.id)
+      .subscribe(async (listeColis) => {
+        for (let i = 0; i < idCommandes.length; i++) {
+          // pour chaque commande on récupére ses informations
+          commande = await this.service.commande(idCommandes[i]).toPromise();
+          //recupérer la liste des article pour chaque commande
+          commande.articles = listeColis.filter(
+            (colis: any) => colis.idCommande == idCommandes[i]
+          );
+          // donner un couleur pour chaque commande
+          //le couleur va être utiliser pour identifier les articles de chaque commande
+          let objetsCommande: any = this.canvas.getObjects().filter((obj: any) => Number(obj.idCommande) == idCommandes[i]);
+          let couleur = objetsCommande[0].item(0).fill;
+          commande.couleur = couleur;
+          this.listeCommandes.push(commande);
+        }
+      });
+  }
+
   creerLesCanvas(vehicule: any) {
     let divTop: any = document.getElementById('vueTop'); //recuperer le div 'vueTop'
     while (divTop.firstChild) {
@@ -1691,57 +1718,99 @@ export class PlanChargement implements OnInit {
     let canvaTop = document.createElement('canvas'); //creation du canva du vue top
     canvaTop.id = 'canvas';
     canvaTop.style.zIndex = '8';
-    canvaTop.style.border = '4px solid';
+    canvaTop.style.border = '2px solid';
     divTop.appendChild(canvaTop); //on ajoute le canva créé dans le divTop
 
     let row = document.createElement('canvas'); //creation du canva vue ligne
     row.id = 'row';
     row.style.zIndex = '8';
-    row.style.border = '4px solid';
+    row.style.border = '2px solid';
     divLigne.appendChild(row);
 
-    this.canvas = new fabric.Canvas('canvas', {
+    this.canvas = new fabric.StaticCanvas('canvas', {
       //creation de l'objet canva du vueTop a l'aide du biblio fabric js
-      width: vehicule.largeur * 2.7,
-      height: vehicule.longueur * 2.7,
+      width: (vehicule.largeur * 2.7) / 2,
+      height: (vehicule.longueur * 2.7) / 2,
       selection: false,
     });
     this.rows = new fabric.StaticCanvas('row', {
       //creation de l'objet canva statique du vueLigne a l'aide du biblio fabric js
-      width: vehicule.largeur * 2.7,
-      height: vehicule.hauteur * 2.7,
+      width: (vehicule.largeur * 2.7) / 2,
+      height: (vehicule.hauteur * 2.7) / 2,
       selection: false,
     });
+    this.charger(vehicule);
+    this.getCommandes();
   }
 
-  charger() {
+  charger(vehicule: any) {
     this.lignes = [];
     this.indexLigne = 0;
     this.note = this.data.mission.note;
-    let listeCanvasLignesEnregistrees;
+    this.canvas.clear();
+    this.rows.clear()
+
+    let canvas = new fabric.StaticCanvas('canvas', {
+      //creation de l'objet canva du vueTop a l'aide du biblio fabric js
+      width: (vehicule.largeur * 2.7) / 2,
+      height: (vehicule.longueur * 2.7) / 2,
+      selection: false,
+    });
+
+    canvas.loadFromJSON(this.data.mission.canvasTop, () => {
+      canvas.getObjects().forEach((obj: any) => {
+        obj.set('left', obj.left/2);
+        obj.set('top', obj.top/2);
+        obj.set('width', obj.width/2);
+        obj.set('height', obj.height/2);
+        obj.item(0).set('width', obj.width);
+        obj.item(0).set('height', obj.height);
+        obj.item(1).set('angle', 90);
+        obj.item(1).set('fontSize', 5);
+        console.log(obj.left);
+      });
+    });
+
+    let canvasJson = canvas.toJSON([
+      'id',
+      '_controlsVisibility',
+      'idCommande',
+      'idArticle',
+      'borderColor',
+    ]);
     // affichage du canvas top
-    this.canvas.loadFromJSON(this.data.mission.canvasTop, () => {
+    this.canvas.loadFromJSON(canvasJson, () => {
       // making sure to render canvas at the end
       this.canvas.renderAll();
     });
-    listeCanvasLignesEnregistrees = this.data.mission.canvasFace.split('|');
+    this.listeCanvasLignesEnregistrees =
+      this.data.mission.canvasFace.split('|');
     // charger les lignes du canvas faces enregistrées
-    for (let i = 0; i < listeCanvasLignesEnregistrees.length; i++) {
+    for (let i = 0; i < this.listeCanvasLignesEnregistrees.length; i++) {
       let row = new fabric.Canvas('', {
         //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
-        width: this.data.vehicule.largeur * 2.7,
-        height: this.data.vehicule.hauteur * 2.7,
+        width: (vehicule.largeur * 2.7) / 2,
+        height: (vehicule.hauteur * 2.7) / 2,
         selection: false,
       });
-      row.loadFromJSON(listeCanvasLignesEnregistrees[i], () => {
+      row.loadFromJSON(this.listeCanvasLignesEnregistrees[i], () => {
         this.lignes.push({
           objects: row.getObjects(),
           longueur: 0,
-          top: 0,
+          top: 2,
           largeur: 0,
         });
+        row.getObjects().forEach((obj: any) => {
+          obj.set('left', obj.left / 2);
+          obj.set('top', obj.top / 2);
+          obj.set('width', obj.width / 2);
+          obj.set('height', obj.height / 2);
+          obj.item(0).set('width', obj.width);
+          obj.item(0).set('height', obj.height);
+          obj.item(1).set('fontSize', 5);
+        });
       });
-      listeCanvasLignesEnregistrees[i] = row.toJSON([
+      this.listeCanvasLignesEnregistrees[i] = row.toJSON([
         'id',
         '_controlsVisibility',
         'idCommande',
@@ -1754,7 +1823,7 @@ export class PlanChargement implements OnInit {
         this.lignes[i].objects.forEach((obj: any) => {
           let objet = canvasTopOjects.filter((ob: any) => ob.id === obj.id)[0];
           if (objet.height > this.lignes[i].longueur) {
-            this.lignes[i].longueur = objet.height;
+            this.lignes[i].longueur = objet.height - 0.5;
           }
           if (i > 0) {
             this.lignes[i].top =
@@ -1765,9 +1834,33 @@ export class PlanChargement implements OnInit {
       }
     }
     //affichage premier ligne canvas face
-    this.rows.loadFromJSON(listeCanvasLignesEnregistrees[0], () => {
+    this.rows.loadFromJSON(this.listeCanvasLignesEnregistrees[0], () => {
       // making sure to render canvas at the end
       this.rows.renderAll();
+    });
+  }
+
+  // fonction pour afficher la ligne selectionnée
+  changerLigne() {
+    console.log(this.lignes);
+    let divLigne: any = document.getElementById('vueLigne');
+    this.rows.clear();
+    this.rows.loadFromJSON(
+      this.listeCanvasLignesEnregistrees[this.indexLigne],
+      () => {
+        // making sure to render canvas at the end
+        this.rows.renderAll();
+      }
+    );
+    this.scroll(divLigne);
+  }
+
+  // fonction pour faire le scroll vers le bas
+  scroll(el: HTMLElement) {
+    el.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest',
     });
   }
 }

@@ -251,6 +251,7 @@ export class PlanChargementComponent implements OnInit {
 
   // fonction qui permet de selectionner une mission qh'on va afficher son plan de chargement
   selectionnerMission(mission: any) {
+    this.planChargementChange = false
     this.mission = mission;
     this.mission.etat === 'En attente'
       ? (this.missionEstEnAttente = true)
@@ -1175,6 +1176,7 @@ export class PlanChargementComponent implements OnInit {
     });
     // indice du ligne
     let i = 0;
+    let longueurCharge = 0;
     // ce bloc permet de place chaque colis dans la bonne position dans une ligne
     // tant que la liste des colis n'est pas vide cette boucle s'execute
     while (colis.length > 0) {
@@ -1190,12 +1192,17 @@ export class PlanChargementComponent implements OnInit {
       // on initialise le root
       this.initialiserRoot(lignes[i].largeur, lignes[i].hauteur);
       // on place les colis dans leurs places
-      this.fit(colis, lignes[i]);
+      this.fit(colis, lignes[i], longueurCharge);
+      let longueurLigne = 0;
       // pour chaque colis affectée dans une ligne en supprime se colis de la liste des colis non affectées
       lignes[i].objects.forEach((article: any) => {
         let index = colis.findIndex((coli: any) => coli.id === article.id);
         colis.splice(index, 1);
+        // if (article.longueur > longueurLigne ) {
+        //   longueurLigne = article.longueur;
+        // }
       });
+      // longueurCharge += longueurLigne;
       i++;
     }
     this.lignes = lignes;
@@ -1445,12 +1452,12 @@ export class PlanChargementComponent implements OnInit {
   }
 
   // fonction qui met les articles dans leurs positions
-  fit(blocks: any, ligne: any) {
+  fit(blocks: any, ligne: any, longueurCharge: number) {
     var n, node, block;
     for (n = 0; n < blocks.length; n++) {
       block = blocks[n];
       if (
-        (node = this.chercherNoeud(this.root, block.largeur, block.hauteur))
+        ((node = this.chercherNoeud(this.root, block.largeur, block.hauteur)))
       ) {
         block.fit = this.diviserNoeud(node, block.largeur, block.hauteur);
         ligne.objects.push(block);
@@ -1698,7 +1705,7 @@ export class PlanChargementComponent implements OnInit {
               this.lignes.push({
                 objects: row.getObjects(),
                 longueur: 0,
-                top: 0,
+                top: 4,
                 largeur: 0,
               });
             });
@@ -1716,7 +1723,7 @@ export class PlanChargementComponent implements OnInit {
                   (ob: any) => ob.id === obj.id
                 )[0];
                 if (objet.height > this.lignes[i].longueur) {
-                  this.lignes[i].longueur = objet.height;
+                  this.lignes[i].longueur = objet.height-1;
                 }
                 if (i > 0) {
                   this.lignes[i].top =
@@ -1777,7 +1784,7 @@ export class PlanChargementComponent implements OnInit {
         this.lignes.push({
           objects: row.getObjects(),
           longueur: 0,
-          top: 0,
+          top: 4,
           largeur: 0,
         });
       });
@@ -1793,7 +1800,7 @@ export class PlanChargementComponent implements OnInit {
         this.lignes[i].objects.forEach((obj: any) => {
           let objet = canvasTopOjects.filter((ob: any) => ob.id === obj.id)[0];
           if (objet.height > this.lignes[i].longueur) {
-            this.lignes[i].longueur = objet.height;
+            this.lignes[i].longueur = objet.height - 1;
           }
           if (i > 0) {
             this.lignes[i].top =
@@ -1841,7 +1848,7 @@ export class PlanChargementComponent implements OnInit {
     this.lignes.push({
       objects: [],
       longueur: 0,
-      top: 0,
+      top: 4,
       largeur: 0,
     });
     this.listeCanvasLignesEnregistrees = [];
@@ -2075,7 +2082,7 @@ export class PlanChargementComponent implements OnInit {
       this.lignes.push({
         objects: [],
         longueur: 0,
-        top: 0,
+        top: 4,
         largeur: this.canvas.width,
       });
       this.indexLigne = 0;

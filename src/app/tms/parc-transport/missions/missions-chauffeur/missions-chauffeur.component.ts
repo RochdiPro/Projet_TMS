@@ -492,7 +492,7 @@ export class MissionsChauffeurComponent implements OnInit {
     const dialogRef = this.dialog.open(PlanChargement, {
       width: '1200px',
       maxWidth: '95vw',
-      maxHeight: '90vh',
+      maxHeight: '95vh',
       panelClass: 'custom-dialog-plan-chargement',
       data: {
         mission: this.missionSelectionnee
