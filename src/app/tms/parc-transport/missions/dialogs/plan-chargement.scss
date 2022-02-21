@@ -36,9 +36,15 @@ img {
 
 // div dans legend
 .legend > div {
-    display: flex;
-    margin: auto;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  margin: auto;
+  align-items: center;
+  gap: 10px;
 }
 
+// div note
+.note {
+  width: 300px;
+  padding: 20px;
+  margin-top: 20px;
+}

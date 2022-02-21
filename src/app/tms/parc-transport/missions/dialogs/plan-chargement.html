@@ -23,4 +23,12 @@
             <div class="label">Vue de face</div>
         </div>
     </div>
+    <div class="note card">
+        <ng-container *ngIf="note === '' ; else elseTemplate">
+            <div style="width: 100%; text-align: center; color: lightgray;">Pas de note!</div>
+         </ng-container>
+         <ng-template #elseTemplate>
+            {{note}}
+         </ng-template>
+    </div>
 </div>

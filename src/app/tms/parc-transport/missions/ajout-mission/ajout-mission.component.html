@@ -137,11 +137,12 @@
                                     Véhicules loués</td>
                             </tr>
                             <tr *ngFor="let vehiculeLoue of listeVehiculesLoues; let i=index;">
-                                <td scope="row">{{vehiculeLoue.matricule}}</td>
+                                <td scope="row">{{vehiculeLoue.vehicule.matricule}}</td>
                                 <td></td>
                                 <td></td>
                                 <td style="height: 41px; text-align: center;">
-                                    <mat-checkbox color="primary" [(ngModel)]="checkBoxVehiculesLoues[i].value"
+                                    <mat-checkbox color="primary" *ngIf="checkBoxVehiculesLoues[i]"
+                                        [(ngModel)]="checkBoxVehiculesLoues[i].value"
                                         [disabled]="checkBoxVehiculesLoues[i].disable"
                                         (change)="selectionnerDeselectionnerVehicule(i, 'loue', vehiculeLoue)"
                                         matTooltip="Séléctionner une commande s'il vous plait"
@@ -610,7 +611,8 @@
         <!-- bouton Annuler -->
         <button mat-button color="warn" class="mb-2 mr-2">Annuler</button>
         <!-- Bouton Enregistrer -->
-        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()" [disabled]="listeFilesAttentes.length === 0">
+        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()"
+            [disabled]="listeFilesAttentes.length === 0">
             <span *ngIf="boutonEnregistrerEstActive">Enregistrer</span>
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                 *ngIf="!boutonEnregistrerEstActive"></span>

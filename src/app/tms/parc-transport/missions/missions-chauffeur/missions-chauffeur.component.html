@@ -107,7 +107,7 @@
             <ng-template #elseTemplate>
                 <ng-container *ngIf="missionSelectionnee.etat === 'En attente'; else elseTemplate2">
                     <!-- si l'etat du mission est 'en attente' on affiche le bouton 'Lancer' -->
-                    <a role="button" (click)="lancerMission(missionSelectionnee.id)"
+                    <a role="button" (click)="lancerMission(missionSelectionnee)"
                         [ngClass]="{'disable': missionEnCoursExiste}">Lancer</a>
                 </ng-container>
                 <ng-template #elseTemplate2>

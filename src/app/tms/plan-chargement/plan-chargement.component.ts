@@ -322,7 +322,7 @@ export class PlanChargementComponent implements OnInit {
 
         let container = document.getElementById('container'); //recuperer le div container qui va contenir notre canva
         // on teste si c'est une mission avec vehicule privé
-        if (this.mission.idChauffeur !== 'null') {
+        if (this.mission.typeVehicule === 'prive') {
           // recupérer les données de notre vehicule privée par son matricule
           this.servicePlanChargement
             .vehicule(this.mission.matricule)
@@ -1179,7 +1179,9 @@ export class PlanChargementComponent implements OnInit {
     let longueurCharge = 0;
     // ce bloc permet de place chaque colis dans la bonne position dans une ligne
     // tant que la liste des colis n'est pas vide cette boucle s'execute
-    while (colis.length > 0) {
+    let colisLength = 0;
+    while (colis.length !== colisLength) {
+      colisLength = colis.length;
       // si la ligne avec cet indice n'existe pas on ajoute une nouvelle ligne
       if (!lignes[i]) {
         lignes.push({
@@ -1196,13 +1198,16 @@ export class PlanChargementComponent implements OnInit {
       let longueurLigne = 0;
       // pour chaque colis affectée dans une ligne en supprime se colis de la liste des colis non affectées
       lignes[i].objects.forEach((article: any) => {
+        let commandeManuel = this.listeCommandesModeManuel.filter((cmd: any) => cmd.id == article.idCommande)[0]
+        let articleManuel = commandeManuel.articles.filter((art: any) => art.id === article.id)[0];
+        articleManuel.nombrePack -=1;
         let index = colis.findIndex((coli: any) => coli.id === article.id);
         colis.splice(index, 1);
-        // if (article.longueur > longueurLigne ) {
-        //   longueurLigne = article.longueur;
-        // }
+        if (article.longueur > longueurLigne ) {
+          longueurLigne = article.longueur;
+        }
       });
-      // longueurCharge += longueurLigne;
+      longueurCharge += longueurLigne;
       i++;
     }
     this.lignes = lignes;
@@ -1350,12 +1355,13 @@ export class PlanChargementComponent implements OnInit {
     );
 
     this.afficherPlanChargement();
-    this.listeCommandesModeManuel.forEach((cmd: any) => {
-      // pour chaque article dans liste commande manuel on met le nombre pack a 0
-      cmd.articles.forEach((article: any) => {
-        article.nombrePack = 0;
-      });
-    });
+    // console.log(this.listeCommandesModeManuel);
+    // this.listeCommandesModeManuel.forEach((cmd: any) => {
+    //   // pour chaque article dans liste commande manuel on met le nombre pack a 0
+    //   cmd.articles.forEach((article: any) => {
+    //     article.nombrePack = 0;
+    //   });
+    // });
   }
 
   // afficher le plan de chargement specifique a une mission
@@ -1456,11 +1462,15 @@ export class PlanChargementComponent implements OnInit {
     var n, node, block;
     for (n = 0; n < blocks.length; n++) {
       block = blocks[n];
-      if (
-        ((node = this.chercherNoeud(this.root, block.largeur, block.hauteur)))
-      ) {
-        block.fit = this.diviserNoeud(node, block.largeur, block.hauteur);
-        ligne.objects.push(block);
+      let nouveauLongueurCharge = block.longueur + longueurCharge;
+      if (nouveauLongueurCharge < (this.vehicule.longueur * 2.7)) {
+        if (
+          ((node = this.chercherNoeud(this.root, block.largeur, block.hauteur)))
+        ) {
+          block.fit = this.diviserNoeud(node, block.largeur, block.hauteur);
+          ligne.objects.push(block);
+        }
+        
       }
     }
   }
@@ -1874,7 +1884,7 @@ export class PlanChargementComponent implements OnInit {
         j++
       ) {
         this.listeCommandesModeManuel[i].articles[j].nombrePack =
-          this.listeCommandes[i].articles[j].nombrePack;
+          this.listeCommandes[i].articles.filter((art: any) => art.id === this.listeCommandesModeManuel[i].articles[j].id)[0].nombrePack;
       }
     }
   }

@@ -164,6 +164,7 @@ export class MissionsChauffeurComponent implements OnInit {
     this.missions = await this.serviceMission
       .getMissionsChauffeur(this.idChauffeur)
       .toPromise();
+    this.missions = this.missions.filter((mission: any) => mission.canvasTop !== "")
   }
 
   // filtrer la liste des missions par leurs Etat
@@ -309,13 +310,14 @@ export class MissionsChauffeurComponent implements OnInit {
   }
 
   // fonction qui permet de commancer une mission
-  async lancerMission(id: number) {
-    await this.serviceMission.modifierEtatMission(id, 'En cours').toPromise();
+  async lancerMission(mission: any) {
+    await this.serviceMission.modifierEtatMission(mission.id, 'En cours').toPromise();
     await this.getMissionsParIdChauffeur();
     // pour refraichir la mission selectionnée aprés qu'on a modifié l'etat du mission
     this.missionSelectionnee = this.filtrerMissionsParEtat('En cours')[0];
     // on change la tab active vers celle en cours
     this.cliquerEnCours();
+    this.serviceMission.envoyerNotificationProchaineLivraison(mission.idCommandes).subscribe();
   }
 
   // le status et le toggle sont utilisée pour les animation lors de ouverture et la fermeture du volet details mission et details commande

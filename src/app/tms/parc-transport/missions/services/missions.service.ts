@@ -268,4 +268,13 @@ export class MissionsService {
       }, observe: 'body'
     });
   }
+
+  // envoyer notification du prochaine livraison
+  public envoyerNotificationProchaineLivraison(idCommandes: any) {
+    return this.httpClient.get(erp + 'envoyer-notification-livraison', {
+      params: {
+        idCommandes: idCommandes
+      }, observe: 'body'
+    });
+  } 
 }
