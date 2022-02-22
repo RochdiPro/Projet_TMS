@@ -56,6 +56,7 @@ export class AjoutMissionComponent implements OnInit {
   vehiculesPriveSelectionnes: any = []; //liste vehicules prives selectionnés avec la liste des chauffeurs compatibles pour chage vehicule
   vehiculesLoueSelectionnes: any = [];
   copieVehiculesPrive: any = [];
+  copieVehiculesLoue: any = [];
   fileAttente: any = []; //liste des mission affectées dans la file d'attente
   vehiculesMemeChauffeursSelectionne: any = []; //liste des vehicules selectionnées qui on le meme chauffeur
   minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
@@ -191,10 +192,7 @@ export class AjoutMissionComponent implements OnInit {
         }
       });
     }
-    this.testerPossibiliteAffectationChauffeur(
-      vehicule,
-      this.listeVehiculesAffiches
-    );
+    this.testerPossibiliteAffectationChauffeur(vehicule);
   }
 
   // supprimer vehicule privé de la liste vehiculesSelectionne
@@ -233,10 +231,7 @@ export class AjoutMissionComponent implements OnInit {
         }
       });
     }
-    this.testerPossibiliteAffectationChauffeur(
-      vehicule,
-      this.listeVehiculesLoues
-    );
+    this.testerPossibiliteAffectationChauffeur(vehicule);
   }
 
   // supprimer vehicule loué de la liste vehiculesSelectionne
@@ -256,6 +251,7 @@ export class AjoutMissionComponent implements OnInit {
     this.checkBoxVehiculesLoues.forEach((checkBox) => {
       checkBox.disable = false;
     });
+    this.rajouterChauffeurAuVehicule(vehicule);
   }
 
   // teste si il ya aucune vehicule selectionné
@@ -498,29 +494,78 @@ export class AjoutMissionComponent implements OnInit {
           })
         : '';
     });
+    this.copieVehiculesPrive = [];
+    this.copieVehiculesLoue = [];
+    for (let i = 0; i < this.listeVehiculesAffiches.length; i++) {
+      this.copieVehiculesPrive.push({
+        vehicule: this.listeVehiculesAffiches[i].vehicule,
+        chauffeurs: [...this.listeVehiculesAffiches[i].chauffeurs],
+      });
+    }
+    for (let i = 0; i < this.listeVehiculesLoues.length; i++) {
+      this.copieVehiculesLoue.push({
+        vehicule: this.listeVehiculesLoues[i].vehicule,
+        chauffeurs: [...this.listeVehiculesLoues[i].chauffeurs],
+      });
+    }
   }
 
   // tester si on selectionne une vehicule qui a un chauffeur qu'on ne peut pas l'utiliser aprés la selection de cette vehicule
-  testerPossibiliteAffectationChauffeur(
-    vehicule: any,
-    listeVehiculePrive: any
-  ) {
-    this.copieVehiculesPrive = [];
-    for (let i = 0; i < listeVehiculePrive.length; i++) {
-      this.copieVehiculesPrive.push({
-        vehicule: listeVehiculePrive[i].vehicule,
-        chauffeurs: [...listeVehiculePrive[i].chauffeurs],
-      });
+  testerPossibiliteAffectationChauffeur(vehiculeSelect: any) {
+    let vehicule: any;
+    if(vehiculeSelect.vehicule.id_Vehicule_Loue === undefined) {
+      vehicule = this.copieVehiculesPrive.filter((veh: any) => veh.vehicule.id === vehiculeSelect.vehicule.id)[0];
+    } else {
+      vehicule = this.copieVehiculesLoue.filter((veh: any) => veh.vehicule.id_Vehicule_Loue == vehiculeSelect.vehicule.id_Vehicule_Loue)[0];
     }
+    console.log(vehicule);
     if (vehicule.chauffeurs.length === 1) {
-      // chercher l'index du vehicule selectionné dans la liste des vehicules privés
-      let index = this.copieVehiculesPrive.findIndex(
-        (v: any) => v.vehicule.id === vehicule.vehicule.id
-      );
-      // pour chaque vehicule si il s'agit d'un vehicule different du vehicule selectionné en supprime le chauffeur du vehicule
-      // selectionné de la liste des chauffeurs de cet vehicule
-      for (let i = 0; i < this.copieVehiculesPrive.length; i++) {
-        if (i !== index) {
+      if (vehicule.vehicule.id_Vehicule_Loue === undefined) {
+        // chercher l'index du vehicule selectionné dans la liste des vehicules privés
+        let index = this.copieVehiculesPrive.findIndex(
+          (v: any) => v.vehicule.id === vehicule.vehicule.id
+        );
+        // pour chaque vehicule si il s'agit d'un vehicule different du vehicule selectionné en supprime le chauffeur du vehicule
+        // selectionné de la liste des chauffeurs de cet vehicule
+        for (let i = 0; i < this.copieVehiculesPrive.length; i++) {
+          if (i !== index) {
+            for (
+              let j = 0;
+              j < this.copieVehiculesPrive[i].chauffeurs.length;
+              j++
+            ) {
+              if (
+                this.copieVehiculesPrive[i].chauffeurs[j] ===
+                vehicule.chauffeurs[0]
+              ) {
+                this.copieVehiculesPrive[i].chauffeurs.splice(j, 1);
+              }
+            }
+          }
+        }
+        for (let i = 0; i < this.copieVehiculesLoue.length; i++) {
+          for (
+            let j = 0;
+            j < this.copieVehiculesLoue[i].chauffeurs.length;
+            j++
+          ) {
+            if (
+              this.copieVehiculesLoue[i].chauffeurs[j] ===
+              vehicule.chauffeurs[0]
+            ) {
+              this.copieVehiculesLoue[i].chauffeurs.splice(j, 1);
+            }
+          }
+        }
+      } else {
+        // chercher l'index du vehicule selectionné dans la liste des vehicules Loues
+        let index = this.copieVehiculesLoue.findIndex(
+          (v: any) =>
+            v.vehicule.id_Vehicule_Loue === vehicule.vehicule.id_Vehicule_Loue
+        );
+        // pour chaque vehicule si il s'agit d'un vehicule different du vehicule selectionné en supprime le chauffeur du vehicule
+        // selectionné de la liste des chauffeurs de cet vehicule
+        for (let i = 0; i < this.copieVehiculesPrive.length; i++) {
           for (
             let j = 0;
             j < this.copieVehiculesPrive[i].chauffeurs.length;
@@ -534,36 +579,128 @@ export class AjoutMissionComponent implements OnInit {
             }
           }
         }
-      }
-    } else {
-      this.vehiculesPriveSelectionnes.forEach((v: any) => {
-        if (vehicule.chauffeurs === v.chauffeurs) {
-          this.vehiculesMemeChauffeursSelectionne.push(v);
-          if (
-            this.vehiculesMemeChauffeursSelectionne.length >=
-            vehicule.chauffeurs.length
-          ) {
-            vehicule.chauffeurs.forEach((chauffeur: any) => {
-              this.copieVehiculesPrive.forEach((ve: any) => {
-                if (
-                  (this.vehiculesMemeChauffeursSelectionne.filter(
-                    (v: any) => v.vehicule.id === ve.vehicule.id
-                  ).length = 0)
-                ) {
-                  let k = ve.chauffeurs.findIndex(
-                    (ch: any) => ch.id_Employe === chauffeur.id_Employe
-                  );
-                  if (k > -1) {
-                    ve.chauffeurs.splice(k, 1);
-                  }
-                }
-              });
-            });
+        for (let i = 0; i < this.copieVehiculesLoue.length; i++) {
+          if (i !== index) {
+            for (
+              let j = 0;
+              j < this.copieVehiculesLoue[i].chauffeurs.length;
+              j++
+            ) {
+              if (
+                this.copieVehiculesLoue[i].chauffeurs[j] ===
+                vehicule.chauffeurs[0]
+              ) {
+                this.copieVehiculesLoue[i].chauffeurs.splice(j, 1);
+              }
+            }
           }
         }
+      }
+    } else {
+      this.vehiculesPriveSelectionnes.forEach((vehiculeSelectionne: any) => {
+        let memeChauffeurs = true;
+        vehicule.chauffeurs.forEach((chauffeur1: any) => {
+          vehiculeSelectionne.chauffeurs.forEach((chauffeur2: any) => {
+            if (chauffeur1 != chauffeur2) {
+              memeChauffeurs = false
+            }
+          });
+        });
+        if (memeChauffeurs) {
+          this.vehiculesMemeChauffeursSelectionne.push(vehiculeSelectionne);
+        }
       });
+      this.vehiculesLoueSelectionnes.forEach((vehiculeSelectionne: any) => {
+        let memeChauffeurs = true;
+        vehicule.chauffeurs.forEach((chauffeur1: any) => {
+          vehiculeSelectionne.chauffeurs.forEach((chauffeur2: any) => {
+            if (chauffeur1 != chauffeur2) {
+              memeChauffeurs = false
+            }
+          });
+        });
+        if (memeChauffeurs) {
+          this.vehiculesMemeChauffeursSelectionne.push(vehiculeSelectionne);
+        }
+      });
+      console.log(this.vehiculesMemeChauffeursSelectionne);
+      if (
+        this.vehiculesMemeChauffeursSelectionne.length >=
+        vehicule.chauffeurs.length
+      ) {
+        vehicule.chauffeurs.forEach((chauffeur: any) => {
+          this.copieVehiculesPrive.forEach((ve: any) => {
+            if (
+              this.vehiculesMemeChauffeursSelectionne.filter(
+                (v: any) => v.vehicule.id === ve.vehicule.id
+              ).length === 0
+            ) {
+              let k = ve.chauffeurs.findIndex(
+                (ch: any) => ch.id_Employe === chauffeur.id_Employe
+              );
+              if (k > -1) {
+                ve.chauffeurs.splice(k, 1);
+              }
+            }
+          });
+          this.copieVehiculesLoue.forEach((ve: any) => {
+            if (
+              this.vehiculesMemeChauffeursSelectionne.filter(
+                (v: any) =>
+                  v.vehicule.id_Vehicule_Loue === ve.vehicule.id_Vehicule_Loue
+              ).length === 0
+            ) {
+              let k = ve.chauffeurs.findIndex(
+                (ch: any) => ch.id_Employe === chauffeur.id_Employe
+              );
+              if (k > -1) {
+                ve.chauffeurs.splice(k, 1);
+              }
+            }
+          });
+        });
+      }
+      // +++++++++++++++++++++++++++++++++++++++
+      // if (
+      //   this.vehiculesMemeChauffeursSelectionne.length >=
+      //   vehicule.chauffeurs.length
+      // ) {
+      //   vehicule.chauffeurs.forEach((chauffeur: any) => {
+      //     this.copieVehiculesPrive.forEach((ve: any) => {
+      //       if (
+      //         (this.vehiculesMemeChauffeursSelectionne.filter(
+      //           (v: any) => v.vehicule.id === ve.vehicule.id
+      //         ).length === 0)
+      //       ) {
+      //         let k = ve.chauffeurs.findIndex(
+      //           (ch: any) => ch.id_Employe === chauffeur.id_Employe
+      //         );
+      //         if (k > -1) {
+      //           ve.chauffeurs.splice(k, 1);
+      //         }
+      //       }
+      //     });
+      //     this.copieVehiculesLoue.forEach((ve: any) => {
+      //       if (
+      //         (this.vehiculesMemeChauffeursSelectionne.filter(
+      //           (v: any) => v.vehicule.id_Vehicule_Loue === ve.vehicule.id_Vehicule_Loue
+      //         ).length === 0)
+      //       ) {
+      //         let k = ve.chauffeurs.findIndex(
+      //           (ch: any) => ch.id_Employe === chauffeur.id_Employe
+      //         );
+      //         if (k > -1) {
+      //           ve.chauffeurs.splice(k, 1);
+      //         }
+      //       }
+      //     });
+      //   });
+      // }
     }
+    console.log(this.copieVehiculesPrive);
+    console.log(this.copieVehiculesLoue);
     this.disableVehiculePrive(this.copieVehiculesPrive);
+    this.disableVehiculeLoue(this.copieVehiculesLoue);
   }
 
   // disable le checkBpx des vehicules privés qu'on ne peut pas affecter leurs chauffeurs qui peuvent la conduire
@@ -571,6 +708,15 @@ export class AjoutMissionComponent implements OnInit {
     for (let i = 0; i < copieVehiculesPrive.length; i++) {
       if (copieVehiculesPrive[i].chauffeurs.length === 0) {
         this.checkBoxVehicules[i].disable = true;
+      }
+    }
+  }
+
+  // disable le checkBpx des vehicules loues qu'on ne peut pas affecter leurs chauffeurs qui peuvent la conduire
+  disableVehiculeLoue(copieVehiculesLoue: any) {
+    for (let i = 0; i < copieVehiculesLoue.length; i++) {
+      if (copieVehiculesLoue[i].chauffeurs.length === 0) {
+        this.checkBoxVehiculesLoues[i].disable = true;
       }
     }
   }
@@ -586,14 +732,14 @@ export class AjoutMissionComponent implements OnInit {
           this.copieVehiculesPrive[i].chauffeurs.push(ch);
         }
       }
-      // for (let i = 0; i < this.listeVehiculesLoues.length; i++) {
-      //   if (
-      //     vehicule.vehicule !== this.listeVehiculesLoues[i].vehicule &&
-      //     this.listeVehiculesLoues[i].chauffeurs.includes(ch)
-      //   ) {
-      //     this.copieVehiculesPrive[i].chauffeurs.push(ch);
-      //   }
-      // }
+      for (let i = 0; i < this.listeVehiculesLoues.length; i++) {
+        if (
+          vehicule.vehicule !== this.listeVehiculesLoues[i].vehicule &&
+          this.listeVehiculesLoues[i].chauffeurs.includes(ch)
+        ) {
+          this.copieVehiculesLoue[i].chauffeurs.push(ch);
+        }
+      }
     });
     // this.vehiculesPriveAvecChauffeurSupprime = []
   }
