@@ -1,91 +1,96 @@
 <div class="app-page-title">
-    <div class="page-title-wrapper">
-       <div class="page-title-heading">
-          <div class="page-title-icon">
-             <i class="pe-7s-map-marker text-success">
-             </i>
-          </div>
-          Suivi Des Commandes
-       </div>
-    </div>
- </div>
- <div class="tab-content">
-    <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
-       <div class="main-card mb-3 card">
-          <div class="panel">
-             <div class="info-commandes">
-                <div class="input-group rounded" style="width: 30%; margin-left: 25em; margin-bottom: 10px;">
-                   <input type="search" class="form-control rounded" placeholder="Numéro De Suivi" aria-label="Search"
-                      aria-describedby="search-addon" [(ngModel)]="trackingNumber" />
-                   <span class="input-group-text border-0" id="search-addon" (click)="rechercheCommande()">
-                      <i class="fas fa-search"></i>
-                   </span>
-                </div>
-                <div class="commande-dispo" *ngIf="this.dispo === true">
-                   <div class="content-header ">
-                      <div class="panel-title">Bref descriptif de l'envoi</div>
-                      <i class="fas fa-globe icon"></i>
-                      <h2 class="header">
-                         Numéro de suivi:
-                         <em>{{trackingNumber}}</em>
-                      </h2>
-                   </div>
-                   <div class="content--wide">
-                      <div class="statut-suivi">
-                         <ul>
-                            <li class="tracking-status processing ">
-                               <span class="status-wrapper">
-                                  <i class="fas fa-ellipsis-h"></i>
-                               </span>
-                               <div class="status-lbl">En cours de traitement</div>
-                            </li>
-                            <li class="tracking-status intransit ">
-                               <span class="status-wrapper"
-                                  *ngIf="(commande.etat === 'Affectée' && mission.etat === 'En cours') || commande.etat === 'Livrée'">
-                                  <i class="fas fa-angle-double-right"></i>
-                               </span>
-                               <div class="status-lbl">En transit</div>
-                            </li>
-                            <li class="tracking-status delivered ">
-                               <span class="status-wrapper" *ngIf="commande.etat === 'Livrée'">
-                                  <i class="fas fa-check-circle"></i>
-                               </span>
-                               <div class="status-lbl">Livré</div>
-                            </li>
-                         </ul>
-                      </div>
- 
-                      <div class="adress-details">
-                         <div class="address">
-                            <div class="shipment-address">
-                               <span class="address-span">
-                                  <span class="address-font-bold">{{commande.adresse_expediteur}}</span>
-                               </span>
-                               <!-- <span>samedi, 26 décembre 2020</span> -->
-                            </div>
-                            <div class="amx-h-cell-no-border amx-h-cell-align-middle">
-                               <i class="fas fa-arrow-right fleche"></i>
-                            </div>
-                            <div class="shipment-address" style="margin: 0 10px">
-                               <span class="address-span">
-                                  <span class="address-font-bold">{{commande.adresse_destinataire}}</span>
-                               </span>
-                               <!-- <div>
+   <div class="page-title-wrapper">
+      <div class="page-title-heading">
+         <div class="page-title-icon">
+            <i class="pe-7s-map-marker text-success">
+            </i>
+         </div>
+         Suivi Des Commandes
+      </div>
+   </div>
+</div>
+<div class="main-card mb-3 card">
+   <div class="panel">
+      <div class="info-commandes">
+         <img src="../../../assets/images/backgroung-suivi-commande.jpg" id="bg" alt="">
+         <section class="recherche" [@statusRecherche]="statusRecherche" *ngIf="rechercheEstActive">
+            <h1>Chercher avec tracking number</h1>
+            <i class="fas fa-search icon" style="margin-top: 50px;"></i>
+            <div id="champ-tracking">
+               <p>Ecrivez votre numéro de suivi</p>
+               <div class="input-group rounded input-chercher">
+                  <input type="search" class="form-control rounded" placeholder="Tracking number" aria-label="Search"
+                     aria-describedby="search-addon" [(ngModel)]="trackingNumber" (keyup.enter)="rechercheCommande()" />
+                  <span class="input-group-text border-0" id="search-addon" (click)="rechercheCommande()" style="cursor: pointer;">
+                     <i class="fas fa-search"></i>
+                  </span>
+               </div>
+            </div>
+         </section>
+         <section class="commande-dispo" *ngIf="infoCommandeEstActive" [@statusInfoCommande]="statusInfoCommande">
+            <div class="content-header ">
+               <div class="panel-title">Bref descriptif de l'envoi</div>
+               <i class="fas fa-map-marker-alt icon"></i>
+               <h2 class="header">
+                  Numéro de suivi:
+                  <em>{{commande.trackingNumber}}
+                     <a role="button" (click)="refaireRecherche()" style="cursor: pointer;"><i class="fas fa-redo-alt"></i></a>
+                  </em>
+               </h2>
+            </div>
+            <div class="content--wide">
+               <div class="statut-suivi">
+                  <ul>
+                     <li class="tracking-status processing ">
+                        <span class="status-wrapper">
+                           <i class="fas fa-ellipsis-h"></i>
+                        </span>
+                        <div class="status-lbl">En cours de traitement</div>
+                     </li>
+                     <li class="tracking-status intransit ">
+                        <span class="status-wrapper" *ngIf="enTransit">
+                           <i class="fas fa-angle-double-right"></i>
+                        </span>
+                        <div class="status-lbl">En transit</div>
+                     </li>
+                     <li class="tracking-status delivered ">
+                        <span class="status-wrapper" *ngIf="livree">
+                           <i class="fas fa-check-circle"></i>
+                        </span>
+                        <div class="status-lbl">Livré</div>
+                     </li>
+                  </ul>
+               </div>
+
+               <div class="adress-details">
+                  <div class="address">
+                     <div class="shipment-address">
+                        <span class="address-span">
+                           <span class="address-font-bold">{{commande.adresse_expediteur}}</span>
+                        </span>
+                        <!-- <span>samedi, 26 décembre 2020</span> -->
+                     </div>
+                     <div class="amx-h-cell-no-border amx-h-cell-align-middle">
+                        <i class="fas fa-arrow-right fleche"></i>
+                     </div>
+                     <div class="shipment-address" style="margin: 0 10px">
+                        <span class="address-span">
+                           <span class="address-font-bold">{{commande.ville}}</span>
+                        </span>
+                        <!-- <div>
                                 <span>lundi, 28 décembre 2020</span>
                              </div> -->
-                            </div>
- 
-                         </div>
-                      </div>
-                   </div>
-                </div>
-                <div class="commande-nondispo" *ngIf="this.dispo === false && nouveauRecherche === false">
-                   <h1 class="pasDispo">Commande n'est pas encore disponible pour livraison <br> ou elle est inexistante
-                   </h1>
-                </div>
-                <div class="nouveauRecherche" *ngIf="nouveauRecherche === true">
-                   <h1>Ecrivez votre numéro de suivi</h1>
-                </div>
-             </div>
-          </div>
-       </div>
+                     </div>
+
+                  </div>
+               </div>
+            </div>
+         </section>
+         <section class="commande-nondispo" *ngIf="pasCommandeEstActive" [@statusPasCommande]="statusPasCommande">
+            <h1 class="pasDispo">Commande n'est pas encore disponible pour livraison <br> ou elle est inexistante
+               <a role="button" class="redo" (click)="refaireRecherche()"><i class="fas fa-redo-alt"></i></a>
+            </h1>
+         </section>
+      </div>
+   </div>
+</div>
