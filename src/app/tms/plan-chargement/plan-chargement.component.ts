@@ -322,6 +322,7 @@ export class PlanChargementComponent implements OnInit {
 
         let container = document.getElementById('container'); //recuperer le div container qui va contenir notre canva
         // on teste si c'est une mission avec vehicule privé
+        console.log(this.mission.typeVehicule);
         if (this.mission.typeVehicule === 'prive') {
           // recupérer les données de notre vehicule privée par son matricule
           this.servicePlanChargement

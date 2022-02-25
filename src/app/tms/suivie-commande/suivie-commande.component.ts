@@ -33,14 +33,14 @@ import { SuivieCommandeService } from './services/suivie-commande.service';
         'show',
         style({
           opacity: 1,
-          position: "relative"
+          position: 'relative',
         })
       ),
       state(
         'hide',
         style({
           opacity: 0,
-          position: "relative"
+          position: 'relative',
         })
       ),
       transition('show <=> hide', animate('500ms')),
@@ -50,7 +50,7 @@ import { SuivieCommandeService } from './services/suivie-commande.service';
         'show',
         style({
           opacity: 1,
-          position: "relative"
+          position: 'relative',
         })
       ),
       state(
@@ -78,6 +78,7 @@ export class SuivieCommandeComponent implements OnInit {
   infoCommandeEstActive = false;
   pasCommandeEstAffiche = false;
   pasCommandeEstActive = false;
+  historique: any = [];
   constructor(public service: SuivieCommandeService) {}
 
   ngOnInit(): void {}
@@ -103,6 +104,23 @@ export class SuivieCommandeComponent implements OnInit {
               ? (this.livree = true)
               : (this.livree = false);
           });
+          let listeHistorique = this.commande.historique.split('%');
+          let dateCreation = this.commande.dateCreation.split("T")[0];
+          dateCreation = dateCreation.split("-");
+          let dateCreationStr = dateCreation[2] + "/" + dateCreation[1] + "/" + dateCreation[0];
+          this.historique.push({
+            etat: listeHistorique[0].split('#')[0],
+            date: dateCreationStr
+          });
+          for (let i = 1; i < listeHistorique.length; i++) {
+            const histo = listeHistorique[i];
+            this.historique.push({
+              etat: histo.split('#')[0],
+              date: histo.split('#')[1].split(' ')[0],
+              heure: histo.split('#')[1].split(' ')[1],
+            });
+          };
+          console.log(this.historique);
         } else {
         }
         this.rechercheEstAffiche = false;
@@ -114,7 +132,7 @@ export class SuivieCommandeComponent implements OnInit {
       });
   }
 
-  // afficher input recherche 
+  // afficher input recherche
   afficherRecherche() {
     this.rechercheEstActive = true;
     setTimeout(() => {
@@ -144,7 +162,7 @@ export class SuivieCommandeComponent implements OnInit {
     setTimeout(() => {
       this.pasCommandeEstActive = false;
       this.infoCommandeEstActive = false;
-      this.afficherRecherche()
+      this.afficherRecherche();
     }, 500);
   }
 
