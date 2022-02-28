@@ -252,6 +252,15 @@ p {
   overflow: auto;
   margin-bottom: 10px;
 }
+
+mat-table {
+  overflow-y: auto;
+  max-height: 475px;
+}
+mat-header-row {
+  position: sticky;
+  top: 0;
+}
 //pour mobile
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {

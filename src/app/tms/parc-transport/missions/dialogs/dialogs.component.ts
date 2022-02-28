@@ -1145,7 +1145,7 @@ export class ConfirmerLivraison implements OnInit {
     if (event.code == 'Enter') {
       if (this.qrCode)
         reponse = await this.serviceMission
-          .livrerCommande(this.qrCode, this.data.mission.id)
+          .livrerCommande(this.qrCode, this.data.mission.id, this.data.mission.idCommandes)
           .toPromise();
       this.qrCode = '';
       if (reponse[0]) {

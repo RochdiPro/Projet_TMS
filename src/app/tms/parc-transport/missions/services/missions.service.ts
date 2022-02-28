@@ -161,10 +161,11 @@ export class MissionsService {
   }
 
   // livrer commande
-  public livrerCommande(qrCode: string, idMaission: any) {
+  public livrerCommande(qrCode: string, idMaission: any, idCommandes: any) {
     let formData = new FormData();
     formData.append('qrCode', qrCode);
     formData.append('idMission', idMaission);
+    formData.append('idCommandes', idCommandes);
     return this.httpClient
       .put(erp + 'livrer-commande', formData)
       .pipe(catchError(this.handleError));

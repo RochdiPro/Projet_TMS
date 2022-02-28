@@ -1,5 +1,10 @@
+.container{
+  width: 100%;
+}
+
 .main-card{
-  max-width: 1200px;
+  max-width: 1000px;
+  overflow: hidden;
 }
 .panel {
   position: relative;
@@ -23,10 +28,6 @@
   transform: translate(-50%, -50%);
   height: 100%;
   width: auto;
-}
-.content--header {
-  padding-left: 10%;
-  padding-right: 10%;
 }
 .panel-title {
   color: #dc291e;
@@ -157,29 +158,11 @@ ul {
   color: #dc291e;
   font-style: normal;
 }
-.panel-historique {
-  position: relative;
-  background-color: #fff;
-  text-align: center;
-  box-shadow: 0 1px 5px -1px #ccc;
-  font-family: "Open Sans", Arial, Helvetica, sans-serif;
-  padding-top: 30px;
-}
-.panel-bar {
-  background-color: #dc291e;
-  display: block;
-  width: 40px;
-  height: 6px;
-  margin: 0 auto;
-  margin-bottom: 10px;
-  border-radius: 5px;
-}
 .content--wide {
-  padding: 2em;
+  padding: 1em;
 }
 thead tr th {
   background-color: #fff;
-  border-top: 1px solid #f0f0f0;
   color: #9a9a9a;
   font-size: 14px;
   font-weight: 400;
@@ -235,7 +218,7 @@ tbody tr td .secondLine {
 }
 
 #champ-tracking input {
-  font-size: 2em;
+  font-size: 1.7em;
   height: 45px;
 }
 
@@ -271,13 +254,15 @@ tbody tr td .secondLine {
   cursor: pointer;
 }
 
-table{
-  width: 100%;
+.table {
+  margin: 0;
+  border: 1px solid #f0f0f0;
 }
 
 .table-cell {
   display: block;
   width: auto;
+  min-height: 40px;
 }
 
 .secondLine{
@@ -285,7 +270,18 @@ table{
   font-size: 14px;
 }
 
-table thead tr th:after {
+table thead tr th:not(:last-child):after {
+  background-color: rgba(204,204,204,.4);
+  bottom: 10px;
+  content: '';
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 10px;
+  width: 1px;
+}
+
+table tbody tr td:not(:last-child):after {
   background-color: rgba(204,204,204,.4);
   bottom: 10px;
   content: '';
@@ -298,7 +294,6 @@ table thead tr th:after {
 
 table thead tr th {
   background-color: #fff;
-  border-top: 1px solid #f0f0f0;
   color: #9a9a9a;
   font-size: 14px;
   font-weight: 400;
@@ -313,9 +308,18 @@ table tbody tr td {
   padding-left: 15px;
   position: relative;
   width: auto;
-  border-bottom: 1px solid #f0f0f0;
 }
 
-table tbody tr td:last-child {
-  border-right: 1px solid #f0f0f0;
+
+.table td.fit, 
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
+#titre-historique {
+  text-align: center;
+    padding: 20px;
+    margin: 0;
+    color: #dc291e;
 }

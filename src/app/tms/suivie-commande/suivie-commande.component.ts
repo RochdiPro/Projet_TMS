@@ -86,6 +86,7 @@ export class SuivieCommandeComponent implements OnInit {
     //rechercher une commande pour consulter son etat
     this.dispo = false;
     this.nouveauRecherche = false;
+    this.historique = [];
     this.service
       .commandeByTrackingNumber(this.trackingNumber)
       .subscribe((data) => {
@@ -95,7 +96,7 @@ export class SuivieCommandeComponent implements OnInit {
           this.commande = this.commandes[0];
           this.service.mission(this.commande.idMission).subscribe((data) => {
             this.mission = data;
-            (this.commande.etat === 'Affectée' &&
+            (this.commande.etat === 'En cours de livraison' &&
               this.mission.etat === 'En cours') ||
             this.commande.etat === 'Livrée'
               ? (this.enTransit = true)
@@ -110,14 +111,27 @@ export class SuivieCommandeComponent implements OnInit {
           let dateCreationStr = dateCreation[2] + "/" + dateCreation[1] + "/" + dateCreation[0];
           this.historique.push({
             etat: listeHistorique[0].split('#')[0],
-            date: dateCreationStr
+            date: dateCreationStr,
+            localisation: "Sfax"
           });
+          
           for (let i = 1; i < listeHistorique.length; i++) {
             const histo = listeHistorique[i];
+            let etat = histo.split('#')[0];
+            let date =  histo.split('#')[1].split(' ')[0];
+            let heure = histo.split('#')[1].split(' ')[1].split('&')[0];
+            let localisation
+            if (histo.split('#')[1].split(' ')[1].split('&').length > 1) {
+              localisation = histo.split('#')[1].split(' ')[1].split('&')[1];
+            } else {
+              localisation = "Sfax"
+            }
+
             this.historique.push({
-              etat: histo.split('#')[0],
-              date: histo.split('#')[1].split(' ')[0],
-              heure: histo.split('#')[1].split(' ')[1],
+              etat: etat,
+              date: date,
+              heure: heure,
+              localisation : localisation
             });
           };
           console.log(this.historique);
@@ -179,5 +193,27 @@ export class SuivieCommandeComponent implements OnInit {
   // etat du section du non disponibilité de commande "show" pour afficher, "hide" pour cacher
   get statusPasCommande() {
     return this.pasCommandeEstAffiche ? 'show' : 'hide';
+  }
+
+  afficherEtat(etat: string) {
+    let status: string;
+    switch (etat) {
+      case "en cours de traitement":
+        status = "Ce colis est en cours de traitement"
+        break;
+      case "en cours d'expédition":
+        status = "Ce colis est en cours d'expédition"
+        break;
+      case "en cours de livraison":
+        status = "Votre colis est en cours de livraison"
+        break;
+      case "livrée":
+        status = "Colis bien livré"
+        break;
+      
+      default:
+        break;
+    }
+    return status
   }
 }
