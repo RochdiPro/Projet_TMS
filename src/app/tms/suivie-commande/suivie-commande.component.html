@@ -45,21 +45,22 @@
                <div class="content--wide">
                   <div class="statut-suivi">
                      <ul>
-                        <li class="tracking-status processing ">
+                        <li class="tracking-status processing" [ngClass]="{'translation-etat': enTransit}">
                            <span class="status-wrapper">
-                              <i class="fas fa-ellipsis-h" *ngIf="!enTransit"></i>
+                              <i class="fas fa-truck-loading" *ngIf="!enTransit"></i>
                               <i class="fas fa-check" *ngIf="enTransit"></i>
                            </span>
-                           <div class="status-lbl">En cours de traitement</div>
+                           <div class="status-lbl" *ngIf="!enTransit">En cours d'expédition</div>
+                           <div class="status-lbl" *ngIf="enTransit">Expédié</div>
                         </li>
                         <li class="tracking-status ">
                            <span class="status-wrapper" *ngIf="enTransit">
-                              <i class="fas fa-truck-loading" *ngIf="!livree"></i>
+                              <i class="fas fa-angle-double-right" *ngIf="!livree"></i>
                               <i class="fas fa-check" *ngIf="livree"></i>
                            </span>
-                           <div class="status-lbl">En cours d'expédition</div>
+                           <div class="status-lbl">En cours de livraison</div>
                         </li>
-                        <li class="tracking-status delivered ">
+                        <li class="tracking-status translation-etat ">
                            <span class="status-wrapper" *ngIf="livree">
                               <i class="fas fa-check-circle"></i>
                            </span>

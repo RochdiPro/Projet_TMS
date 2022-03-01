@@ -1128,6 +1128,8 @@ export class DetailCommande implements OnInit {
 export class ConfirmerLivraison implements OnInit {
   interval: any; //intervalle entre les keyup ==> on va specifier interval de 20ms pour ne pas autoriser l'ecriture que au scanner du code a barre
   qrCode = '';
+  chargementActive = false;
+  chargementLong = false;
 
   constructor(
     private dialogRef: MatDialogRef<ConfirmerLivraison>,
@@ -1140,6 +1142,10 @@ export class ConfirmerLivraison implements OnInit {
   // fonction pour scanner le Qr code de confirmation de livraison avec le scanner
   @HostListener('window:keyup', ['$event'])
   async keyEvent(event: KeyboardEvent) {
+    this.chargementActive = true;
+    setTimeout(() => {
+      this.chargementLong = true;
+    }, 2000);
     let reponse: any;
     if (this.interval) clearInterval(this.interval);
     if (event.code == 'Enter') {
@@ -1163,6 +1169,8 @@ export class ConfirmerLivraison implements OnInit {
           text: "Ce Qr code n'appartiens à aucune commande pour cette mission!",
         });
       }
+      this.chargementActive = false;
+      this.chargementLong = false;
       return;
     }
     if (event.key != 'Shift') this.qrCode += event.key;

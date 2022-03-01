@@ -192,7 +192,6 @@ export class AjoutMissionComponent implements OnInit {
         }
       });
     }
-    this.testerPossibiliteAffectationChauffeur(vehicule);
   }
 
   // supprimer vehicule privé de la liste vehiculesSelectionne
@@ -229,7 +228,6 @@ export class AjoutMissionComponent implements OnInit {
         }
       });
     }
-    this.testerPossibiliteAffectationChauffeur(vehicule);
   }
 
   // supprimer vehicule loué de la liste vehiculesSelectionne
@@ -507,165 +505,6 @@ export class AjoutMissionComponent implements OnInit {
     }
   }
 
-  // tester si on selectionne une vehicule qui a un chauffeur qu'on ne peut pas l'utiliser aprés la selection de cette vehicule
-  testerPossibiliteAffectationChauffeur(vehiculeSelect: any) {
-    let vehicule: any;
-    if (vehiculeSelect.vehicule.id_Vehicule_Loue === undefined) {
-      vehicule = this.copieVehiculesPrive.filter(
-        (veh: any) => veh.vehicule.id === vehiculeSelect.vehicule.id
-      )[0];
-    } else {
-      vehicule = this.copieVehiculesLoue.filter(
-        (veh: any) =>
-          veh.vehicule.id_Vehicule_Loue ==
-          vehiculeSelect.vehicule.id_Vehicule_Loue
-      )[0];
-    }
-    if (vehicule.chauffeurs.length === 1) {
-      if (vehicule.vehicule.id_Vehicule_Loue === undefined) {
-        // chercher l'index du vehicule selectionné dans la liste des vehicules privés
-        let index = this.copieVehiculesPrive.findIndex(
-          (v: any) => v.vehicule.id === vehicule.vehicule.id
-        );
-        // pour chaque vehicule si il s'agit d'un vehicule different du vehicule selectionné en supprime le chauffeur du vehicule
-        // selectionné de la liste des chauffeurs de cet vehicule
-        for (let i = 0; i < this.copieVehiculesPrive.length; i++) {
-          if (i !== index) {
-            for (
-              let j = 0;
-              j < this.copieVehiculesPrive[i].chauffeurs.length;
-              j++
-            ) {
-              if (
-                this.copieVehiculesPrive[i].chauffeurs[j] ===
-                vehicule.chauffeurs[0]
-              ) {
-                this.copieVehiculesPrive[i].chauffeurs.splice(j, 1);
-              }
-            }
-          }
-        }
-        for (let i = 0; i < this.copieVehiculesLoue.length; i++) {
-          for (
-            let j = 0;
-            j < this.copieVehiculesLoue[i].chauffeurs.length;
-            j++
-          ) {
-            if (
-              this.copieVehiculesLoue[i].chauffeurs[j] ===
-              vehicule.chauffeurs[0]
-            ) {
-              this.copieVehiculesLoue[i].chauffeurs.splice(j, 1);
-            }
-          }
-        }
-      } else {
-        // chercher l'index du vehicule selectionné dans la liste des vehicules Loues
-        let index = this.copieVehiculesLoue.findIndex(
-          (v: any) =>
-            v.vehicule.id_Vehicule_Loue === vehicule.vehicule.id_Vehicule_Loue
-        );
-        // pour chaque vehicule si il s'agit d'un vehicule different du vehicule selectionné en supprime le chauffeur du vehicule
-        // selectionné de la liste des chauffeurs de cet vehicule
-        for (let i = 0; i < this.copieVehiculesPrive.length; i++) {
-          for (
-            let j = 0;
-            j < this.copieVehiculesPrive[i].chauffeurs.length;
-            j++
-          ) {
-            if (
-              this.copieVehiculesPrive[i].chauffeurs[j] ===
-              vehicule.chauffeurs[0]
-            ) {
-              this.copieVehiculesPrive[i].chauffeurs.splice(j, 1);
-            }
-          }
-        }
-        for (let i = 0; i < this.copieVehiculesLoue.length; i++) {
-          if (i !== index) {
-            for (
-              let j = 0;
-              j < this.copieVehiculesLoue[i].chauffeurs.length;
-              j++
-            ) {
-              if (
-                this.copieVehiculesLoue[i].chauffeurs[j] ===
-                vehicule.chauffeurs[0]
-              ) {
-                this.copieVehiculesLoue[i].chauffeurs.splice(j, 1);
-              }
-            }
-          }
-        }
-      }
-    } else {
-      this.vehiculesMemeChauffeursSelectionne = [];
-      console.log(this.vehiculesPriveSelectionnes);
-      console.log(this.vehiculesLoueSelectionnes);
-      this.vehiculesPriveSelectionnes.forEach((vehiculeSelectionne: any) => {
-        let memeChauffeurs = true;
-        vehicule.chauffeurs.forEach((chauffeur1: any) => {
-          if (!vehiculeSelectionne.chauffeurs.includes(chauffeur1)) {
-            memeChauffeurs = false;
-          }
-        });
-        if (memeChauffeurs) {
-          this.vehiculesMemeChauffeursSelectionne.push(vehiculeSelectionne);
-        }
-      });
-      this.vehiculesLoueSelectionnes.forEach((vehiculeSelectionne: any) => {
-        let memeChauffeurs = true;
-        vehicule.chauffeurs.forEach((chauffeur1: any) => {
-          if (!vehiculeSelectionne.chauffeurs.includes(chauffeur1)) {
-            memeChauffeurs = false;
-          }
-        });
-        if (memeChauffeurs) {
-          this.vehiculesMemeChauffeursSelectionne.push(vehiculeSelectionne);
-        }
-      });
-      if (
-        this.vehiculesMemeChauffeursSelectionne.length >=
-        vehicule.chauffeurs.length
-      ) {
-        vehicule.chauffeurs.forEach((chauffeur: any) => {
-          this.copieVehiculesPrive.forEach((ve: any) => {
-            if (
-              this.vehiculesMemeChauffeursSelectionne.filter(
-                (v: any) => v.vehicule.id === ve.vehicule.id
-              ).length === 0
-            ) {
-              let k = ve.chauffeurs.findIndex(
-                (ch: any) => ch.id_Employe === chauffeur.id_Employe
-              );
-              if (k > -1) {
-                ve.chauffeurs.splice(k, 1);
-              }
-            }
-          });
-          this.copieVehiculesLoue.forEach((ve: any) => {
-            if (
-              this.vehiculesMemeChauffeursSelectionne.filter(
-                (v: any) =>
-                  v.vehicule.id_Vehicule_Loue === ve.vehicule.id_Vehicule_Loue
-              ).length === 0
-            ) {
-              let k = ve.chauffeurs.findIndex(
-                (ch: any) => ch.id_Employe === chauffeur.id_Employe
-              );
-              if (k > -1) {
-                ve.chauffeurs.splice(k, 1);
-              }
-            }
-          });
-        });
-      }
-    }
-    console.log(this.copieVehiculesPrive);
-    console.log(this.copieVehiculesLoue);
-    this.disableVehiculePrive(this.copieVehiculesPrive);
-    this.disableVehiculeLoue(this.copieVehiculesLoue);
-  }
 
   // disable le checkBpx des vehicules privés qu'on ne peut pas affecter leurs chauffeurs qui peuvent la conduire
   disableVehiculePrive(copieVehiculesPrive: any) {
