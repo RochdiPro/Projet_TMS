@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import { ConfigurationTmsRoutingModule } from './configuration-tms-routing.module';
 import { ConfigurationTmsComponent } from './configuration-tms.component';
+import { ConfigurationGeneraleComponent } from './configuration-generale/configuration-generale.component';
 
 
 @NgModule({
   declarations: [
-    ConfigurationTmsComponent
+    ConfigurationTmsComponent,
+    ConfigurationGeneraleComponent
   ],
   imports: [
     CommonModule,

@@ -9,32 +9,16 @@
         </div>
     </div>
 </div>
-<div class="tab-content">
-    <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
-       <div class="main-card mb-3 card">
-          <div class="card-body">
-             <ul class="tabs-animated-shadow tabs-animated nav" id="tab">
-                <!-- bouton configuration general -->
-                <li class="nav-item">
-                    <a role="tab" class="nav-link" id="tab-c-0" data-toggle="tab" >
-                        <span>Général</span>
-                    </a>
-                </li>
-                <!-- bouton configuration position -->
-                <li class="nav-item">
-                    <a role="tab" class="nav-link" id="tab-c-0" data-toggle="tab" >
-                        <span>Position</span>
-                    </a>
-                </li>
-                <!-- bouton configuration commande -->
-                <li class="nav-item">
-                    <a role="tab" class="nav-link" id="tab-c-1" data-toggle="tab" >
-                        <span>Commande</span>
-                    </a>
-                </li>
-            </ul>
-             <router-outlet></router-outlet>
-          </div>
-       </div>
+<div class="contenaire">
+    <div class="card menu-config">
+        <a role="button">Général</a>
+        <a role="button">Position</a>
+        <a role="button">Commande</a>
     </div>
- </div>
+    <div class = "contenu-config">
+        <div class="card test-config">
+            <app-configuration-generale></app-configuration-generale>
+        </div>
+    </div>
+</div>
+  

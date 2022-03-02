@@ -3,9 +3,13 @@
 }
 
 .main-card{
-  max-width: 1000px;
   overflow: hidden;
 }
+
+h1 {
+  font-size: 1rem;
+}
+
 .panel {
   position: relative;
   background-color: #fff;
@@ -16,7 +20,7 @@
 .info-commandes {
   padding-bottom: 50px;
   padding-top: 50px;
-  height: 550px;
+  height: 480px;
   overflow: hidden;
   position: relative;
 }
@@ -55,6 +59,11 @@
   border-radius: 50%;
   text-align: center;
 }
+
+.icon-recherche{
+  margin-top: 25px;
+}
+
 .header {
   margin-bottom: 0;
   text-transform: capitalize;
@@ -63,6 +72,8 @@
   line-height: 1.3;
   font-family: "SceneAltLight", Arial, Helvetica, sans-serif;
   font-weight: 200;
+  display: flex;
+  flex-direction: column;
 }
 .header em {
   color: #dc291e;
@@ -73,18 +84,19 @@
   max-width: none;
   background-repeat: no-repeat;
   background-position: center top;
-  margin: 4em auto;
+  margin: 1em auto;
   font-family: "Open Sans", Arial, Helvetica, sans-serif;
   line-height: 1.8;
   color: #808284;
+  background-size: 255px;
 }
 .tracking-status {
-  width: 129.7px;
+  width: 105.7px;
   height: 40px;
   display: inline-block;
   text-align: center;
 }
-tracking-status ul li {
+.tracking-status ul li {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -98,8 +110,8 @@ ul {
 }
 .tracking-status .status-wrapper {
   background-color: #26a4db;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   display: inline-block;
   margin-top: 5px;
   margin-bottom: 8px;
@@ -113,7 +125,7 @@ ul {
   display: block;
   padding: 4px;
   color: #fff;
-  font-size: 1.5em;
+  font-size: 0.9em;
 }
 .translation-etat {
   transform: translateY(-62%);
@@ -189,13 +201,14 @@ tbody tr td .secondLine {
   color: #dc291e;
   font-weight: 700;
   padding-top: 10%;
+  font-size: 1.5em;
 }
 .nouveauRecherche {
   padding-top: 10%;
   padding-bottom: 10%;
 }
 .input-chercher {
-  width: 30%;
+  width: 65%;
   margin: 0 auto;
 }
 
@@ -212,14 +225,10 @@ tbody tr td .secondLine {
 }
 
 #champ-tracking p {
-  font-size: 2rem;
+  font-size: 1.3rem;
   padding-bottom: 30px;
 }
 
-#champ-tracking input {
-  font-size: 1.7em;
-  height: 45px;
-}
 
 .input-group-text {
   width: 45px;
@@ -321,4 +330,64 @@ table tbody tr td {
     padding: 20px;
     margin: 0;
     color: #dc291e;
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .main-card{
+    max-width: 1000px;
+  }
+
+  .info-commandes {
+    height: 550px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .icon-recherche{
+    margin-top: 50px;
+  }
+
+  #champ-tracking p {
+    font-size: 2rem;
+  }
+  
+  #champ-tracking input {
+    font-size: 1.7em;
+    height: 45px;
+  }
+
+  .input-chercher {
+    width: 30%;
+    margin: 0 auto;
+  }
+
+  .tracking-status .status-wrapper {
+    width: 40px;
+    height: 40px;
+
+  }
+
+  .tracking-status .status-wrapper > i {
+    font-size: 1.5em;
+  }
+
+  .statut-suivi {
+    background-size: auto;
+    margin: 4em auto;
+  }
+
+  .tracking-status {
+    width: 129.7px;
+  }
+
+  .header {
+    display: unset;
+  }
+
+  .pasDispo {
+    font-size: 24px;
+  }
 }
