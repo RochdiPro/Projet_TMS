@@ -1,0 +1,22 @@
+<h2>Position</h2>
+<div class="champ">
+    <h3>Adresse</h3>
+    <input type="text">
+</div>
+<div class="champ">
+    <h3>Complément adresse</h3>
+    <input type="text">
+</div>
+<div class="position">
+    <h3>Localisation</h3>
+    <div class="map">
+        <agm-map [latitude]="0" [longitude]="0" [zoom]="12" [disableDefaultUI]="false">
+            <agm-marker [latitude]="0" [longitude]="0">
+                <agm-info-window>fff</agm-info-window>
+            </agm-marker>
+        </agm-map>
+    </div>
+</div>
+<div class="boutons">
+    <button mat-raised-button color="primary" disabled>Enregistrer</button>
+</div>

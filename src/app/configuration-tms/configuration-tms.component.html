@@ -11,13 +11,19 @@
 </div>
 <div class="contenaire">
     <div class="card menu-config">
-        <a role="button">Général</a>
-        <a role="button">Position</a>
-        <a role="button">Commande</a>
+        <a role="button" [ngClass]="{'active': generalEstActive}" (click)="changerCategorieConfig('general')">Général</a>
+        <a role="button" [ngClass]="{'active': positionEstActive}" (click)="changerCategorieConfig('position')">Position</a>
+        <a role="button" [ngClass]="{'active': commandeEstActive}" (click)="changerCategorieConfig('commande')">Commande</a>
     </div>
     <div class = "contenu-config">
-        <div class="card test-config">
+        <div class="card config" *ngIf="generalEstActive" [@enterAnimation]>
             <app-configuration-generale></app-configuration-generale>
+        </div>
+        <div class="card config" *ngIf="positionEstActive" [@enterAnimation]>
+            <app-configuration-position></app-configuration-position>
+        </div>
+        <div *ngIf="commandeEstActive" [@enterAnimation]>
+            <app-configuration-commande></app-configuration-commande>
         </div>
     </div>
 </div>
