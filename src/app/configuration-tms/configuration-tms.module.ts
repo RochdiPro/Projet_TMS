@@ -8,6 +8,8 @@ import { ConfigurationPositionComponent } from './configuration-position/configu
 import {MatButtonModule} from '@angular/material/button';
 import { AgmCoreModule } from '@agm/core';
 import { ConfigurationCommandeComponent } from './configuration-commande/configuration-commande.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
 
 
 @NgModule({
@@ -24,6 +26,8 @@ import { ConfigurationCommandeComponent } from './configuration-commande/configu
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8'
     }),
+    ReactiveFormsModule,
+    MatInputModule
   ]
 })
 export class ConfigurationTmsModule { }

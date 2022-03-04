@@ -1,22 +1,30 @@
 <h2>Position</h2>
-<div class="champ">
-    <h3>Adresse</h3>
-    <input type="text">
-</div>
-<div class="champ">
-    <h3>Complément adresse</h3>
-    <input type="text">
+<div [formGroup]="formPosition">
+    <div class="champ">
+        <h3>Adresse</h3>
+        <div class="input">
+            <input type="text" formControlName="adresse">
+            <div *ngIf="(adresse.invalid && adresse.touched) || adresse.dirty" class="erreur">
+                <small *ngIf="adresse.errors?.required" class="text-danger" [@enterAnimation]>une adresse est requise</small>
+            </div>
+        </div>
+    </div>
+    <div class="champ" >
+        <h3>Complément adresse</h3>
+        <div class="input">
+            <input type="text" formControlName="complementAdresse">
+        </div>
+    </div>
 </div>
 <div class="position">
     <h3>Localisation</h3>
     <div class="map">
-        <agm-map [latitude]="0" [longitude]="0" [zoom]="12" [disableDefaultUI]="false">
-            <agm-marker [latitude]="0" [longitude]="0">
-                <agm-info-window>fff</agm-info-window>
+        <agm-map [latitude]="latitudeMap" [longitude]="longitudeMap" [zoom]="zoom" [disableDefaultUI]="false">
+            <agm-marker [latitude]="latitudeMarker" [longitude]="longitudeMarker">
             </agm-marker>
         </agm-map>
     </div>
 </div>
 <div class="boutons">
-    <button mat-raised-button color="primary" disabled>Enregistrer</button>
+    <button mat-raised-button color="primary" [disabled]="formPosition.invalid">Enregistrer</button>
 </div>

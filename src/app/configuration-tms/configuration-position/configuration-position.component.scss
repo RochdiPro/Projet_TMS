@@ -6,6 +6,7 @@ h3 {
   margin: 0;
   padding: 0;
   font-size: small;
+  width: 100%;
 }
 
 .champ {
@@ -23,6 +24,16 @@ input {
   font-size: larger;
   height: 30px;
   outline: none;
+}
+
+.input {
+  width: 100%;
+  position: relative;
+}
+
+.erreur {
+  position: absolute;
+  left: 20px;
 }
 
 .position {
@@ -74,10 +85,14 @@ agm-map {
   }
 
   input {
+    width: 100%;
+  }
+  .input {
     width: 60%;
   }
   h3 {
     font-size: medium;
+    width: 40%;
   }
 
   .map {
@@ -102,10 +117,14 @@ agm-map {
     width: 100%;
   }
   input {
+    width: 70%;
+  }
+  .input {
     width: 75%;
   }
   h3 {
     font-size: medium;
+    width: 25%;
   }
   .map {
     width: 75%;
