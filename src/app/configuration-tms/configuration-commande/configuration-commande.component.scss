@@ -19,7 +19,7 @@ h4 {
     margin-top: 10px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  row-gap: 30px;
 }
 
 input {
@@ -30,6 +30,16 @@ input {
   font-size: larger;
   height: 30px;
   outline: none;
+}
+
+.input {
+  width: 100%;
+  position: relative;
+}
+
+.erreur {
+  position: absolute;
+  left: 10px;
 }
 
 .boutons {
@@ -48,6 +58,9 @@ input {
   h4 {
     font-size: medium;
   }
+  .erreur {
+    left: 20px;
+  }
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
@@ -55,7 +68,8 @@ input {
   .modifier-coefficient {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
-    gap: 10px;
+    row-gap: 0px;
+    gap: 30px;
   }
   h3 {
     font-size: medium;
@@ -70,6 +84,10 @@ input {
   .modifier-coefficient {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    gap: 10px;
+    row-gap: 0px;
+    gap: 30px;
+  }
+  .erreur {
+    left: 20px;
   }
 }
