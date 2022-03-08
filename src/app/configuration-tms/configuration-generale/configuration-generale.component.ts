@@ -1,6 +1,8 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { InfoGeneral } from '../interfaces et classes/info-general';
+import { ConfigurationTmsService } from '../services/configuration-tms.service';
 
 @Component({
   selector: 'app-configuration-generale',
@@ -17,10 +19,22 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class ConfigurationGeneraleComponent implements OnInit {
   formConfigurationInformationsGeneral: FormGroup;
-  constructor(private fb: FormBuilder) {}
+  infos: InfoGeneral;
+  constructor(
+    private fb: FormBuilder,
+    private serviceConfiguration: ConfigurationTmsService
+  ) {}
 
   ngOnInit(): void {
     this.creerFormGroup();
+    this.serviceConfiguration.infosGenerals().subscribe((result) => {
+      this.infos = result;
+      if (this.infos) {
+        this.nomSociete.setValue(this.infos.nomSociete);
+        this.numeroTelephone.setValue(this.infos.telephone);
+        this.email.setValue(this.infos.email);
+      }
+    });
   }
 
   creerFormGroup() {
@@ -38,6 +52,27 @@ export class ConfigurationGeneraleComponent implements OnInit {
         ],
       ],
     });
+  }
+
+  enregistrer() {
+    let nouveauInfos: InfoGeneral = new InfoGeneral(
+      this.nomSociete.value,
+      this.numeroTelephone.value,
+      this.email.value
+    );
+    if (this.infos) {
+      this.serviceConfiguration
+        .modifierInfosGenerals(nouveauInfos)
+        .subscribe(() => {
+          console.log('enregistrée');
+        });
+    } else {
+      this.serviceConfiguration
+        .createInfosGenerals(nouveauInfos)
+        .subscribe(() => {
+          console.log('enregistrée');
+        });
+    }
   }
 
   get nomSociete() {

@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ConfigurationTmsService } from '../services/configuration-tms.service';
 
 @Component({
   selector: 'app-configuration-commande',
@@ -19,10 +20,13 @@ export class ConfigurationCommandeComponent implements OnInit {
   formCoefficientFraisTransport: FormGroup;
   formCoefficientFormuleScore: FormGroup;
   formParametreExcel: FormGroup;
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder, private serviceConfig: ConfigurationTmsService) {}
 
   ngOnInit(): void {
     this.creerForms();
+    this.serviceConfig.fraisLivraison().subscribe((result) => {
+      
+    })
   }
 
   creerForms() {

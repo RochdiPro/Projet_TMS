@@ -3,14 +3,15 @@
     <div class="champ">
         <h3>Adresse</h3>
         <div class="input">
-            <input type="text" formControlName="adresse">
+            <input type="text" formControlName="adresse" required>
             <div *ngIf="(adresse.invalid && adresse.touched) || adresse.dirty" class="erreur">
-                <small *ngIf="adresse.errors?.required" class="text-danger" [@enterAnimation]>une adresse est requise</small>
+                <small *ngIf="adresse.errors?.required" class="text-danger" [@enterAnimation]>une adresse est
+                    requise</small>
             </div>
         </div>
     </div>
-    <div class="champ" >
-        <h3>Complément adresse</h3>
+    <div class="champ">
+        <h3>Complément adresse <small>(optionel)</small></h3>
         <div class="input">
             <input type="text" formControlName="complementAdresse">
         </div>
@@ -19,12 +20,15 @@
 <div class="position">
     <h3>Localisation</h3>
     <div class="map">
-        <agm-map [latitude]="latitudeMap" [longitude]="longitudeMap" [zoom]="zoom" [disableDefaultUI]="false">
-            <agm-marker [latitude]="latitudeMarker" [longitude]="longitudeMarker">
+        <agm-map [latitude]="latitudeMap" [longitude]="longitudeMap" [zoom]="zoom" [disableDefaultUI]="false"
+            [disableDoubleClickZoom]="true" (mapDblClick)="positionerMarquer($event)">
+            <agm-marker [latitude]="latitudeMarker" [longitude]="longitudeMarker" *ngIf="afficherMarker"
+                [markerDraggable]="true" (dragEnd)="modifierPositionMarquer($event)" animation='DROP'>
             </agm-marker>
         </agm-map>
     </div>
 </div>
 <div class="boutons">
-    <button mat-raised-button color="primary" [disabled]="formPosition.invalid">Enregistrer</button>
+    <button mat-raised-button color="primary" [disabled]="formPosition.invalid || !coordonnePlaces"
+        (click)=" enregistrer()">Enregistrer</button>
 </div>

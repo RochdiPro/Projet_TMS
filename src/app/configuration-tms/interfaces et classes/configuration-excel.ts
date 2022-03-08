@@ -1,4 +1,5 @@
 export interface ConfigurationExcel {
+  id: number;
   reference: string;
   idClient: string;
   nomClient: string;
