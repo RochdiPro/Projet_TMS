@@ -7,41 +7,49 @@
             <div class="input">
                 <input type="number" formControlName="taxefixe">
                 <div *ngIf="(taxefixe.invalid && taxefixe.touched) || taxefixe.dirty" class="erreur">
-                    <small *ngIf="taxefixe.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="taxefixe.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>Limite</h4>
             <div class="input">
                 <input type="number" formControlName="limite">
                 <div *ngIf="(limite.invalid && limite.touched) || limite.dirty" class="erreur">
-                    <small *ngIf="limite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="limite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>Unité limite</h4>
             <div class="input">
-                <input type="number" formControlName="uniteLimite">
+                <input type="text" formControlName="uniteLimite">
                 <div *ngIf="(uniteLimite.invalid && uniteLimite.touched) || uniteLimite.dirty" class="erreur">
-                    <small *ngIf="uniteLimite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="uniteLimite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>Taxe supplimentaire</h4>
             <div class="input">
                 <input type="number" formControlName="taxeSupplimentaire">
-                <div *ngIf="(taxeSupplimentaire.invalid && taxeSupplimentaire.touched) || taxeSupplimentaire.dirty" class="erreur">
-                    <small *ngIf="taxeSupplimentaire.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                <div *ngIf="(taxeSupplimentaire.invalid && taxeSupplimentaire.touched) || taxeSupplimentaire.dirty"
+                    class="erreur">
+                    <small *ngIf="taxeSupplimentaire.errors?.required" class="text-danger" [@enterAnimation]>ce champ
+                        est requis</small>
                 </div>
             </div>
             <h4>Limite taxe supplimentaire</h4>
             <div class="input">
                 <input type="number" formControlName="limiteTaxeSupplimentaire">
-                <div *ngIf="(limiteTaxeSupplimentaire.invalid && limiteTaxeSupplimentaire.touched) || limiteTaxeSupplimentaire.dirty" class="erreur">
-                    <small *ngIf="limiteTaxeSupplimentaire.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                <div *ngIf="(limiteTaxeSupplimentaire.invalid && limiteTaxeSupplimentaire.touched) || limiteTaxeSupplimentaire.dirty"
+                    class="erreur">
+                    <small *ngIf="limiteTaxeSupplimentaire.errors?.required" class="text-danger" [@enterAnimation]>ce
+                        champ est requis</small>
                 </div>
             </div>
         </div>
     </div>
     <div class="boutons">
-        <button mat-raised-button color="primary" [disabled]="formCoefficientFraisTransport.invalid">Enregistrer</button>
+        <button mat-raised-button color="primary" [disabled]="formCoefficientFraisTransport.invalid"
+            (click)="enregistrerCoefficientFraisTransport() ">Enregistrer</button>
     </div>
     <hr>
     <div class="coefficients">
@@ -51,34 +59,39 @@
             <div class="input">
                 <input type="number" formControlName="client">
                 <div *ngIf="(client.invalid && client.touched) || client.dirty" class="erreur">
-                    <small *ngIf="client.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="client.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>Frais de livraison</h4>
             <div class="input">
                 <input type="number" formControlName="fraisLivraison">
                 <div *ngIf="(fraisLivraison.invalid && fraisLivraison.touched) || fraisLivraison.dirty" class="erreur">
-                    <small *ngIf="fraisLivraison.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="fraisLivraison.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>Prix de la facture</h4>
             <div class="input">
                 <input type="number" formControlName="prixFacture">
                 <div *ngIf="(prixFacture.invalid && prixFacture.touched) || prixFacture.dirty" class="erreur">
-                    <small *ngIf="prixFacture.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="prixFacture.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>retard</h4>
             <div class="input">
                 <input type="number" formControlName="retard">
                 <div *ngIf="(retard.invalid && retard.touched) || retard.dirty" class="erreur">
-                    <small *ngIf="retard.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="retard.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
         </div>
     </div>
     <div class="boutons">
-        <button mat-raised-button color="primary" [disabled]="formCoefficientFormuleScore.invalid">Enregistrer</button>
+        <button mat-raised-button color="primary" [disabled]="formCoefficientFormuleScore.invalid"
+            (click)="enregistrerCoefficientsFormuleScore()">Enregistrer</button>
     </div>
 </div>
 <div class="card full-width">
@@ -90,119 +103,139 @@
             <div class="input">
                 <input type="text" formControlName="reference">
                 <div *ngIf="(reference.invalid && reference.touched) || reference.dirty" class="erreur">
-                    <small *ngIf="reference.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="reference.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>id client</h4>
             <div class="input">
                 <input type="text" formControlName="idClient">
                 <div *ngIf="(idClient.invalid && idClient.touched) || idClient.dirty" class="erreur">
-                    <small *ngIf="idClient.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="idClient.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>nom client</h4>
             <div class="input">
                 <input type="text" formControlName="nomClient">
                 <div *ngIf="(nomClient.invalid && nomClient.touched) || nomClient.dirty" class="erreur">
-                    <small *ngIf="nomClient.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="nomClient.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>contact</h4>
             <div class="input">
                 <input type="text" formControlName="contact">
                 <div *ngIf="(contact.invalid && contact.touched) || contact.dirty" class="erreur">
-                    <small *ngIf="contact.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="contact.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>téléphone</h4>
             <div class="input">
                 <input type="text" formControlName="telephone">
                 <div *ngIf="(telephone.invalid && telephone.touched) || telephone.dirty" class="erreur">
-                    <small *ngIf="telephone.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="telephone.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>email</h4>
             <div class="input">
                 <input type="text" formControlName="email">
                 <div *ngIf="(email.invalid && email.touched) || email.dirty" class="erreur">
-                    <small *ngIf="email.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="email.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>ville</h4>
             <div class="input">
                 <input type="text" formControlName="ville">
                 <div *ngIf="(ville.invalid && ville.touched) || ville.dirty" class="erreur">
-                    <small *ngIf="ville.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="ville.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>adresse</h4>
             <div class="input">
                 <input type="text" formControlName="adresse">
                 <div *ngIf="(adresse.invalid && adresse.touched) || adresse.dirty" class="erreur">
-                    <small *ngIf="adresse.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="adresse.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>type piece identité</h4>
             <div class="input">
                 <input type="text" formControlName="typePieceIdentite">
-                <div *ngIf="(typePieceIdentite.invalid && typePieceIdentite.touched) || typePieceIdentite.dirty" class="erreur">
-                    <small *ngIf="typePieceIdentite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                <div *ngIf="(typePieceIdentite.invalid && typePieceIdentite.touched) || typePieceIdentite.dirty"
+                    class="erreur">
+                    <small *ngIf="typePieceIdentite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>num piéce identité</h4>
             <div class="input">
                 <input type="text" formControlName="numPieceIdentite">
-                <div *ngIf="(numPieceIdentite.invalid && numPieceIdentite.touched) || numPieceIdentite.dirty" class="erreur">
-                    <small *ngIf="numPieceIdentite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                <div *ngIf="(numPieceIdentite.invalid && numPieceIdentite.touched) || numPieceIdentite.dirty"
+                    class="erreur">
+                    <small *ngIf="numPieceIdentite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>catégorie client</h4>
             <div class="input">
                 <input type="text" formControlName="categorieClient">
-                <div *ngIf="(categorieClient.invalid && categorieClient.touched) || categorieClient.dirty" class="erreur">
-                    <small *ngIf="categorieClient.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                <div *ngIf="(categorieClient.invalid && categorieClient.touched) || categorieClient.dirty"
+                    class="erreur">
+                    <small *ngIf="categorieClient.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>date de création</h4>
             <div class="input">
                 <input type="text" formControlName="dateCreation">
                 <div *ngIf="(dateCreation.invalid && dateCreation.touched) || dateCreation.dirty" class="erreur">
-                    <small *ngIf="dateCreation.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="dateCreation.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>type</h4>
             <div class="input">
                 <input type="text" formControlName="type">
                 <div *ngIf="(type.invalid && type.touched) || type.dirty" class="erreur">
-                    <small *ngIf="type.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="type.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>mode de paiement</h4>
             <div class="input">
                 <input type="text" formControlName="modePaiement">
                 <div *ngIf="(modePaiement.invalid && modePaiement.touched) || modePaiement.dirty" class="erreur">
-                    <small *ngIf="modePaiement.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="modePaiement.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>devise</h4>
             <div class="input">
                 <input type="text" formControlName="devise">
                 <div *ngIf="(devise.invalid && devise.touched) || devise.dirty" class="erreur">
-                    <small *ngIf="devise.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="devise.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>total TTC</h4>
             <div class="input">
                 <input type="text" formControlName="totalTTC">
                 <div *ngIf="(totalTTC.invalid && totalTTC.touched) || totalTTC.dirty" class="erreur">
-                    <small *ngIf="totalTTC.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="totalTTC.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>etat</h4>
             <div class="input">
                 <input type="text" formControlName="etat">
                 <div *ngIf="(etat.invalid && etat.touched) || etat.dirty" class="erreur">
-                    <small *ngIf="etat.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="etat.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
         </div>
@@ -213,68 +246,80 @@
             <div class="input">
                 <input type="text" formControlName="idProduit">
                 <div *ngIf="(idProduit.invalid && idProduit.touched) || idProduit.dirty" class="erreur">
-                    <small *ngIf="idProduit.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="idProduit.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>type</h4>
             <div class="input">
                 <input type="text" formControlName="typeProduit">
                 <div *ngIf="(typeProduit.invalid && typeProduit.touched) || typeProduit.dirty" class="erreur">
-                    <small *ngIf="typeProduit.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="typeProduit.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>nom</h4>
             <div class="input">
                 <input type="text" formControlName="nomProduit">
                 <div *ngIf="(nomProduit.invalid && nomProduit.touched) || nomProduit.dirty" class="erreur">
-                    <small *ngIf="nomProduit.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="nomProduit.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4> existance n° serie</h4>
             <div class="input">
                 <input type="text" formControlName="existanceNumSerie">
-                <div *ngIf="(existanceNumSerie.invalid && existanceNumSerie.touched) || existanceNumSerie.dirty" class="erreur">
-                    <small *ngIf="existanceNumSerie.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                <div *ngIf="(existanceNumSerie.invalid && existanceNumSerie.touched) || existanceNumSerie.dirty"
+                    class="erreur">
+                    <small *ngIf="existanceNumSerie.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>existance n° imei</h4>
             <div class="input">
                 <input type="text" formControlName="existanceNumImei">
-                <div *ngIf="(existanceNumImei.invalid && existanceNumImei.touched) || existanceNumImei.dirty" class="erreur">
-                    <small *ngIf="existanceNumImei.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                <div *ngIf="(existanceNumImei.invalid && existanceNumImei.touched) || existanceNumImei.dirty"
+                    class="erreur">
+                    <small *ngIf="existanceNumImei.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>quantité</h4>
             <div class="input">
                 <input type="text" formControlName="quantite">
                 <div *ngIf="(quantite.invalid && quantite.touched) || quantite.dirty" class="erreur">
-                    <small *ngIf="quantite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="quantite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>n° serie</h4>
             <div class="input">
                 <input type="text" formControlName="numSerie">
                 <div *ngIf="(numSerie.invalid && numSerie.touched) || numSerie.dirty" class="erreur">
-                    <small *ngIf="numSerie.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="numSerie.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>imei1</h4>
             <div class="input">
                 <input type="text" formControlName="imei1">
                 <div *ngIf="(imei1.invalid && imei1.touched) || imei1.dirty" class="erreur">
-                    <small *ngIf="imei1.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="imei1.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
             <h4>imei2</h4>
             <div class="input">
                 <input type="text" formControlName="imei2">
                 <div *ngIf="(imei2.invalid && imei2.touched) || imei2.dirty" class="erreur">
-                    <small *ngIf="imei2.errors?.required" class="text-danger" [@enterAnimation]>ce champ est requis</small>
+                    <small *ngIf="imei2.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
                 </div>
             </div>
         </div>
     </div>
     <div class="boutons">
-        <button mat-raised-button color="primary" [disabled]="formParametreExcel.invalid">Enregistrer</button>
+        <button mat-raised-button color="primary" [disabled]="formParametreExcel.invalid"
+            (click)="enregistrerParametreExcel()">Enregistrer</button>
     </div>
 </div>

@@ -115,7 +115,7 @@ export class ConfigurationTmsService {
   }
 
   //mettre a jour la configuration excel
-  public miseajourvehicule(config: ConfigurationExcel) {
+  public modifierParametreExcel(config: ConfigurationExcel) {
     return this.httpClient
       .put(erp + 'modifier-configuration-excel', config)
       .pipe(catchError(this.handleError));
