@@ -3,7 +3,13 @@
     <div class="coefficients">
         <h3>Coefficients frais de transport</h3>
         <div class="modifier-coefficient" [formGroup]="formCoefficientFraisTransport">
-            <h4>Taxe fixe</h4>
+            <div class="label">
+                <h4>Taxe fixe </h4>
+                <div class="info">
+                    <i class="fas fa-info-circle" (mouseover)="hintTaxeFixe=true" (mouseout)="hintTaxeFixe=false"></i>
+                    <p *ngIf="hintTaxeFixe" class="hint card">C'est le prix de livraison initial fixe</p>
+                </div>
+            </div>
             <div class="input">
                 <input type="number" formControlName="taxefixe">
                 <div *ngIf="(taxefixe.invalid && taxefixe.touched) || taxefixe.dirty" class="erreur">
@@ -11,7 +17,14 @@
                         requis</small>
                 </div>
             </div>
-            <h4>Limite</h4>
+            <div class="label">
+                <h4>Limite</h4>
+                <div class="info">
+                    <i class="fas fa-info-circle" (mouseover)="hintLimite=true" (mouseout)="hintLimite=false"></i>
+                    <p *ngIf="hintLimite" class="hint card">C'est le limite que si on l'excede on ajoute des taxes
+                        supplimentaire</p>
+                </div>
+            </div>
             <div class="input">
                 <input type="number" formControlName="limite">
                 <div *ngIf="(limite.invalid && limite.touched) || limite.dirty" class="erreur">
@@ -19,7 +32,14 @@
                         requis</small>
                 </div>
             </div>
-            <h4>Unité limite</h4>
+            <div class="label">
+                <h4>Unité limite</h4>
+                <div class="info">
+                    <i class="fas fa-info-circle" (mouseover)="hintUniteLimite=true"
+                        (mouseout)="hintUniteLimite=false"></i>
+                    <p *ngIf="hintUniteLimite" class="hint card">C'est l'unité du limite (ex: kg, l, ...)</p>
+                </div>
+            </div>
             <div class="input">
                 <input type="text" formControlName="uniteLimite">
                 <div *ngIf="(uniteLimite.invalid && uniteLimite.touched) || uniteLimite.dirty" class="erreur">
@@ -27,7 +47,15 @@
                         requis</small>
                 </div>
             </div>
-            <h4>Taxe supplimentaire</h4>
+            <div class="label">
+                <h4>Taxe supplimentaire</h4>
+                <div class="info">
+                    <i class="fas fa-info-circle" (mouseover)="hintTaxeSupplimentaire=true"
+                        (mouseout)="hintTaxeSupplimentaire=false"></i>
+                    <p *ngIf="hintTaxeSupplimentaire" class="hint card">C'est le montant à ajouter si on excede le
+                        limite</p>
+                </div>
+            </div>
             <div class="input">
                 <input type="number" formControlName="taxeSupplimentaire">
                 <div *ngIf="(taxeSupplimentaire.invalid && taxeSupplimentaire.touched) || taxeSupplimentaire.dirty"
@@ -36,7 +64,14 @@
                         est requis</small>
                 </div>
             </div>
-            <h4>Limite taxe supplimentaire</h4>
+            <div class="label">
+                <h4>Limite taxe supplimentaire</h4>
+                <div class="info"><i class="fas fa-info-circle" (mouseover)="hintLimiteTaxeSupplimentaire=true"
+                        (mouseout)="hintLimiteTaxeSupplimentaire=false"></i>
+                    <p *ngIf="hintLimiteTaxeSupplimentaire" class="hint card">C'est le pas que a chaque fois qu'on
+                        l'excede on rajoute le taxe supplimentaire</p>
+                </div>
+            </div>
             <div class="input">
                 <input type="number" formControlName="limiteTaxeSupplimentaire">
                 <div *ngIf="(limiteTaxeSupplimentaire.invalid && limiteTaxeSupplimentaire.touched) || limiteTaxeSupplimentaire.dirty"
@@ -54,34 +89,39 @@
     <hr>
     <div class="coefficients">
         <h3>Coefficients formule de calcul du score</h3>
+        <p class="formule">Score = score client * 
+            <strong (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverClient}">coefficient client</strong> + frais livraison * 
+            <strong (mouseover)="hoverCoefficientScore('frais livraison')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverFraisLivraison}">coefficient frais livraison</strong> + prix facture * 
+            <strong (mouseover)="hoverCoefficientScore('prix facture')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverPrixFacture}">coefficient prix facture</strong> + retard * 
+            <strong (mouseover)="hoverCoefficientScore('retard')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverRetard}">coefficient retard</strong></p>
         <div class="modifier-coefficient" [formGroup]="formCoefficientFormuleScore">
-            <h4>Client</h4>
+            <h4 (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverClient}">Coefficient client</h4>
             <div class="input">
-                <input type="number" formControlName="client">
+                <input type="number" formControlName="client" max="10" min="0" (keyup)="client.value > 10 ? client.setValue('10') : ''; client.value < 10 ? client.setValue('0') : '';">
                 <div *ngIf="(client.invalid && client.touched) || client.dirty" class="erreur">
                     <small *ngIf="client.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
                 </div>
             </div>
-            <h4>Frais de livraison</h4>
+            <h4 (mouseover)="hoverCoefficientScore('frais livraison')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverFraisLivraison}">Coefficient frais de livraison</h4>
             <div class="input">
-                <input type="number" formControlName="fraisLivraison">
+                <input type="number" formControlName="fraisLivraison" max="10" min="0" (keyup)="fraisLivraison.value > 10 ? fraisLivraison.setValue('10') : ''; fraisLivraison.value < 10 ? fraisLivraison.setValue('0') : '';">
                 <div *ngIf="(fraisLivraison.invalid && fraisLivraison.touched) || fraisLivraison.dirty" class="erreur">
                     <small *ngIf="fraisLivraison.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
                 </div>
             </div>
-            <h4>Prix de la facture</h4>
+            <h4 (mouseover)="hoverCoefficientScore('prix facture')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverPrixFacture}">Coefficient prix de la facture</h4>
             <div class="input">
-                <input type="number" formControlName="prixFacture">
+                <input type="number" formControlName="prixFacture" max="10" min="0" (keyup)="prixFacture.value > 10 ? prixFacture.setValue('10') : ''; prixFacture.value < 10 ? prixFacture.setValue('0') : '';">
                 <div *ngIf="(prixFacture.invalid && prixFacture.touched) || prixFacture.dirty" class="erreur">
                     <small *ngIf="prixFacture.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
                 </div>
             </div>
-            <h4>retard</h4>
+            <h4 (mouseover)="hoverCoefficientScore('retard')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverRetard}">Coefficient retard</h4>
             <div class="input">
-                <input type="number" formControlName="retard">
+                <input type="number" formControlName="retard" max="10" min="0" (keyup)="retard.value > 10 ? retard.setValue('10') : ''; retard.value < 10 ? retard.setValue('0') : '';">
                 <div *ngIf="(retard.invalid && retard.touched) || retard.dirty" class="erreur">
                     <small *ngIf="retard.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>

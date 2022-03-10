@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { InfoGeneral } from '../interfaces et classes/info-general';
 import { ConfigurationTmsService } from '../services/configuration-tms.service';
 
@@ -28,13 +29,16 @@ export class ConfigurationPositionComponent implements OnInit {
   longitudeMarker: number = 0;
   afficherMarker = false;
 
-  constructor(private fb: FormBuilder, private serviceConfig: ConfigurationTmsService) {}
+  constructor(
+    private fb: FormBuilder,
+    private serviceConfig: ConfigurationTmsService
+  ) {}
 
   ngOnInit(): void {
     this.creerFormGroup();
     this.serviceConfig.infosGenerals().subscribe((result) => {
       this.infos = result;
-      if (this.infos.adresse != "") {
+      if (this.infos.adresse != '') {
         this.adresse.setValue(this.infos.adresse);
         this.complementAdresse.setValue(this.infos.complementAdresse);
       }
@@ -45,7 +49,7 @@ export class ConfigurationPositionComponent implements OnInit {
         this.longitudeMarker = this.infos.longitude;
         this.afficherMarker = true;
       }
-    })
+    });
   }
 
   creerFormGroup() {
@@ -55,18 +59,18 @@ export class ConfigurationPositionComponent implements OnInit {
     });
   }
 
-  positionerMarquer(event: any) { //pour positionner un marqueur sur le map
+  positionerMarquer(event: any) {
+    //pour positionner un marqueur sur le map
     if (!this.afficherMarker) {
       this.latitudeMarker = event.coords.lat;
       this.longitudeMarker = event.coords.lng;
       this.afficherMarker = true;
     }
-
   }
-  modifierPositionMarquer(event: any) { //pour modifier la position du marqueur existant
+  modifierPositionMarquer(event: any) {
+    //pour modifier la position du marqueur existant
     this.latitudeMarker = event.coords.lat;
     this.longitudeMarker = event.coords.lng;
-
   }
 
   enregistrer() {
@@ -74,9 +78,23 @@ export class ConfigurationPositionComponent implements OnInit {
     this.infos.complementAdresse = this.complementAdresse.value;
     this.infos.latitude = this.latitudeMarker;
     this.infos.longitude = this.longitudeMarker;
-    this.serviceConfig.modifierAdresse(this.infos).subscribe(()=> {
-      console.log("enregistrée");
-    })
+    this.serviceConfig.modifierAdresse(this.infos).subscribe(
+      () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Configuration bien enregistrée',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      },
+      (error) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+        });
+      }
+    );
   }
 
   get adresse() {
@@ -89,7 +107,9 @@ export class ConfigurationPositionComponent implements OnInit {
 
   get coordonnePlaces() {
     let valide;
-    (this.latitudeMarker == 0 || this.longitudeMarker == 0) ? valide = false : valide = true;
+    this.latitudeMarker == 0 || this.longitudeMarker == 0
+      ? (valide = false)
+      : (valide = true);
     return valide;
   }
 }

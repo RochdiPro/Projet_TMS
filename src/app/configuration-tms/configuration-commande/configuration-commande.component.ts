@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { CoefficientsFraisLivraison } from '../interfaces et classes/coefficients-frais-livraison';
 import { CoefficientsScoreCommande } from '../interfaces et classes/coefficients-score-commande';
 import { ConfigurationExcel } from '../interfaces et classes/configuration-excel';
@@ -27,6 +28,17 @@ export class ConfigurationCommandeComponent implements OnInit {
   coefficientFraisLivraison: CoefficientsFraisLivraison;
   coefficientsScoreCommande: CoefficientsScoreCommande;
   parametreExcel: ConfigurationExcel;
+
+  hintTaxeFixe = false;
+  hintLimite = false;
+  hintUniteLimite = false;
+  hintTaxeSupplimentaire = false;
+  hintLimiteTaxeSupplimentaire = false;
+
+  hoverClient = false;
+  hoverFraisLivraison = false;
+  hoverPrixFacture = false;
+  hoverRetard = false;
   constructor(
     private fb: FormBuilder,
     private serviceConfig: ConfigurationTmsService
@@ -145,20 +157,48 @@ export class ConfigurationCommandeComponent implements OnInit {
       this.limite.value,
       this.uniteLimite.value,
       this.taxeSupplimentaire.value,
-      this.limiteTaxeSupplimentaire.value,
+      this.limiteTaxeSupplimentaire.value
     );
     if (this.coefficientFraisLivraison) {
       this.serviceConfig
         .modifierCoefficientsFraisLivraison(nouveauCoefficientFraisLivraison)
-        .subscribe(() => {
-          console.log('enregistrée');
-        });
+        .subscribe(
+          () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Configuration bien enregistrée',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+            });
+          }
+        );
     } else {
       this.serviceConfig
         .createCoefficientsFraisLivraison(nouveauCoefficientFraisLivraison)
-        .subscribe(() => {
-          console.log('enregistrée');
-        });
+        .subscribe(
+          () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Configuration bien enregistrée',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+            });
+          }
+        );
     }
   }
 
@@ -172,15 +212,43 @@ export class ConfigurationCommandeComponent implements OnInit {
     if (this.coefficientsScoreCommande) {
       this.serviceConfig
         .modifierCoefficientsScoreCommande(nouveauCoefficientsFormuleScore)
-        .subscribe(() => {
-          console.log('enregistrée');
-        });
+        .subscribe(
+          () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Configuration bien enregistrée',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+            });
+          }
+        );
     } else {
       this.serviceConfig
         .createCoefficientsScoreCommande(nouveauCoefficientsFormuleScore)
-        .subscribe(() => {
-          console.log('enregistrée');
-        });
+        .subscribe(
+          () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Configuration bien enregistrée',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+            });
+          }
+        );
     }
   }
 
@@ -216,15 +284,80 @@ export class ConfigurationCommandeComponent implements OnInit {
     if (this.parametreExcel) {
       this.serviceConfig
         .modifierParametreExcel(nouveauParametreExcel)
-        .subscribe(() => {
-          console.log('enregistrée');
-        });
+        .subscribe(
+          () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Configuration bien enregistrée',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+            });
+          }
+        );
     } else {
-      this.serviceConfig
-        .createConfigExcel(nouveauParametreExcel)
-        .subscribe(() => {
-          console.log('enregistrée');
-        });
+      this.serviceConfig.createConfigExcel(nouveauParametreExcel).subscribe(
+        () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Configuration bien enregistrée',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        },
+        (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+          });
+        }
+      );
+    }
+  }
+
+  hoverCoefficientScore(coefficient: string) {
+    let hover;
+    switch (coefficient) {
+      case 'client':
+        this.hoverClient = true;
+        this.hoverFraisLivraison = false;
+        this.hoverPrixFacture = false;
+        this.hoverRetard = false;
+        break;
+      case 'frais livraison':
+        this.hoverClient = false;
+        this.hoverFraisLivraison = true;
+        this.hoverPrixFacture = false;
+        this.hoverRetard = false;
+        break;
+      case 'prix facture':
+        this.hoverClient = false;
+        this.hoverFraisLivraison = false;
+        this.hoverPrixFacture = true;
+        this.hoverRetard = false;
+        break;
+      case 'retard':
+        this.hoverClient = false;
+        this.hoverFraisLivraison = false;
+        this.hoverPrixFacture = false;
+        this.hoverRetard = true;
+        break;
+      case 'nohover':
+        this.hoverClient = false;
+        this.hoverFraisLivraison = false;
+        this.hoverPrixFacture = false;
+        this.hoverRetard = false;
+        break;
+
+      default:
+        break;
     }
   }
 

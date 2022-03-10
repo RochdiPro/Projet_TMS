@@ -16,7 +16,7 @@ h4 {
 }
 
 .modifier-coefficient {
-    margin-top: 10px;
+  margin-top: 10px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   row-gap: 30px;
@@ -52,6 +52,42 @@ input {
   margin-left: auto;
 }
 
+.label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.label i:hover {
+  color: #f7b217;
+  cursor: help;
+}
+
+.info {
+position: relative;
+}
+
+.hint {
+  position: absolute;
+  left: 20px;
+  top: -20px;
+  z-index: 99;
+  width: 200px;
+  padding: 10px;
+}
+
+.formule{ 
+  text-align: center;
+  font-size: small;
+  padding: 20px 0;
+  border: 1px solid #dddfe3;
+}
+
+.hover-coefficient {
+  color:#f7b217;
+}
+
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 600px) {
   h3,
@@ -60,6 +96,9 @@ input {
   }
   .erreur {
     left: 20px;
+  }
+  .formule{
+    font-size: medium;
   }
 }
 

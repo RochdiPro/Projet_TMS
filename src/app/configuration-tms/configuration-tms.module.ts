@@ -10,6 +10,7 @@ import { AgmCoreModule } from '@agm/core';
 import { ConfigurationCommandeComponent } from './configuration-commande/configuration-commande.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
+import { ConfigurationServeurComponent } from './configuration-serveur/configuration-serveur.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import {MatInputModule} from '@angular/material/input';
     ConfigurationTmsComponent,
     ConfigurationGeneraleComponent,
     ConfigurationPositionComponent,
-    ConfigurationCommandeComponent
+    ConfigurationCommandeComponent,
+    ConfigurationServeurComponent
   ],
   imports: [
     CommonModule,

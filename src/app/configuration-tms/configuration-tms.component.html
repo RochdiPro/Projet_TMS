@@ -14,6 +14,7 @@
         <a role="button" [ngClass]="{'active': generalEstActive}" (click)="changerCategorieConfig('general')">Général</a>
         <a role="button" [ngClass]="{'active': positionEstActive}" (click)="changerCategorieConfig('position')">Position</a>
         <a role="button" [ngClass]="{'active': commandeEstActive}" (click)="changerCategorieConfig('commande')">Commande</a>
+        <a role="button" [ngClass]="{'active': serveurEstActive}" (click)="changerCategorieConfig('serveur')">Serveur</a>
     </div>
     <div class = "contenu-config">
         <div class="card config" *ngIf="generalEstActive" [@enterAnimation]>
@@ -24,6 +25,9 @@
         </div>
         <div *ngIf="commandeEstActive" [@enterAnimation]>
             <app-configuration-commande></app-configuration-commande>
+        </div>
+        <div class="card config" *ngIf="serveurEstActive" [@enterAnimation]>
+            <app-configuration-serveur></app-configuration-serveur>
         </div>
     </div>
 </div>

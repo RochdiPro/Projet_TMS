@@ -1,6 +1,7 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
 import { InfoGeneral } from '../interfaces et classes/info-general';
 import { ConfigurationTmsService } from '../services/configuration-tms.service';
 
@@ -61,17 +62,41 @@ export class ConfigurationGeneraleComponent implements OnInit {
       this.email.value
     );
     if (this.infos) {
-      this.serviceConfiguration
-        .modifierInfosGenerals(nouveauInfos)
-        .subscribe(() => {
-          console.log('enregistrée');
-        });
+      this.serviceConfiguration.modifierInfosGenerals(nouveauInfos).subscribe(
+        () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Configuration bien enregistrée',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        },
+        (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+          });
+        }
+      );
     } else {
-      this.serviceConfiguration
-        .createInfosGenerals(nouveauInfos)
-        .subscribe(() => {
-          console.log('enregistrée');
-        });
+      this.serviceConfiguration.createInfosGenerals(nouveauInfos).subscribe(
+        () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Configuration bien enregistrée',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        },
+        (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
+          });
+        }
+      );
     }
   }
 

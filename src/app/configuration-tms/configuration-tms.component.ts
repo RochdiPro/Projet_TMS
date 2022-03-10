@@ -22,6 +22,7 @@ export class ConfigurationTmsComponent implements OnInit {
   generalEstActive = true;
   positionEstActive = false;
   commandeEstActive = false;
+  serveurEstActive = false;
   constructor() {}
 
   ngOnInit(): void {}
@@ -31,6 +32,7 @@ export class ConfigurationTmsComponent implements OnInit {
       case 'general':
         this.positionEstActive = false;
         this.commandeEstActive = false;
+        this.serveurEstActive = false;
         setTimeout(() => {
           this.generalEstActive = true;
         }, 550);
@@ -39,6 +41,7 @@ export class ConfigurationTmsComponent implements OnInit {
       case 'position':
         this.generalEstActive = false;
         this.commandeEstActive = false;
+        this.serveurEstActive = false;
         setTimeout(() => {
           this.positionEstActive = true;
         }, 550);
@@ -47,8 +50,18 @@ export class ConfigurationTmsComponent implements OnInit {
       case 'commande':
         this.generalEstActive = false;
         this.positionEstActive = false;
+        this.serveurEstActive = false;
         setTimeout(() => {
           this.commandeEstActive = true;
+        }, 550);
+        break;
+
+      case 'serveur':
+        this.generalEstActive = false;
+        this.positionEstActive = false;
+        this.commandeEstActive = false;
+        setTimeout(() => {
+          this.serveurEstActive = true;
         }, 550);
         break;
 
