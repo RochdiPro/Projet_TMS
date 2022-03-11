@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { catchError } from 'rxjs/operators';
 import { CoefficientsFraisLivraison } from '../interfaces et classes/coefficients-frais-livraison';
 import { CoefficientsScoreCommande } from '../interfaces et classes/coefficients-score-commande';
+import { ConfigurationApplication } from '../interfaces et classes/configuration-application';
 import { ConfigurationExcel } from '../interfaces et classes/configuration-excel';
 import { InfoGeneral } from '../interfaces et classes/info-general';
 const erp = '/ERP/';
@@ -119,5 +120,29 @@ export class ConfigurationTmsService {
     return this.httpClient
       .put(erp + 'modifier-configuration-excel', config)
       .pipe(catchError(this.handleError));
+  }
+
+   //creation config application general
+   public createConfigApplication(
+    config: ConfigurationApplication
+  ) {
+    return this.httpClient
+      .post(erp + 'creer-configuration-application', config)
+      .pipe(catchError(this.handleError));
+  }
+
+  //get coefficients infos generals
+  public getConfigurationApplication() {
+    return this.httpClient
+      .get(erp + 'configuration-application')
+      .pipe(catchError(this.handleError));
+  }
+
+  //mettre a jour infos general
+  public modifierConfigurationApplication(
+    config: ConfigurationApplication
+  ) {
+    return this.httpClient
+      .put(erp + 'modifier-configuration-application', config);
   }
 }

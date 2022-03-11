@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ConfigurationServeurComponent } from './configuration-serveur.component';
+import { ConfigurationServeurComponent } from './configuration-application.component';
 
 describe('ConfigurationServeurComponent', () => {
   let component: ConfigurationServeurComponent;

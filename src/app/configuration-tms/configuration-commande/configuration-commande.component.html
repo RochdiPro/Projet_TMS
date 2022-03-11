@@ -89,10 +89,10 @@
     <hr>
     <div class="coefficients">
         <h3>Coefficients formule de calcul du score</h3>
-        <p class="formule">Score = score client * 
-            <strong (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverClient}">coefficient client</strong> + frais livraison * 
-            <strong (mouseover)="hoverCoefficientScore('frais livraison')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverFraisLivraison}">coefficient frais livraison</strong> + prix facture * 
-            <strong (mouseover)="hoverCoefficientScore('prix facture')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverPrixFacture}">coefficient prix facture</strong> + retard * 
+        <p class="formule">Score = score client &#215; 
+            <strong (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverClient}">coefficient client</strong> + frais livraison &#215; 
+            <strong (mouseover)="hoverCoefficientScore('frais livraison')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverFraisLivraison}">coefficient frais livraison</strong> + prix facture &#215; 
+            <strong (mouseover)="hoverCoefficientScore('prix facture')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverPrixFacture}">coefficient prix facture</strong> + retard &#215; 
             <strong (mouseover)="hoverCoefficientScore('retard')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverRetard}">coefficient retard</strong></p>
         <div class="modifier-coefficient" [formGroup]="formCoefficientFormuleScore">
             <h4 (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverClient}">Coefficient client</h4>

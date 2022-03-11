@@ -1166,7 +1166,6 @@ export class ConfirmerLivraison implements OnInit {
         Swal.fire({
           icon: 'error',
           title: 'Qr code invalide',
-          text: "Ce Qr code n'appartiens à aucune commande pour cette mission!",
         });
       }
       this.chargementActive = false;

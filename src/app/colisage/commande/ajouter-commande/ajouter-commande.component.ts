@@ -69,7 +69,7 @@ export class AjouterCommandeComponent implements OnInit {
   nom: any;
   acces: any;
   wms: any;
-  estManuel = false;
+  estManuel = true;
   today = new Date();
   date = new Date(
     this.today.getFullYear(),
