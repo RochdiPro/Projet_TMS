@@ -35,4 +35,11 @@ export class SuivieCommandeService {
       })
       .pipe(catchError(this.handleError));
   }
+
+      //get parmétres infos generals
+      public infosGenerals() {
+        return this.httpClient
+          .get(erp + 'info-general')
+          .pipe(catchError(this.handleError));
+      }
 }

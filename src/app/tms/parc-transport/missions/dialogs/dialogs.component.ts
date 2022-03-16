@@ -951,9 +951,11 @@ export class DetailComponent implements OnInit {
         tel: this.data.mission.telephoneChauffeur,
       };
     } else {
-      this.chauffeur = await this.serviceChauffeur
+      this.serviceChauffeur
         .employe(Number(idChauffeur))
-        .toPromise();
+        .subscribe(chauffeur => {
+          this.chauffeur = chauffeur
+        })
     }
     await this.getListeCommandes();
   }

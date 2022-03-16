@@ -41,7 +41,11 @@
                 </div>
             </div>
             <div class="input">
-                <input type="text" formControlName="uniteLimite">
+                <select formControlName="uniteLimite">
+                    <option>kg</option>
+                    <option>m³</option>
+                  </select>
+                <!-- <input type="text" formControlName="uniteLimite"> -->
                 <div *ngIf="(uniteLimite.invalid && uniteLimite.touched) || uniteLimite.dirty" class="erreur">
                     <small *ngIf="uniteLimite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
@@ -89,39 +93,53 @@
     <hr>
     <div class="coefficients">
         <h3>Coefficients formule de calcul du score</h3>
-        <p class="formule">Score = score client &#215; 
-            <strong (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverClient}">coefficient client</strong> + frais livraison &#215; 
-            <strong (mouseover)="hoverCoefficientScore('frais livraison')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverFraisLivraison}">coefficient frais livraison</strong> + prix facture &#215; 
-            <strong (mouseover)="hoverCoefficientScore('prix facture')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverPrixFacture}">coefficient prix facture</strong> + retard &#215; 
-            <strong (mouseover)="hoverCoefficientScore('retard')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverRetard}">coefficient retard</strong></p>
+        <p class="formule">Score = score client &#215;
+            <strong (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')"
+                [ngClass]="{'hover-coefficient': hoverClient}">coefficient client</strong> + frais livraison &#215;
+            <strong (mouseover)="hoverCoefficientScore('frais livraison')" (mouseout)="hoverCoefficientScore('nohover')"
+                [ngClass]="{'hover-coefficient': hoverFraisLivraison}">coefficient frais livraison</strong> + prix
+            facture &#215;
+            <strong (mouseover)="hoverCoefficientScore('prix facture')" (mouseout)="hoverCoefficientScore('nohover')"
+                [ngClass]="{'hover-coefficient': hoverPrixFacture}">coefficient prix facture</strong> + retard &#215;
+            <strong (mouseover)="hoverCoefficientScore('retard')" (mouseout)="hoverCoefficientScore('nohover')"
+                [ngClass]="{'hover-coefficient': hoverRetard}">coefficient retard</strong>
+        </p>
         <div class="modifier-coefficient" [formGroup]="formCoefficientFormuleScore">
-            <h4 (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverClient}">Coefficient client</h4>
+            <h4 (mouseover)="hoverCoefficientScore('client')" (mouseout)="hoverCoefficientScore('nohover')"
+                [ngClass]="{'hover-coefficient': hoverClient}">Coefficient client</h4>
             <div class="input">
-                <input type="number" formControlName="client" max="10" min="0" (keyup)="client.value > 10 ? client.setValue('10') : ''; client.value < 10 ? client.setValue('0') : '';">
+                <input type="number" formControlName="client" max="10" min="0"
+                    (keyup)="client.value > 10 ? client.setValue('10') : ''; client.value < 10 ? client.setValue('0') : '';">
                 <div *ngIf="(client.invalid && client.touched) || client.dirty" class="erreur">
                     <small *ngIf="client.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
                 </div>
             </div>
-            <h4 (mouseover)="hoverCoefficientScore('frais livraison')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverFraisLivraison}">Coefficient frais de livraison</h4>
+            <h4 (mouseover)="hoverCoefficientScore('frais livraison')" (mouseout)="hoverCoefficientScore('nohover')"
+                [ngClass]="{'hover-coefficient': hoverFraisLivraison}">Coefficient frais de livraison</h4>
             <div class="input">
-                <input type="number" formControlName="fraisLivraison" max="10" min="0" (keyup)="fraisLivraison.value > 10 ? fraisLivraison.setValue('10') : ''; fraisLivraison.value < 10 ? fraisLivraison.setValue('0') : '';">
+                <input type="number" formControlName="fraisLivraison" max="10" min="0"
+                    (keyup)="fraisLivraison.value > 10 ? fraisLivraison.setValue('10') : ''; fraisLivraison.value < 10 ? fraisLivraison.setValue('0') : '';">
                 <div *ngIf="(fraisLivraison.invalid && fraisLivraison.touched) || fraisLivraison.dirty" class="erreur">
                     <small *ngIf="fraisLivraison.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
                 </div>
             </div>
-            <h4 (mouseover)="hoverCoefficientScore('prix facture')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverPrixFacture}">Coefficient prix de la facture</h4>
+            <h4 (mouseover)="hoverCoefficientScore('prix facture')" (mouseout)="hoverCoefficientScore('nohover')"
+                [ngClass]="{'hover-coefficient': hoverPrixFacture}">Coefficient prix de la facture</h4>
             <div class="input">
-                <input type="number" formControlName="prixFacture" max="10" min="0" (keyup)="prixFacture.value > 10 ? prixFacture.setValue('10') : ''; prixFacture.value < 10 ? prixFacture.setValue('0') : '';">
+                <input type="number" formControlName="prixFacture" max="10" min="0"
+                    (keyup)="prixFacture.value > 10 ? prixFacture.setValue('10') : ''; prixFacture.value < 10 ? prixFacture.setValue('0') : '';">
                 <div *ngIf="(prixFacture.invalid && prixFacture.touched) || prixFacture.dirty" class="erreur">
                     <small *ngIf="prixFacture.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
                 </div>
             </div>
-            <h4 (mouseover)="hoverCoefficientScore('retard')" (mouseout)="hoverCoefficientScore('nohover')" [ngClass]="{'hover-coefficient': hoverRetard}">Coefficient retard</h4>
+            <h4 (mouseover)="hoverCoefficientScore('retard')" (mouseout)="hoverCoefficientScore('nohover')"
+                [ngClass]="{'hover-coefficient': hoverRetard}">Coefficient retard</h4>
             <div class="input">
-                <input type="number" formControlName="retard" max="10" min="0" (keyup)="retard.value > 10 ? retard.setValue('10') : ''; retard.value < 10 ? retard.setValue('0') : '';">
+                <input type="number" formControlName="retard" max="10" min="0"
+                    (keyup)="retard.value > 10 ? retard.setValue('10') : ''; retard.value < 10 ? retard.setValue('0') : '';">
                 <div *ngIf="(retard.invalid && retard.touched) || retard.dirty" class="erreur">
                     <small *ngIf="retard.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
@@ -136,6 +154,13 @@
 </div>
 <div class="card full-width">
     <h2>Paramétres des fichiers excels des commandes (manuel)</h2>
+    <div class="data-folder">
+        <img src="../../../assets/images/Configuration TMS/structure-dossier-DATA.png"
+        alt="structure dossier DATA">
+        <p>Structure du dossier DATA
+            <i class="fas fa-info-circle structure" (click)="ovrirEtapesCreationData()"></i>
+        </p>
+    </div>
     <div class="coefficients" [formGroup]="formParametreExcel">
         <h3>Inforamtions commande</h3>
         <div class="modifier-coefficient">

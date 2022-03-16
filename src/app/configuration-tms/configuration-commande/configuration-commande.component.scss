@@ -22,7 +22,7 @@ h4 {
   row-gap: 30px;
 }
 
-input {
+input, select {
   padding-left: 10px;
   width: 100%;
   border: 2px solid #dddfe3;
@@ -88,6 +88,22 @@ position: relative;
   color:#f7b217;
 }
 
+.data-folder {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+img {
+  width: 100%;
+}
+
+.structure:hover {
+  color: #f7b217;
+  cursor: pointer;
+}
 /* Small devices (portrait tablets and large phones, 600px and up) */
 @media only screen and (min-width: 600px) {
   h3,

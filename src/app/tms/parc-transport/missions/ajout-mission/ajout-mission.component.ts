@@ -505,7 +505,6 @@ export class AjoutMissionComponent implements OnInit {
     }
   }
 
-
   // disable le checkBpx des vehicules privés qu'on ne peut pas affecter leurs chauffeurs qui peuvent la conduire
   disableVehiculePrive(copieVehiculesPrive: any) {
     for (let i = 0; i < copieVehiculesPrive.length; i++) {
@@ -698,13 +697,15 @@ export class AjoutMissionComponent implements OnInit {
   }
   // calculer le score des commandes dans une region
   calculerScoreCommandeParRegion(commandesParRegion: any) {
-    let scoreTotal = 0;
+    let scoreRegionsTotal = this.calculerScoreTotal();
+    let scoreRegion = 0;
     if (commandesParRegion) {
       commandesParRegion.forEach((commande: any) => {
-        scoreTotal += commande.score;
+        scoreRegion += commande.score;
       });
     }
-    return Number(scoreTotal.toFixed(4));
+    let pourcentageScoreRegion = (100 / scoreRegionsTotal) * scoreRegion;
+    return Number(pourcentageScoreRegion.toFixed(2));
   }
   // calculer le score des commandes total
   calculerScoreTotal() {

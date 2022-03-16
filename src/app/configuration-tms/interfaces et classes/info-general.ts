@@ -4,7 +4,7 @@ export class InfoGeneral {
   telephone: string;
   email: string;
   adresse: string;
-  complementAdresse: string;
+  ville: string;
   latitude: number;
   longitude: number;
 
@@ -17,7 +17,7 @@ export class InfoGeneral {
     this.telephone = telephone
     this.email = email
     this.adresse = ""
-    this.complementAdresse = ""
+    this.ville = ""
     this.latitude = 0
     this.longitude = 0
   }

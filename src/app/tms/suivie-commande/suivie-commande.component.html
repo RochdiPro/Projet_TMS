@@ -73,7 +73,7 @@
                      <div class="address">
                         <div class="shipment-address">
                            <span class="address-span">
-                              <span class="address-font-bold">Sfax</span>
+                              <span class="address-font-bold">{{adresseLivreur}}</span>
                            </span>
                            <!-- <span>samedi, 26 décembre 2020</span> -->
                         </div>
@@ -109,7 +109,6 @@
             <thead>
                <tr>
                   <th style="text-align: center;" class="fit">Date</th>
-                  <th class="fit">Localisation</th>
                   <th>Etat</th>
                </tr>
             </thead>
@@ -121,7 +120,6 @@
                         <span class="secondLine">{{histo.heure}}</span>
                      </div>
                   </td>
-                  <td class="fit">{{histo.localisation}}, Tunisie</td>
                   <td>
                      {{afficherEtat(histo.etat)}}
                   </td>

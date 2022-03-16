@@ -25,7 +25,7 @@ export class ConfigurationTmsService {
         .pipe(catchError(this.handleError));
     }
   
-    //get coefficients infos generals
+    //get parmétres infos generals
     public infosGenerals() {
       return this.httpClient
         .get(erp + 'info-general')

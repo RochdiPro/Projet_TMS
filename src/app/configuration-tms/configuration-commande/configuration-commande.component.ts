@@ -1,7 +1,9 @@
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
+import { EtapesCreationData } from '../dialogs/dialogs.component';
 import { CoefficientsFraisLivraison } from '../interfaces et classes/coefficients-frais-livraison';
 import { CoefficientsScoreCommande } from '../interfaces et classes/coefficients-score-commande';
 import { ConfigurationExcel } from '../interfaces et classes/configuration-excel';
@@ -41,7 +43,8 @@ export class ConfigurationCommandeComponent implements OnInit {
   hoverRetard = false;
   constructor(
     private fb: FormBuilder,
-    private serviceConfig: ConfigurationTmsService
+    private serviceConfig: ConfigurationTmsService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -359,6 +362,12 @@ export class ConfigurationCommandeComponent implements OnInit {
       default:
         break;
     }
+  }
+
+  ovrirEtapesCreationData() {
+    this.dialog.open(EtapesCreationData, {
+      width: '600px'
+    })
   }
 
   get taxefixe() {

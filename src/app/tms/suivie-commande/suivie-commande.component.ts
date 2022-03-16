@@ -79,9 +79,14 @@ export class SuivieCommandeComponent implements OnInit {
   pasCommandeEstAffiche = false;
   pasCommandeEstActive = false;
   historique: any = [];
+  adresseLivreur: string;
   constructor(public service: SuivieCommandeService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+      this.service.infosGenerals().subscribe(result => {
+        this.adresseLivreur = result.ville;
+      })
+  }
   rechercheCommande() {
     //rechercher une commande pour consulter son etat
     this.dispo = false;

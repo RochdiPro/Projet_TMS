@@ -11,9 +11,13 @@
         </div>
     </div>
     <div class="champ">
-        <h3>Complément adresse <small>(optionel)</small></h3>
+        <h3>Ville</h3>
         <div class="input">
-            <input type="text" formControlName="complementAdresse">
+            <input type="text" formControlName="ville">
+            <div *ngIf="(ville.invalid && ville.touched) || ville.dirty" class="erreur">
+                <small *ngIf="ville.errors?.required" class="text-danger" [@enterAnimation]>ville est
+                    requise</small>
+            </div>
         </div>
     </div>
 </div>

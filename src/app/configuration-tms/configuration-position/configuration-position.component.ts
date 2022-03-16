@@ -40,7 +40,7 @@ export class ConfigurationPositionComponent implements OnInit {
       this.infos = result;
       if (this.infos.adresse != '') {
         this.adresse.setValue(this.infos.adresse);
-        this.complementAdresse.setValue(this.infos.complementAdresse);
+        this.ville.setValue(this.infos.ville);
       }
       if (this.infos.latitude != 0 && this.infos.longitude != 0) {
         this.latitudeMap = this.infos.latitude;
@@ -55,7 +55,7 @@ export class ConfigurationPositionComponent implements OnInit {
   creerFormGroup() {
     this.formPosition = this.fb.group({
       adresse: ['', Validators.required],
-      complementAdresse: [''],
+      ville: ['', Validators.required],
     });
   }
 
@@ -75,7 +75,7 @@ export class ConfigurationPositionComponent implements OnInit {
 
   enregistrer() {
     this.infos.adresse = this.adresse.value;
-    this.infos.complementAdresse = this.complementAdresse.value;
+    this.infos.ville = this.ville.value;
     this.infos.latitude = this.latitudeMarker;
     this.infos.longitude = this.longitudeMarker;
     this.serviceConfig.modifierAdresse(this.infos).subscribe(
@@ -101,8 +101,8 @@ export class ConfigurationPositionComponent implements OnInit {
     return this.formPosition.get('adresse');
   }
 
-  get complementAdresse() {
-    return this.formPosition.get('complementAdresse');
+  get ville() {
+    return this.formPosition.get('ville');
   }
 
   get coordonnePlaces() {
