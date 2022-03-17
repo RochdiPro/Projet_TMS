@@ -1,5 +1,6 @@
 <h2>Information Générale</h2>
 <div [formGroup]="formConfigurationInformationsGeneral">
+    <!-- champ nom de societé -->
     <div class="champ">
         <h3>Nom de la société</h3>
         <div class="input">
@@ -9,6 +10,7 @@
             </div>
         </div>
     </div>
+    <!-- champ numéro de téléphone -->
     <div class="champ">
         <h3>Numéro de téléphone</h3>
         <div class="input">
@@ -21,6 +23,7 @@
             </div>
         </div>
     </div>
+    <!-- champ adresse mail -->
     <div class="champ">
         <h3>Adresse mail</h3>
         <div class="input">
@@ -33,7 +36,7 @@
         </div>
     </div>
 </div>
-
+<!-- bouton enregistrer -->
 <div class="boutons">
     <button mat-raised-button color="primary"
         [disabled]="formConfigurationInformationsGeneral.invalid"

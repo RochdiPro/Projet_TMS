@@ -9,13 +9,13 @@ export class AppInitService {
   get apiKey() {
     return AppInitService._apiKey;
   }
-
+  // charger API key depuis la base de donnée
   public static loadApiKey(httpClient: HttpClient) {
     return httpClient
-      .get<any>('/ERP/configuration-application') // use your endpoint for getting the settings and your own SettingsDto type
+      .get<any>('/ERP/configuration-application')
       .toPromise()
       .then((dto) => {
-        this._apiKey = dto.apiKeyGoogle; // adjust to your DTO
+        this._apiKey = dto.apiKeyGoogle;
       });
   }
 }

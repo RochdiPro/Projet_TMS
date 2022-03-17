@@ -36,12 +36,15 @@ export class ConfigurationPositionComponent implements OnInit {
 
   ngOnInit(): void {
     this.creerFormGroup();
+    // get infos generales
     this.serviceConfig.infosGenerals().subscribe((result) => {
       this.infos = result;
+      // afficher les valeurs enregistrées dans les inputs
       if (this.infos.adresse != '') {
         this.adresse.setValue(this.infos.adresse);
         this.ville.setValue(this.infos.ville);
       }
+      // afficher la position enregistrée sur le map
       if (this.infos.latitude != 0 && this.infos.longitude != 0) {
         this.latitudeMap = this.infos.latitude;
         this.latitudeMarker = this.infos.latitude;
@@ -52,6 +55,7 @@ export class ConfigurationPositionComponent implements OnInit {
     });
   }
 
+  // création du formGroup
   creerFormGroup() {
     this.formPosition = this.fb.group({
       adresse: ['', Validators.required],
@@ -97,6 +101,7 @@ export class ConfigurationPositionComponent implements OnInit {
     );
   }
 
+  // getters des formControls
   get adresse() {
     return this.formPosition.get('adresse');
   }

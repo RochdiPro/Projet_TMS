@@ -28,8 +28,10 @@ export class ConfigurationGeneraleComponent implements OnInit {
 
   ngOnInit(): void {
     this.creerFormGroup();
+    // get configuration info general
     this.serviceConfiguration.infosGenerals().subscribe((result) => {
       this.infos = result;
+      // afficher les valeurs dans les inputs
       if (this.infos) {
         this.nomSociete.setValue(this.infos.nomSociete);
         this.numeroTelephone.setValue(this.infos.telephone);
@@ -38,6 +40,7 @@ export class ConfigurationGeneraleComponent implements OnInit {
     });
   }
 
+  // creation du formGroup info general
   creerFormGroup() {
     this.formConfigurationInformationsGeneral = this.fb.group({
       nomSociete: ['', Validators.required],
@@ -61,6 +64,7 @@ export class ConfigurationGeneraleComponent implements OnInit {
       this.numeroTelephone.value,
       this.email.value
     );
+    // si il'y a deja des information enregistrée on les modifient si non on crée des nouvelles informations
     if (this.infos) {
       this.serviceConfiguration.modifierInfosGenerals(nouveauInfos).subscribe(
         () => {
@@ -100,6 +104,7 @@ export class ConfigurationGeneraleComponent implements OnInit {
     }
   }
 
+  //getters des formControls
   get nomSociete() {
     return this.formConfigurationInformationsGeneral.get('nomSociete');
   }

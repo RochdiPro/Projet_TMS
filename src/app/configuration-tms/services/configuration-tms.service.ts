@@ -16,40 +16,33 @@ export class ConfigurationTmsService {
   handleError: any;
   constructor(private httpClient: HttpClient) {}
 
-    //creation infos general
-    public createInfosGenerals(
-      info: InfoGeneral
-    ) {
-      return this.httpClient
-        .post(erp + 'creer-info-general', info)
-        .pipe(catchError(this.handleError));
-    }
-  
-    //get parmétres infos generals
-    public infosGenerals() {
-      return this.httpClient
-        .get(erp + 'info-general')
-        .pipe(catchError(this.handleError));
-    }
-  
-    //mettre a jour infos general
-    public modifierInfosGenerals(
-      info: InfoGeneral
-    ) {
-      return this.httpClient
-        .put(erp + 'modifier-info-general', info)
-        .pipe(catchError(this.handleError));
-    }
-  
-    //mettre a jour adresse
-    public modifierAdresse(
-      info: InfoGeneral
-    ) {
-      return this.httpClient
-        .put(erp + 'modifier-adresse-info-general', info)
-        .pipe(catchError(this.handleError));
-    }
+  //creation infos general
+  public createInfosGenerals(info: InfoGeneral) {
+    return this.httpClient
+      .post(erp + 'creer-info-general', info)
+      .pipe(catchError(this.handleError));
+  }
 
+  //get parmétres infos generals
+  public infosGenerals() {
+    return this.httpClient
+      .get(erp + 'info-general')
+      .pipe(catchError(this.handleError));
+  }
+
+  //mettre a jour infos general
+  public modifierInfosGenerals(info: InfoGeneral) {
+    return this.httpClient
+      .put(erp + 'modifier-info-general', info)
+      .pipe(catchError(this.handleError));
+  }
+
+  //mettre a jour adresse
+  public modifierAdresse(info: InfoGeneral) {
+    return this.httpClient
+      .put(erp + 'modifier-adresse-info-general', info)
+      .pipe(catchError(this.handleError));
+  }
 
   //creation coefficients frais livraison
   public createCoefficientsFraisLivraison(
@@ -122,10 +115,8 @@ export class ConfigurationTmsService {
       .pipe(catchError(this.handleError));
   }
 
-   //creation config application general
-   public createConfigApplication(
-    config: ConfigurationApplication
-  ) {
+  //creation config application general
+  public createConfigApplication(config: ConfigurationApplication) {
     return this.httpClient
       .post(erp + 'creer-configuration-application', config)
       .pipe(catchError(this.handleError));
@@ -139,10 +130,10 @@ export class ConfigurationTmsService {
   }
 
   //mettre a jour infos general
-  public modifierConfigurationApplication(
-    config: ConfigurationApplication
-  ) {
-    return this.httpClient
-      .put(erp + 'modifier-configuration-application', config);
+  public modifierConfigurationApplication(config: ConfigurationApplication) {
+    return this.httpClient.put(
+      erp + 'modifier-configuration-application',
+      config
+    );
   }
 }

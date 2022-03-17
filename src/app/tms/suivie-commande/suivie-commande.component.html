@@ -13,7 +13,9 @@
    <div class="main-card mb-3 card">
       <div class="panel">
          <div class="info-commandes">
+            <!-- arriére plan suivi commande -->
             <img src="../../../assets/images/backgroung-suivi-commande.jpg" id="bg" alt="">
+            <!-- section de recherche commande -->
             <section class="recherche" [@statusRecherche]="statusRecherche" *ngIf="rechercheEstActive">
                <h1>Chercher avec tracking number</h1>
                <i class="fas fa-search icon icon-recherche"></i>
@@ -30,7 +32,9 @@
                   </div>
                </div>
             </section>
+            <!-- section info commande -->
             <section class="commande-dispo" *ngIf="infoCommandeEstActive" [@statusInfoCommande]="statusInfoCommande">
+               <!-- bref descriptif du commande -->
                <div class="content-header ">
                   <div class="panel-title">Bref descriptif de l'envoi</div>
                   <i class="fas fa-map-marker-alt icon"></i>
@@ -75,7 +79,6 @@
                            <span class="address-span">
                               <span class="address-font-bold">{{adresseLivreur}}</span>
                            </span>
-                           <!-- <span>samedi, 26 décembre 2020</span> -->
                         </div>
                         <div class="amx-h-cell-no-border amx-h-cell-align-middle">
                            <i class="fas fa-arrow-right fleche"></i>
@@ -84,15 +87,13 @@
                            <span class="address-span">
                               <span class="address-font-bold">{{commande.ville}}</span>
                            </span>
-                           <!-- <div>
-                                   <span>lundi, 28 décembre 2020</span>
-                                </div> -->
                         </div>
 
                      </div>
                   </div>
                </div>
             </section>
+            <!-- section commande non disponible -->
             <section class="commande-nondispo" *ngIf="pasCommandeEstActive" [@statusPasCommande]="statusPasCommande">
                <h1 class="pasDispo">Commande n'est pas encore disponible pour livraison <br> ou elle est inexistante
                </h1>
@@ -102,6 +103,7 @@
          </div>
       </div>
    </div>
+   <!-- Historique de la commande -->
    <div class="main-card mb-3 card" *ngIf="infoCommandeEstActive" [@statusInfoCommande]="statusInfoCommande">
       <h2 id="titre-historique">Historique De La Commande</h2>
       <div class="content--wide">

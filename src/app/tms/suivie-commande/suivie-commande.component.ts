@@ -83,24 +83,30 @@ export class SuivieCommandeComponent implements OnInit {
   constructor(public service: SuivieCommandeService) {}
 
   ngOnInit(): void {
-      this.service.infosGenerals().subscribe(result => {
-        this.adresseLivreur = result.ville;
-      })
+    // get adresse de la societé
+    this.service.infosGenerals().subscribe((result) => {
+      this.adresseLivreur = result.ville;
+    });
   }
+
+  //rechercher une commande pour consulter son etat
   rechercheCommande() {
-    //rechercher une commande pour consulter son etat
     this.dispo = false;
     this.nouveauRecherche = false;
     this.historique = [];
+    // get commande by tracking number
     this.service
       .commandeByTrackingNumber(this.trackingNumber)
       .subscribe((data) => {
         this.commandes = data;
+        // tester si il y'a une commande avec le tracking number fourni
         this.commandes.length > 0 ? (this.dispo = true) : (this.dispo = false);
         if (this.commandes.length === 1) {
           this.commande = this.commandes[0];
+          // get mission qui contienne la commande séléctionnée
           this.service.mission(this.commande.idMission).subscribe((data) => {
             this.mission = data;
+            // afficher l'etat convenable au commande
             (this.commande.etat === 'En cours de livraison' &&
               this.mission.etat === 'En cours') ||
             this.commande.etat === 'Livrée'
@@ -110,42 +116,43 @@ export class SuivieCommandeComponent implements OnInit {
               ? (this.livree = true)
               : (this.livree = false);
           });
+          // get historique de la commande et l'enregistrer dans array
           let listeHistorique = this.commande.historique.split('%');
-          let dateCreation = this.commande.dateCreation.split("T")[0];
-          dateCreation = dateCreation.split("-");
-          let dateCreationStr = dateCreation[2] + "/" + dateCreation[1] + "/" + dateCreation[0];
+          let dateCreation = this.commande.dateCreation.split('T')[0];
+          dateCreation = dateCreation.split('-');
+          let dateCreationStr =
+            dateCreation[2] + '/' + dateCreation[1] + '/' + dateCreation[0];
+          // la premiére etat dans historique est sans temps donc on l'enregistre au debut tout seul
           this.historique.push({
             etat: listeHistorique[0].split('#')[0],
             date: dateCreationStr,
-            localisation: "Sfax"
+            localisation: 'Sfax',
           });
-          
+          // on ajoute les autres etats dans l'historique avec le temps convenable
           for (let i = 1; i < listeHistorique.length; i++) {
             const histo = listeHistorique[i];
             let etat = histo.split('#')[0];
-            let date =  histo.split('#')[1].split(' ')[0];
+            let date = histo.split('#')[1].split(' ')[0];
             let heure = histo.split('#')[1].split(' ')[1].split('&')[0];
-            let localisation
+            let localisation;
             if (histo.split('#')[1].split(' ')[1].split('&').length > 1) {
               localisation = histo.split('#')[1].split(' ')[1].split('&')[1];
             } else {
-              localisation = "Sfax"
+              localisation = 'Sfax';
             }
 
             this.historique.push({
               etat: etat,
               date: date,
               heure: heure,
-              localisation : localisation
+              localisation: localisation,
             });
-          };
-          console.log(this.historique);
-        } else {
+          }
         }
+        // passer au interface convenable selon disponibilité du commande
         this.rechercheEstAffiche = false;
         setTimeout(() => {
           this.rechercheEstActive = false;
-          console.log(this.dispo);
           this.dispo ? this.afficherInfoCommande() : this.afficherPasCommande();
         }, 500);
       });
@@ -200,25 +207,26 @@ export class SuivieCommandeComponent implements OnInit {
     return this.pasCommandeEstAffiche ? 'show' : 'hide';
   }
 
+  // afficher l'etat convenable a dessus des icons des etats
   afficherEtat(etat: string) {
     let status: string;
     switch (etat) {
-      case "en cours de traitement":
-        status = "Ce colis est en cours de traitement"
+      case 'en cours de traitement':
+        status = 'Ce colis est en cours de traitement';
         break;
       case "en cours d'expédition":
-        status = "Ce colis est en cours d'expédition"
+        status = "Ce colis est en cours d'expédition";
         break;
-      case "en cours de livraison":
-        status = "Votre colis est en cours de livraison"
+      case 'en cours de livraison':
+        status = 'Votre colis est en cours de livraison';
         break;
-      case "livrée":
-        status = "Colis bien livré"
+      case 'livrée':
+        status = 'Colis bien livré';
         break;
-      
+
       default:
         break;
     }
-    return status
+    return status;
   }
 }

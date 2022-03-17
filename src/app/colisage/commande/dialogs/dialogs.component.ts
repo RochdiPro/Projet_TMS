@@ -899,7 +899,27 @@ export class BoiteDialogueCreerCommande implements OnInit {
         prix = bonLivraison.total_TTC;
       }
     }
-    let fraisLivraison = 7; //frais livraison temporaire jusqu'a avoir la formule
+    // calcul du frais livraison
+    // get coefficients frais livraison
+    let coefficientFraisLivraison = await this.serviceCommande.fraisLivraison().toPromise() as CoefficientsFraisLivraison;
+    let fraisLivraison = coefficientFraisLivraison.taxeFixe;
+    if (coefficientFraisLivraison.uniteLimite === "kg") {
+      if(Number(this.poidsTotalBrut) > coefficientFraisLivraison.limite) {
+        let poidsSupplimentaire = Number(this.poidsTotalBrut) - coefficientFraisLivraison.limite;
+        let nbrFoisAjoutTaxSupp = Math.ceil(poidsSupplimentaire/coefficientFraisLivraison.limiteTaxeSupp);
+        for (let i = 0; i < nbrFoisAjoutTaxSupp; i++) {
+          fraisLivraison += coefficientFraisLivraison.taxeSupplimentaire;
+        }
+      }
+    } else {
+      if(Number(this.volumeTotal) > coefficientFraisLivraison.limite) {
+        let volumeSupplimentaire = Number(this.volumeTotal) - coefficientFraisLivraison.limite;
+        let nbrFoisAjoutTaxSupp = Math.ceil(volumeSupplimentaire/coefficientFraisLivraison.limiteTaxeSupp);
+        for (let i = 0; i < nbrFoisAjoutTaxSupp; i++) {
+          fraisLivraison += coefficientFraisLivraison.taxeSupplimentaire;
+        }
+      }
+    }
     // get le score du client
     let scoreClient = 0;
     switch (this.data.commande.categorieClient) {
@@ -920,7 +940,16 @@ export class BoiteDialogueCreerCommande implements OnInit {
         break;
     }
 
-    let retard = 0; //provisoirement jusqu'a savoir comment calculer le retard
+    // calcul du retard
+    let dateCreationCommande;
+    if (this.data.modeManuel) {
+      let date = new Date(this.data.commande.dateCreation);
+      dateCreationCommande = date;
+    } else {
+      dateCreationCommande = this.data.commande.dateCreation;
+    }
+    var dateActuel = new Date();
+    let retard = dateActuel.getTime() - dateCreationCommande.getTime();
     this.score =
       prix * coefficientScoreCommande.prixFacture +
       fraisLivraison * coefficientScoreCommande.fraisLivraison +
@@ -2544,4 +2573,28 @@ class Article {
     this.listeEmballage = listeEmballage;
     this.listeEmballageChoisi = listeEmballageChoisi;
   }
+}
+
+class CoefficientsFraisLivraison {
+  id: number;
+  taxeFixe: number;
+  limite: number;
+  uniteLimite: string;
+  taxeSupplimentaire: number;
+  limiteTaxeSupp: number;
+
+  constructor( 
+    taxeFixe: number, 
+    limite: number, 
+    uniteLimite: string, 
+    taxeSupplimentaire: number, 
+    limiteTaxeSupp: number
+) {
+    this.taxeFixe = taxeFixe
+    this.limite = limite
+    this.uniteLimite = uniteLimite
+    this.taxeSupplimentaire = taxeSupplimentaire
+    this.limiteTaxeSupp = limiteTaxeSupp
+  }
+
 }

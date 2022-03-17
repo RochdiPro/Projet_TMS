@@ -11,6 +11,9 @@ const infonet = '/INFONET/';
 export class CommandeService {
   handleError: any;
 
+  // changer cette valeur pour spécifier s'il s'agit d'un mode manuel ou pas
+  public modeManuel = true;
+
   constructor(private httpClient: HttpClient) {}
 
   //charger la liste des factures
@@ -273,7 +276,7 @@ export class CommandeService {
       .get(erp + 'detail-commande-manuel', {
         params: {
           date: date,
-          nomFichier: nomFichier
+          nomFichier: nomFichier,
         },
         responseType: 'blob',
       })
@@ -312,5 +315,12 @@ export class CommandeService {
       (response) => console.log(response),
       (error) => console.log(error)
     );
+  }
+
+  //get coefficients frais de livraison
+  public fraisLivraison() {
+    return this.httpClient
+      .get(erp + 'frais-livraison')
+      .pipe(catchError(this.handleError));
   }
 }

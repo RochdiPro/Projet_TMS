@@ -69,7 +69,7 @@ export class AjouterCommandeComponent implements OnInit {
   nom: any;
   acces: any;
   wms: any;
-  estManuel = true;
+  estManuel = false;
   today = new Date();
   date = new Date(
     this.today.getFullYear(),
@@ -101,6 +101,7 @@ export class AjouterCommandeComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.estManuel = this.serviceCommande.modeManuel;
     // ajout des formControls dans le formGroup des filtres
     this.filtreFormGroup = this.fb.group({
       type: 'Facture',
@@ -108,7 +109,7 @@ export class AjouterCommandeComponent implements OnInit {
       ville: '',
       date: this.date,
     });
-    await this.getListeClients();
+    // await this.getListeClients();
 
     if (this.estManuel) {
       // si le mode est manuel:

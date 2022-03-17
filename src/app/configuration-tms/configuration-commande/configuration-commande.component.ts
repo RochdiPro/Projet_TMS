@@ -110,6 +110,7 @@ export class ConfigurationCommandeComponent implements OnInit {
     });
   }
 
+  // créer les formsGroups
   creerForms() {
     this.formCoefficientFraisTransport = this.fb.group({
       taxefixe: ['', Validators.required],
@@ -154,6 +155,7 @@ export class ConfigurationCommandeComponent implements OnInit {
     });
   }
 
+  // enregistrer coefficientsFraisTransport
   enregistrerCoefficientFraisTransport() {
     let nouveauCoefficientFraisLivraison = new CoefficientsFraisLivraison(
       this.taxefixe.value,
@@ -162,6 +164,7 @@ export class ConfigurationCommandeComponent implements OnInit {
       this.taxeSupplimentaire.value,
       this.limiteTaxeSupplimentaire.value
     );
+    // si les coefficients frais de livraison sont deja existantes on les modifie si non en créent des nouvelles coefficients
     if (this.coefficientFraisLivraison) {
       this.serviceConfig
         .modifierCoefficientsFraisLivraison(nouveauCoefficientFraisLivraison)
@@ -205,6 +208,7 @@ export class ConfigurationCommandeComponent implements OnInit {
     }
   }
 
+// enregistrer coefficients Formule score
   enregistrerCoefficientsFormuleScore() {
     let nouveauCoefficientsFormuleScore = new CoefficientsScoreCommande(
       this.prixFacture.value,
@@ -212,6 +216,7 @@ export class ConfigurationCommandeComponent implements OnInit {
       this.client.value,
       this.retard.value
     );
+    // si les coefficients formule score sont deja existantes on les modifie si non en créent des nouvelles coefficients
     if (this.coefficientsScoreCommande) {
       this.serviceConfig
         .modifierCoefficientsScoreCommande(nouveauCoefficientsFormuleScore)
@@ -255,6 +260,7 @@ export class ConfigurationCommandeComponent implements OnInit {
     }
   }
 
+  // enregistrer les paramétres des fichiers excel
   enregistrerParametreExcel() {
     let nouveauParametreExcel = new ConfigurationExcel(
       this.reference.value,
@@ -284,6 +290,7 @@ export class ConfigurationCommandeComponent implements OnInit {
       this.imei1.value,
       this.imei2.value
     );
+    // si les paramétres fichiers excel sont deja existantes on les modifie si non en créent des nouvelles coefficients
     if (this.parametreExcel) {
       this.serviceConfig
         .modifierParametreExcel(nouveauParametreExcel)
@@ -325,8 +332,8 @@ export class ConfigurationCommandeComponent implements OnInit {
     }
   }
 
+  // fonction pour avoir quel icon d'info le curseur est placée sur elle
   hoverCoefficientScore(coefficient: string) {
-    let hover;
     switch (coefficient) {
       case 'client':
         this.hoverClient = true;
@@ -363,13 +370,14 @@ export class ConfigurationCommandeComponent implements OnInit {
         break;
     }
   }
-
+  // ouvrir boite dialogue qui contienne les etappes necessaires pour créer le dossier data
   ovrirEtapesCreationData() {
     this.dialog.open(EtapesCreationData, {
       width: '600px'
     })
   }
 
+  // getters des formControls
   get taxefixe() {
     return this.formCoefficientFraisTransport.get('taxefixe');
   }
