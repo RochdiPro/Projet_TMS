@@ -1,8 +1,8 @@
-.container{
+.container {
   width: 100%;
 }
 
-.main-card{
+.main-card {
   overflow: hidden;
 }
 
@@ -60,7 +60,7 @@ h1 {
   text-align: center;
 }
 
-.icon-recherche{
+.icon-recherche {
   margin-top: 25px;
 }
 
@@ -229,7 +229,6 @@ tbody tr td .secondLine {
   padding-bottom: 30px;
 }
 
-
 .input-group-text {
   width: 45px;
 }
@@ -255,7 +254,7 @@ tbody tr td .secondLine {
   margin-bottom: 10px;
 }
 
-#ressayer{
+#ressayer {
   font-size: 1.2em;
   font-weight: 600;
   color: #dc291e;
@@ -273,15 +272,15 @@ tbody tr td .secondLine {
   min-height: 40px;
 }
 
-.secondLine{
+.secondLine {
   display: block;
   font-size: 14px;
 }
 
 table thead tr th:not(:last-child):after {
-  background-color: rgba(204,204,204,.4);
+  background-color: rgba(204, 204, 204, 0.4);
   bottom: 10px;
-  content: '';
+  content: "";
   display: block;
   position: absolute;
   right: 0;
@@ -290,9 +289,9 @@ table thead tr th:not(:last-child):after {
 }
 
 table tbody tr td:not(:last-child):after {
-  background-color: rgba(204,204,204,.4);
+  background-color: rgba(204, 204, 204, 0.4);
   bottom: 10px;
-  content: '';
+  content: "";
   display: block;
   position: absolute;
   right: 0;
@@ -318,23 +317,22 @@ table tbody tr td {
   width: auto;
 }
 
-
-.table td.fit, 
+.table td.fit,
 .table th.fit {
-    white-space: nowrap;
-    width: 1%;
+  white-space: nowrap;
+  width: 1%;
 }
 
 #titre-historique {
   text-align: center;
-    padding: 20px;
-    margin: 0;
-    color: #dc291e;
+  padding: 20px;
+  margin: 0;
+  color: #dc291e;
 }
 
 /* Extra large devices (large laptops and desktops, 1200px and up) */
 @media only screen and (min-width: 1200px) {
-  .main-card{
+  .main-card {
     max-width: 1000px;
   }
 
@@ -346,14 +344,14 @@ table tbody tr td {
     font-size: 24px;
   }
 
-  .icon-recherche{
+  .icon-recherche {
     margin-top: 50px;
   }
 
   #champ-tracking p {
     font-size: 2rem;
   }
-  
+
   #champ-tracking input {
     font-size: 1.7em;
     height: 45px;
@@ -367,7 +365,6 @@ table tbody tr td {
   .tracking-status .status-wrapper {
     width: 40px;
     height: 40px;
-
   }
 
   .tracking-status .status-wrapper > i {

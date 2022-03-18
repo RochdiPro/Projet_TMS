@@ -21,6 +21,7 @@ import { ConfigurationTmsService } from '../services/configuration-tms.service';
 export class ConfigurationServeurComponent implements OnInit {
   formConfigurationServeur: FormGroup;
   configuration: ConfigurationApplication;
+  email: string;
   constructor(
     private fb: FormBuilder,
     private serviceConfiguration: ConfigurationTmsService
@@ -36,6 +37,11 @@ export class ConfigurationServeurComponent implements OnInit {
           this.adresseIP.setValue(this.configuration.adresseIp);
           this.apiGoogle.setValue(this.configuration.apiKeyGoogle);
         }
+      });
+    this.serviceConfiguration
+      .getEmailAdress()
+      .subscribe((result) => {
+        this.email = result;
       });
   }
 
@@ -77,7 +83,7 @@ export class ConfigurationServeurComponent implements OnInit {
               title: 'Oops...',
               text: "Une erreur est survenue lors de l'enregistrement de vos modifications!",
             });
-            throw error
+            throw error;
           }
         );
     } else {

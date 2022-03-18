@@ -1,3 +1,4 @@
+/* Small devices (small phones, under 600px) */
 .full-width {
   width: 100%;
   padding: 20px;
@@ -22,7 +23,8 @@ h4 {
   row-gap: 30px;
 }
 
-input, select {
+input,
+select {
   padding-left: 10px;
   width: 100%;
   border: 2px solid #dddfe3;
@@ -65,7 +67,7 @@ input, select {
 }
 
 .info {
-position: relative;
+  position: relative;
 }
 
 .hint {
@@ -77,7 +79,7 @@ position: relative;
   padding: 10px;
 }
 
-.formule{ 
+.formule {
   text-align: center;
   font-size: small;
   padding: 20px 0;
@@ -85,7 +87,7 @@ position: relative;
 }
 
 .hover-coefficient {
-  color:#f7b217;
+  color: #f7b217;
 }
 
 .data-folder {
@@ -113,7 +115,7 @@ img {
   .erreur {
     left: 20px;
   }
-  .formule{
+  .formule {
     font-size: medium;
   }
 }

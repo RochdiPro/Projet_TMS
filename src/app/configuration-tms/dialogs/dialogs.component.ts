@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-    templateUrl: 'etapes-creation-DATA.html'
+  templateUrl: 'etapes-creation-DATA.html',
 })
-
 export class EtapesCreationData implements OnInit {
-    constructor() { }
+  constructor() {}
 
-    ngOnInit() { }
+  ngOnInit() {}
 }

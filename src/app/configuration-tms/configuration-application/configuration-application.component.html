@@ -14,7 +14,7 @@
         </div>
     </div>
     <div class="champ">
-        <h3>Clé API Google Maps</h3>
+        <h3>Clé API Google Maps *</h3>
         <div class="input">
             <input type="text" formControlName="apiGoogle">
             <div *ngIf="(apiGoogle.invalid && apiGoogle.touched) || apiGoogle.dirty" class="erreur">
@@ -23,7 +23,14 @@
             </div>
         </div>
     </div>
-    <small>Pour savoir comment obtenir un clé API de google maps visiter le <a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">lien</a> suivant.</small>
+    <div class="champ">
+        <h3>Adresse Email **</h3>
+        <div class="input">
+            <input type="text" [value]="email" disabled>
+        </div>
+    </div>
+    <small>* &nbsp; : Pour savoir comment obtenir un clé API de google maps visiter le <a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">lien</a> suivant.</small><br>
+    <small>** : Pour changer l'adresse email utilisée pour l'envoie des notifications contacter INFONET SERVICES.</small>
 </div>
 
 <div class="boutons">

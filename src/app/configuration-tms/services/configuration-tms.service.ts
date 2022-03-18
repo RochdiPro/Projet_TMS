@@ -136,4 +136,11 @@ export class ConfigurationTmsService {
       config
     );
   }
+
+  //get adresse email utilisée pour envoyer email
+  public getEmailAdress() {
+    return this.httpClient
+      .get(erp + 'adresse-email', {responseType: 'text'})
+      .pipe(catchError(this.handleError));
+  }
 }
