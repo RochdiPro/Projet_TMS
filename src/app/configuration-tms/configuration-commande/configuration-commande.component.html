@@ -433,6 +433,33 @@
                         requis</small>
                 </div>
             </div>
+            <!-- champ num lot -->
+            <h4>n° lot</h4>
+            <div class="input">
+                <input type="text" formControlName="numLot">
+                <div *ngIf="(numLot.invalid && numLot.touched) || numLot.dirty" class="erreur">
+                    <small *ngIf="numLot.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
+                </div>
+            </div>
+            <!-- champ date fabrication -->
+            <h4>date de fabrication</h4>
+            <div class="input">
+                <input type="text" formControlName="dateFabrication">
+                <div *ngIf="(dateFabrication.invalid && dateFabrication.touched) || dateFabrication.dirty" class="erreur">
+                    <small *ngIf="dateFabrication.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
+                </div>
+            </div>
+            <!-- champ date validite -->
+            <h4>date de validité</h4>
+            <div class="input">
+                <input type="text" formControlName="dateValidite">
+                <div *ngIf="(dateValidite.invalid && dateValidite.touched) || dateValidite.dirty" class="erreur">
+                    <small *ngIf="dateValidite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                        requis</small>
+                </div>
+            </div>
         </div>
     </div>
     <div class="boutons">

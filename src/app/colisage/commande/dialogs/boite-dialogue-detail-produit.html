@@ -18,7 +18,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let produit of this.data.produit.produit4Gs">
+                <tr *ngFor="let produit of this.data.produit.numeroLots">
                     <td>{{produit.numSerie}}</td>
                     <td>{{produit.numImei1}}</td>
                     <td>{{produit.numImei2}}</td>
@@ -31,18 +31,18 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Numero de serie</th>
-                    <th scope="col">Numero Imei 1</th>
-                    <th scope="col">Numero Imei 2</th>
-                    <th scope="col">Numero de lot</th>
+                    <th scope="col">Numero du lot</th>
+                    <th scope="col">Quantité</th>
+                    <th scope="col">Date de fabrication</th>
+                    <th scope="col">Date de validité</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let produit of this.data.produit.numeroLots">
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{produit.numero}}</td>
+                    <td>{{produit.quantite}}</td>
+                    <td>{{produit.dateFabrication}}</td>
+                    <td>{{produit.dateValidite}}</td>
                 </tr>
             </tbody>
         </table>

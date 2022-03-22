@@ -25,6 +25,9 @@ export class ConfigurationExcel {
   numSerie: string;
   imei1: string;
   imei2: string;
+  nLot: string;
+  dateFabrication: string;
+  dateValidite: string;
 
   constructor(
     reference: string, 
@@ -52,7 +55,10 @@ export class ConfigurationExcel {
     quantite: string, 
     numSerie: string, 
     imei1: string, 
-    imei2: string
+    imei2: string,
+    nLot: string,
+    dateFabrication: string,
+    dateValidite: string
 ) {
     this.reference = reference
     this.idClient = idClient
@@ -80,6 +86,9 @@ export class ConfigurationExcel {
     this.numSerie = numSerie
     this.imei1 = imei1
     this.imei2 = imei2
+    this.nLot = nLot
+    this.dateFabrication = dateFabrication
+    this.dateValidite = dateValidite
   }
 
 }

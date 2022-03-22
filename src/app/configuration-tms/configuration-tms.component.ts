@@ -23,7 +23,27 @@ export class ConfigurationTmsComponent implements OnInit {
   positionEstActive = false;
   commandeEstActive = false;
   serveurEstActive = false;
-  constructor() {}
+
+
+  nom: any;
+  acces: any;
+  tms: any;
+  wms: any;
+  constructor() {
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1004000");
+
+    this.nom = sessionStorage.getItem('Utilisateur'); 
+    this.acces = sessionStorage.getItem('Acces'); 
+
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
+  
+    this.tms = Number( arrayOfDigits[3])
+    this.wms = Number( arrayOfDigits[4])
+     
+  }
 
   ngOnInit(): void {}
 

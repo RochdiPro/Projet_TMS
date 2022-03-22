@@ -75,6 +75,7 @@ export class BoiteDialogueInfo implements OnInit {
         this.articles = await getDetail(detail, 'bl');
       }
     }
+    console.log(this.articles);
     for (let i = 0; i < this.articles.length; i++) {
       // pour chaque article qu'on a recupérer depuis le fichier detail on construit avec ses données un objet article
       // avec les informations desirées et on l'ajoute a la listeArticlesDetail
@@ -1340,7 +1341,9 @@ export class BoiteDialogueDetailProduit implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.data);
+  }
 }
 
 // -------------------------------------------------------------------------------------------------------------
@@ -2488,7 +2491,7 @@ async function getDetail(detail: any, typeCommande: string) {
             articles.push(new_obj);
           }
         }
-        if (xmldata.Produits[0].Produits_N_Lot) {
+        if (xmldata.Produits[0].Produits_N_Lot[0].Produit) {
           for (
             let i = 0;
             i < xmldata.Produits[0].Produits_N_Lot[0].Produit.length;
@@ -2518,10 +2521,14 @@ async function getDetail(detail: any, typeCommande: string) {
                 xmldata.Produits[0].Produits_N_Lot[0].Produit[
                   i
                 ].N_Lots[0].N_Lot[j].Qte[0];
-              numeroLot.date =
+              numeroLot.dateFabrication =
                 xmldata.Produits[0].Produits_N_Lot[0].Produit[
                   i
-                ].N_Lots[0].N_Lot[j].Date[0];
+                ].N_Lots[0].N_Lot[j].Date_Fabrication[0];
+              numeroLot.dateValidite =
+                xmldata.Produits[0].Produits_N_Lot[0].Produit[
+                  i
+                ].N_Lots[0].N_Lot[j].Date_Validite[0];
               numeroLots.push(numeroLot);
             }
             new_obj.numeroLots = numeroLots;

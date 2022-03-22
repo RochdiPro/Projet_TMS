@@ -12,7 +12,7 @@ export class MenuComponent implements OnInit {
   wms: any;
   constructor() {
     sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1002200");
+    sessionStorage.setItem('Acces', "1004400");
 
     this.nom = sessionStorage.getItem('Utilisateur'); 
     this.acces = sessionStorage.getItem('Acces'); 

@@ -106,6 +106,9 @@ export class ConfigurationCommandeComponent implements OnInit {
         this.numSerie.setValue(this.parametreExcel.numSerie);
         this.imei1.setValue(this.parametreExcel.imei1);
         this.imei2.setValue(this.parametreExcel.imei2);
+        this.numLot.setValue(this.parametreExcel.nLot);
+        this.dateFabrication.setValue(this.parametreExcel.dateFabrication);
+        this.dateValidite.setValue(this.parametreExcel.dateValidite);
       }
     });
   }
@@ -152,6 +155,9 @@ export class ConfigurationCommandeComponent implements OnInit {
       numSerie: ['', Validators.required],
       imei1: ['', Validators.required],
       imei2: ['', Validators.required],
+      numLot: ['', Validators.required],
+      dateFabrication: ['', Validators.required],
+      dateValidite: ['', Validators.required],
     });
   }
 
@@ -288,7 +294,10 @@ export class ConfigurationCommandeComponent implements OnInit {
       this.quantite.value,
       this.numSerie.value,
       this.imei1.value,
-      this.imei2.value
+      this.imei2.value,
+      this.numLot.value,
+      this.dateFabrication.value,
+      this.dateValidite.value
     );
     // si les paramétres fichiers excel sont deja existantes on les modifie si non en créent des nouvelles coefficients
     if (this.parametreExcel) {
@@ -516,5 +525,16 @@ export class ConfigurationCommandeComponent implements OnInit {
 
   get imei2() {
     return this.formParametreExcel.get('imei2');
+  }
+  get numLot() {
+    return this.formParametreExcel.get('numLot');
+  }
+
+  get dateFabrication() {
+    return this.formParametreExcel.get('dateFabrication');
+  }
+
+  get dateValidite() {
+    return this.formParametreExcel.get('dateValidite');
   }
 }

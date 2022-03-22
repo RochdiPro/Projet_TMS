@@ -236,7 +236,7 @@
                            </ul>
 
                         </li>
-                        <li>
+                        <li *ngIf="tms >= 2">
 
                            <a routerLink="/Menu/TMS/plan-chargement">
                               <i class="metismenu-icon"></i>
@@ -255,7 +255,7 @@
 
                      </ul>
                   </li>
-                  <li>
+                  <li *ngIf="tms >= 4">
                      <a href="/Menu/Configuration">
                         <i class="metismenu-icon pe-7s-diamond"></i>
                         Configuration

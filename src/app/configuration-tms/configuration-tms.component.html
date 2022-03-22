@@ -1,34 +1,36 @@
-<div class="app-page-title">
-    <div class="page-title-wrapper">
-        <div class="page-title-heading">
-            <div class="page-title-icon">
-                <i class="pe-7s-config text-success">
-                </i>
+<div *ngIf="tms >= 4">
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-config text-success">
+                    </i>
+                </div>
+                Suivi Des Commandes
             </div>
-            Suivi Des Commandes
         </div>
     </div>
+    <div class="contenaire">
+        <div class="card menu-config">
+            <a role="button" [ngClass]="{'active': generalEstActive}" (click)="changerCategorieConfig('general')">Général</a>
+            <a role="button" [ngClass]="{'active': positionEstActive}" (click)="changerCategorieConfig('position')">Position</a>
+            <a role="button" [ngClass]="{'active': commandeEstActive}" (click)="changerCategorieConfig('commande')">Commande</a>
+            <a role="button" [ngClass]="{'active': serveurEstActive}" (click)="changerCategorieConfig('serveur')">Application</a>
+        </div>
+        <div class = "contenu-config">
+            <div class="card config" *ngIf="generalEstActive" [@enterAnimation]>
+                <app-configuration-generale></app-configuration-generale>
+            </div>
+            <div class="card config" *ngIf="positionEstActive" [@enterAnimation]>
+                <app-configuration-position></app-configuration-position>
+            </div>
+            <div *ngIf="commandeEstActive" [@enterAnimation]>
+                <app-configuration-commande></app-configuration-commande>
+            </div>
+            <div class="card config" *ngIf="serveurEstActive" [@enterAnimation]>
+                <app-configuration-application></app-configuration-application>
+            </div>
+        </div>
+    </div>
+    
 </div>
-<div class="contenaire">
-    <div class="card menu-config">
-        <a role="button" [ngClass]="{'active': generalEstActive}" (click)="changerCategorieConfig('general')">Général</a>
-        <a role="button" [ngClass]="{'active': positionEstActive}" (click)="changerCategorieConfig('position')">Position</a>
-        <a role="button" [ngClass]="{'active': commandeEstActive}" (click)="changerCategorieConfig('commande')">Commande</a>
-        <a role="button" [ngClass]="{'active': serveurEstActive}" (click)="changerCategorieConfig('serveur')">Application</a>
-    </div>
-    <div class = "contenu-config">
-        <div class="card config" *ngIf="generalEstActive" [@enterAnimation]>
-            <app-configuration-generale></app-configuration-generale>
-        </div>
-        <div class="card config" *ngIf="positionEstActive" [@enterAnimation]>
-            <app-configuration-position></app-configuration-position>
-        </div>
-        <div *ngIf="commandeEstActive" [@enterAnimation]>
-            <app-configuration-commande></app-configuration-commande>
-        </div>
-        <div class="card config" *ngIf="serveurEstActive" [@enterAnimation]>
-            <app-configuration-application></app-configuration-application>
-        </div>
-    </div>
-</div>
-  
