@@ -39,18 +39,20 @@ export class ConfigurationPositionComponent implements OnInit {
     // get infos generales
     this.serviceConfig.infosGenerals().subscribe((result) => {
       this.infos = result;
-      // afficher les valeurs enregistrées dans les inputs
-      if (this.infos.adresse != '') {
-        this.adresse.setValue(this.infos.adresse);
-        this.ville.setValue(this.infos.ville);
-      }
-      // afficher la position enregistrée sur le map
-      if (this.infos.latitude != 0 && this.infos.longitude != 0) {
-        this.latitudeMap = this.infos.latitude;
-        this.latitudeMarker = this.infos.latitude;
-        this.longitudeMap = this.infos.longitude;
-        this.longitudeMarker = this.infos.longitude;
-        this.afficherMarker = true;
+      if (this.infos) {
+        // afficher les valeurs enregistrées dans les inputs
+        if (this.infos.adresse != '') {
+          this.adresse.setValue(this.infos.adresse);
+          this.ville.setValue(this.infos.ville);
+        }
+        // afficher la position enregistrée sur le map
+        if (this.infos.latitude != 0 && this.infos.longitude != 0) {
+          this.latitudeMap = this.infos.latitude;
+          this.latitudeMarker = this.infos.latitude;
+          this.longitudeMap = this.infos.longitude;
+          this.longitudeMarker = this.infos.longitude;
+          this.afficherMarker = true;
+        }
       }
     });
   }

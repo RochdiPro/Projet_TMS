@@ -5,13 +5,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
 import {
   ConfirmationAnnulationMission,
   DetailComponent,
   ModifierMission,
-  Trajet,
+  Trajet
 } from '../dialogs/dialogs.component';
 import { MissionsService } from '../services/missions.service';
 
@@ -59,12 +57,22 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   destinationsOptimise: any = [];
   commande: any;
 
+  nom: any;
+  acces: any;
+  tms: any;
   constructor(
     public serviceMission: MissionsService,
     public datepipe: DatePipe,
-    private router: Router,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+  }
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;

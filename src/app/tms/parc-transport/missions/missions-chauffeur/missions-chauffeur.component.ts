@@ -119,11 +119,23 @@ export class MissionsChauffeurComponent implements OnInit {
   // les points de stops
   pointStop: any;
 
+  nom: any;
+  acces: any;
+  tms: any;
+
   constructor(
     private fb: FormBuilder,
     private serviceMission: MissionsService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+  }
 
   async ngOnInit() {
     this.formDate = this.fb.group({

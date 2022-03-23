@@ -15,7 +15,7 @@ export class AppInitService {
       .get<any>('/ERP/configuration-application')
       .toPromise()
       .then((dto) => {
-        this._apiKey = dto.apiKeyGoogle;
+        dto ? this._apiKey = dto.apiKeyGoogle : this._apiKey = "";
       });
   }
 }

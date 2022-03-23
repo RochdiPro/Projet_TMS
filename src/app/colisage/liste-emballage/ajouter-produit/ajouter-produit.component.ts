@@ -68,9 +68,6 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     private formBuilder: FormBuilder,
     public _router: Router
   ) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1000200');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

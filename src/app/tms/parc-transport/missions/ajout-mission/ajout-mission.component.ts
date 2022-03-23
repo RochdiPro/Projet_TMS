@@ -68,6 +68,10 @@ export class AjoutMissionComponent implements OnInit {
   currentLat: any;
   currentLong: any;
 
+  nom: any;
+  acces: any;
+  tms: any;
+
   constructor(
     private fb: FormBuilder,
     private serviceMission: MissionsService,
@@ -75,7 +79,15 @@ export class AjoutMissionComponent implements OnInit {
     private dialog: MatDialog,
     private serviceChauffeur: ChauffeurService,
     private serviceCommande: CommandeService
-  ) {}
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+  }
 
   async ngOnInit() {
     this.chercherMoi();
@@ -429,7 +441,7 @@ export class AjoutMissionComponent implements OnInit {
   // get tous les vehicules avec l'état disponible
   async getVehiculeDisponibles() {
     let listeVehiculesPrives = await this.serviceVehicule
-      .filtrerVehicule('etat_vehicule', 'Disponible')
+      .filtrerVehicule('', '', 'Disponible')
       .toPromise();
     return listeVehiculesPrives;
   }

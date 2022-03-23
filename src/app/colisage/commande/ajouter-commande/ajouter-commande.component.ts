@@ -86,11 +86,6 @@ export class AjouterCommandeComponent implements OnInit {
     private dialogue: MatDialog,
     private fb: FormBuilder
   ) {
-    // code accés presentée d'une facon manuelle
-    // enlever les deux lignes suivantes lors du deployement
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1000200');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

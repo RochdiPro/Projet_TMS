@@ -46,8 +46,8 @@ export class AjouterVehiculeComponent implements OnInit {
     public service: VehiculeService,
     public router: Router
   ) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1002000');
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1004400");
 
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');

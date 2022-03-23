@@ -804,6 +804,7 @@ export class MiseAJourConsommationComponent implements OnInit {
   async chargerVehicule(id: any) {
     //charger le vehicule par son identifiant
     this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
+    localStorage.setItem('kmactuelV',this.vehicule.kmactuel);
   }
 
   //Bouton Annuler

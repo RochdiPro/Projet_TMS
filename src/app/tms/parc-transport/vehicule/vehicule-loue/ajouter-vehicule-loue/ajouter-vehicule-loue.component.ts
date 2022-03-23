@@ -35,9 +35,6 @@ export class AjouterVehiculeLoueComponent implements OnInit {
   tms: any;
 
   constructor(public fb: FormBuilder, public service: VehiculeService, public router: Router, public _location: Location) {
-    sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1002000");
-
     this.nom = sessionStorage.getItem('Utilisateur'); 
     this.acces = sessionStorage.getItem('Acces'); 
 

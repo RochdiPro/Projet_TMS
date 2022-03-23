@@ -27,10 +27,24 @@ export class ListerVehiculesComponent implements OnInit {
   acces: any;
   tms: any;
 
+  // categorie utilisé pour le filtrage par categorie vehicule
+  carosserie = [
+    //types de carosserie des véhicules et leur catégories de permis accordées
+    { name: 'DEUX ROUES', value: 'A/A1/B/B+E/C/C+E/D/D1/D+E/H' },
+    { name: 'VOITURES PARTICULIÈRES', value: 'B/B+E/C/C+E/D/D1/D+E/H' },
+    { name: 'POIDS LOURDS', value: 'C/C+E' },
+    { name: 'POIDS LOURDS ARTICULÉS', value: 'C+E' },
+  ];
+
+    // variables des filtres
+    filtreMatricule: string = "";
+    filtreCategorie: string = "";
+    filtreDisponibilte: string = "";
+
   //constructeur
   constructor(private dialog: MatDialog, public service: VehiculeService, public _router: Router) {
     sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1004000");
+    sessionStorage.setItem('Acces', "1004400");
 
     this.nom = sessionStorage.getItem('Utilisateur'); 
     this.acces = sessionStorage.getItem('Acces'); 
@@ -185,23 +199,43 @@ export class ListerVehiculesComponent implements OnInit {
   //Bouton supprimer vehicule
   async supprimerVehicule(id: any) { //supprimer vehicule
     Swal.fire({
-      title: 'Êtes-vous sûr?',
-      text: "Vous allez supprimer le vehicul!",
-      icon: 'warning',
+      title: 'Mot de passe',
+      input: 'password',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Supprimer!',
-      cancelButtonText: 'Annuler'
-    }).then(async (result) => {
+      confirmButtonText: 'ok',
+      showLoaderOnConfirm: true,
+      preConfirm: (pass) => {
+        if(pass !== "infonet") {
+          Swal.showValidationMessage(
+            `Mot de passe incorrecte`)
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
       if (result.isConfirmed) {
-        await this.service.supprimerVehicule(id).toPromise();
-        this.chargerVehicules();
-        Swal.fire(
-          'Supprimé!',
-          'Le vehicul a été supprimé.',
-          'success'
-        )
+        Swal.fire({
+          title: 'Êtes-vous sûr?',
+          text: "Vous allez supprimer le vehicul!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Supprimer!',
+          cancelButtonText: 'Annuler'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await this.service.supprimerVehicule(id).toPromise();
+            this.chargerVehicules();
+            Swal.fire(
+              'Supprimé!',
+              'Le vehicul a été supprimé.',
+              'success'
+            )
+          }
+        })
       }
     })
 
@@ -229,6 +263,18 @@ export class ListerVehiculesComponent implements OnInit {
     }
     return this.notification;
   }
+
+
+  // fonction pour filtrer mission
+  filtrerMission(){
+    this.filtreMatricule == undefined ? this.filtreMatricule = "": "";
+    this.filtreCategorie == undefined ? this.filtreCategorie = "": "";
+    this.filtreDisponibilte == undefined ? this.filtreDisponibilte = "": "";
+    this.service.filtrerVehicule(this.filtreMatricule,this.filtreCategorie,this.filtreDisponibilte).subscribe((result) => {
+      this.vehicules = result;
+    })
+  }
+
 
   //partie de modification carburant
   selectionnerCarburant() { //selectionner le type de carburant et afficher son prix

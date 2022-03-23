@@ -126,7 +126,7 @@
                 [ngClass]="{'hover-coefficient': hoverClient}">Coefficient client</h4>
             <div class="input">
                 <input type="number" formControlName="client" max="10" min="0"
-                    (keyup)="client.value > 10 ? client.setValue('10') : ''; client.value < 10 ? client.setValue('0') : '';">
+                    (keyup)="client.value > 10 ? client.setValue('10') : ''; client.value < 0 ? client.setValue('0') : '';">
                 <div *ngIf="(client.invalid && client.touched) || client.dirty" class="erreur">
                     <small *ngIf="client.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
@@ -137,7 +137,7 @@
                 [ngClass]="{'hover-coefficient': hoverFraisLivraison}">Coefficient frais de livraison</h4>
             <div class="input">
                 <input type="number" formControlName="fraisLivraison" max="10" min="0"
-                    (keyup)="fraisLivraison.value > 10 ? fraisLivraison.setValue('10') : ''; fraisLivraison.value < 10 ? fraisLivraison.setValue('0') : '';">
+                    (keyup)="fraisLivraison.value > 10 ? fraisLivraison.setValue('10') : ''; fraisLivraison.value < 0 ? fraisLivraison.setValue('0') : '';">
                 <div *ngIf="(fraisLivraison.invalid && fraisLivraison.touched) || fraisLivraison.dirty" class="erreur">
                     <small *ngIf="fraisLivraison.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
@@ -148,7 +148,7 @@
                 [ngClass]="{'hover-coefficient': hoverPrixFacture}">Coefficient prix de la facture</h4>
             <div class="input">
                 <input type="number" formControlName="prixFacture" max="10" min="0"
-                    (keyup)="prixFacture.value > 10 ? prixFacture.setValue('10') : ''; prixFacture.value < 10 ? prixFacture.setValue('0') : '';">
+                    (keyup)="prixFacture.value > 10 ? prixFacture.setValue('10') : ''; prixFacture.value < 0 ? prixFacture.setValue('0') : '';">
                 <div *ngIf="(prixFacture.invalid && prixFacture.touched) || prixFacture.dirty" class="erreur">
                     <small *ngIf="prixFacture.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>
@@ -159,7 +159,7 @@
                 [ngClass]="{'hover-coefficient': hoverRetard}">Coefficient retard</h4>
             <div class="input">
                 <input type="number" formControlName="retard" max="10" min="0"
-                    (keyup)="retard.value > 10 ? retard.setValue('10') : ''; retard.value < 10 ? retard.setValue('0') : '';">
+                    (keyup)="retard.value > 10 ? retard.setValue('10') : ''; retard.value < 0 ? retard.setValue('0') : '';">
                 <div *ngIf="(retard.invalid && retard.touched) || retard.dirty" class="erreur">
                     <small *ngIf="retard.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                         requis</small>

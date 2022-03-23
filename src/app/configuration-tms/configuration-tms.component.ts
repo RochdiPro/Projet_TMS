@@ -24,15 +24,14 @@ export class ConfigurationTmsComponent implements OnInit {
   commandeEstActive = false;
   serveurEstActive = false;
 
+  chargementTermine = true;
+
 
   nom: any;
   acces: any;
   tms: any;
   wms: any;
   constructor() {
-    sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1004000");
-
     this.nom = sessionStorage.getItem('Utilisateur'); 
     this.acces = sessionStorage.getItem('Acces'); 
 
@@ -48,6 +47,9 @@ export class ConfigurationTmsComponent implements OnInit {
   ngOnInit(): void {}
 
   changerCategorieConfig(categorie: string) {
+    if (!this.chargementTermine) return;
+    this.chargementTermine = false
+    
     switch (categorie) {
       case 'general':
         this.positionEstActive = false;
@@ -55,6 +57,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.serveurEstActive = false;
         setTimeout(() => {
           this.generalEstActive = true;
+          this.chargementTermine = true;
         }, 550);
         break;
 
@@ -64,6 +67,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.serveurEstActive = false;
         setTimeout(() => {
           this.positionEstActive = true;
+          this.chargementTermine = true;
         }, 550);
         break;
 
@@ -73,6 +77,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.serveurEstActive = false;
         setTimeout(() => {
           this.commandeEstActive = true;
+          this.chargementTermine = true;
         }, 550);
         break;
 
@@ -82,6 +87,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.commandeEstActive = false;
         setTimeout(() => {
           this.serveurEstActive = true;
+          this.chargementTermine = true;
         }, 550);
         break;
 

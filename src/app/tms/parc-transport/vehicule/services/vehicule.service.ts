@@ -40,11 +40,12 @@ export class VehiculeService {
   }
 
   //filtrer vehicule
-  public filtrerVehicule(champ: any, valeur: any) {
+  public filtrerVehicule(matricule: string, categories: string, etatVehicule: string) {
     return this.httpClient.get(erp + 'filtre-vehicule', {
       params: {
-        champ: champ,
-        valeur: valeur
+        matricule: matricule,
+        categories: categories,
+        etatVehicule: etatVehicule
       }, observe: 'body'
     }).pipe(catchError(this.handleError));
   }

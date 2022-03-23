@@ -67,9 +67,26 @@ export class MissionsComponent implements OnInit {
   ajouterMissionEstActive = false;
 
   estChauffeur = false;
+  
+  nom: any;
+  acces: any;
+  tms: any;
 
 
-  constructor(public router: Router) { }
+  constructor(public router: Router) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+    if (this.tms == 1) {
+      this.estChauffeur = true;
+    } else if (this.tms >= 1) {
+      this.estChauffeur = false
+    } 
+  }
 
   ngOnInit() {
     if (this.router.url === '/Menu/TMS/Missions/Liste_Missions') this.activerListerMissions();

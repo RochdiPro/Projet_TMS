@@ -38,11 +38,6 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
     public serviceCommande: CommandeService,
     public dialog: MatDialog
   ) {
-    // code accés presentée d'une facon manuelle
-    // enlever les deux lignes suivantes lors du deployement
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1000400');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

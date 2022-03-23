@@ -173,9 +173,6 @@ export class PlanChargementComponent implements OnInit {
     private servicePlanChargement: PlanChargementService,
     public datepipe: DatePipe
   ) {
-    sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1004000");
-
     this.nom = sessionStorage.getItem('Utilisateur'); 
     this.acces = sessionStorage.getItem('Acces'); 
 

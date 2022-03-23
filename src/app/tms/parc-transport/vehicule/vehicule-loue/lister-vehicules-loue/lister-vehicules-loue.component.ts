@@ -22,6 +22,7 @@ export class ListerVehiculesLoueComponent implements OnInit {
   nom: any;
   acces: any;
   tms: any;
+
   constructor(
     public service: VehiculeService,
     private dialog: MatDialog,
@@ -29,17 +30,13 @@ export class ListerVehiculesLoueComponent implements OnInit {
     public _location: Location,
     public fb: FormBuilder
   ) {
-    sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1005000");
-
-    this.nom = sessionStorage.getItem('Utilisateur'); 
-    this.acces = sessionStorage.getItem('Acces'); 
-
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
     const numToSeparate = this.acces;
-    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
-  
-    this.tms = Number( arrayOfDigits[3])
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
   }
 
   ngOnInit(): void {
@@ -104,27 +101,46 @@ export class ListerVehiculesLoueComponent implements OnInit {
       width: '450px',
       panelClass: 'custom-dialog',
       autoFocus: false,
-      data: {id: id}
+      data: { id: id },
     });
   }
 
   //Bouton supprimer vehicule Loue
   supprimerVehiculeLoue(id: any): void {
-    //supprimer vehicule
     Swal.fire({
-      title: 'Êtes-vous sûr?',
-      text: 'Vous allez supprimer le vehicul!',
-      icon: 'warning',
+      title: 'Mot de passe',
+      input: 'password',
+      inputAttributes: {
+        autocapitalize: 'off',
+      },
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Supprimer!',
-      cancelButtonText: 'Annuler',
-    }).then(async (result) => {
+      confirmButtonText: 'ok',
+      showLoaderOnConfirm: true,
+      preConfirm: (pass) => {
+        if (pass !== 'infonet') {
+          Swal.showValidationMessage(`Mot de passe incorrecte`);
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
       if (result.isConfirmed) {
-        await this.service.supprimerVehiculeLoue(id).toPromise();
-        this.chargerVehicules();
-        Swal.fire('Supprimé!', 'Le vehicul a été supprimé.', 'success');
+        //supprimer vehicule
+        Swal.fire({
+          title: 'Êtes-vous sûr?',
+          text: 'Vous allez supprimer le vehicul!',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Supprimer!',
+          cancelButtonText: 'Annuler',
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await this.service.supprimerVehiculeLoue(id).toPromise();
+            this.chargerVehicules();
+            Swal.fire('Supprimé!', 'Le vehicul a été supprimé.', 'success');
+          }
+        });
       }
     });
   }

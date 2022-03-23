@@ -15,7 +15,7 @@ export class AppInitService {
       .get<any>('/ERP/configuration-application') // use your endpoint for getting the settings and your own SettingsDto type
       .toPromise()
       .then((dto) => {
-        this._apiKey = dto.apiKeyGoogle; // adjust to your DTO
+        dto ? this._apiKey = dto.apiKeyGoogle : this._apiKey = "";
       });
   }
 }
