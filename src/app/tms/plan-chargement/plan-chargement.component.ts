@@ -1126,6 +1126,7 @@ export class PlanChargementComponent implements OnInit {
 
   // créer plan chargement mode automatique
   createPlanChargementAuto() {
+    this.viderCanvas();
     this.planChargementChange = true;
     this.lignes = [];
     this.indexLigne = 0;

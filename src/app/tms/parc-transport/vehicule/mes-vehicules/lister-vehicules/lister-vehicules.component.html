@@ -43,23 +43,14 @@
       <section>
          <mat-form-field class="filtres">
             <mat-label>Matricule</mat-label>
-            <input matInput placeholder="Matricule" (keyup)="filtrerMission()" id="nom" [(ngModel)]="filtreMatricule">
+            <input matInput placeholder="Matricule" (keyup)="filtrerVehicule()" id="nom" [(ngModel)]="filtreMatricule">
             <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="filtreMatricule = ''">
                <i class="fa fa-filter" aria-hidden="true"></i>
             </button>
          </mat-form-field>
          <mat-form-field class="filtres">
-            <mat-label>Catégorie</mat-label>
-            <mat-select [(value)]="filtreCategorie" (selectionChange)="filtrerMission()">
-               <mat-option></mat-option>
-               <mat-option *ngFor="let carosseries of carosserie" [value]="carosseries.value">
-                  {{ carosseries.name }}
-               </mat-option>
-            </mat-select>
-         </mat-form-field>
-         <mat-form-field class="filtres">
             <mat-label>Disponibilité</mat-label>
-            <mat-select [(value)]="filtreDisponibilte" (selectionChange)="filtrerMission()">
+            <mat-select [(value)]="filtreDisponibilte" (selectionChange)="filtrerVehicule()">
                <mat-option></mat-option>
                <mat-option value="Disponible">Disponible</mat-option>
                <mat-option value="En mission">En mission</mat-option>

@@ -99,4 +99,11 @@ export class AjouterSupportComponent implements OnInit {
       this.form.get('hauteur').disable();
     }
   }
+
+  focusNextElement(event: any){
+    let element = document.getElementById('long');
+    if (event.code === 'Enter') {
+      element.focus();
+    }
+  }
 }

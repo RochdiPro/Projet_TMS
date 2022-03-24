@@ -44,6 +44,8 @@ import { AjouterProduitComponent } from './liste-emballage/ajouter-produit/ajout
 import { ListerEmballageComponent } from './liste-emballage/lister-emballage/lister-emballage.component';
 import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-emballage/menu-ajouter-emballage.component';
 
+import { NgxBarcodeModule } from 'ngx-barcode';
+
 
 @NgModule({
   declarations: [
@@ -95,6 +97,7 @@ import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-em
       apiKey: 'AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8',
       libraries: ['places']
     }),
+    NgxBarcodeModule
   ],
   providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 

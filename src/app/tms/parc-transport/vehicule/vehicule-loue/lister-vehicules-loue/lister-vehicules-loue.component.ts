@@ -23,6 +23,11 @@ export class ListerVehiculesLoueComponent implements OnInit {
   acces: any;
   tms: any;
 
+  // variables des filtres
+  filtreMatricule: string = '';
+  filtreProprietaire: string = '';
+  filtreDisponibilte: string = '';
+
   constructor(
     public service: VehiculeService,
     private dialog: MatDialog,
@@ -171,4 +176,14 @@ export class ListerVehiculesLoueComponent implements OnInit {
       }
     });
   }
+
+    // fonction pour filtrer mission
+    filtrerVehicule(){
+      this.filtreMatricule == undefined ? this.filtreMatricule = "": "";
+      this.filtreProprietaire == undefined ? this.filtreProprietaire = "": "";
+      this.filtreDisponibilte == undefined ? this.filtreDisponibilte = "": "";
+      this.service.filtrerVehiculeLoues(this.filtreMatricule,this.filtreProprietaire,this.filtreDisponibilte).subscribe((result) => {
+        this.vehiculesLoues = result;
+      })
+    }
 }

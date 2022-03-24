@@ -266,11 +266,11 @@ export class ListerVehiculesComponent implements OnInit {
 
 
   // fonction pour filtrer mission
-  filtrerMission(){
+  filtrerVehicule(){
     this.filtreMatricule == undefined ? this.filtreMatricule = "": "";
     this.filtreCategorie == undefined ? this.filtreCategorie = "": "";
     this.filtreDisponibilte == undefined ? this.filtreDisponibilte = "": "";
-    this.service.filtrerVehicule(this.filtreMatricule,this.filtreCategorie,this.filtreDisponibilte).subscribe((result) => {
+    this.service.filtrerVehicule(this.filtreMatricule,"",this.filtreDisponibilte).subscribe((result) => {
       this.vehicules = result;
     })
   }

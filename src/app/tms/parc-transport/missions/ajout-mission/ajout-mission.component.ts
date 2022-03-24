@@ -449,7 +449,7 @@ export class AjoutMissionComponent implements OnInit {
   // get la liste des vehicules loués
   async getVehiculeLoueDisponibles() {
     let listeVehiculesLoues = await this.serviceVehicule
-      .filtrerVehiculeLoues('etat_vehicule', 'Disponible')
+      .filtrerVehiculeLoues('', '', 'Disponible')
       .toPromise();
     return listeVehiculesLoues;
   }
