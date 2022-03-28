@@ -953,9 +953,9 @@ export class DetailComponent implements OnInit {
     } else {
       this.serviceChauffeur
         .employe(Number(idChauffeur))
-        .subscribe(chauffeur => {
-          this.chauffeur = chauffeur
-        })
+        .subscribe((chauffeur) => {
+          this.chauffeur = chauffeur;
+        });
     }
     await this.getListeCommandes();
   }
@@ -1153,7 +1153,11 @@ export class ConfirmerLivraison implements OnInit {
     if (event.code == 'Enter') {
       if (this.qrCode)
         reponse = await this.serviceMission
-          .livrerCommande(this.qrCode, this.data.mission.id, this.data.mission.idCommandes)
+          .livrerCommande(
+            this.qrCode,
+            this.data.mission.id,
+            this.data.mission.idCommandes
+          )
           .toPromise();
       this.qrCode = '';
       if (reponse[0]) {
@@ -1762,5 +1766,26 @@ export class PlanChargement implements OnInit {
       block: 'start',
       inline: 'nearest',
     });
+  }
+}
+
+// *********************************************** dialog cloturer mission ******************************
+@Component({
+  templateUrl: 'cloturer-mission.html',
+  styleUrls: ['cloturer-mission.scss'],
+})
+export class CloturerMission implements OnInit {
+  reservoir: number = 0;
+  constructor(
+    private dialogRef: MatDialogRef<CloturerMission>,
+    @Inject(MAT_DIALOG_DATA) private data: any
+  ) {}
+
+  ngOnInit() {
+    console.log(this.data.mission);
+  }
+
+  formatLabel(value: number) {
+    return value+'%';
   }
 }

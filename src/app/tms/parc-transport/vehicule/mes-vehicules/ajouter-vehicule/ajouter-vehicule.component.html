@@ -136,6 +136,22 @@
                                     </mat-error>
                                 </mat-form-field>
                             </div>
+                            <!-- input Capacité reservoir -->
+                            <div class="capacite-reservoir">
+                                <mat-form-field class="full-width">
+                                    <mat-label>Capacité du reservoir de carburant en L</mat-label>
+                                    <input matInput placeholder="40" formControlName="capaciteReservoir"
+                                        name="capaciteReservoir" id="capaciteReservoir" type="number" required>
+                                    <mat-error
+                                        *ngIf="caracteristiquesFormGroup.controls['capaciteReservoir'].hasError('required')">
+                                        Champ <strong>Obligatoire</strong>
+                                    </mat-error>
+                                    <mat-error
+                                        *ngIf="caracteristiquesFormGroup.controls['capaciteReservoir'].hasError('pattern')">
+                                        Seuls les <strong>chiffres</strong> sont autorisés
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
                             <!-- input charge utile maximale -->
                             <div class="charge">
                                 <mat-form-field class="full-width">

@@ -388,21 +388,6 @@ export class MissionsChauffeurComponent implements OnInit {
       panelClass: 'custom-dialog-livraison',
       data: { mission: mission },
     });
-    dialogRef.afterClosed().subscribe(async () => {
-      await this.getCommandesMission(this.missionSelectionnee);
-
-      if (
-        this.commandesLivrees.length != 0 &&
-        this.commandesNonLivrees.length == 0
-      ) {
-        await this.serviceMission
-          .modifierEtatMission(this.missionSelectionnee.id, 'Terminée')
-          .toPromise();
-        await this.getMissionsParIdChauffeur();
-        this.missionSelectionnee = this.filtrerMissionsParEtat('Terminée')[0];
-        this.cliquerTerminee();
-      }
-    });
   }
 
   // avoir la position de début depuis le navigateur

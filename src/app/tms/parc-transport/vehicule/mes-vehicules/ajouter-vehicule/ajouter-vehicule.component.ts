@@ -46,8 +46,8 @@ export class AjouterVehiculeComponent implements OnInit {
     public service: VehiculeService,
     public router: Router
   ) {
-    sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1004400");
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1004400');
 
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -68,6 +68,10 @@ export class AjouterVehiculeComponent implements OnInit {
       couleur: ['', [Validators.required]],
       car: ['', [Validators.required]],
       consommationnormale: [
+        '',
+        [Validators.required, Validators.pattern('^[0-9]*$')],
+      ],
+      capaciteReservoir: [
         '',
         [Validators.required, Validators.pattern('^[0-9]*$')],
       ],
@@ -249,6 +253,12 @@ export class AjouterVehiculeComponent implements OnInit {
     formData.append('description', '');
     formData.append('etatVehicule', 'Disponible');
     formData.append('positionVehicule', 'Sfax');
+    formData.append('consommationActuelle', 0);
+    formData.append('historiqueConsommation', '');
+    formData.append(
+      'capaciteReservoir',
+      this.caracteristiquesFormGroup.get('capaciteReservoir').value
+    );
     Swal.fire({
       title: 'Voulez vous enregistrer?',
       showCancelButton: true,

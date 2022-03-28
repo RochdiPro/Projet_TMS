@@ -32,6 +32,7 @@ import {
   ConfirmationAnnulationMission,
   Trajet,
   PlanChargement,
+  CloturerMission
 } from './dialogs/dialogs.component';
 import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
 import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauffeur.component';
@@ -39,6 +40,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
 import { AppInitService } from './services/app-init.service';
+import {MatSliderModule} from '@angular/material/slider';
 
 @NgModule({
   declarations: [
@@ -56,6 +58,7 @@ import { AppInitService } from './services/app-init.service';
     ConfirmationAnnulationMission,
     Trajet,
     PlanChargement,
+    CloturerMission
   ],
   imports: [
     SafePipeModule,
@@ -81,6 +84,7 @@ import { AppInitService } from './services/app-init.service';
     MatNativeDateModule,
     DragDropModule,
     MatProgressSpinnerModule,
+    MatSliderModule
   ],
   providers: [
     MatDatepickerModule,

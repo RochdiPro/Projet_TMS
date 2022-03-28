@@ -1,0 +1,31 @@
+<h1>Cloturer Mission</h1>
+<div class="grid-container">
+    <div class="grid-item"><strong>ID:</strong></div>
+    <div class="grid-item">1</div>
+    <div class="grid-item"><strong>ID chauffeur:</strong></div>
+    <div class="grid-item">1</div>
+    <div class="grid-item"><strong>Nom chauffeur:</strong></div>
+    <div class="grid-item">1</div>
+    <div class="grid-item"><strong>Vehicule:</strong></div>
+    <div class="grid-item">1</div>
+    <div class="grid-item"><strong>Type vehicule:</strong></div>
+    <div class="grid-item">1</div>
+    <div class="grid-item"><strong>Date de début:</strong></div>
+    <div class="grid-item">1</div>
+    <div class="grid-item"><strong>Date de fin:</strong></div>
+    <div class="grid-item">1</div>
+    <div class="grid-item"><strong>Durée:</strong></div>
+    <div class="grid-item">1</div>
+</div>
+<div class="full-width">
+    <mat-form-field class="km-actuel" appearance="fill">
+        <mat-label>Km actuel</mat-label>
+        <input matInput placeholder="Ex. 10000">
+    </mat-form-field>
+    <div class="carburant">
+        <label for="carburant">Carburant restant</label>
+        <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="1" step="1" min="0" max="100"
+            aria-label="units" color="primary" [(ngModel)]="reservoir"></mat-slider>
+        <div>{{reservoir}}%</div>
+    </div>
+</div>

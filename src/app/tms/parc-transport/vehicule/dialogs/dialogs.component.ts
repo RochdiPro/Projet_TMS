@@ -1031,8 +1031,9 @@ export class NotificationComponent implements OnInit {
     }
     return this.taxeExiste;
   }
-
+  compteur: any = 0
   testConsommation() {
+    console.log(this.compteur++);
     //tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale
     if (this.vehicule.distanceparcourie != null) {
       this.carburantConsomme = this.carburants.filter(
@@ -1044,6 +1045,11 @@ export class NotificationComponent implements OnInit {
           this.vehicule.distanceparcourie) *
         100
       ).toFixed(2);
+      console.log(this.vehicule.montantConsomme + "montant");
+      console.log(this.carburantConsomme[0].prixCarburant + "carb");
+      console.log(this.vehicule.distanceparcourie + "distance");
+      console.log("montant/carb/distance* 100");
+      console.log(this.vehicule.montantConsomme +" /"+ this.carburantConsomme[0].prixCarburant +"/"+  this.vehicule.distanceparcourie +" * " + 100+" ")
       if (this.vehicule.consommationNormale + 1 < this.consommationActuelle) {
         this.consommationAnormale = true;
       } else {

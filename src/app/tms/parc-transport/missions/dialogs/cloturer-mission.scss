@@ -1,0 +1,12 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 10px;
+}
+.full-width {
+  width: 100%;
+}
+
+mat-slider {
+    width: 300px;
+  }
