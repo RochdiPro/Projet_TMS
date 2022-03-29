@@ -1776,16 +1776,92 @@ export class PlanChargement implements OnInit {
 })
 export class CloturerMission implements OnInit {
   reservoir: number = 0;
+  kmActuel: number;
+  mission: any;
+  vehicule: any;
+  consommationActuelle: number = 0;
+  distanceParcourue: number = 0;
   constructor(
     private dialogRef: MatDialogRef<CloturerMission>,
-    @Inject(MAT_DIALOG_DATA) private data: any
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private serviceMission: MissionsService
   ) {}
 
   ngOnInit() {
-    console.log(this.data.mission);
+    this.mission = this.data.mission;
+    this.serviceMission
+      .vehicule(this.mission.matricule)
+      .subscribe((vehicule) => {
+        this.vehicule = vehicule;
+        this.reservoir = this.vehicule.reservoir;
+        this.kmActuel = this.vehicule.kmactuel
+      });
   }
 
   formatLabel(value: number) {
-    return value+'%';
+    return value + '%';
+  }
+
+  changerHistorique(){
+    let historique = this.vehicule.historiqueConsommation;
+    let distanceParcourue = this.calculerDitanceParcourue();
+    historique += "#idChauffeur:" + this.mission.idChauffeur + "/distance:" + distanceParcourue + "/consommation:" + this.consommationActuelle;
+    return historique;
+  }
+
+  calculerConsommationActuelle(){
+    this.calculerDitanceParcourue();
+    let carburantConsomme = ((this.vehicule.reservoir - this.reservoir)*this.vehicule.capaciteReservoir)/100;
+    this.consommationActuelle = (carburantConsomme*100)/this.distanceParcourue;
+  }
+
+  calculerConsommation(){
+    let sommeConsommations = 0;
+    let consommation = 0;
+    let historiques = this.vehicule.historiqueConsommation.split('#');
+    if (historiques.length > 1) {
+      for (let i = 1; i < historiques.length; i++) {
+        const historique = historiques[i];
+        sommeConsommations += Number(historique.split('/')[2].split(':')[1])
+      }
+    }
+    sommeConsommations += this.consommationActuelle;
+    consommation = sommeConsommations/(historiques.length);
+    return consommation
+  }
+
+  calculerDitanceParcourue(){
+    let distanceParcourue = this.kmActuel - this.vehicule.kmactuel;
+    this.distanceParcourue = distanceParcourue;
+  }
+
+  enregistrer() {
+    let consommation = this.calculerConsommation();
+    let historique = this.changerHistorique()
+    this.calculerConsommationActuelle();
+    this.changerHistorique();
+    this.serviceMission
+      .modifierConsommation(
+        this.vehicule.id,
+        this.kmActuel,
+        consommation,
+        historique,
+        this.reservoir
+      )
+      .subscribe((result) => {
+        this.serviceMission
+          .modifierEtatMission(this.mission.id, 'Terminée')
+          .subscribe((result) => {
+            if (result) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Commande bien reçue',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              this.dialogRef.close();
+            }
+          });
+      });
   }
 }

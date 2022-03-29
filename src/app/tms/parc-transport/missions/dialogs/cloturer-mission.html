@@ -1,31 +1,38 @@
 <h1>Cloturer Mission</h1>
 <div class="grid-container">
     <div class="grid-item"><strong>ID:</strong></div>
-    <div class="grid-item">1</div>
+    <div class="grid-item">{{mission.id}}</div>
     <div class="grid-item"><strong>ID chauffeur:</strong></div>
-    <div class="grid-item">1</div>
+    <div class="grid-item">{{mission.idChauffeur}}</div>
     <div class="grid-item"><strong>Nom chauffeur:</strong></div>
-    <div class="grid-item">1</div>
+    <div class="grid-item">{{mission.nomChauffeur}}</div>
     <div class="grid-item"><strong>Vehicule:</strong></div>
-    <div class="grid-item">1</div>
+    <div class="grid-item">{{mission.matricule}}</div>
     <div class="grid-item"><strong>Type vehicule:</strong></div>
-    <div class="grid-item">1</div>
+    <div class="grid-item">{{mission.typeVehicule}}</div>
     <div class="grid-item"><strong>Date de début:</strong></div>
     <div class="grid-item">1</div>
     <div class="grid-item"><strong>Date de fin:</strong></div>
     <div class="grid-item">1</div>
     <div class="grid-item"><strong>Durée:</strong></div>
     <div class="grid-item">1</div>
+    <div class="grid-item"><strong>Distance parcouru:</strong></div>
+    <div class="grid-item">{{distanceParcourue}}km</div>
+    <div class="grid-item"><strong>Consommation:</strong></div>
+    <div class="grid-item">{{consommationActuelle}}l/100km</div>
 </div>
-<div class="full-width">
+<div class="full-width flex">
     <mat-form-field class="km-actuel" appearance="fill">
         <mat-label>Km actuel</mat-label>
-        <input matInput placeholder="Ex. 10000">
+        <input matInput placeholder="Ex. 10000" [(ngModel)]="kmActuel" type="number" (keyup)="calculerConsommationActuelle()" (change)="calculerConsommationActuelle()">
     </mat-form-field>
     <div class="carburant">
-        <label for="carburant">Carburant restant</label>
+        <div>Carburant restant:</div>
         <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="1" step="1" min="0" max="100"
-            aria-label="units" color="primary" [(ngModel)]="reservoir"></mat-slider>
+            aria-label="units" color="primary" [(ngModel)]="reservoir" (change)="calculerConsommationActuelle()"></mat-slider>
         <div>{{reservoir}}%</div>
     </div>
+</div>
+<div class="button">
+    <button mat-raised-button class="push-right" color="primary" (click)="enregistrer()">Enregistrer</button>
 </div>
