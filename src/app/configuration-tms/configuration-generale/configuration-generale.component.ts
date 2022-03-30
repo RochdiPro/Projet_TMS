@@ -2,7 +2,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { InfoGeneral } from '../interfaces et classes/info-general';
+import { InfoGeneral } from '../classes/info-general';
 import { ConfigurationTmsService } from '../services/configuration-tms.service';
 
 @Component({

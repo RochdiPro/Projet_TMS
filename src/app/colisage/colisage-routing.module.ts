@@ -8,6 +8,9 @@ import { AjouterProduitComponent } from './liste-emballage/ajouter-produit/ajout
 import { ListeEmballageComponent } from './liste-emballage/liste-emballage.component';
 import { ListerEmballageComponent } from './liste-emballage/lister-emballage/lister-emballage.component';
 import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-emballage/menu-ajouter-emballage.component';
+import { AjouterProduitsComponent } from './produits/ajouter-produit/ajouter-produits.component';
+import { ListerProduitComponent } from './produits/lister-produit/lister-produit.component';
+import { ProduitsComponent } from './produits/produits.component';
 import { AjouterSupportComponent } from './supports/ajouter-support/ajouter-support.component';
 import { ListerSupportsComponent } from './supports/lister-supports/lister-supports.component';
 import { ModifierSupportComponent } from './supports/modifier-support/modifier-support.component';
@@ -33,6 +36,12 @@ const routes: Routes = [
     path: 'commandes', component: CommandeComponent, children: [
       { path: 'ajout-commande', component: AjouterCommandeComponent },
       { path: 'liste-commande', component: ListerCommandeComponent },
+    ]
+  },
+  {
+    path: 'Produits', component: ProduitsComponent, children: [
+      { path: 'ajout-produit', component: AjouterProduitsComponent },
+      { path: 'liste-produits', component: ListerProduitComponent },
     ]
   }
 ];

@@ -13,7 +13,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
@@ -1543,6 +1543,7 @@ export class Trajet implements OnInit {
 
 // ------------------------------ boite dialog plan chargement -------------------------------------------
 import { fabric } from 'fabric';
+import { kmactuelValidator } from '../../vehicule/kmactuel.validator';
 
 @Component({
   templateUrl: 'plan-chargement.html',
@@ -1776,26 +1777,41 @@ export class PlanChargement implements OnInit {
 })
 export class CloturerMission implements OnInit {
   reservoir: number = 0;
-  kmActuel: number;
   mission: any;
   vehicule: any;
   consommationActuelle: number = 0;
   distanceParcourue: number = 0;
+  form: FormGroup;
   constructor(
     private dialogRef: MatDialogRef<CloturerMission>,
     @Inject(MAT_DIALOG_DATA) private data: any,
-    private serviceMission: MissionsService
+    private serviceMission: MissionsService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
+    this.form = this.fb.group({
+      kmActuel: [
+        0,
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
+      ]
+    });
     this.mission = this.data.mission;
     this.serviceMission
       .vehicule(this.mission.matricule)
       .subscribe((vehicule) => {
         this.vehicule = vehicule;
         this.reservoir = this.vehicule.reservoir;
-        this.kmActuel = this.vehicule.kmactuel
+        this.kmActuel.setValue(this.vehicule.kmactuel)
+        localStorage.setItem('kmactuelV', this.vehicule.kmactuel)
       });
+  }
+  get kmActuel(){
+    return this.form.get('kmActuel')
   }
 
   formatLabel(value: number) {
@@ -1804,15 +1820,16 @@ export class CloturerMission implements OnInit {
 
   changerHistorique(){
     let historique = this.vehicule.historiqueConsommation;
-    let distanceParcourue = this.calculerDitanceParcourue();
-    historique += "#idChauffeur:" + this.mission.idChauffeur + "/distance:" + distanceParcourue + "/consommation:" + this.consommationActuelle;
+    this.calculerDitanceParcourue();
+    historique += "#idChauffeur:" + this.mission.idChauffeur + "/distance:" + this.distanceParcourue + "/consommation:" + this.consommationActuelle;
     return historique;
   }
 
   calculerConsommationActuelle(){
     this.calculerDitanceParcourue();
     let carburantConsomme = ((this.vehicule.reservoir - this.reservoir)*this.vehicule.capaciteReservoir)/100;
-    this.consommationActuelle = (carburantConsomme*100)/this.distanceParcourue;
+    let consommation = (carburantConsomme*100)/this.distanceParcourue;
+    this.consommationActuelle = Math.round((consommation + Number.EPSILON) * 100) / 100
   }
 
   calculerConsommation(){
@@ -1831,7 +1848,7 @@ export class CloturerMission implements OnInit {
   }
 
   calculerDitanceParcourue(){
-    let distanceParcourue = this.kmActuel - this.vehicule.kmactuel;
+    let distanceParcourue = this.kmActuel.value - this.vehicule.kmactuel;
     this.distanceParcourue = distanceParcourue;
   }
 
@@ -1843,7 +1860,7 @@ export class CloturerMission implements OnInit {
     this.serviceMission
       .modifierConsommation(
         this.vehicule.id,
-        this.kmActuel,
+        this.kmActuel.value,
         consommation,
         historique,
         this.reservoir

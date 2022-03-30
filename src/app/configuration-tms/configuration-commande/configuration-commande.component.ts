@@ -4,9 +4,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import Swal from 'sweetalert2';
 import { EtapesCreationData } from '../dialogs/dialogs.component';
-import { CoefficientsFraisLivraison } from '../interfaces et classes/coefficients-frais-livraison';
-import { CoefficientsScoreCommande } from '../interfaces et classes/coefficients-score-commande';
-import { ConfigurationExcel } from '../interfaces et classes/configuration-excel';
+import { CoefficientsFraisLivraison } from '../classes/coefficients-frais-livraison';
+import { CoefficientsScoreCommande } from '../classes/coefficients-score-commande';
+import { ConfigurationExcel } from '../classes/configuration-excel';
 import { ConfigurationTmsService } from '../services/configuration-tms.service';
 
 @Component({

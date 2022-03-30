@@ -1,11 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError } from 'rxjs/operators';
-import { CoefficientsFraisLivraison } from '../interfaces et classes/coefficients-frais-livraison';
-import { CoefficientsScoreCommande } from '../interfaces et classes/coefficients-score-commande';
-import { ConfigurationApplication } from '../interfaces et classes/configuration-application';
-import { ConfigurationExcel } from '../interfaces et classes/configuration-excel';
-import { InfoGeneral } from '../interfaces et classes/info-general';
+import { CoefficientsFraisLivraison } from '../classes/coefficients-frais-livraison';
+import { CoefficientsScoreCommande } from '../classes/coefficients-score-commande';
+import { ConfigurationApplication } from '../classes/configuration-application';
+import { ConfigurationExcel } from '../classes/configuration-excel';
+import { InfoGeneral } from '../classes/info-general';
 const erp = '/ERP/';
 const infonet = '/INFONET/';
 

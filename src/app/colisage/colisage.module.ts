@@ -45,6 +45,8 @@ import { ListerEmballageComponent } from './liste-emballage/lister-emballage/lis
 import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-emballage/menu-ajouter-emballage.component';
 
 import { NgxBarcodeModule } from 'ngx-barcode';
+import { ProduitsComponent } from './produits/produits.component';
+import { ListerProduitComponent } from './produits/lister-produit/lister-produit.component';
 
 
 @NgModule({
@@ -67,7 +69,9 @@ import { NgxBarcodeModule } from 'ngx-barcode';
     ListerEmballageComponent,
     BoiteDialogueModifierPositionComponent,
     BoiteDialogueModifierColisage,
-    InformationCommandeComponent
+    InformationCommandeComponent,
+    ProduitsComponent,
+    ListerProduitComponent
   ],
   imports: [
     CommonModule,

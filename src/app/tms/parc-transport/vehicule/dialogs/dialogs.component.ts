@@ -770,6 +770,7 @@ export class MiseAJourConsommationComponent implements OnInit {
   form: FormGroup;
   vehicule: any;
   idVehicule: any;
+  carburant: any; 
 
   //constructeur
   constructor(
@@ -799,12 +800,36 @@ export class MiseAJourConsommationComponent implements OnInit {
         ],
       ],
     });
+    this.service.carburant(this.vehicule.carburant).subscribe((carburant) => {
+      this.carburant = carburant;
+    })
   }
 
   async chargerVehicule(id: any) {
     //charger le vehicule par son identifiant
     this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
     localStorage.setItem('kmactuelV',this.vehicule.kmactuel);
+  }
+
+  // calculer quantité de carburant
+  calculerQuantiteCarburant(){
+    return this.montantConsomme.value/this.carburant.prixCarburant;
+  }
+
+  // calculer consommation (quantiteCarburant*100)/distance parcourue entre 2 pleins
+  calculerConsommation() {
+    let quantiteCarburant = this.calculerQuantiteCarburant();
+    let historiques = this.vehicule.historiqueConsommation.split('#');
+    let distanceParcourue = 0;
+    if (historiques.length > 1) {
+      for (let i = 1; i < historiques.length; i++) {
+        const historique = historiques[i];
+        distanceParcourue += Number(historique.split('/')[1].split(':')[1])
+      }
+    }
+    distanceParcourue += (this.kmActuel.value - this.vehicule.kmactuel);
+    let consommation = (quantiteCarburant*100)/distanceParcourue;
+    return Math.round((consommation + Number.EPSILON) * 100) / 100
   }
 
   //Bouton Annuler
@@ -815,15 +840,14 @@ export class MiseAJourConsommationComponent implements OnInit {
 
   // Bouton Enregistrer
   async miseAJourConsommation() {
+    let consommation = this.calculerConsommation();
     //Effectuer le mise ajour de consommation
     var formData: any = new FormData();
     formData.append('id', this.idVehicule);
-    formData.append('kmactuel', this.form.get('kmActuel').value);
-    formData.append('montantConsomme', this.form.get('montantConsomme').value);
-    formData.append(
-      'distanceparcourie',
-      Number(this.form.get('kmActuel').value) - Number(this.vehicule.kmactuel)
-    );
+    formData.append('kmactuel', Number(this.kmActuel.value));
+    formData.append('consommation', consommation);
+    formData.append('historiqueConsommation', "");
+    formData.append('reservoir', 100);
     Swal.fire({
       title: 'Voulez vous enregistrer?',
       showCancelButton: true,
@@ -836,6 +860,12 @@ export class MiseAJourConsommationComponent implements OnInit {
         Swal.fire('Consommation enregistrée!', '', 'success');
       }
     });
+  }
+  get montantConsomme() {
+    return this.form.get('montantConsomme')
+  }
+  get kmActuel() {
+    return this.form.get('kmActuel')
   }
 }
 

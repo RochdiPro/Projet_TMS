@@ -69,7 +69,7 @@ export class VehiculeService {
   //mettre a jour le kilométrage d'un vehicule
   public miseajourkm(formData: any) {
     return this.httpClient
-      .put(erp + 'mise-a-jour-km', formData)
+      .put(erp + 'modifier-consommation', formData)
       .pipe(catchError(this.handleError));
   }
 
@@ -122,6 +122,15 @@ export class VehiculeService {
   //lister les carburants
   public carburants() {
     return this.httpClient.get(erp + 'carburants');
+  }
+
+  //get carburant par nom carburant
+  public carburant(carburant: string) {
+    return this.httpClient.get(erp + 'carburant', {
+      params: {
+        carburant: carburant
+      }, observe: 'body'
+    });
   }
 
   //creer nouveau carburant
