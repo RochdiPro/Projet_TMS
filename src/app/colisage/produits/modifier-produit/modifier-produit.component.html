@@ -1,5 +1,5 @@
 <div *ngIf="wms >= 2">
-    <h1>Ajouter Produit </h1>
+    <h1>Modifier Produit </h1>
     <div>
         <form [formGroup]="produitFormGroup">
             <div class="produits">
@@ -135,6 +135,7 @@
                 </div>
             </div>
             <div class="float-right">
+                <button mat-button color="warn" (click)="annuler()" >Annuler</button>
                 <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()"
                     [disabled]="produitFormGroup.invalid">Enregistrer</button>
             </div>

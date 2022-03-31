@@ -44,10 +44,19 @@ export class ConfigurationGeneraleComponent implements OnInit {
   creerFormGroup() {
     this.formConfigurationInformationsGeneral = this.fb.group({
       nomSociete: ['', Validators.required],
+      matriculeFiscale: ['', Validators.required],
+      registreCommerce: ['', Validators.required],
+      banque: ['', Validators.required],
+      rib: ['', Validators.required],
       numeroTelephone: [
         '',
         [Validators.required, Validators.pattern('^((\\+216-?)|0)?[0-9]{8}$')],
       ],
+      numeroFax: [
+        '',
+        [Validators.required, Validators.pattern('^((\\+216-?)|0)?[0-9]{8}$')],
+      ],
+      siteWeb: ['', Validators.required],
       adresseEmail: [
         '',
         [
@@ -108,10 +117,28 @@ export class ConfigurationGeneraleComponent implements OnInit {
   get nomSociete() {
     return this.formConfigurationInformationsGeneral.get('nomSociete');
   }
+  get matriculeFiscale() {
+    return this.formConfigurationInformationsGeneral.get('matriculeFiscale');
+  }
+  get registreCommerce() {
+    return this.formConfigurationInformationsGeneral.get('registreCommerce');
+  }
   get numeroTelephone() {
     return this.formConfigurationInformationsGeneral.get('numeroTelephone');
   }
+  get numeroFax() {
+    return this.formConfigurationInformationsGeneral.get('numeroFax');
+  }
+  get siteWeb() {
+    return this.formConfigurationInformationsGeneral.get('siteWeb');
+  }
   get email() {
     return this.formConfigurationInformationsGeneral.get('adresseEmail');
+  }
+  get banque() {
+    return this.formConfigurationInformationsGeneral.get('banque');
+  }
+  get rib() {
+    return this.formConfigurationInformationsGeneral.get('rib');
   }
 }

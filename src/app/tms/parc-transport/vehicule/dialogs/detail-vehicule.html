@@ -80,14 +80,14 @@
       <li class="list-group-item">{{vehicule.carburant}}</li>
     </div>
     <!-- afficher consomation normale -->
-    <div class="position-relative form-group"><label for="consommationnormale" class="">Consommation Normale</label>
+    <div class="position-relative form-group"><label for="consommationnormale" class="">Consommation Normale L/100km</label>
       <li class="list-group-item">{{vehicule.consommationNormale}}</li>
     </div>
     <!-- afficher consomation actuelle -->
-    <div class="position-relative form-group" *ngIf="vehicule.distanceparcourie!=null"><label for="consommationactuelle"
-        class="">Consommation Actulle</label>
+    <div class="position-relative form-group"><label for="consommationactuelle"
+        class="">Consommation Actulle L/100km</label>
       <li class="list-group-item">
-        {{(((vehicule.montantConsomme/carburant.prixCarburant)/vehicule.distanceparcourie)*100).toFixed(2)}}</li>
+        {{(vehicule.consommation).toFixed(2)}}</li>
     </div>
     <!-- afficher charge utile -->
     <div class="position-relative form-group"><label for="charge_utile" class="">Charge Utile</label>

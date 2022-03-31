@@ -8,6 +8,7 @@ const erp = '/ERP/';
 })
 export class ProduitService {
   handleError: any;
+  prod: Produit;
   constructor(private httpClient: HttpClient) {}
 
   // get liste produits
@@ -41,9 +42,25 @@ export class ProduitService {
 
   // supprimer produit
   public supprimerProduit(id: string) {
-    return this.httpClient.delete(erp + 'delete-produit', {
-      params: { id: id },
-      observe: 'body',
-    }).pipe(catchError(this.handleError));
+    return this.httpClient
+      .delete(erp + 'delete-produit', {
+        params: { id: id },
+        observe: 'body',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  // filtrer produit produits
+  public filtrerProduits(id: string, marque: string, nom: string) {
+    return this.httpClient
+      .get(erp + 'filtre-produit', {
+        params: {
+          id: id,
+          marque: marque,
+          nom: nom,
+        },
+        observe: 'body',
+      })
+      .pipe(catchError(this.handleError));
   }
 }

@@ -888,7 +888,6 @@ export class NotificationComponent implements OnInit {
   taxeExiste = false;
   consommationAnormale = false;
   notificationExiste = false;
-  carburants: any;
   datePresent = new Date();
   carburantConsomme: any;
   consommationActuelle: any;
@@ -919,16 +918,12 @@ export class NotificationComponent implements OnInit {
     this.idVehicule = this.data.id; //charger id vehicule
     await this.chargerVehicule();
     this.testerExistanceReclamation();
-    this.chargerCarburants();
+    this.testePresenceNotification();
   }
 
   async chargerVehicule() {
     //cahrger vehicule par identifiant
     this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
-  }
-
-  async chargerCarburants() {
-    this.carburants = await this.service.carburants().toPromise();
   }
 
   testerExistanceReclamation() {
@@ -1019,7 +1014,6 @@ export class NotificationComponent implements OnInit {
     } else {
       this.entretienExiste = false;
     }
-    return this.entretienExiste;
   }
 
   testExpirationVisite() {
@@ -1032,7 +1026,6 @@ export class NotificationComponent implements OnInit {
     } else {
       this.visiteExiste = false;
     }
-    return this.visiteExiste;
   }
 
   testExpirationAssurance() {
@@ -1046,7 +1039,6 @@ export class NotificationComponent implements OnInit {
     } else {
       this.assuranceExiste = false;
     }
-    return this.assuranceExiste;
   }
 
   testExpirationTaxe() {
@@ -1059,34 +1051,16 @@ export class NotificationComponent implements OnInit {
     } else {
       this.taxeExiste = false;
     }
-    return this.taxeExiste;
   }
-  compteur: any = 0
+
   testConsommation() {
-    console.log(this.compteur++);
     //tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale
-    if (this.vehicule.distanceparcourie != null) {
-      this.carburantConsomme = this.carburants.filter(
-        (x: any) => (x.nom = this.vehicule.carburant)
-      );
-      this.consommationActuelle = (
-        (this.vehicule.montantConsomme /
-          this.carburantConsomme[0].prixCarburant /
-          this.vehicule.distanceparcourie) *
-        100
-      ).toFixed(2);
-      console.log(this.vehicule.montantConsomme + "montant");
-      console.log(this.carburantConsomme[0].prixCarburant + "carb");
-      console.log(this.vehicule.distanceparcourie + "distance");
-      console.log("montant/carb/distance* 100");
-      console.log(this.vehicule.montantConsomme +" /"+ this.carburantConsomme[0].prixCarburant +"/"+  this.vehicule.distanceparcourie +" * " + 100+" ")
+      this.consommationActuelle = this.vehicule.consommation;
       if (this.vehicule.consommationNormale + 1 < this.consommationActuelle) {
         this.consommationAnormale = true;
       } else {
         this.consommationAnormale = false;
       }
-    }
-    return this.consommationAnormale;
   }
 
   testePresenceNotification() {
@@ -1108,7 +1082,6 @@ export class NotificationComponent implements OnInit {
     } else {
       this.notificationExiste = true;
     }
-    return this.notificationExiste;
   }
 }
 

@@ -1,1 +1,93 @@
-<p>lister-produit works!</p>
+<div *ngIf="wms >= 1">
+    <!-- des champs de filtrage du tableau liste produits -->
+    <div class="filtres">
+        <!-- filtrage par id de produit -->
+        <mat-form-field class="custom-width">
+            <mat-label>ID</mat-label>
+            <input matInput placeholder="ID" id="id" [(ngModel)]="filtreId" (keyup)="filtrerProduits()">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <!-- filtrage selon marque -->
+        <mat-form-field class="custom-width">
+            <mat-label>Marque</mat-label>
+            <input matInput placeholder="Marque" id="marque" [(ngModel)]="filtreMarque" (keyup)="filtrerProduits()">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <!-- filtrage selon nom produit -->
+        <mat-form-field class="custom-width">
+            <mat-label>Nom</mat-label>
+            <input matInput placeholder="Nom" id="nom" [(ngModel)]="filtreNom" (keyup)="filtrerProduits()">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+    </div>
+    <!-- Table liste produits -->
+    <div class="mat-elevation-z8">
+        <mat-table [dataSource]="dataSource" matSort>
+
+            <!-- Colonne id -->
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="id"> {{element.id}} </mat-cell>
+            </ng-container>
+
+            <!-- Colonne marque -->
+            <ng-container matColumnDef="marque">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Marque
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="marque">{{element.marque}}</mat-cell>
+            </ng-container>
+
+            <!-- Colonne nom -->
+            <ng-container matColumnDef="nom">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Nom
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Nom"> {{element.nom}} </mat-cell>
+            </ng-container>
+
+            <!-- Colonne unite -->
+            <ng-container matColumnDef="unite">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Unité
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Unité"> {{element.unite}} </mat-cell>
+            </ng-container>
+
+            <!-- Colonne valeur unite -->
+            <ng-container matColumnDef="valeurUnite">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Valeur Unité </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Valeur Unité">{{element.valeurUnite}}</mat-cell>
+            </ng-container>
+
+            <!-- Colonne code a barre -->
+            <ng-container matColumnDef="codeBarre">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Code à Barre </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Unité"> {{element.codeBarre}} </mat-cell>
+            </ng-container>
+
+            <!-- Colonne poids -->
+            <ng-container matColumnDef="poids">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Poids(Kg)</mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Poids(Kg)"> {{element.poids}}
+                </mat-cell>
+            </ng-container>
+            <!-- Colonne volume -->
+            <ng-container matColumnDef="volume">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Volume(m³)</mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Volume(m³)"> {{element.volume}} </mat-cell>
+            </ng-container>
+            <!-- Colonne actions -->
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> actions</mat-header-cell>
+                <mat-cell *matCellDef="let element"> <button mat-icon-button (click)="modifierProduit(element)"><mat-icon>edit</mat-icon></button> </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+
+
+        <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+</div>
