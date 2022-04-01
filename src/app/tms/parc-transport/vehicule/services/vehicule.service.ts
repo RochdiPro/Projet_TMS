@@ -128,8 +128,9 @@ export class VehiculeService {
   public carburant(carburant: string) {
     return this.httpClient.get(erp + 'carburant', {
       params: {
-        carburant: carburant
-      }, observe: 'body'
+        carburant: carburant,
+      },
+      observe: 'body',
     });
   }
 
@@ -206,5 +207,21 @@ export class VehiculeService {
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
+  }
+
+  public modifierConsommation(
+    id: any,
+    kmActuel: any,
+    consommation: any,
+    historiqueConsommation: any,
+    reservoir: any
+  ) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    formData.append('kmactuel', Number(kmActuel));
+    formData.append('consommation', consommation);
+    formData.append('historiqueConsommation', historiqueConsommation);
+    formData.append('reservoir', reservoir);
+    return this.httpClient.put(erp + 'modifier-consommation', formData);
   }
 }

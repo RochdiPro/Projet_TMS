@@ -190,7 +190,7 @@ export class DetailVehiculeComponent implements OnInit {
     var carosserie = this.carosserie.filter(
       (element) => element.value === this.vehicule.categories
     );
-    var nomCarosserie = carosserie[0].name.split(" ")
+    var nomCarosserie = carosserie[0].name.split(' ');
     return {
       pageSize: 'A4',
       pageMargins: [40, 95, 40, 60],
@@ -271,7 +271,7 @@ export class DetailVehiculeComponent implements OnInit {
               width: 'auto',
             },
             {
-              text: nomCarosserie[0] + "\n" + nomCarosserie[1],
+              text: nomCarosserie[0] + '\n' + nomCarosserie[1],
               bold: true,
               fontSize: 9,
               margin: [91, 18.5, 0, 0],
@@ -678,8 +678,8 @@ export class MajVehiculeComponent implements OnInit {
     this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
   }
 
-  async getCarburant(){
-    this.carburants= await this.service.carburants().toPromise()
+  async getCarburant() {
+    this.carburants = await this.service.carburants().toPromise();
   }
 
   // Bouton Annuler
@@ -749,9 +749,7 @@ export class MajVehiculeComponent implements OnInit {
       cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service
-          .miseajourvehicule(formData)
-          .toPromise();
+        await this.service.miseajourvehicule(formData).toPromise();
         this.fermerMiseAJourVehicule();
         Swal.fire('Modifications enregistrées!', '', 'success');
       }
@@ -766,58 +764,108 @@ export class MajVehiculeComponent implements OnInit {
   styleUrls: ['./maj-consommation.scss'],
 })
 export class MiseAJourConsommationComponent implements OnInit {
-  //declaration des variables
-  form: FormGroup;
+  reservoir: number = 0;
+  mission: any;
   vehicule: any;
-  idVehicule: any;
-  carburant: any; 
+  consommationActuelle: number = 0;
+  distanceParcourue: number = 0;
+  form: FormGroup;
 
-  //constructeur
+  checkBoxRemplirreservoir = false;
+  sliderReservoirEstActive = true;
   constructor(
-    public dialogRef: MatDialogRef<MiseAJourConsommationComponent>,
-    public fb: FormBuilder,
-    public service: VehiculeService,
-    public _router: Router,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    private dialogRef: MatDialogRef<MiseAJourConsommationComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private service: VehiculeService,
+    private fb: FormBuilder
   ) {}
-  async ngOnInit() {
-    this.idVehicule = this.data.id; //pour charger l'id du vehicule a modifier sa consommation
-    await this.chargerVehicule(this.idVehicule);
+
+  ngOnInit() {
     this.form = this.fb.group({
       kmActuel: [
-        this.vehicule.kmactuel,
+        0,
         [
           Validators.required,
           Validators.pattern('^[0-9]*$'),
           kmactuelValidator,
         ],
       ],
-      montantConsomme: [
-        this.vehicule.montantConsomme,
-        [
-          Validators.required,
-          Validators.pattern('(^[0-9]{1,9})+(.[0-9]{1,4})?$'),
-        ],
-      ],
+      idChauffeur: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
     });
-    this.service.carburant(this.vehicule.carburant).subscribe((carburant) => {
-      this.carburant = carburant;
-    })
+    this.vehicule = this.data.vehicule;
+    this.reservoir = this.vehicule.reservoir;
+    this.kmActuel.setValue(this.vehicule.kmactuel);
+    localStorage.setItem('kmactuelV', this.vehicule.kmactuel);
+  }
+  get kmActuel() {
+    return this.form.get('kmActuel');
   }
 
-  async chargerVehicule(id: any) {
-    //charger le vehicule par son identifiant
-    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
-    localStorage.setItem('kmactuelV',this.vehicule.kmactuel);
+  formatLabel(value: number) {
+    return value + '%';
   }
 
-  // calculer quantité de carburant
-  calculerQuantiteCarburant(){
+  changerHistorique() {
+    let historique = this.vehicule.historiqueConsommation;
+    this.calculerDitanceParcourue();
+    historique +=
+      '#idChauffeur:' +
+      this.mission.idChauffeur +
+      '/distance:' +
+      this.distanceParcourue +
+      '/consommation:' +
+      this.consommationActuelle;
+    return historique;
+  }
+
+  calculerConsommationActuelle() {
+    this.calculerDitanceParcourue();
+    let carburantConsomme =
+      ((this.vehicule.reservoir - this.reservoir) *
+        this.vehicule.capaciteReservoir) /
+      100;
+    let consommation = (carburantConsomme * 100) / this.distanceParcourue;
+    this.consommationActuelle =
+      Math.round((consommation + Number.EPSILON) * 100) / 100;
+  }
+
+  calculerConsommation() {
+    let sommeConsommations = 0;
+    let consommation = 0;
+    let historiques = this.vehicule.historiqueConsommation.split('#');
+    if (historiques.length > 1) {
+      for (let i = 1; i < historiques.length; i++) {
+        const historique = historiques[i];
+        sommeConsommations += Number(historique.split('/')[2].split(':')[1]);
+      }
+    }
+    sommeConsommations += this.consommationActuelle;
+    consommation = sommeConsommations / historiques.length;
+    return consommation;
+  }
+
+  calculerDitanceParcourue() {
+    let distanceParcourue = this.kmActuel.value - this.vehicule.kmactuel;
+    this.distanceParcourue = distanceParcourue;
+  }
+
+  remplirReservoir() {
+    if (this.checkBoxRemplirreservoir) {
+      this.reservoir = 100;
+      this.sliderReservoirEstActive = false;
+    } else {
+      this.sliderReservoirEstActive = true;
+      this.reservoir = this.vehicule.reservoir;
+    }
+  }
+
+   // calculer quantité de carburant
+   calculerQuantiteCarburant(){
     return this.montantConsomme.value/this.carburant.prixCarburant;
   }
 
   // calculer consommation (quantiteCarburant*100)/distance parcourue entre 2 pleins
-  calculerConsommation() {
+  calculerConsommationRemplissage() {
     let quantiteCarburant = this.calculerQuantiteCarburant();
     let historiques = this.vehicule.historiqueConsommation.split('#');
     let distanceParcourue = 0;
@@ -832,40 +880,35 @@ export class MiseAJourConsommationComponent implements OnInit {
     return Math.round((consommation + Number.EPSILON) * 100) / 100
   }
 
+  enregistrer() {
+    let consommation = this.calculerConsommation();
+    let historique = this.changerHistorique();
+    this.calculerConsommationActuelle();
+    this.changerHistorique();
+    this.service
+      .modifierConsommation(
+        this.vehicule.id,
+        this.kmActuel.value,
+        consommation,
+        historique,
+        this.reservoir
+      )
+      .subscribe((result) => {
+        if (result) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Commande bien reçue',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          this.dialogRef.close();
+        }
+      });
+  }
   //Bouton Annuler
   fermerMiseAJourConsommation(): void {
     // fermer la boite de dialogue
     this.dialogRef.close();
-  }
-
-  // Bouton Enregistrer
-  async miseAJourConsommation() {
-    let consommation = this.calculerConsommation();
-    //Effectuer le mise ajour de consommation
-    var formData: any = new FormData();
-    formData.append('id', this.idVehicule);
-    formData.append('kmactuel', Number(this.kmActuel.value));
-    formData.append('consommation', consommation);
-    formData.append('historiqueConsommation', "");
-    formData.append('reservoir', 100);
-    Swal.fire({
-      title: 'Voulez vous enregistrer?',
-      showCancelButton: true,
-      confirmButtonText: 'Oui',
-      cancelButtonText: 'Non',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await this.service.miseajourkm(formData).toPromise();
-        this.fermerMiseAJourConsommation();
-        Swal.fire('Consommation enregistrée!', '', 'success');
-      }
-    });
-  }
-  get montantConsomme() {
-    return this.form.get('montantConsomme')
-  }
-  get kmActuel() {
-    return this.form.get('kmActuel')
   }
 }
 
@@ -897,7 +940,7 @@ export class NotificationComponent implements OnInit {
   nom: any;
   acces: any;
   tms: any;
-  
+
   //consructeur
   constructor(
     public dialogRef: MatDialogRef<NotificationComponent>,
@@ -905,14 +948,13 @@ export class NotificationComponent implements OnInit {
     public _router: Router,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.nom = sessionStorage.getItem('Utilisateur'); 
-    this.acces = sessionStorage.getItem('Acces'); 
-
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
     const numToSeparate = this.acces;
-    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
-  
-    this.tms = Number( arrayOfDigits[3])
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
   }
   async ngOnInit() {
     this.idVehicule = this.data.id; //charger id vehicule
@@ -959,9 +1001,7 @@ export class NotificationComponent implements OnInit {
       cancelButtonText: 'Annuler',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service
-          .reclamationvehicule(formData)
-          .toPromise();
+        await this.service.reclamationvehicule(formData).toPromise();
         Swal.fire('Supprimé!', 'La réclamation a été supprimée.', 'success');
       }
     });
@@ -1055,12 +1095,12 @@ export class NotificationComponent implements OnInit {
 
   testConsommation() {
     //tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale
-      this.consommationActuelle = this.vehicule.consommation;
-      if (this.vehicule.consommationNormale + 1 < this.consommationActuelle) {
-        this.consommationAnormale = true;
-      } else {
-        this.consommationAnormale = false;
-      }
+    this.consommationActuelle = this.vehicule.consommation;
+    if (this.vehicule.consommationNormale + 1 < this.consommationActuelle) {
+      this.consommationAnormale = true;
+    } else {
+      this.consommationAnormale = false;
+    }
   }
 
   testePresenceNotification() {
@@ -1139,9 +1179,7 @@ export class ReclamationComponent implements OnInit {
       cancelButtonText: 'Annuler',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service
-          .reclamationvehicule(formData)
-          .toPromise();
+        await this.service.reclamationvehicule(formData).toPromise();
         this.dialogRef.close();
         Swal.fire('Réclamation enregistrée!', '', 'success');
       }

@@ -80,7 +80,7 @@
                         <mat-form-field class="full-width">
                             <mat-label>Longueur</mat-label>
                             <input matInput formControlName="longueur" name="longueur" id="longueur" type="text"
-                                required (keyup)="activerDimensions()" [disabled]="!dimensionsActive">
+                                required (keyup)="activerDimensions()">
                             <mat-error *ngIf="produitFormGroup.controls['longueur'].hasError('required')">
                                 Champ <strong>Obligatoire</strong>
                             </mat-error>
@@ -94,7 +94,7 @@
                         <mat-form-field class="full-width">
                             <mat-label>Largeur</mat-label>
                             <input matInput formControlName="largeur" name="largeur" id="largeur" type="text" required
-                                (keyup)="activerDimensions()" [disabled]="!dimensionsActive">
+                                (keyup)="activerDimensions()">
                             <mat-error *ngIf="produitFormGroup.controls['largeur'].hasError('required')">
                                 Champ <strong>Obligatoire</strong>
                             </mat-error>
@@ -108,7 +108,7 @@
                         <mat-form-field class="full-width">
                             <mat-label>Hauteur</mat-label>
                             <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="text" required
-                                (keyup)="activerDimensions()" [disabled]="!dimensionsActive">
+                                (keyup)="activerDimensions()">
                             <mat-error *ngIf="produitFormGroup.controls['hauteur'].hasError('required')">
                                 Champ <strong>Obligatoire</strong>
                             </mat-error>
@@ -122,7 +122,7 @@
                         <mat-form-field class="full-width">
                             <mat-label>Volume</mat-label>
                             <input matInput formControlName="volume" name="volume" id="volume" type="text" required
-                                (keyup)="activerVolume()" [disabled]="!volumeActive">
+                                (keyup)="activerVolume()">
                             <mat-error *ngIf="produitFormGroup.controls['volume'].hasError('required')">
                                 Champ <strong>Obligatoire</strong>
                             </mat-error>

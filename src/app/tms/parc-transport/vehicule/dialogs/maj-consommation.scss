@@ -1,10 +1,49 @@
-  .full-width {
-    width: 100%;
-  }
-
-  @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
-    h1{ //on change la taille du titre 
-        font-size: 140%;
-        margin-bottom: 2%;
-    }
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  padding: 10px;
+  gap: 10px;
 }
+.full-width {
+  width: 100%;
+}
+
+.flex, .carburant {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+mat-slider {
+  width: 200px;
+}
+mat-form-field {
+  width: 250px;
+}
+.push-right{
+  margin-left: auto;
+}
+.button{
+  width: 100%;
+  display: flex;
+}
+
+//pour mobile
+@media only screen and (max-width: 760px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+    .flex {
+      flex-direction: column;
+      gap: 20px;
+      align-items: unset;
+    }
+    mat-form-field {
+      width: 100%;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 10px;
+      gap: 10px;
+    }
+  }

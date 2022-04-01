@@ -144,11 +144,11 @@ export class ListerVehiculesComponent implements OnInit {
   }
 
   //bouton de mise a jour du consommation du vehicule
-  ouvrirMiseAJourConsommation(id: any): void { //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
+  ouvrirMiseAJourConsommation(vehicule: any): void { //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
     const dialogRef = this.dialog.open(MiseAJourConsommationComponent, {
-      width: '600px',
+      width: '1000px',
       autoFocus: false,
-      data: { id: id }
+      data: { vehicule: vehicule }
     });
     dialogRef.afterClosed().subscribe(res => {
       this.chargerVehicules();

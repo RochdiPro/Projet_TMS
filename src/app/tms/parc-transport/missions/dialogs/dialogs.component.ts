@@ -1382,8 +1382,8 @@ export class ConfirmationAnnulationMission implements OnInit {
 })
 export class Trajet implements OnInit {
   // les coordonnées actuelles prise depuis le navigateur
-  currentLat: any;
-  currentLong: any;
+  latDepart: any;
+  longDepart: any;
 
   // lien map
   lien: any;
@@ -1428,15 +1428,10 @@ export class Trajet implements OnInit {
   }
 
   // avoir la position de début depuis le navigateur
-  chercherMoi() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.currentLat = position.coords.latitude;
-        this.currentLong = position.coords.longitude;
-      });
-    } else {
-      alert('Geolocation is not supported by this browser.');
-    }
+  async getPositionDepart() {
+    let infoGenerals = await this.serviceMission.infosGenerals().toPromise()
+    this.latDepart = infoGenerals.latitude;
+    this.longDepart = infoGenerals.longitude;
   }
 
   // retourne la position de destination d'une commande
@@ -1449,7 +1444,7 @@ export class Trajet implements OnInit {
 
   // créer le meilleur trajet possible
   async createTrajet() {
-    this.chercherMoi();
+    await this.getPositionDepart();
     let positions: any = [];
     let idCommandes = this.data.mission.idCommandes.split('/');
     for (let i = 0; i < idCommandes.length; i++) {
@@ -1462,8 +1457,8 @@ export class Trajet implements OnInit {
         : '';
     }
     var debutChemin = {
-      latitude: this.currentLat,
-      longitude: this.currentLong,
+      latitude: this.latDepart,
+      longitude: this.longDepart,
     };
     var finChemin = positions[positions.length - 1];
     let pointStop = [];

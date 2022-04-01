@@ -236,7 +236,7 @@ export class MissionsService {
       .put(erp + 'modifier-id-commandes', formData)
       .pipe(catchError(this.handleError));
   }
-  
+
   public majEtat(id: any, formData: any) {
     this.httpClient.put(erp + 'miseajouretat/' + id, formData).subscribe(
       (response) => console.log(response),
@@ -265,13 +265,20 @@ export class MissionsService {
   public vehicule(matricule: string) {
     return this.httpClient.get(erp + 'vehicule-matricule', {
       params: {
-        matricule: matricule
-      }, observe: 'body'
+        matricule: matricule,
+      },
+      observe: 'body',
     });
   }
 
-  //get vehicule par sa matricule
-  public modifierConsommation(id: any, kmActuel: any, consommation: any, historiqueConsommation: any, reservoir: any) {
+  //modifier consommation
+  public modifierConsommation(
+    id: any,
+    kmActuel: any,
+    consommation: any,
+    historiqueConsommation: any,
+    reservoir: any
+  ) {
     let formData: any = new FormData();
     formData.append('id', id);
     formData.append('kmactuel', Number(kmActuel));
@@ -285,8 +292,16 @@ export class MissionsService {
   public envoyerNotificationProchaineLivraison(idCommandes: any) {
     return this.httpClient.get(erp + 'envoyer-notification-livraison', {
       params: {
-        idCommandes: idCommandes
-      }, observe: 'body'
+        idCommandes: idCommandes,
+      },
+      observe: 'body',
     });
-  } 
+  }
+
+  //get parmétres infos generals
+  public infosGenerals() {
+    return this.httpClient
+      .get(erp + 'info-general')
+      .pipe(catchError(this.handleError));
+  }
 }

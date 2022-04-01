@@ -1,41 +1,57 @@
 <h1 mat-dialog-title>Mise à Jour Kilométrage Véhicule {{vehicule?.matricule}} </h1> <!-- titre boite dialogue -->
 <!-- contenu boite de dialogue ne s'affiche que si le vehicule est chargé -->
 <div mat-dialog-content *ngIf="vehicule">
-    <form class="" [formGroup]="form" >
-        <!-- input Kilometrage Actuel -->
-        <div class="position-relative form-group">
-            <mat-form-field class="full-width">
-                <mat-label>Kilométrage Actuel</mat-label>
-                <input matInput formControlName="kmActuel" name="km-actuel" id="km-actuel" value="{{vehicule.kmactuel}}"
-                    type="text">
-                <mat-error *ngIf="form.controls['kmActuel'].hasError('required')">
+    <div class="grid-container">
+        <div class="grid-item"><strong>ID chauffeur:</strong></div>
+        <div class="grid-item">
+            <mat-form-field class="id-chauffeur" appearance="fill" [formGroup]="form">
+                <mat-label>Id chauffeur</mat-label>
+                <input matInput formControlName="idChauffeur" type="number">
+                <mat-error *ngIf="form.controls['idChauffeur'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
-                <mat-error *ngIf="form.controls['kmActuel'].hasError('pattern')">
-                    Seuls les <strong>chiffres</strong> sont autorisés
-                </mat-error>
-                <mat-error
-                    *ngIf="form.controls['kmActuel'].hasError('kmvalide') && !(form.controls['kmActuel'].hasError('pattern') || form.controls['kmActuel'].hasError('required'))">
-                    Kilométrage Actuel <strong>Invalide</strong>
-                </mat-error>
-            </mat-form-field>
-        </div>
-        <!-- input carburant consommé -->
-        <div class="position-relative form-group">
-            <mat-form-field class="full-width">
-                <mat-label>Montant Carburant Consommé En TND</mat-label>
-                <input matInput formControlName="montantConsomme" name="montantConsomme" id="montantConsomme"
-                    value="{{vehicule.montantConsomme}}" type="text">
-                <mat-error *ngIf="form.controls['montantConsomme'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
-                </mat-error>
-                <mat-error *ngIf="form.controls['montantConsomme'].hasError('pattern')">
+                <mat-error *ngIf="form.controls['idChauffeur'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
                 </mat-error>
             </mat-form-field>
         </div>
-
-    </form>
+        <div class="grid-item"><strong>Nom chauffeur:</strong></div>
+        <div class="grid-item"></div>
+        <div class="grid-item"><strong>Distance parcouru:</strong></div>
+        <div class="grid-item">{{distanceParcourue}}km</div>
+        <div class="grid-item"><strong>Consommation:</strong></div>
+        <div class="grid-item">{{consommationActuelle}}l/100km</div>
+        <div class="grid-item">
+            <mat-checkbox [(ngModel)]="checkBoxRemplirreservoir" color="primary" (change)="remplirReservoir()">
+                Remplir le réservoir
+            </mat-checkbox>
+        </div>
+    </div>
+    <div class="full-width flex">
+        <mat-form-field class="km-actuel" appearance="fill" [formGroup]="form">
+            <mat-label>Km actuel</mat-label>
+            <input matInput placeholder="Ex. 10000" formControlName="kmActuel" type="number"
+                (keyup)="calculerConsommationActuelle()" (change)="calculerConsommationActuelle()">
+            <mat-error *ngIf="form.controls['kmActuel'].hasError('required')">
+                Champ <strong>Obligatoire</strong>
+            </mat-error>
+            <mat-error *ngIf="form.controls['kmActuel'].hasError('pattern')">
+                Seuls les <strong>chiffres</strong> sont autorisés
+            </mat-error>
+            <mat-error
+                *ngIf="form.controls['kmActuel'].hasError('kmvalide') && !(form.controls['kmActuel'].hasError('pattern') || form.controls['kmActuel'].hasError('required'))">
+                Kilométrage Actuel <strong>Invalide</strong>
+            </mat-error>
+        </mat-form-field>
+        <div class="carburant">
+            <div>Carburant restant:</div>
+            <mat-slider thumbLabel [displayWith]="formatLabel" tickInterval="1" step="1" min="0" max="100"
+                aria-label="units" color="primary" [(ngModel)]="reservoir" (change)="calculerConsommationActuelle();"
+                [disabled]="!sliderReservoirEstActive">
+            </mat-slider>
+            <div>{{reservoir}}%</div>
+        </div>
+    </div>
 </div>
 <div mat-dialog-actions class="float-right" *ngIf="vehicule">
     <!-- Bouton Annuler -->
@@ -43,9 +59,7 @@
     <!-- fin Bouton Annuler -->
 
     <!-- Bouton Enregistrer -->
-    <button mat-button color="primary" class="mb-2 mr-2" (click)="miseAJourConsommation()"
+    <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()"
         [disabled]="form.invalid">Enregistrer</button>
     <!-- fin Bouton Enregistrer -->
 </div>
-
-<button mat-button (click)="calculerConsommation()">text</button>

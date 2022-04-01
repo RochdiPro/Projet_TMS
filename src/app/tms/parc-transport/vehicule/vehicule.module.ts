@@ -32,6 +32,7 @@ import { AjouterVehiculeLoueComponent } from "./vehicule-loue/ajouter-vehicule-l
 import { AjouterVehiculeComponent } from "./mes-vehicules/ajouter-vehicule/ajouter-vehicule.component";
 import { ListerVehiculesComponent } from './mes-vehicules/lister-vehicules/lister-vehicules.component';
 import { ListerVehiculesLoueComponent } from './vehicule-loue/lister-vehicules-loue/lister-vehicules-loue.component';
+import {MatSliderModule} from '@angular/material/slider';
 
 import localeFr from '@angular/common/locales/fr';
 
@@ -80,7 +81,8 @@ registerLocaleData(localeFr, 'fr');
     MatCheckboxModule,
     MatButtonModule,
     MatDatepickerModule,
-    MatStepperModule
+    MatStepperModule,
+    MatSliderModule
   ],
   providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 

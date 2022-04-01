@@ -89,15 +89,37 @@ export class AjouterProduitsComponent implements OnInit {
   }
 
   activerDimensions() {
-    this.dimensionsActive = true;
-    this.volumeActive = false;
+    // let dimensionsSontVides =
+    //   this.longueur.value === '' &&
+    //   this.largeur.value === '' &&
+    //   this.hauteur.value === '';
+    // if (dimensionsSontVides) {
+    //   this.volume.enable();
+    // } else {
+    //   this.volume.disable();
+    // }
   }
 
   activerVolume() {
-    this.dimensionsActive = false;
-    this.volumeActive = true;
+    // if (this.volume.value === '') {
+    //   this.longueur.enable();
+    //   this.largeur.enable();
+    //   this.hauteur.enable();
+    // } else {
+    //   this.longueur.disable();
+    //   this.largeur.disable();
+    //   this.hauteur.disable();
+    // }
   }
-  
+
+  calculerVolume() {
+    return (
+      Number(this.longueur.value) *
+      Number(this.largeur.value) *
+      Number(this.hauteur.value)
+    );
+  }
+
   enregistrer() {
     let produit = new Produit(
       this.nomProduit.value,
