@@ -1,7 +1,11 @@
 import { DatePipe } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { kmactuelValidator } from '../kmactuel.validator';
@@ -98,7 +102,8 @@ export class DetailVehiculeComponent implements OnInit {
     public dialogRef: MatDialogRef<DetailVehiculeComponent>,
     public service: VehiculeService,
     public datepipe: DatePipe,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialog: MatDialog
   ) {}
 
   async ngOnInit() {
@@ -590,6 +595,13 @@ export class DetailVehiculeComponent implements OnInit {
       },
     };
   }
+
+  ouvrirHistoriqueConsommation() {
+    const dialogRef = this.dialog.open(HistoriqueConsommation, {
+      width: '800px',
+      data: { vehicule: this.vehicule },
+    });
+  }
 }
 
 //********************************************Boite de dialogue mise a jour vehicule ***********************************
@@ -767,9 +779,13 @@ export class MiseAJourConsommationComponent implements OnInit {
   reservoir: number = 0;
   mission: any;
   vehicule: any;
+  carburant: any;
   consommationActuelle: number = 0;
   distanceParcourue: number = 0;
   form: FormGroup;
+  chauffeurs: any;
+  chauffeur = '';
+  idInvalide = false;
 
   checkBoxRemplirreservoir = false;
   sliderReservoirEstActive = true;
@@ -791,11 +807,21 @@ export class MiseAJourConsommationComponent implements OnInit {
         ],
       ],
       idChauffeur: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      montantConsomme: [
+        { value: '', disabled: true },
+        [Validators.required, Validators.pattern('^[0-9]*$')],
+      ],
     });
     this.vehicule = this.data.vehicule;
     this.reservoir = this.vehicule.reservoir;
     this.kmActuel.setValue(this.vehicule.kmactuel);
     localStorage.setItem('kmactuelV', this.vehicule.kmactuel);
+    this.service.carburant(this.vehicule.carburant).subscribe((carburant) => {
+      this.carburant = carburant;
+    });
+    this.service.getChauffeurs().subscribe((chauffeurs) => {
+      this.chauffeurs = chauffeurs;
+    });
   }
   get kmActuel() {
     return this.form.get('kmActuel');
@@ -805,28 +831,54 @@ export class MiseAJourConsommationComponent implements OnInit {
     return value + '%';
   }
 
+  afficherChauffeur() {
+    if (
+      this.chauffeurs.filter(
+        (chauffeur: any) => chauffeur.id_Employe == this.idChauffeur.value
+      )[0]
+    ) {
+      this.chauffeur = this.chauffeurs.filter(
+        (chauffeur: any) => chauffeur.id_Employe == this.idChauffeur.value
+      )[0].nom;
+      this.idInvalide = false;
+    } else {
+      this.chauffeur = 'Id chauffeur invalide';
+      this.idInvalide = true;
+    }
+    console.log(this.idInvalide);
+  }
+
   changerHistorique() {
     let historique = this.vehicule.historiqueConsommation;
     this.calculerDitanceParcourue();
+    if (this.checkBoxRemplirreservoir) {
+      this.consommationActuelle = this.calculerConsommationRemplissage();
+    }
     historique +=
       '#idChauffeur:' +
-      this.mission.idChauffeur +
+      this.idChauffeur.value +
       '/distance:' +
       this.distanceParcourue +
       '/consommation:' +
-      this.consommationActuelle;
+      this.consommationActuelle +
+      '/nomChauffeur:' +
+      this.chauffeur;
     return historique;
   }
 
   calculerConsommationActuelle() {
-    this.calculerDitanceParcourue();
-    let carburantConsomme =
-      ((this.vehicule.reservoir - this.reservoir) *
-        this.vehicule.capaciteReservoir) /
-      100;
-    let consommation = (carburantConsomme * 100) / this.distanceParcourue;
-    this.consommationActuelle =
-      Math.round((consommation + Number.EPSILON) * 100) / 100;
+    if (this.checkBoxRemplirreservoir) {
+      this.consommationActuelle = this.calculerConsommationRemplissage();
+    } else {
+      this.calculerDitanceParcourue();
+      let carburantConsomme =
+        ((this.vehicule.reservoir - this.reservoir) *
+          this.vehicule.capaciteReservoir) /
+        100;
+      let consommation = (carburantConsomme * 100) / this.distanceParcourue;
+      this.consommationActuelle =
+        Math.round((consommation + Number.EPSILON) * 100) / 100;
+    }
   }
 
   calculerConsommation() {
@@ -853,15 +905,17 @@ export class MiseAJourConsommationComponent implements OnInit {
     if (this.checkBoxRemplirreservoir) {
       this.reservoir = 100;
       this.sliderReservoirEstActive = false;
+      this.montantConsomme.enable();
     } else {
       this.sliderReservoirEstActive = true;
       this.reservoir = this.vehicule.reservoir;
+      this.montantConsomme.disable();
     }
   }
 
-   // calculer quantité de carburant
-   calculerQuantiteCarburant(){
-    return this.montantConsomme.value/this.carburant.prixCarburant;
+  // calculer quantité de carburant
+  calculerQuantiteCarburant() {
+    return this.montantConsomme.value / this.carburant.prixCarburant;
   }
 
   // calculer consommation (quantiteCarburant*100)/distance parcourue entre 2 pleins
@@ -872,43 +926,70 @@ export class MiseAJourConsommationComponent implements OnInit {
     if (historiques.length > 1) {
       for (let i = 1; i < historiques.length; i++) {
         const historique = historiques[i];
-        distanceParcourue += Number(historique.split('/')[1].split(':')[1])
+        distanceParcourue += Number(historique.split('/')[1].split(':')[1]);
       }
     }
-    distanceParcourue += (this.kmActuel.value - this.vehicule.kmactuel);
-    let consommation = (quantiteCarburant*100)/distanceParcourue;
-    return Math.round((consommation + Number.EPSILON) * 100) / 100
+    distanceParcourue += this.kmActuel.value - this.vehicule.kmactuel;
+    let consommation = (quantiteCarburant * 100) / distanceParcourue;
+    return Math.round((consommation + Number.EPSILON) * 100) / 100;
   }
 
   enregistrer() {
-    let consommation = this.calculerConsommation();
-    let historique = this.changerHistorique();
-    this.calculerConsommationActuelle();
-    this.changerHistorique();
-    this.service
-      .modifierConsommation(
-        this.vehicule.id,
-        this.kmActuel.value,
-        consommation,
-        historique,
-        this.reservoir
-      )
-      .subscribe((result) => {
-        if (result) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Commande bien reçue',
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          this.dialogRef.close();
-        }
-      });
+    let consommation: any;
+    let historique = '';
+    let historiqueA = '';
+    let historiqueB = '';
+    let historiqueC = '';
+    if (this.checkBoxRemplirreservoir) {
+      consommation = this.calculerConsommationRemplissage();
+      this.consommationActuelle = consommation;
+      historiqueA = this.changerHistorique();
+      historiqueB = this.vehicule.historiqueA;
+      historiqueC = this.vehicule.historiqueB;
+    } else {
+      consommation = this.calculerConsommation();
+      this.calculerConsommationActuelle();
+      historique = this.changerHistorique();
+      historiqueA = this.vehicule.historiqueA;
+      historiqueB = this.vehicule.historiqueB;
+      historiqueC = this.vehicule.historiqueC;
+    }
+    Swal.fire({
+      title: 'Voulez vous enregistrer?',
+      showCancelButton: true,
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await this.service
+          .modifierConsommation(
+            this.vehicule.id,
+            this.kmActuel.value,
+            consommation,
+            historique,
+            historiqueA,
+            historiqueB,
+            historiqueC,
+            this.reservoir
+          )
+          .toPromise();
+        this.fermerMiseAJourConsommation();
+        Swal.fire('Consommation enregistrée!', '', 'success');
+      }
+    });
   }
   //Bouton Annuler
   fermerMiseAJourConsommation(): void {
     // fermer la boite de dialogue
     this.dialogRef.close();
+  }
+
+  get montantConsomme() {
+    return this.form.get('montantConsomme');
+  }
+
+  get idChauffeur() {
+    return this.form.get('idChauffeur');
   }
 }
 
@@ -1499,5 +1580,64 @@ export class DetailVehiculeLoueComponent implements OnInit {
   fermerDetailVehiculeLoue(): void {
     //fermer la boite de dialogue
     this.dialogRef.close();
+  }
+}
+
+//********************************************* Historique Consommation ******************************
+
+@Component({
+  templateUrl: 'historique-consommation.html',
+  styleUrls: ['historique-consommation.scss'],
+})
+export class HistoriqueConsommation implements OnInit {
+  vehicule: any;
+  historiqueA: any = [];
+  historiqueB: any = [];
+  historiqueC: any = [];
+  constructor(@Inject(MAT_DIALOG_DATA) private data: any) {}
+
+  ngOnInit() {
+    this.vehicule = this.data.vehicule;
+    this.extraireHistorique();
+  }
+
+  extraireHistorique(){
+    let historiqueA = this.vehicule.historiqueA.split('#');
+    let historiqueB = this.vehicule.historiqueB.split('#');
+    let historiqueC = this.vehicule.historiqueC.split('#');
+
+    if (historiqueA.length > 1) {
+      for (let i = 1; i < historiqueA.length; i++) {
+        const historique = historiqueA[i];
+        this.historiqueA.push({
+          idChauffeur: historique.split('/')[0].split(':')[1],
+          distance: historique.split('/')[1].split(':')[1],
+          consommation: historique.split('/')[2].split(':')[1],
+          nomChauffeur: historique.split('/')[3].split(':')[1]
+        })
+      }
+    }
+    if (historiqueB.length > 1) {
+      for (let i = 1; i < historiqueB.length; i++) {
+        const historique = historiqueB[i];
+        this.historiqueB.push({
+          idChauffeur: historique.split('/')[0].split(':')[1],
+          distance: historique.split('/')[1].split(':')[1],
+          consommation: historique.split('/')[2].split(':')[1],
+          nomChauffeur: historique.split('/')[3].split(':')[1]
+        })
+      }
+    }
+    if (historiqueC.length > 1) {
+      for (let i = 1; i < historiqueC.length; i++) {
+        const historique = historiqueC[i];
+        this.historiqueC.push({
+          idChauffeur: historique.split('/')[0].split(':')[1],
+          distance: historique.split('/')[1].split(':')[1],
+          consommation: historique.split('/')[2].split(':')[1],
+          nomChauffeur: historique.split('/')[3].split(':')[1]
+        })
+      }
+    }
   }
 }

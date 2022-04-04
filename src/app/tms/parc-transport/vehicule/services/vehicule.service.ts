@@ -214,6 +214,9 @@ export class VehiculeService {
     kmActuel: any,
     consommation: any,
     historiqueConsommation: any,
+    historiqueA: any,
+    historiqueB: any,
+    historiqueC: any,
     reservoir: any
   ) {
     let formData: any = new FormData();
@@ -221,7 +224,22 @@ export class VehiculeService {
     formData.append('kmactuel', Number(kmActuel));
     formData.append('consommation', consommation);
     formData.append('historiqueConsommation', historiqueConsommation);
+    formData.append('historiqueA', historiqueA);
+    formData.append('historiqueB', historiqueB);
+    formData.append('historiqueC', historiqueC);
     formData.append('reservoir', reservoir);
     return this.httpClient.put(erp + 'modifier-consommation', formData);
+  }
+
+  //get liste des chauffeurs
+  public getChauffeurs() {
+    return this.httpClient
+      .get(infonet + 'Filtre_Employee', {
+        params: {
+          Champ: 'role',
+          Valeur: 'chauffeur',
+        },
+      })
+      .pipe(catchError(this.handleError));
   }
 }

@@ -79,13 +79,17 @@
     <div class="position-relative form-group"><label for="carburant" class="">Carburant</label>
       <li class="list-group-item">{{vehicule.carburant}}</li>
     </div>
+    <!-- afficher capacité du reservoir -->
+    <div class="position-relative form-group"><label for="carburant" class="">Capacité du réservoir en littre</label>
+      <li class="list-group-item">{{vehicule.capaciteReservoir}}</li>
+    </div>
     <!-- afficher consomation normale -->
     <div class="position-relative form-group"><label for="consommationnormale" class="">Consommation Normale L/100km</label>
       <li class="list-group-item">{{vehicule.consommationNormale}}</li>
     </div>
     <!-- afficher consomation actuelle -->
     <div class="position-relative form-group"><label for="consommationactuelle"
-        class="">Consommation Actulle L/100km</label>
+        class="">Consommation Actulle L/100km <button mat-icon-button color="primary" (click)="ouvrirHistoriqueConsommation()"><mat-icon>info</mat-icon></button></label>
       <li class="list-group-item">
         {{(vehicule.consommation).toFixed(2)}}</li>
     </div>
