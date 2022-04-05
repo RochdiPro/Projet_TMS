@@ -1,3 +1,16 @@
+/*
+Liste des méthodes:
+* date: creation du formControl date d'une facon dynamique selon le longueur du liste de vehicule.
+* nouveauDate: creation nouveaux formControls dateDebut et dateFin.
+* ajouterDatePicker: ajout du nouveaux dateDebut et dateFin au formControl array date.
+* supprimerDate: supprimer formControl date qui a était crée dynamiquement.
+* majControlleur: pour chaque vehicul on ajoute un fomControll date.
+* chargerVehicules: get liste vehicules.
+* ouvrirDetailVehiculeLoue: ouvrir la boite de dialogue de détails vehicule loué.
+* supprimerVehiculeLoue: supprimer vehicule Loue.
+* changerDate: changengemetn date debut et fin de location.
+* filtrerVehicule: filtrer vehicule par matricule, proprietaire et disponibilité.
+*/
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -51,31 +64,32 @@ export class ListerVehiculesLoueComponent implements OnInit {
     this.chargerVehicules();
   }
 
-  //creation du formControl date d'une facon dynamique selon la longue du liste de vehicule
+  //creation du formControl date d'une facon dynamique selon le longueur du liste de vehicule
   date(): FormArray {
     //get le formControl date
     return this.form.get('date') as FormArray;
   }
 
+  //creation nouveaux formControls dateDebut et dateFin
   nouveauDate(dateDebut: any, dateFin: any): FormGroup {
-    //creation nouveaux formControls dateDebut et dateFin
     return this.fb.group({
       dateDebut: [dateDebut, Validators.required],
       dateFin: [dateFin, Validators.required],
     });
   }
 
+  // ajout du nouveaux dateDebut et dateFin au formControl array date
   ajouterDatePicker(dateDebut: any, dateFin: any) {
-    // ajout du nouveaux dateDebut et dateFin au formControl array date
     this.date().push(this.nouveauDate(dateDebut, dateFin));
   }
 
+  // supprimer formControl date qui a était crée dynamiquement
   supprimerDate() {
     this.date().clear();
   }
 
+  //pour chaque vehicul on ajoute un fomControll date
   majControlleur() {
-    //creation des formControls date d'une facon dynamique
     this.supprimerDate();
     this.vehiculesLoues.forEach((vehicule: any) => {
       this.ajouterDatePicker(
@@ -86,7 +100,7 @@ export class ListerVehiculesLoueComponent implements OnInit {
   }
   //Fin creation du formControl date
 
-  //charger liste vehicules
+  //get liste vehicules
   async chargerVehicules() {
     this.vehiculesLoues = await this.service.vehiculesLoues().toPromise();
     this.majControlleur();
@@ -99,9 +113,8 @@ export class ListerVehiculesLoueComponent implements OnInit {
     });
   }
 
-  //bouton de detail vehicule loué
+  //ouvrir la boite de dialogue de détails vehicule loué
   ouvrirDetailVehiculeLoue(id: any): void {
-    //ouvrir la boite de dialogue de détails vehicule loué
     const dialogRef = this.dialog.open(DetailVehiculeLoueComponent, {
       width: '450px',
       panelClass: 'custom-dialog',
@@ -110,7 +123,7 @@ export class ListerVehiculesLoueComponent implements OnInit {
     });
   }
 
-  //Bouton supprimer vehicule Loue
+  //supprimer vehicule Loue
   supprimerVehiculeLoue(id: any): void {
     Swal.fire({
       title: 'Mot de passe',
@@ -151,8 +164,8 @@ export class ListerVehiculesLoueComponent implements OnInit {
   }
 
   //Utilisé dans le date picker de modification
+  //changengemetn date debut et fin de location
   async changerDate(id: any, index: any) {
-    //changengemetn date debut et fin de location
     var formData: any = new FormData();
     formData.append('id', id);
     formData.append(
@@ -177,7 +190,7 @@ export class ListerVehiculesLoueComponent implements OnInit {
     });
   }
 
-    // fonction pour filtrer mission
+    //filtrer vehicule par matricule, proprietaire et disponibilité
     filtrerVehicule(){
       this.filtreMatricule == undefined ? this.filtreMatricule = "": "";
       this.filtreProprietaire == undefined ? this.filtreProprietaire = "": "";
