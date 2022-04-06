@@ -21,13 +21,15 @@
         <div class="grid-item">{{distanceParcourue}}km</div>
         <div class="grid-item"><strong>Consommation:</strong></div>
         <div class="grid-item">{{consommationActuelle}}l/100km</div>
-        <div class="grid-item">
+    </div>
+    <div class="remplissage">
+        <div>
             <mat-checkbox [(ngModel)]="checkBoxRemplirreservoir" color="primary" (change)="remplirReservoir()">
                 Remplir le réservoir
             </mat-checkbox>
         </div>
-        <div class="grid-item">
-            <mat-form-field class="id-chauffeur" appearance="fill" [formGroup]="form">
+        <div>
+            <mat-form-field class="montnat" appearance="fill" [formGroup]="form">
                 <mat-label>Montant consommé en TND</mat-label>
                 <input matInput formControlName="montantConsomme" type="number" (keyup)="calculerConsommationActuelle()">
                 <mat-error *ngIf="form.controls['idChauffeur'].hasError('required')">

@@ -3,12 +3,14 @@
   grid-template-columns: 1fr 1fr 1fr 1fr;
   padding: 10px;
   gap: 10px;
-align-items: center;}
+  align-items: center;
+}
 .full-width {
   width: 100%;
 }
 
-.flex, .carburant {
+.flex,
+.carburant {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -21,29 +23,44 @@ mat-slider {
 mat-form-field {
   width: 250px;
 }
-.push-right{
+.push-right {
   margin-left: auto;
 }
-.button{
+.button {
   width: 100%;
   display: flex;
+}
+
+.remplissage {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  align-items: center;
 }
 
 //pour mobile
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {
-    .flex {
-      flex-direction: column;
-      gap: 20px;
-      align-items: unset;
-    }
-    mat-form-field {
-      width: 100%;
-    }
-    .grid-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      padding: 10px;
-      gap: 10px;
-    }
+  .flex {
+    flex-direction: column;
+    gap: 20px;
+    align-items: unset;
   }
+  mat-form-field {
+    width: 100%;
+  }
+  .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 10px;
+    gap: 10px;
+  }
+  .remplissage {
+    flex-direction: column;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .grid-item {
+    width: 85%;
+  }
+}

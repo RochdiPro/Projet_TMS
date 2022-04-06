@@ -641,12 +641,21 @@ export class DetailVehiculeComponent implements OnInit {
   ouvrirHistoriqueConsommation() {
     const dialogRef = this.dialog.open(HistoriqueConsommation, {
       width: '800px',
+      maxHeight: '80vh',
       data: { vehicule: this.vehicule },
     });
   }
 }
 
 //********************************************Boite de dialogue mise a jour vehicule ***********************************
+/**
+ * Cette boite de dialogue permet de modifier les informations d'un vehicule
+ * Liste des méthodes:
+    -chargerVehicule: get vehicule par id.
+    - getCarburant: get liste des carburants.
+    - fermerMiseAJourVehicule: fermer boite de dialogue mise a jour vehicule.
+    - miseAJourVehicule: Enregistrer les modifications.
+ */
 
 @Component({
   selector: 'app-maj-vehicule',
@@ -812,6 +821,27 @@ export class MajVehiculeComponent implements OnInit {
 }
 
 //****************************************** */ Boite de dialogue mise a jour consommation **********************************
+/**
+ * Cette bpoite de dialogue permet de modifier le kilométrage actuel, la consommation et permet d'enregistrer les trois derniéres 
+   historiques de consommation.
+ * Liste des methodes:
+   - getCarburant: get carburant par nom carburant.
+   - getChauffeurs: get liste des chauffeurs.
+   - formatLabel: formatter la valeur du label qui s'affiche lors du changement du position du slider.
+   - afficherChauffeur: afficher le nom du chauffeur lors du saisie de l'id.
+   - changerHistorique: changer l'historique de consommation enregistré dans vehicule.
+   - calculerConsommationActuelle: calculer la consommation d'une vehicule dans une distance parcourie par un chauffeur.
+   - calculerConsommation: calculer la consommation moyenne de tout les chauffeur qui ont circuler avec le vehicule avant de faire un nouveau plein.
+   - calculerDitanceParcourue: calculer la distance parcourie depuis le dernier enregistrement.
+   - remplirReservoir: activer mode remplissage reservoir.
+   - calculerQuantiteCarburant: calculer quantité de carburant consommé depuis le dernier plein.
+   - calculerConsommationRemplissage: calculer consommation global aprés le plein (quantiteCarburant*100)/distance parcourue entre 2 pleins.
+   - enregistrer: enregistrer les modification de kilométrage actuel du vehicul, consommation, les historiques et la consommation.
+   - fermerMiseAJourConsommation: fermer la boite de dialogue.
+   - get montantConsomme: get formControl montantConsomme.
+   - get idChauffeur: get formControl idChauffeur.
+   - get kmActuel: get formControl kmActuel.
+ */
 @Component({
   selector: 'app-maj-consommation',
   templateUrl: './maj-consommation.html',
@@ -1057,7 +1087,20 @@ export class MiseAJourConsommationComponent implements OnInit {
 }
 
 //********************************************* */ Boite de dialogue notification ****************************************
-
+/**
+ * Cette boite de dialogue permet d'afficher les notification disponibles pour un vehicule
+ * Liste des méthodes:
+  - chargerVehicule: get vehicule par identifiant.
+  - testerExistanceReclamation: tester s'il y a une reclamation qui existe ou non.
+  - fermerNotification: fermer la boite du dialogue notification.
+  - supprimerReclamation: supprimer reclamation.
+  - testExistanceEntretien: teste s'il y a un entretien dans les 1000 prochains km.
+  - testExpirationVisite: tester s'il y a une visite technique dans les 30 prochains jours.
+  - testExpirationAssurance: tester si l'assurance s'expire dans les 30 prochains jours.
+  - testExpirationTaxe: tester si les taxes s'expirent dans les 30 prochains jours.
+  - testConsommation: tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale.
+  - testePresenceNotification: réaliser les testes précedent et prendre la decision d'affichage des notifications ou non.
+ */
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.html',
@@ -1270,6 +1313,13 @@ export class NotificationComponent implements OnInit {
 }
 
 //*****************************************************Boite de dialogue reclamation *********************************************
+/**
+ * Cette boite de dialogue permet de saisir une réclamation concernant un vehicule
+ * Liste des méthodes:
+  - chargerVehicule: get vehicule par identifiant.
+  - fermerReclamation: fermer la boite de dialogue.
+  - enregistrerReclamation: enregistre la reclamation.
+ */
 @Component({
   selector: 'app-reclamation',
   templateUrl: './reclamation.html',
@@ -1331,6 +1381,15 @@ export class ReclamationComponent implements OnInit {
 }
 
 // ********************************Boite dialogue entretien ******************************************
+/**
+ * Cette Boite de dialogue permet de faire le saisie de l'entretient passé recement et de modifier le kilométrage du prochain entretien
+ * Liste des methodes:
+  - selectionnerVidangeHuileMoteur: si on selectionne le type de vidange huile moteur on  met les valeur de filtre à huile et filtre à air a 'true' car il sont obligatoire a changer.
+  - changerEtatInput: si on selectionne un checkbox son input sera activé si non on le desactive.
+  - tetsterValidite: teste s'il ya au moins un check box selectionné.
+  - fermerBoiteDialogueEntretien: fermer la boite de dilaogue entretien.
+  - valider: enregistrer les modifications.
+ */
 @Component({
   selector: 'boite-dialogue-entretien',
   templateUrl: 'boite-dialogue-entretien.html',
@@ -1588,7 +1647,13 @@ export class BoiteDialogueEntretien implements OnInit {
   }
 }
 // ********************************************Detail Vehicule Loué***********************************************
-
+/**
+ * Cette boite de dialogue permet d'afficher les informations d'un vehicule loué
+ * Liste des methodes:
+  - fermerDetailVehiculeLoue: fermer la boite de dialogue.
+  - testerTypeMatricule: teste le type de matricule.
+  - chargerVehiculeLoue: get vehicule loué par identifiant.
+ */
 @Component({
   selector: 'app-detail-vehicule-loue',
   templateUrl: './detail-vehicule-loue.html',
@@ -1646,7 +1711,9 @@ export class DetailVehiculeLoueComponent implements OnInit {
 }
 
 //********************************************* Historique Consommation ******************************
-
+/**
+ * Cette boite de dialogue permet d'afficher les trois derniéres historiques enregistrées pour un vehicule
+ */
 @Component({
   templateUrl: 'historique-consommation.html',
   styleUrls: ['historique-consommation.scss'],

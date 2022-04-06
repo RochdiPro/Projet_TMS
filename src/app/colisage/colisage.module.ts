@@ -54,6 +54,7 @@ import { ProduitsComponent } from './produits/produits.component';
 import { ListerProduitComponent } from './produits/lister-produit/lister-produit.component';
 import { AjouterProduitsComponent } from './produits/ajouter-produit/ajouter-produits.component';
 import { ModifierProduitComponent } from './produits/modifier-produit/modifier-produit.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -111,6 +112,7 @@ import { ModifierProduitComponent } from './produits/modifier-produit/modifier-p
       libraries: ['places'],
     }),
     NgxBarcodeModule,
+    MatProgressBarModule
   ],
   providers: [
     MatDatepickerModule,

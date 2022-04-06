@@ -1,143 +1,27 @@
 <div *ngIf="wms >= 2">
     <h1>Ajouter Produit </h1>
-    <div>
-        <form [formGroup]="produitFormGroup">
-            <div class="produits">
-                <div class="grid-produits">
-                    <!-- input field marque -->
-                    <div class="marque">
-                        <mat-form-field class="full-width">
-                            <mat-label>Marque</mat-label>
-                            <input matInput formControlName="marque" name="marque" id="marque" type="text"
-                                style="text-transform:capitalize;" required>
-                            <mat-error *ngIf="produitFormGroup.controls['marque'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input field nom -->
-                    <div class="nom">
-                        <mat-form-field class="full-width">
-                            <mat-label>Nom</mat-label>
-                            <input matInput formControlName="nom" name="nom" id="nom" type="text"
-                                style="text-transform:capitalize;" required>
-                            <mat-error *ngIf="produitFormGroup.controls['nom'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input field unite -->
-                    <div class="unite">
-                        <mat-form-field class="full-width">
-                            <mat-label>Unité</mat-label>
-                            <input matInput formControlName="unite" name="unite" id="unite" type="text"
-                                style="text-transform:capitalize;" required>
-                            <mat-error *ngIf="produitFormGroup.controls['unite'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input valeur unite -->
-                    <div class="valeur-unite">
-                        <mat-form-field class="full-width">
-                            <mat-label>Valeur Unité</mat-label>
-                            <input matInput formControlName="valeurUnite" name="valeurUnite" id="valeurUnite"
-                                type="text" required>
-                            <mat-error *ngIf="produitFormGroup.controls['valeurUnite'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                            <mat-error *ngIf="produitFormGroup.controls['valeurUnite'].hasError('pattern')">
-                                Seuls les <strong>chiffres</strong> sont autorisés
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input Code a barre -->
-                    <div class="code-barre">
-                        <mat-form-field class="full-width">
-                            <mat-label>Code à Barre</mat-label>
-                            <input matInput formControlName="codeBarre" name="codeBarre" id="codeBarre" type="number"
-                                required>
-                            <mat-error *ngIf="produitFormGroup.controls['codeBarre'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input poids -->
-                    <div class="poids">
-                        <mat-form-field class="full-width">
-                            <mat-label>Poids</mat-label>
-                            <input matInput formControlName="poids" name="poids" id="poids" type="text" required>
-                            <mat-error *ngIf="produitFormGroup.controls['poids'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                            <mat-error *ngIf="produitFormGroup.controls['poids'].hasError('pattern')">
-                                Seuls les <strong>chiffres</strong> sont autorisés
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input longueur -->
-                    <div class="longueuer">
-                        <mat-form-field class="full-width">
-                            <mat-label>Longueur</mat-label>
-                            <input matInput formControlName="longueur" name="longueur" id="longueur" type="text"
-                                required (keyup)="activerDimensions()">
-                            <mat-error *ngIf="produitFormGroup.controls['longueur'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                            <mat-error *ngIf="produitFormGroup.controls['longueur'].hasError('pattern')">
-                                Seuls les <strong>chiffres</strong> sont autorisés
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input largeur -->
-                    <div class="largeur">
-                        <mat-form-field class="full-width">
-                            <mat-label>Largeur</mat-label>
-                            <input matInput formControlName="largeur" name="largeur" id="largeur" type="text" required
-                                (keyup)="activerDimensions()">
-                            <mat-error *ngIf="produitFormGroup.controls['largeur'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                            <mat-error *ngIf="produitFormGroup.controls['largeur'].hasError('pattern')">
-                                Seuls les <strong>chiffres</strong> sont autorisés
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input hauteur -->
-                    <div class="hauteur">
-                        <mat-form-field class="full-width">
-                            <mat-label>Hauteur</mat-label>
-                            <input matInput formControlName="hauteur" name="hauteur" id="hauteur" type="text" required
-                                (keyup)="activerDimensions()">
-                            <mat-error *ngIf="produitFormGroup.controls['hauteur'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                            <mat-error *ngIf="produitFormGroup.controls['hauteur'].hasError('pattern')">
-                                Seuls les <strong>chiffres</strong> sont autorisés
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
-                    <!-- input volume -->
-                    <div class="volume">
-                        <mat-form-field class="full-width">
-                            <mat-label>Volume</mat-label>
-                            <input matInput formControlName="volume" name="volume" id="volume" type="text" required
-                                (keyup)="activerVolume()">
-                            <mat-error *ngIf="produitFormGroup.controls['volume'].hasError('required')">
-                                Champ <strong>Obligatoire</strong>
-                            </mat-error>
-                            <mat-error *ngIf="produitFormGroup.controls['volume'].hasError('pattern')">
-                                Seuls les <strong>chiffres</strong> sont autorisés
-                            </mat-error>
-                        </mat-form-field>
-                    </div>
+    <div class="contenaire">
+        <input type="file" class="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" (change)="onFileSelected($event)" #fileUpload>
 
-                </div>
-            </div>
-            <div class="float-right">
-                <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()"
-                    [disabled]="produitFormGroup.invalid">Enregistrer</button>
-            </div>
-        </form>
+        <div class="file-upload">
+
+            {{fileName || "No file uploaded yet."}}
+
+            <button mat-mini-fab color="primary" class="upload-btn" (click)="fileUpload.click()">
+                <mat-icon>attach_file</mat-icon>
+
+            </button>
+
+        </div>
+
+        <div class="progress">
+
+            <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress" *ngIf="uploadProgress">
+
+            </mat-progress-bar>
+
+            <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever</mat-icon>
+
+        </div>
     </div>
 </div>
