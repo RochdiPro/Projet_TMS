@@ -19,10 +19,11 @@ import { Component, OnInit } from '@angular/core';
   ],
 })
 export class ConfigurationTmsComponent implements OnInit {
-  generalEstActive = true;
+  serveurEstActive = true;
+  generalEstActive = false;
   positionEstActive = false;
   commandeEstActive = false;
-  serveurEstActive = false;
+  produitEstActive = false;
 
   chargementTermine = true;
 
@@ -55,6 +56,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.positionEstActive = false;
         this.commandeEstActive = false;
         this.serveurEstActive = false;
+        this.produitEstActive = false;
         setTimeout(() => {
           this.generalEstActive = true;
           this.chargementTermine = true;
@@ -65,6 +67,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.generalEstActive = false;
         this.commandeEstActive = false;
         this.serveurEstActive = false;
+        this.produitEstActive = false;
         setTimeout(() => {
           this.positionEstActive = true;
           this.chargementTermine = true;
@@ -75,6 +78,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.generalEstActive = false;
         this.positionEstActive = false;
         this.serveurEstActive = false;
+        this.produitEstActive = false;
         setTimeout(() => {
           this.commandeEstActive = true;
           this.chargementTermine = true;
@@ -85,8 +89,20 @@ export class ConfigurationTmsComponent implements OnInit {
         this.generalEstActive = false;
         this.positionEstActive = false;
         this.commandeEstActive = false;
+        this.produitEstActive = false;
         setTimeout(() => {
           this.serveurEstActive = true;
+          this.chargementTermine = true;
+        }, 550);
+        break;
+
+      case 'produit':
+        this.generalEstActive = false;
+        this.positionEstActive = false;
+        this.commandeEstActive = false;
+        this.serveurEstActive = false;
+        setTimeout(() => {
+          this.produitEstActive = true;
           this.chargementTermine = true;
         }, 550);
         break;

@@ -10,6 +10,8 @@ const infonet = "/INFONET/";
 })
 export class EmballageService {
   handleError: any;
+  
+  public modeManuel = true;
 
   constructor(private httpClient: HttpClient) { }
 

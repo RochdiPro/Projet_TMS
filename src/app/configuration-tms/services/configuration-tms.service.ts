@@ -5,6 +5,7 @@ import { CoefficientsFraisLivraison } from '../classes/coefficients-frais-livrai
 import { CoefficientsScoreCommande } from '../classes/coefficients-score-commande';
 import { ConfigurationApplication } from '../classes/configuration-application';
 import { ConfigurationExcel } from '../classes/configuration-excel';
+import { ConfigurationExcelProduit } from '../classes/configuration-excel-produit';
 import { InfoGeneral } from '../classes/info-general';
 const erp = '/ERP/';
 const infonet = '/INFONET/';
@@ -140,7 +141,28 @@ export class ConfigurationTmsService {
   //get adresse email utilisée pour envoyer email
   public getEmailAdress() {
     return this.httpClient
-      .get(erp + 'adresse-email', {responseType: 'text'})
+      .get(erp + 'adresse-email', { responseType: 'text' })
+      .pipe(catchError(this.handleError));
+  }
+
+  //get configuration excel produit
+  public getConfigurationProduit() {
+    return this.httpClient
+      .get(erp + 'configuration-excel-produit')
+      .pipe(catchError(this.handleError));
+  }
+
+  //créer nouvelle configuration produit
+  public createConfigurationProduit(config: ConfigurationExcelProduit) {
+    return this.httpClient
+      .post(erp + 'creer-configuration-excel-produit', config)
+      .pipe(catchError(this.handleError));
+  }
+
+  //modifier configuratio produit
+  public modifierConfigurationProduit(config: ConfigurationExcelProduit) {
+    return this.httpClient
+      .put(erp + 'modifier-configuration-excel-produit', config)
       .pipe(catchError(this.handleError));
   }
 }

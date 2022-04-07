@@ -5,8 +5,9 @@ h1 {
 }
 .contenaire {
   display: flex;
+  flex-direction: column;
   width: 100%;
-  height: 200px;
+  height: 100px;
 }
 
 .file-upload{
@@ -15,4 +16,15 @@ h1 {
 
 .file-input {
   display: none;
+}
+
+.progress {
+  display: flex;
+  height: auto;
+  overflow: hidden;
+  font-size: .75rem;
+  background-color: #e9ecef;
+  border-radius: 0.25rem;
+  align-items: center;
+  padding-left: 5px;
 }

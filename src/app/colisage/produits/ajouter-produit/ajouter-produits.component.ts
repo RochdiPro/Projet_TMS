@@ -1,12 +1,9 @@
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { Produit } from '../classes/produit';
-import { ProduitService } from '../services/produit.service';
-
+const erp = '/ERP/';
 @Component({
   selector: 'app-ajouter-produit',
   templateUrl: './ajouter-produit.component.html',
@@ -41,14 +38,22 @@ export class AjouterProduitsComponent implements OnInit {
     if (file) {
       this.fileName = file.name;
       const formData = new FormData();
-      formData.append('thumbnail', file);
+      formData.append('file', file);
 
       const upload$ = this.http
-        .post('/api/thumbnail-upload', formData, {
+        .post(erp + 'upload-fichier-produit', formData, {
           reportProgress: true,
           observe: 'events',
         })
-        .pipe(finalize(() => this.reset()));
+        .pipe(finalize(() => {
+          this.reset();
+          Swal.fire({
+            icon: 'success',
+            title: 'Liste des produits est bien enregistrée',
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        }));
 
       this.uploadSub = upload$.subscribe((event) => {
         if (event.type == HttpEventType.UploadProgress) {

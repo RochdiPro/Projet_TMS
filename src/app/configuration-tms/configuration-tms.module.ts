@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { ConfigurationServeurComponent } from './configuration-application/configuration-application.component';
 import { HttpClient } from '@angular/common/http';
 import { AppInitService } from './services/app-init.service';
+import { ConfigurationProduitComponent } from './configuration-produit/configuration-produit.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { AppInitService } from './services/app-init.service';
     ConfigurationPositionComponent,
     ConfigurationCommandeComponent,
     ConfigurationServeurComponent,
+    ConfigurationProduitComponent,
   ],
   imports: [
     CommonModule,

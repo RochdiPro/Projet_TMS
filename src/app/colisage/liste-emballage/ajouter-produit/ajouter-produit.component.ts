@@ -52,6 +52,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   barcode = '';
   interval: any;
 
+  modeManuel: boolean;
+
   // variables de droits d'accés
   nom: any;
   acces: any;
@@ -75,6 +77,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     const arrayOfDigits = Array.from(String(numToSeparate), Number);
 
     this.wms = Number(arrayOfDigits[4]);
+
+    this.modeManuel = service.modeManuel;
   }
 
   ngOnInit() {
