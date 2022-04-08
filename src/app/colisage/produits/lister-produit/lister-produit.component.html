@@ -27,7 +27,7 @@
             <!-- Colonne id -->
             <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
-                <mat-cell *matCellDef="let element" data-label="id"> {{element.idProduit}} </mat-cell>
+                <mat-cell *matCellDef="let element" data-label="id"> {{element.id_Produit}} </mat-cell>
             </ng-container>
 
             <!-- Colonne marque -->
@@ -43,7 +43,7 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>
                     Nom
                 </mat-header-cell>
-                <mat-cell *matCellDef="let element" data-label="Nom"> {{element.nom}} </mat-cell>
+                <mat-cell *matCellDef="let element" data-label="Nom"> {{element.nom_Produit}} </mat-cell>
             </ng-container>
 
             <!-- Colonne unite -->
@@ -57,25 +57,25 @@
             <!-- Colonne valeur unite -->
             <ng-container matColumnDef="valeurUnite">
                 <mat-header-cell *matHeaderCellDef mat-sort-header> Valeur Unité </mat-header-cell>
-                <mat-cell *matCellDef="let element" data-label="Valeur Unité">{{element.valeurUnite}}</mat-cell>
+                <mat-cell *matCellDef="let element" data-label="Valeur Unité">{{element.valeur_Unite}}</mat-cell>
             </ng-container>
 
             <!-- Colonne code a barre -->
             <ng-container matColumnDef="codeBarre">
                 <mat-header-cell *matHeaderCellDef mat-sort-header> Code à Barre </mat-header-cell>
-                <mat-cell *matCellDef="let element" data-label="Unité"> {{element.codeBarre}} </mat-cell>
+                <mat-cell *matCellDef="let element" data-label="Unité"> {{element.code_Barre}} </mat-cell>
             </ng-container>
 
-            <!-- Colonne poids -->
-            <ng-container matColumnDef="poids">
-                <mat-header-cell *matHeaderCellDef mat-sort-header> Poids(Kg)</mat-header-cell>
-                <mat-cell *matCellDef="let element" data-label="Poids(Kg)"> {{element.poids}}
+            <!-- Colonne type1 -->
+            <ng-container matColumnDef="type1">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> type1</mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="type1"> {{element.type1}}
                 </mat-cell>
             </ng-container>
-            <!-- Colonne volume -->
-            <ng-container matColumnDef="volume">
-                <mat-header-cell *matHeaderCellDef mat-sort-header> Volume(m³)</mat-header-cell>
-                <mat-cell *matCellDef="let element" data-label="Volume(m³)"> {{element.volume}} </mat-cell>
+            <!-- Colonne type2 -->
+            <ng-container matColumnDef="type2">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> type2</mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="type2"> {{element.type2}} </mat-cell>
             </ng-container>
 
             <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>

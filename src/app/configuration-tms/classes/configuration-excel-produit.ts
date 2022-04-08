@@ -6,11 +6,9 @@ export class ConfigurationExcelProduit {
   unite: string;
   valeurUnite: string;
   codeBarre: string;
-  longueur: string;
-  largeur: string;
-  hauteur: string;
-  volume: string;
-  poids: string;
+  type1: string;
+  type2: string;
+
 
   constructor(
     idProduit: string,
@@ -19,11 +17,9 @@ export class ConfigurationExcelProduit {
     unite: string,
     valeurUnite: string,
     codeBarre: string,
-    longueur: string,
-    largeur: string,
-    hauteur: string,
-    volume: string,
-    poids: string
+    type1: string,
+    type2: string,
+
   ) {
     this.idProduit = idProduit;
     this.nom = nom;
@@ -31,10 +27,7 @@ export class ConfigurationExcelProduit {
     this.unite = unite;
     this.valeurUnite = valeurUnite;
     this.codeBarre = codeBarre;
-    this.longueur = longueur;
-    this.largeur = largeur;
-    this.hauteur = hauteur;
-    this.volume = volume;
-    this.poids = poids;
+    this.type1 = type1;
+    this.type2 = type2;
   }
 }

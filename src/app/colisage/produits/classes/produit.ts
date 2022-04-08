@@ -1,15 +1,14 @@
 export class Produit {
     id: number;
+    idProduit: number;
     nom: string;
     marque: string;
     unite: string;
     valeurUnite: number;
     codeBarre: string;
-    longueur: number;
-    largeur: number;
-    hauteur: number;
-    volume: number;
-    poids: number;
+    type1: number;
+    type2: number;
+
 
   constructor(
     nom: string, 
@@ -17,22 +16,17 @@ export class Produit {
     unite: string, 
     valeurUnite: number, 
     codeBarre: string, 
-    longueur: number, 
-    largeur: number, 
-    hauteur: number, 
-    volume: number, 
-    poids: number
+    type1: number, 
+    type2: number, 
+
 ) {
     this.nom = nom
     this.marque = marque
     this.unite = unite
     this.valeurUnite = valeurUnite
     this.codeBarre = codeBarre
-    this.longueur = longueur
-    this.largeur = largeur
-    this.hauteur = hauteur
-    this.volume = volume
-    this.poids = poids
+    this.type1 = type1
+    this.type2 = type2
   }
 
 }

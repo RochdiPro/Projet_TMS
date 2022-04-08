@@ -858,6 +858,7 @@ export class MiseAJourConsommationComponent implements OnInit {
   chauffeurs: any;
   chauffeur = '';
   idInvalide = false;
+  reservoirEstPlein = false;
 
   checkBoxRemplirreservoir = false;
   sliderReservoirEstActive = true;
@@ -881,7 +882,7 @@ export class MiseAJourConsommationComponent implements OnInit {
       idChauffeur: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       montantConsomme: [
         { value: '', disabled: true },
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('[+]?([0-9]*[.])?[0-9]+')],
       ],
     });
     this.vehicule = this.data.vehicule;
@@ -890,6 +891,12 @@ export class MiseAJourConsommationComponent implements OnInit {
     localStorage.setItem('kmactuelV', this.vehicule.kmactuel);
     this.getCarburant();
     this.getChauffeurs();
+    this.reservoirEstPlein = this.testerReservoirPlein();
+  }
+
+  // tester si le reservoir est initialement plein
+  testerReservoirPlein() {
+    return this.vehicule.reservoir === 100 ? true : false;
   }
 
   // get carburant par nom carburant

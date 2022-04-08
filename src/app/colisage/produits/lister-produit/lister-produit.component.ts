@@ -23,8 +23,8 @@ export class ListerProduitComponent implements OnInit {
     'unite',
     'valeurUnite',
     'codeBarre',
-    'poids',
-    'volume'
+    'type1',
+    'type2'
   ];
   dataSource = new MatTableDataSource<Produit>();
 

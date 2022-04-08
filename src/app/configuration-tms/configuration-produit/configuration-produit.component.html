@@ -55,48 +55,21 @@
                     requis</small>
             </div>
         </div>
-        <!-- champ longueur -->
-        <h4>longueur</h4>
+        <!-- champ type1 -->
+        <h4>type1</h4>
         <div class="input">
-            <input type="text" formControlName="longueur">
-            <div *ngIf="(longueur.invalid && longueur.touched) || longueur.dirty" class="erreur">
-                <small *ngIf="longueur.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+            <input type="text" formControlName="type1">
+            <div *ngIf="(type1.invalid && type1.touched) || type1.dirty" class="erreur">
+                <small *ngIf="type1.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                     requis</small>
             </div>
         </div>
-        <!-- champ largeur -->
-        <h4>largeur</h4>
+        <!-- champ type2 -->
+        <h4>type2</h4>
         <div class="input">
-            <input type="text" formControlName="largeur">
-            <div *ngIf="(largeur.invalid && largeur.touched) || largeur.dirty" class="erreur">
-                <small *ngIf="largeur.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
-                    requis</small>
-            </div>
-        </div>
-        <!-- champ hauteur -->
-        <h4>hauteur</h4>
-        <div class="input">
-            <input type="text" formControlName="hauteur">
-            <div *ngIf="(hauteur.invalid && hauteur.touched) || hauteur.dirty" class="erreur">
-                <small *ngIf="hauteur.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
-                    requis</small>
-            </div>
-        </div>
-        <!-- champ volume -->
-        <h4>volume</h4>
-        <div class="input">
-            <input type="text" formControlName="volume">
-            <div *ngIf="(volume.invalid && volume.touched) || volume.dirty" class="erreur">
-                <small *ngIf="volume.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
-                    requis</small>
-            </div>
-        </div>
-        <!-- champ poids -->
-        <h4>poids</h4>
-        <div class="input">
-            <input type="text" formControlName="poids">
-            <div *ngIf="(poids.invalid && poids.touched) || poids.dirty" class="erreur">
-                <small *ngIf="poids.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+            <input type="text" formControlName="type2">
+            <div *ngIf="(type2.invalid && type2.touched) || type2.dirty" class="erreur">
+                <small *ngIf="type2.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
                     requis</small>
             </div>
         </div>

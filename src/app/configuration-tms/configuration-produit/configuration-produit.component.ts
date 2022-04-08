@@ -37,11 +37,8 @@ export class ConfigurationProduitComponent implements OnInit {
         this.unite.setValue(this.parametreExcel.unite);
         this.valeurUnite.setValue(this.parametreExcel.valeurUnite);
         this.codeBarre.setValue(this.parametreExcel.codeBarre);
-        this.longueur.setValue(this.parametreExcel.longueur);
-        this.largeur.setValue(this.parametreExcel.largeur);
-        this.hauteur.setValue(this.parametreExcel.hauteur);
-        this.volume.setValue(this.parametreExcel.volume);
-        this.poids.setValue(this.parametreExcel.poids);
+        this.type1.setValue(this.parametreExcel.type1);
+        this.type2.setValue(this.parametreExcel.type2);
       }
     });
   }
@@ -55,11 +52,8 @@ export class ConfigurationProduitComponent implements OnInit {
       unite: ['', Validators.required],
       valeurUnite: ['', Validators.required],
       codeBarre: ['', Validators.required],
-      longueur: ['', Validators.required],
-      largeur: ['', Validators.required],
-      hauteur: ['', Validators.required],
-      volume: ['', Validators.required],
-      poids: ['', Validators.required],
+      type1: ['', Validators.required],
+      type2: ['', Validators.required]
     });
   }
 
@@ -94,28 +88,13 @@ export class ConfigurationProduitComponent implements OnInit {
   }
 
   //get le formControl longueur
-  get longueur() {
-    return this.formParametreExcel.get('longueur');
+  get type1() {
+    return this.formParametreExcel.get('type1');
   }
 
   //get le formControl largeur
-  get largeur() {
-    return this.formParametreExcel.get('largeur');
-  }
-
-  // get le formControl hauteur
-  get hauteur() {
-    return this.formParametreExcel.get('hauteur');
-  }
-
-  // get le formControl volume
-  get volume() {
-    return this.formParametreExcel.get('volume');
-  }
-
-  // get le formControl poids
-  get poids() {
-    return this.formParametreExcel.get('poids');
+  get type2() {
+    return this.formParametreExcel.get('type2');
   }
 
   // enregistrer les paramétres des fichiers excel
@@ -127,11 +106,8 @@ export class ConfigurationProduitComponent implements OnInit {
       this.unite.value,
       this.valeurUnite.value,
       this.codeBarre.value,
-      this.longueur.value,
-      this.largeur.value,
-      this.hauteur.value,
-      this.volume.value,
-      this.poids.value
+      this.type1.value,
+      this.type2.value
     );
     // si les paramétres fichiers excel sont deja existantes on les modifie si non en créent des nouvelles coefficients
     if (this.parametreExcel) {

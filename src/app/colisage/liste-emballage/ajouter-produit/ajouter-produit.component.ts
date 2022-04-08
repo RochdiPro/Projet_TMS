@@ -92,8 +92,12 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
 
   async chargerFicheProduit() {
+    if (this.modeManuel) {
+      this.listeProduits = await this.service.produitsManuel().toPromise();
+    } else {
+      this.listeProduits = await this.service.listeProduits().toPromise();
+    }
     //charger la liste de fiche produits
-    this.listeProduits = await this.service.listeProduits().toPromise();
     let listeEmballage = await this.getListeEmballage();
     this.produitsAffiche = [];
     this.listeProduits.forEach((element: any) => {
@@ -218,7 +222,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       }
     }
     let produitEstSelectionne = this.produitSelectionne.length > 0;
-    if(produitEstSelectionne) {
+    if (produitEstSelectionne) {
       this.deuxiemeFormGroup.get('validateur').setValue('validé');
     } else {
       this.deuxiemeFormGroup.get('validateur').setValue('');
@@ -227,7 +231,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   premierSuivant() {
     this.dataSourceProduit.data = this.produitSelectionne as tableProduits[];
     let produitEstSelectionne = this.produitSelectionne.length > 0;
-    if(produitEstSelectionne) {
+    if (produitEstSelectionne) {
       this.premierFormGroup
         .get('nom')
         .setValue(this.produitSelectionne[0].nom_Produit);
@@ -264,7 +268,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       a.id_Produit > b.id_Produit ? -1 : 1
     );
   }
-  
+
   deuxiemeSuivant() {
     //pour le deuxieme bouton suivant
     this.troisiemeFormGroup
@@ -276,14 +280,13 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
   troisiemeSuivant() {
     //pour le troisieme bouton suivant
-    if(this.troisiemeFormGroup.status === "VALID") {
+    if (this.troisiemeFormGroup.status === 'VALID') {
       this.troisiemeStepEstRemplit = true;
     } else {
       this.troisiemeStepEstRemplit = false;
     }
-    
   }
-  quatriemePrecedent(){
+  quatriemePrecedent() {
     this.troisiemeStepEstRemplit = false;
   }
   reinitialiserStepper() {

@@ -24,15 +24,15 @@
     </div>
     <div class="remplissage">
         <div>
-            <mat-checkbox [(ngModel)]="checkBoxRemplirreservoir" color="primary" (change)="remplirReservoir()">
-                Remplir le réservoir
+            <mat-checkbox [(ngModel)]="checkBoxRemplirreservoir" color="primary" (change)="remplirReservoir()" [disabled]="reservoirEstPlein">
+                Faire un plein
             </mat-checkbox>
         </div>
         <div>
             <mat-form-field class="montnat" appearance="fill" [formGroup]="form">
-                <mat-label>Montant consommé en TND</mat-label>
+                <mat-label>Montant en TND</mat-label>
                 <input matInput formControlName="montantConsomme" type="number" (keyup)="calculerConsommationActuelle()">
-                <mat-error *ngIf="form.controls['idChauffeur'].hasError('required')">
+                <mat-error *ngIf="form.controls['montantConsomme'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
                 <mat-error *ngIf="form.controls['montantConsomme'].hasError('pattern')">
