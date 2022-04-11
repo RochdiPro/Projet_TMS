@@ -1,27 +1,31 @@
 <div *ngIf="wms >= 2">
-    <h1>Ajouter Produit </h1>
-    <div class="contenaire">
-        <input type="file" class="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" (change)="onFileSelected($event)" #fileUpload>
-
-        <div class="file-upload">
-
-            {{fileName || "Pas de fichier sélectionné."}}
-
-            <button mat-mini-fab color="primary" class="upload-btn" (click)="fileUpload.click()">
-                <mat-icon>attach_file</mat-icon>
-
-            </button>
-
+    <h1>Importer/Restorer Liste Des Produits </h1>
+    <div class="grid">
+        <div class="importer border">
+            <h2>Importer une liste des produits</h2>
+            <div class="contenaire">
+                <input type="file" class="file-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" (change)="onFileSelected($event)" #fileUpload>
+                <div class="file-upload">
+                    {{fileName || "Pas de fichier sélectionné."}}
+                    <button mat-mini-fab color="primary" class="upload-btn" (click)="fileUpload.click()">
+                        <mat-icon>attach_file</mat-icon>
+                    </button>
+                </div>
+                <div class="progress">
+                    <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress" *ngIf="uploadProgress">
+                    </mat-progress-bar>
+                    <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever</mat-icon>
+                </div>
+            </div>
         </div>
-
-        <div class="progress">
-
-            <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress" *ngIf="uploadProgress">
-
-            </mat-progress-bar>
-
-            <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever</mat-icon>
-
+        <div class="backup border">
+            <h2>Restorer la liste des produits</h2>
+            <p>Les sauvegardes disponibles:</p>
+            <ul *ngIf="backups">
+                <li *ngIf="backups.dateBackup1 != null">{{backups.dateBackup1 | date: "dd-MM-yyyy"}}<button mat-icon-button (click)="restaurerListeProduit('1')"><mat-icon>restore</mat-icon></button></li>
+                <li *ngIf="backups.dateBackup2 != null">{{backups.dateBackup2 | date: "dd-MM-yyyy"}}<button mat-icon-button (click)="restaurerListeProduit('2')"><mat-icon>restore</mat-icon></button></li>
+                <li *ngIf="backups.dateBackup3 != null">{{backups.dateBackup3 | date: "dd-MM-yyyy"}}<button mat-icon-button (click)="restaurerListeProduit('3')"><mat-icon>restore</mat-icon></button></li>
+            </ul>
         </div>
     </div>
 </div>

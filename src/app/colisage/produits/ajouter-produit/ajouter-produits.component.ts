@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import { Backup } from '../classes/backup';
+import { ProduitService } from '../services/produit.service';
 const erp = '/ERP/';
 @Component({
   selector: 'app-ajouter-produit',
@@ -13,12 +15,13 @@ export class AjouterProduitsComponent implements OnInit {
   fileName = '';
   uploadProgress: number;
   uploadSub: Subscription;
+  backups: Backup;
 
   // variables de droits d'accés
   nom: any;
   acces: any;
   wms: any;
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private service: ProduitService) {
     sessionStorage.setItem('Utilisateur', '' + 'tms2');
     sessionStorage.setItem('Acces', '1004400');
 
@@ -30,7 +33,16 @@ export class AjouterProduitsComponent implements OnInit {
 
     this.wms = Number(arrayOfDigits[4]);
   }
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.getBackup();
+  }
+
+  //get les backups enregistrés
+  getBackup() {
+    this.service.getBackup().subscribe(res => {
+      this.backups = res;
+    })
+  }
 
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
@@ -53,6 +65,9 @@ export class AjouterProduitsComponent implements OnInit {
             showConfirmButton: false,
             timer: 1500,
           });
+          this.service.ajouterBackup(file).subscribe(() => {
+            this.getBackup();
+          });
         }));
 
       this.uploadSub = upload$.subscribe((event) => {
@@ -71,5 +86,36 @@ export class AjouterProduitsComponent implements OnInit {
   reset() {
     this.uploadProgress = null;
     this.uploadSub = null;
+  }
+
+  restaurerListeProduit(numBackup: string) {
+    Swal.fire({
+      title: 'Êtes-vous sûr?',
+      text: "La liste des produits actuelle sera écrasée!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'oui',
+      cancelButtonText: 'non'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.service.restaurerListeProduit(numBackup).subscribe((success) => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Liste des produits est restaurée avec succès',
+            showConfirmButton: false,
+            timer: 1500
+          })
+        },
+        (error) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Echec de restauration!'
+          })
+        });
+      }
+    })
   }
 }
