@@ -1,0 +1,63 @@
+<h2>Historique A</h2>
+<div class="table">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Id chauffeur</th>
+                <th scope="col">Nom chauffeur</th>
+                <th scope="col">Distance</th>
+                <th scope="col">Consommation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let historique of historiqueA">
+                <th scope="row">{{historique.idChauffeur}}</th>
+                <th scope="row">{{historique.nomChauffeur}}</th>
+                <td>{{historique.distance}}</td>
+                <td>{{historique.consommation}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<h2>Historique B</h2>
+<div class="table">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Id chauffeur</th>
+                <th scope="col">Nom chauffeur</th>
+                <th scope="col">Distance</th>
+                <th scope="col">Consommation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let historique of historiqueB">
+                <th scope="row">{{historique.idChauffeur}}</th>
+                <th scope="row">{{historique.nomChauffeur}}</th>
+                <td>{{historique.distance}}</td>
+                <td>{{historique.consommation}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<h2>Historique C</h2>
+<div class="table">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">Id chauffeur</th>
+                <th scope="col">Nom chauffeur</th>
+                <th scope="col">Distance</th>
+                <th scope="col">Consommation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let historique of historiqueC">
+                <th scope="row">{{historique.idChauffeur}}</th>
+                <th scope="row">{{historique.nomChauffeur}}</th>
+                <td>{{historique.distance}}</td>
+                <td>{{historique.consommation}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

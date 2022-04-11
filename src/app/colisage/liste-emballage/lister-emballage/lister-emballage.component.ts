@@ -53,9 +53,6 @@ export class ListerEmballageComponent implements OnInit {
   }
 
   constructor(public service: EmballageService) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1000200');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

@@ -33,15 +33,13 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   nom: any;
   acces: any;
   wms: any;
-  estManuel = true;
+  estManuel = false;
   constructor(
     public serviceCommande: CommandeService,
     public dialog: MatDialog
   ) {
-    // code accés presentée d'une facon manuelle
-    // enlever les deux lignes suivantes lors du deployement
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1000400');
+    sessionStorage.setItem('Utilisateur', '' + "tms2");
+    sessionStorage.setItem('Acces', "1004400");
 
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -57,6 +55,7 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
   async ngOnInit() {
+    this.estManuel = this.serviceCommande.modeManuel;
     await this.getListeCommandes();
   }
 

@@ -1,6 +1,6 @@
-import { AgmCoreModule } from '@agm/core';
+import { AgmCoreModule, LAZY_MAPS_API_CONFIG } from '@agm/core';
 import { CommonModule, DatePipe } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -21,16 +21,26 @@ import { SafePipeModule } from 'safe-pipe';
 import { AjoutMissionComponent } from './ajout-mission/ajout-mission.component';
 import { MissionsRoutingModule } from './missions-routing.module';
 import { MissionsComponent } from './missions.component';
-import { AffecterMultiChauffeur, AffecterChauffeur, DetailComponent, PositionComponent, DetailCommande, ConfirmerLivraison, ModifierMission, ConfirmationAnnulationMission, Trajet } from './dialogs/dialogs.component';
+import {
+  AffecterMultiChauffeur,
+  AffecterChauffeur,
+  DetailComponent,
+  PositionComponent,
+  DetailCommande,
+  ConfirmerLivraison,
+  ModifierMission,
+  ConfirmationAnnulationMission,
+  Trajet,
+  PlanChargement,
+  CloturerMission
+} from './dialogs/dialogs.component';
 import { ListerMissionsComponent } from './lister-missions/lister-missions.component';
 import { MissionsChauffeurComponent } from './missions-chauffeur/missions-chauffeur.component';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-
-
-
-
-
-
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HttpClient } from '@angular/common/http';
+import { AppInitService } from './services/app-init.service';
+import {MatSliderModule} from '@angular/material/slider';
 
 @NgModule({
   declarations: [
@@ -46,16 +56,15 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     ConfirmerLivraison,
     ModifierMission,
     ConfirmationAnnulationMission,
-    Trajet
-
+    Trajet,
+    PlanChargement,
+    CloturerMission
   ],
   imports: [
     SafePipeModule,
     CommonModule,
     MissionsRoutingModule,
-    AgmCoreModule.forRoot({
-      apiKey: 'AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8'
-    }),
+    AgmCoreModule.forRoot(),
     QRCodeModule,
     MatDialogModule,
     ReactiveFormsModule,
@@ -73,9 +82,25 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     MatCheckboxModule,
     MatListModule,
     MatNativeDateModule,
-    DragDropModule
+    DragDropModule,
+    MatProgressSpinnerModule,
+    MatSliderModule
   ],
-  providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
-
+  providers: [
+    MatDatepickerModule,
+    DatePipe,
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (http: HttpClient) => () => AppInitService.loadApiKey(http),
+      deps: [HttpClient],
+      multi: true,
+    },
+    {
+      provide: LAZY_MAPS_API_CONFIG,
+      useFactory: (init: AppInitService) => ({ apiKey: init.apiKey }),
+      deps: [AppInitService],
+    },
+  ],
 })
-export class MissionsModule { }
+export class MissionsModule {}

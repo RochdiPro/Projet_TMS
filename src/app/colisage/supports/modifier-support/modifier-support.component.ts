@@ -21,9 +21,6 @@ export class ModifierSupportComponent implements OnInit {
     private serviceSupport: SupportService,
     public _router: Router
   ) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1000300');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

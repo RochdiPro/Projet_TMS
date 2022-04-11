@@ -1,13 +1,23 @@
 import { DatePipe } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialog,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { kmactuelValidator } from '../kmactuel.validator';
 import { VehiculeService } from '../services/vehicule.service';
 
 //*****************************************Boite de dialogue Ajouter carburant****************************************
+/**
+ * Boite de dilogue pour ajouter un nouveau type de carburant
+ * Listes des méthodes: 
+    - enregistrerCarburant: ajouter nouveau carburant.
+    - fermerAjouterCarburant: fermer la boite de dialogue.
+ */
 @Component({
   selector: 'app-ajouter-carburant',
   templateUrl: './ajouter-carburant.html',
@@ -33,9 +43,8 @@ export class AjouterCarburantComponent {
     });
   }
 
-  //Bouton enregistrer carburant
+  //ajouter nouveau carburant
   async enregistrerCarburant() {
-    //fontion d'enregistrement du carburant
     var formData: any = new FormData();
     formData.append('nom', this.form.get('nom').value);
     formData.append('prixCarburant', this.form.get('prixCarburant').value);
@@ -53,14 +62,27 @@ export class AjouterCarburantComponent {
     });
   }
 
-  //bouton Annuler
+  //fermer la boite de dialogue
   fermerAjouterCarburant(): void {
-    //fermer la boite de dialogue
     this.dialogRef.close();
   }
 }
 
 //********************************************boite de dialogue detail vehicule **************************************
+/**
+ * Boite dialogue permet d'afficher les informations d'un vehicule
+ * Liste des fonctions:
+    - chargerVehicule: get vehicule par id.
+    - chargerCarburant: get carburant par nom.
+    - chargerEntretiensDuVehicule: get liste d'entretiens d'un vehicule et placer les données dans des objets
+    - testerTypeMatricule: tester les type de matricule.
+    - fermerDetailVehicule: fermer la boite de dialogue detail vehicule.
+    - creerRapport: créer le pdf qui contient les détails d'un vehicule.
+    - printPage: afficher le fichier pdf.
+    - buildTableBody: création du tableau historique des entretiens du vehicule.
+    - table: insérer le tableau  historique des entretiens dans le fichier pdf.
+    - ouvrirHistoriqueConsommation: ouvrir boite de dialogue historique consommation.
+ */
 var pdfMake = require('pdfmake/build/pdfmake.js');
 var pdfFonts = require('pdfmake/build/vfs_fonts.js');
 pdfMake.vfs = pdfFonts.pdfMake.vfs; //pour pouvoir créer un fichier PDF pour le rapport des vehicules
@@ -84,8 +106,8 @@ export class DetailVehiculeComponent implements OnInit {
   matRS: String;
   matricule: String;
 
+  //types de carosserie des véhicules et leur catégories de permis accordées
   carosserie = [
-    //types de carosserie des véhicules et leur catégories de permis accordées
     { name: 'DEUX ROUES', value: 'A/A1/B/B+E/C/C+E/D/D1/D+E/H' },
     { name: 'VOITURES PARTICULIÈRES', value: 'B/B+E/C/C+E/D/D1/D+E/H' },
     { name: 'POIDS LOURDS', value: 'C/C+E' },
@@ -98,7 +120,8 @@ export class DetailVehiculeComponent implements OnInit {
     public dialogRef: MatDialogRef<DetailVehiculeComponent>,
     public service: VehiculeService,
     public datepipe: DatePipe,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialog: MatDialog
   ) {}
 
   async ngOnInit() {
@@ -109,11 +132,12 @@ export class DetailVehiculeComponent implements OnInit {
     this.chargerEntretiensDuVehicule();
   }
 
+  // get vehicule par id
   async chargerVehicule(id: any) {
-    //charger le vehicule par id
-    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
+    this.vehicule = await this.service.vehicule(id).toPromise();
   }
 
+  // get carburant par nom
   async chargerCarburant() {
     this.carburants = await this.service.carburants().toPromise();
     this.carburant = this.carburants.filter(
@@ -121,6 +145,7 @@ export class DetailVehiculeComponent implements OnInit {
     )[0];
   }
 
+  // get liste d'entretiens d'un vehicule et placer les données dans des objets
   async chargerEntretiensDuVehicule() {
     this.listeEntretiensAfficher = [];
     let description = '';
@@ -163,6 +188,7 @@ export class DetailVehiculeComponent implements OnInit {
     });
   }
 
+  // tester les type de matricule
   testerTypeMatricule() {
     this.matricule = this.vehicule.matricule;
     if (this.vehicule.matricule.includes('TUN')) {
@@ -178,19 +204,17 @@ export class DetailVehiculeComponent implements OnInit {
     }
   }
 
-  //Bouton Fermer
+  //fermer la boite de dialogue detail vehicule
   fermerDetailVehicule(): void {
-    //fermer la boite de dialogue
     this.dialogRef.close();
   }
 
-  // Bouton Imprimer
+  // créer le pdf qui contient les détails d'un vehicule
   creerRapport() {
-    //pour la creation du doccument a imprimer
     var carosserie = this.carosserie.filter(
       (element) => element.value === this.vehicule.categories
     );
-    var nomCarosserie = carosserie[0].name.split(" ")
+    var nomCarosserie = carosserie[0].name.split(' ');
     return {
       pageSize: 'A4',
       pageMargins: [40, 95, 40, 60],
@@ -231,14 +255,16 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // matricule du vehicule
             {
               text: this.vehicule.matricule,
               bold: true,
               fontSize: 15,
               margin: [70, 18, 0, 0],
             },
+            //date de création du fichier
             {
-              text: this.datepipe.transform(this.date, 'dd/MM/y'), //date de création du fichier
+              text: this.datepipe.transform(this.date, 'dd/MM/y'),
               margin: [100, 8, 0, 0],
               fontSize: 12,
             },
@@ -246,6 +272,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // marque vehicule
             {
               text: this.vehicule.marque,
               bold: true,
@@ -253,6 +280,7 @@ export class DetailVehiculeComponent implements OnInit {
               margin: [70, 15, 0, 0],
               width: 'auto',
             },
+            // modele vehicule
             {
               text: this.vehicule.modele,
               bold: true,
@@ -263,6 +291,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // couleur du vehicule
             {
               text: this.vehicule.couleur,
               bold: true,
@@ -270,8 +299,9 @@ export class DetailVehiculeComponent implements OnInit {
               margin: [70, 15, 0, 0],
               width: 'auto',
             },
+            // type carosserie
             {
-              text: nomCarosserie[0] + "\n" + nomCarosserie[1],
+              text: nomCarosserie[0] + '\n' + nomCarosserie[1],
               bold: true,
               fontSize: 9,
               margin: [91, 18.5, 0, 0],
@@ -280,6 +310,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage actuel du vehicule
             {
               text: 'Kilométrage actuel:',
               width: 'auto',
@@ -296,6 +327,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage du prochain vidange huile moteur
             {
               text: 'Prochain vidange huile de moteur dans:',
               width: 'auto',
@@ -315,6 +347,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage prochain vidange liquide de refroidissement
             {
               text: 'Prochain vidange liquide de refroidissement dans:',
               width: 'auto',
@@ -334,6 +367,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage prochain vidange huile boite de vitesse
             {
               text: 'Prochain vidange huile boite de vitesse dans:',
               width: 'auto',
@@ -353,6 +387,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage prochain changement filtre de climatiseur
             {
               text: 'Prochain changement filtre de climatiseur dans:',
               width: 'auto',
@@ -372,6 +407,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage Prochain changement filtre de carburant
             {
               text: 'Prochain changement filtre de carburant dans:',
               width: 'auto',
@@ -391,6 +427,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage Prochain changement des bougies
             {
               text: 'Prochain changement des bougies dans:',
               width: 'auto',
@@ -410,6 +447,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage Prochain changement des courroies
             {
               text: 'Prochain changement des courroies dans:',
               width: 'auto',
@@ -429,6 +467,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // kilométrage Prochain changement des pneus
             {
               text: 'Prochain changement des pneus dans:',
               width: 'auto',
@@ -448,6 +487,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // Consommation normale
             {
               text: 'Consommation normale:',
               width: 'auto',
@@ -464,6 +504,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // Consommation actuelle
             {
               text: 'Consommation actuelle:',
               width: 'auto',
@@ -486,6 +527,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // Date du prochaine visite technique
             {
               text: 'Date du prochaine visite technique:',
               width: 'auto',
@@ -505,6 +547,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // Date d'expiration d'assurance
             {
               text: "Date d'expiration d'assurance:",
               width: 'auto',
@@ -524,6 +567,7 @@ export class DetailVehiculeComponent implements OnInit {
         },
         {
           columns: [
+            // Date d'expiration des taxes
             {
               text: "Date d'expiration des taxes:",
               width: 'auto',
@@ -538,6 +582,7 @@ export class DetailVehiculeComponent implements OnInit {
             },
           ],
         },
+        // Historique Des Entretiens
         {
           text: 'Historique Des Entretiens',
           Style: 'header',
@@ -555,14 +600,14 @@ export class DetailVehiculeComponent implements OnInit {
     };
   }
 
+  // afficher le fichier pdf
   printPage() {
-    // ouvrir le fichier pdf
     const fichierPDF = this.creerRapport(); //création du fichier
     pdfMake.createPdf(fichierPDF).open(); //lancement du fichier
   }
 
+  //création du tableau historique des entretiens du vehicule
   buildTableBody(data: any, columns: any) {
-    //création du tableau historique des missions du vehicule
     var body = [];
 
     body.push(['Date', 'Kilométrage', "Lieu d'intervention", 'Description']);
@@ -580,6 +625,7 @@ export class DetailVehiculeComponent implements OnInit {
     return body;
   }
 
+  // insérer le tableau  historique des entretiens dans le fichier pdf
   table(data: any, columns: any) {
     return {
       table: {
@@ -590,9 +636,26 @@ export class DetailVehiculeComponent implements OnInit {
       },
     };
   }
+
+  // ouvrir boite de dialogue historique consommation
+  ouvrirHistoriqueConsommation() {
+    const dialogRef = this.dialog.open(HistoriqueConsommation, {
+      width: '800px',
+      maxHeight: '80vh',
+      data: { vehicule: this.vehicule },
+    });
+  }
 }
 
 //********************************************Boite de dialogue mise a jour vehicule ***********************************
+/**
+ * Cette boite de dialogue permet de modifier les informations d'un vehicule
+ * Liste des méthodes:
+    -chargerVehicule: get vehicule par id.
+    - getCarburant: get liste des carburants.
+    - fermerMiseAJourVehicule: fermer boite de dialogue mise a jour vehicule.
+    - miseAJourVehicule: Enregistrer les modifications.
+ */
 
 @Component({
   selector: 'app-maj-vehicule',
@@ -674,23 +737,23 @@ export class MajVehiculeComponent implements OnInit {
     });
   }
 
+  // get vehicule par id
   async chargerVehicule(id: any) {
-    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
+    this.vehicule = await this.service.vehicule(id).toPromise();
   }
 
-  async getCarburant(){
-    this.carburants= await this.service.carburants().toPromise()
+  // get liste des carburants
+  async getCarburant() {
+    this.carburants = await this.service.carburants().toPromise();
   }
 
-  // Bouton Annuler
+  // fermer boite de dialogue mise a jour vehicule
   fermerMiseAJourVehicule(): void {
-    // fermer boite de dialogue
     this.dialogRef.close();
   }
 
-  // Bouton Enregistrer
+  // Enregistrer les modifications
   async miseAJourVehicule() {
-    //Effectuer le mise a jour
     var formData: any = new FormData();
     formData.append('id', this.idVehicule);
     formData.append('kmactuel', this.form.get('kmactuel').value);
@@ -749,9 +812,7 @@ export class MajVehiculeComponent implements OnInit {
       cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service
-          .miseajourvehicule(formData)
-          .toPromise();
+        await this.service.miseajourvehicule(formData).toPromise();
         this.fermerMiseAJourVehicule();
         Swal.fire('Modifications enregistrées!', '', 'success');
       }
@@ -760,69 +821,232 @@ export class MajVehiculeComponent implements OnInit {
 }
 
 //****************************************** */ Boite de dialogue mise a jour consommation **********************************
+/**
+ * Cette bpoite de dialogue permet de modifier le kilométrage actuel, la consommation et permet d'enregistrer les trois derniéres 
+   historiques de consommation.
+ * Liste des methodes:
+   - getCarburant: get carburant par nom carburant.
+   - getChauffeurs: get liste des chauffeurs.
+   - formatLabel: formatter la valeur du label qui s'affiche lors du changement du position du slider.
+   - afficherChauffeur: afficher le nom du chauffeur lors du saisie de l'id.
+   - changerHistorique: changer l'historique de consommation enregistré dans vehicule.
+   - calculerConsommationActuelle: calculer la consommation d'une vehicule dans une distance parcourie par un chauffeur.
+   - calculerConsommation: calculer la consommation moyenne de tout les chauffeur qui ont circuler avec le vehicule avant de faire un nouveau plein.
+   - calculerDitanceParcourue: calculer la distance parcourie depuis le dernier enregistrement.
+   - remplirReservoir: activer mode remplissage reservoir.
+   - calculerQuantiteCarburant: calculer quantité de carburant consommé depuis le dernier plein.
+   - calculerConsommationRemplissage: calculer consommation global aprés le plein (quantiteCarburant*100)/distance parcourue entre 2 pleins.
+   - enregistrer: enregistrer les modification de kilométrage actuel du vehicul, consommation, les historiques et la consommation.
+   - fermerMiseAJourConsommation: fermer la boite de dialogue.
+   - get montantConsomme: get formControl montantConsomme.
+   - get idChauffeur: get formControl idChauffeur.
+   - get kmActuel: get formControl kmActuel.
+ */
 @Component({
   selector: 'app-maj-consommation',
   templateUrl: './maj-consommation.html',
   styleUrls: ['./maj-consommation.scss'],
 })
 export class MiseAJourConsommationComponent implements OnInit {
-  //declaration des variables
-  form: FormGroup;
+  reservoir: number = 0;
+  mission: any;
   vehicule: any;
-  idVehicule: any;
+  carburant: any;
+  consommationActuelle: number = 0;
+  distanceParcourue: number = 0;
+  form: FormGroup;
+  chauffeurs: any;
+  chauffeur = '';
+  idInvalide = false;
+  reservoirEstPlein = false;
 
-  //constructeur
+  checkBoxRemplirreservoir = false;
+  sliderReservoirEstActive = true;
   constructor(
-    public dialogRef: MatDialogRef<MiseAJourConsommationComponent>,
-    public fb: FormBuilder,
-    public service: VehiculeService,
-    public _router: Router,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    private dialogRef: MatDialogRef<MiseAJourConsommationComponent>,
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private service: VehiculeService,
+    private fb: FormBuilder
   ) {}
-  async ngOnInit() {
-    this.idVehicule = this.data.id; //pour charger l'id du vehicule a modifier sa consommation
-    await this.chargerVehicule(this.idVehicule);
+
+  ngOnInit() {
     this.form = this.fb.group({
       kmActuel: [
-        this.vehicule.kmactuel,
+        0,
         [
           Validators.required,
           Validators.pattern('^[0-9]*$'),
           kmactuelValidator,
         ],
       ],
+      idChauffeur: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       montantConsomme: [
-        this.vehicule.montantConsomme,
-        [
-          Validators.required,
-          Validators.pattern('(^[0-9]{1,9})+(.[0-9]{1,4})?$'),
-        ],
+        { value: '', disabled: true },
+        [Validators.required, Validators.pattern('[+]?([0-9]*[.])?[0-9]+')],
       ],
+    });
+    this.vehicule = this.data.vehicule;
+    this.reservoir = this.vehicule.reservoir;
+    this.kmActuel.setValue(this.vehicule.kmactuel);
+    localStorage.setItem('kmactuelV', this.vehicule.kmactuel);
+    this.getCarburant();
+    this.getChauffeurs();
+    this.reservoirEstPlein = this.testerReservoirPlein();
+  }
+
+  // tester si le reservoir est initialement plein
+  testerReservoirPlein() {
+    return this.vehicule.reservoir === 100 ? true : false;
+  }
+
+  // get carburant par nom carburant
+  getCarburant() {
+    this.service.carburant(this.vehicule.carburant).subscribe((carburant) => {
+      this.carburant = carburant;
     });
   }
 
-  async chargerVehicule(id: any) {
-    //charger le vehicule par son identifiant
-    this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
+  // get liste des chauffeurs
+  getChauffeurs() {
+    this.service.getChauffeurs().subscribe((chauffeurs) => {
+      this.chauffeurs = chauffeurs;
+    });
   }
 
-  //Bouton Annuler
-  fermerMiseAJourConsommation(): void {
-    // fermer la boite de dialogue
-    this.dialogRef.close();
+  // formatter la valeur du label qui s'affiche lors du changement du position du slider
+  formatLabel(value: number) {
+    return value + '%';
   }
 
-  // Bouton Enregistrer
-  async miseAJourConsommation() {
-    //Effectuer le mise ajour de consommation
-    var formData: any = new FormData();
-    formData.append('id', this.idVehicule);
-    formData.append('kmactuel', this.form.get('kmActuel').value);
-    formData.append('montantConsomme', this.form.get('montantConsomme').value);
-    formData.append(
-      'distanceparcourie',
-      Number(this.form.get('kmActuel').value) - Number(this.vehicule.kmactuel)
-    );
+  // afficher le nom du chauffeur lors du saisie de l'id
+  afficherChauffeur() {
+    if (
+      this.chauffeurs.filter(
+        (chauffeur: any) => chauffeur.id_Employe == this.idChauffeur.value
+      )[0]
+    ) {
+      this.chauffeur = this.chauffeurs.filter(
+        (chauffeur: any) => chauffeur.id_Employe == this.idChauffeur.value
+      )[0].nom;
+      this.idInvalide = false;
+    } else {
+      this.chauffeur = 'Id chauffeur invalide';
+      this.idInvalide = true;
+    }
+  }
+
+  // changer l'historique de consommation enregistré dans vehicule
+  changerHistorique() {
+    let historique = this.vehicule.historiqueConsommation;
+    this.calculerDitanceParcourue();
+    if (this.checkBoxRemplirreservoir) {
+      this.consommationActuelle = this.calculerConsommationRemplissage();
+    }
+    historique +=
+      '#idChauffeur:' +
+      this.idChauffeur.value +
+      '/distance:' +
+      this.distanceParcourue +
+      '/consommation:' +
+      this.consommationActuelle +
+      '/nomChauffeur:' +
+      this.chauffeur;
+    return historique;
+  }
+
+  // calculer la consommation d'une vehicule dans une distance parcourie par un chauffeur
+  calculerConsommationActuelle() {
+    if (this.checkBoxRemplirreservoir) {
+      this.consommationActuelle = this.calculerConsommationRemplissage();
+    } else {
+      this.calculerDitanceParcourue();
+      let carburantConsomme =
+        ((this.vehicule.reservoir - this.reservoir) *
+          this.vehicule.capaciteReservoir) /
+        100;
+      let consommation = (carburantConsomme * 100) / this.distanceParcourue;
+      this.consommationActuelle =
+        Math.round((consommation + Number.EPSILON) * 100) / 100;
+    }
+  }
+
+  // calculer la consommation moyenne de tout les chauffeur qui ont circuler avec le vehicule avant de faire un nouveau plein
+  calculerConsommation() {
+    let sommeConsommations = 0;
+    let consommation = 0;
+    let historiques = this.vehicule.historiqueConsommation.split('#');
+    if (historiques.length > 1) {
+      for (let i = 1; i < historiques.length; i++) {
+        const historique = historiques[i];
+        sommeConsommations += Number(historique.split('/')[2].split(':')[1]);
+      }
+    }
+    sommeConsommations += this.consommationActuelle;
+    consommation = sommeConsommations / historiques.length;
+    return consommation;
+  }
+
+  // calculer la distance parcourie depuis le dernier enregistrement
+  calculerDitanceParcourue() {
+    let distanceParcourue = this.kmActuel.value - this.vehicule.kmactuel;
+    this.distanceParcourue = distanceParcourue;
+  }
+
+  // activer mode remplissage reservoir
+  remplirReservoir() {
+    if (this.checkBoxRemplirreservoir) {
+      this.reservoir = 100;
+      this.sliderReservoirEstActive = false;
+      this.montantConsomme.enable();
+    } else {
+      this.sliderReservoirEstActive = true;
+      this.reservoir = this.vehicule.reservoir;
+      this.montantConsomme.disable();
+    }
+  }
+
+  // calculer quantité de carburant consommé depuis le dernier plein
+  calculerQuantiteCarburant() {
+    return this.montantConsomme.value / this.carburant.prixCarburant;
+  }
+
+  // calculer consommation global aprés le plein (quantiteCarburant*100)/distance parcourue entre 2 pleins
+  calculerConsommationRemplissage() {
+    let quantiteCarburant = this.calculerQuantiteCarburant();
+    let historiques = this.vehicule.historiqueConsommation.split('#');
+    let distanceParcourue = 0;
+    if (historiques.length > 1) {
+      for (let i = 1; i < historiques.length; i++) {
+        const historique = historiques[i];
+        distanceParcourue += Number(historique.split('/')[1].split(':')[1]);
+      }
+    }
+    distanceParcourue += this.kmActuel.value - this.vehicule.kmactuel;
+    let consommation = (quantiteCarburant * 100) / distanceParcourue;
+    return Math.round((consommation + Number.EPSILON) * 100) / 100;
+  }
+
+  // enregistrer les modification de kilométrage actuel du vehicul, consommation, les historiques et la consommation
+  enregistrer() {
+    let consommation: any;
+    let historique = '';
+    let historiqueA = '';
+    let historiqueB = '';
+    let historiqueC = '';
+    if (this.checkBoxRemplirreservoir) {
+      consommation = this.calculerConsommationRemplissage();
+      this.consommationActuelle = consommation;
+      historiqueA = this.changerHistorique();
+      historiqueB = this.vehicule.historiqueA;
+      historiqueC = this.vehicule.historiqueB;
+    } else {
+      consommation = this.calculerConsommation();
+      this.calculerConsommationActuelle();
+      historique = this.changerHistorique();
+      historiqueA = this.vehicule.historiqueA;
+      historiqueB = this.vehicule.historiqueB;
+      historiqueC = this.vehicule.historiqueC;
+    }
     Swal.fire({
       title: 'Voulez vous enregistrer?',
       showCancelButton: true,
@@ -830,16 +1054,60 @@ export class MiseAJourConsommationComponent implements OnInit {
       cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service.miseajourkm(formData).toPromise();
+        await this.service
+          .modifierConsommation(
+            this.vehicule.id,
+            this.kmActuel.value,
+            consommation,
+            historique,
+            historiqueA,
+            historiqueB,
+            historiqueC,
+            this.reservoir
+          )
+          .toPromise();
         this.fermerMiseAJourConsommation();
         Swal.fire('Consommation enregistrée!', '', 'success');
       }
     });
   }
+
+  // fermer la boite de dialogue
+  fermerMiseAJourConsommation(): void {
+    this.dialogRef.close();
+  }
+
+  // get formControl montantConsomme
+  get montantConsomme() {
+    return this.form.get('montantConsomme');
+  }
+
+  // get formControl idChauffeur
+  get idChauffeur() {
+    return this.form.get('idChauffeur');
+  }
+
+  // get formControl kmActuel
+  get kmActuel() {
+    return this.form.get('kmActuel');
+  }
 }
 
 //********************************************* */ Boite de dialogue notification ****************************************
-
+/**
+ * Cette boite de dialogue permet d'afficher les notification disponibles pour un vehicule
+ * Liste des méthodes:
+  - chargerVehicule: get vehicule par identifiant.
+  - testerExistanceReclamation: tester s'il y a une reclamation qui existe ou non.
+  - fermerNotification: fermer la boite du dialogue notification.
+  - supprimerReclamation: supprimer reclamation.
+  - testExistanceEntretien: teste s'il y a un entretien dans les 1000 prochains km.
+  - testExpirationVisite: tester s'il y a une visite technique dans les 30 prochains jours.
+  - testExpirationAssurance: tester si l'assurance s'expire dans les 30 prochains jours.
+  - testExpirationTaxe: tester si les taxes s'expirent dans les 30 prochains jours.
+  - testConsommation: tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale.
+  - testePresenceNotification: réaliser les testes précedent et prendre la decision d'affichage des notifications ou non.
+ */
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.html',
@@ -857,7 +1125,6 @@ export class NotificationComponent implements OnInit {
   taxeExiste = false;
   consommationAnormale = false;
   notificationExiste = false;
-  carburants: any;
   datePresent = new Date();
   carburantConsomme: any;
   consommationActuelle: any;
@@ -867,7 +1134,7 @@ export class NotificationComponent implements OnInit {
   nom: any;
   acces: any;
   tms: any;
-  
+
   //consructeur
   constructor(
     public dialogRef: MatDialogRef<NotificationComponent>,
@@ -875,31 +1142,27 @@ export class NotificationComponent implements OnInit {
     public _router: Router,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.nom = sessionStorage.getItem('Utilisateur'); 
-    this.acces = sessionStorage.getItem('Acces'); 
-
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
     const numToSeparate = this.acces;
-    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
-  
-    this.tms = Number( arrayOfDigits[3])
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
   }
   async ngOnInit() {
     this.idVehicule = this.data.id; //charger id vehicule
     await this.chargerVehicule();
     this.testerExistanceReclamation();
-    this.chargerCarburants();
+    this.testePresenceNotification();
   }
 
+  //get vehicule par identifiant
   async chargerVehicule() {
-    //cahrger vehicule par identifiant
     this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
   }
 
-  async chargerCarburants() {
-    this.carburants = await this.service.carburants().toPromise();
-  }
-
+  // tester s'il y a une reclamation qui existe ou non
   testerExistanceReclamation() {
     let sujetExiste = this.vehicule.sujet.toString() === '';
     if (sujetExiste) {
@@ -909,13 +1172,12 @@ export class NotificationComponent implements OnInit {
     }
   }
 
-  //Bouton Fermer
+  //fermer la boite du dialogue notification
   fermerNotification(): void {
-    //fermer la boite du dialogue
     this.dialogRef.close();
   }
 
-  //bouton supprimer reclamation
+  //supprimer reclamation
   async supprimerReclamation() {
     // supprimer la reclamation
     var formData: any = new FormData();
@@ -933,17 +1195,15 @@ export class NotificationComponent implements OnInit {
       cancelButtonText: 'Annuler',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service
-          .reclamationvehicule(formData)
-          .toPromise();
+        await this.service.reclamationvehicule(formData).toPromise();
         Swal.fire('Supprimé!', 'La réclamation a été supprimée.', 'success');
       }
     });
     this.reclamationExiste = false;
   }
 
+  //teste s'il y a un entretien dans les 1000 prochains km
   testExistanceEntretien() {
-    //teste s'il y a un entretien dans les 1000 prochains km
     let listeEntretien = [
       {
         type: 'Vidange huile moteur',
@@ -988,11 +1248,10 @@ export class NotificationComponent implements OnInit {
     } else {
       this.entretienExiste = false;
     }
-    return this.entretienExiste;
   }
 
+  //tester s'il y a une visite technique dans les 30 prochains jours
   testExpirationVisite() {
-    //tester s'il y a une visite technique dans les 30 prochains jours
     let dateVisite = new Date(this.vehicule.datevisite);
     var DifferenceVisite = dateVisite.getTime() - this.datePresent.getTime();
     var DifferenceVisiteJ = DifferenceVisite / (1000 * 3600 * 24);
@@ -1001,11 +1260,10 @@ export class NotificationComponent implements OnInit {
     } else {
       this.visiteExiste = false;
     }
-    return this.visiteExiste;
   }
 
+  //tester si l'assurance s'expire dans les 30 prochains jours
   testExpirationAssurance() {
-    //tester si l'assurance s'expire dans les 30 prochains jours
     let dateAssurance = new Date(this.vehicule.dateassurance);
     var DifferenceAssurance =
       dateAssurance.getTime() - this.datePresent.getTime();
@@ -1015,11 +1273,10 @@ export class NotificationComponent implements OnInit {
     } else {
       this.assuranceExiste = false;
     }
-    return this.assuranceExiste;
   }
 
+  //tester si les taxes s'expirent dans les 30 prochains jours
   testExpirationTaxe() {
-    //tester si les taxes s'expirent dans les 30 prochains jours
     let dateTaxe = new Date(this.vehicule.datetaxe);
     var DifferenceTaxe = dateTaxe.getTime() - this.datePresent.getTime();
     var DifferenceTaxeJ = DifferenceTaxe / (1000 * 3600 * 24);
@@ -1028,32 +1285,20 @@ export class NotificationComponent implements OnInit {
     } else {
       this.taxeExiste = false;
     }
-    return this.taxeExiste;
   }
 
+  //tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale
   testConsommation() {
-    //tester si la consommation est anormale avec 1L/100 ou plus de differnece entre elle et la consommation normale
-    if (this.vehicule.distanceparcourie != null) {
-      this.carburantConsomme = this.carburants.filter(
-        (x: any) => (x.nom = this.vehicule.carburant)
-      );
-      this.consommationActuelle = (
-        (this.vehicule.montantConsomme /
-          this.carburantConsomme[0].prixCarburant /
-          this.vehicule.distanceparcourie) *
-        100
-      ).toFixed(2);
-      if (this.vehicule.consommationNormale + 1 < this.consommationActuelle) {
-        this.consommationAnormale = true;
-      } else {
-        this.consommationAnormale = false;
-      }
+    this.consommationActuelle = this.vehicule.consommation;
+    if (this.vehicule.consommationNormale + 1 < this.consommationActuelle) {
+      this.consommationAnormale = true;
+    } else {
+      this.consommationAnormale = false;
     }
-    return this.consommationAnormale;
   }
 
+  //réaliser les testes précedent et prendre la decision d'affichage des notifications ou non
   testePresenceNotification() {
-    //réaliser les testes précedent pour prendre la decision d'affichage des notifications ou non
     this.testExistanceEntretien();
     this.testExpirationVisite();
     this.testExpirationAssurance();
@@ -1071,11 +1316,17 @@ export class NotificationComponent implements OnInit {
     } else {
       this.notificationExiste = true;
     }
-    return this.notificationExiste;
   }
 }
 
 //*****************************************************Boite de dialogue reclamation *********************************************
+/**
+ * Cette boite de dialogue permet de saisir une réclamation concernant un vehicule
+ * Liste des méthodes:
+  - chargerVehicule: get vehicule par identifiant.
+  - fermerReclamation: fermer la boite de dialogue.
+  - enregistrerReclamation: enregistre la reclamation.
+ */
 @Component({
   selector: 'app-reclamation',
   templateUrl: './reclamation.html',
@@ -1105,19 +1356,18 @@ export class ReclamationComponent implements OnInit {
     this.chargerVehicule();
   }
 
+  // get vehicule par identifiant
   async chargerVehicule() {
     this.vehicule = await this.service.vehicule(this.idVehicule).toPromise();
   }
 
-  // Bouton Annuler
+  //fermer la boite de dialogue
   fermerReclamation(): void {
-    //fermer la boite de dialogue
     this.dialogRef.close();
   }
 
-  // Bouton Enregistrer
+  //enregistre la reclamation
   async enregistrerReclamation() {
-    //enregistre la reclamation
     var formData: any = new FormData();
     formData.append('id', this.idVehicule);
     formData.append('sujet', this.form.get('sujet').value);
@@ -1129,9 +1379,7 @@ export class ReclamationComponent implements OnInit {
       cancelButtonText: 'Annuler',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service
-          .reclamationvehicule(formData)
-          .toPromise();
+        await this.service.reclamationvehicule(formData).toPromise();
         this.dialogRef.close();
         Swal.fire('Réclamation enregistrée!', '', 'success');
       }
@@ -1140,6 +1388,15 @@ export class ReclamationComponent implements OnInit {
 }
 
 // ********************************Boite dialogue entretien ******************************************
+/**
+ * Cette Boite de dialogue permet de faire le saisie de l'entretient passé recement et de modifier le kilométrage du prochain entretien
+ * Liste des methodes:
+  - selectionnerVidangeHuileMoteur: si on selectionne le type de vidange huile moteur on  met les valeur de filtre à huile et filtre à air a 'true' car il sont obligatoire a changer.
+  - changerEtatInput: si on selectionne un checkbox son input sera activé si non on le desactive.
+  - tetsterValidite: teste s'il ya au moins un check box selectionné.
+  - fermerBoiteDialogueEntretien: fermer la boite de dilaogue entretien.
+  - valider: enregistrer les modifications.
+ */
 @Component({
   selector: 'boite-dialogue-entretien',
   templateUrl: 'boite-dialogue-entretien.html',
@@ -1225,8 +1482,8 @@ export class BoiteDialogueEntretien implements OnInit {
     this.tetsterValidite();
   }
 
+  //teste s'il ya au moins un check box selectionné
   tetsterValidite() {
-    //teste s'il ya au moins un check box selectionné
     let listeCheckbox = [
       this.form.get('huileMoteur').value,
       this.form.get('liquideRefroidissement').value,
@@ -1248,12 +1505,13 @@ export class BoiteDialogueEntretien implements OnInit {
     });
   }
 
+  // fermer la boite de dilaogue entretien
   fermerBoiteDialogueEntretien() {
     this.dialogRef.close();
   }
 
+  //enregistrer les modifications
   async valider() {
-    //bouton valider pour lesubmit du form
     let formdata: any = new FormData();
     let formdata2: any = new FormData();
     let kilometrageProchainVidangeHuileMoteur;
@@ -1396,7 +1654,13 @@ export class BoiteDialogueEntretien implements OnInit {
   }
 }
 // ********************************************Detail Vehicule Loué***********************************************
-
+/**
+ * Cette boite de dialogue permet d'afficher les informations d'un vehicule loué
+ * Liste des methodes:
+  - fermerDetailVehiculeLoue: fermer la boite de dialogue.
+  - testerTypeMatricule: teste le type de matricule.
+  - chargerVehiculeLoue: get vehicule loué par identifiant.
+ */
 @Component({
   selector: 'app-detail-vehicule-loue',
   templateUrl: './detail-vehicule-loue.html',
@@ -1424,15 +1688,15 @@ export class DetailVehiculeLoueComponent implements OnInit {
     this.testerTypeMatricule();
   }
 
+  //get vehicule loué par identifiant
   async chargerVehiculeLoue() {
-    //charger les données du vehicule selectionné
     this.vehicule = await this.service
       .vehiculeLoue(this.idVehicule)
       .toPromise();
   }
 
+  //teste le type de matricule
   testerTypeMatricule() {
-    //teste le type de matricule
     this.matricule = this.vehicule.matricule;
     if (this.vehicule.matricule.includes('TUN')) {
       this.tun = true;
@@ -1447,9 +1711,70 @@ export class DetailVehiculeLoueComponent implements OnInit {
     }
   }
 
-  //Bouton Fermer
+  //fermer la boite de dialogue
   fermerDetailVehiculeLoue(): void {
-    //fermer la boite de dialogue
     this.dialogRef.close();
+  }
+}
+
+//********************************************* Historique Consommation ******************************
+/**
+ * Cette boite de dialogue permet d'afficher les trois derniéres historiques enregistrées pour un vehicule
+ */
+@Component({
+  templateUrl: 'historique-consommation.html',
+  styleUrls: ['historique-consommation.scss'],
+})
+export class HistoriqueConsommation implements OnInit {
+  vehicule: any;
+  historiqueA: any = [];
+  historiqueB: any = [];
+  historiqueC: any = [];
+  constructor(@Inject(MAT_DIALOG_DATA) private data: any) {}
+
+  ngOnInit() {
+    this.vehicule = this.data.vehicule;
+    this.extraireHistorique();
+  }
+
+  // formuler des liste d'objets qui contiennent l'historique de consommation
+  extraireHistorique() {
+    let historiqueA = this.vehicule.historiqueA.split('#');
+    let historiqueB = this.vehicule.historiqueB.split('#');
+    let historiqueC = this.vehicule.historiqueC.split('#');
+
+    if (historiqueA.length > 1) {
+      for (let i = 1; i < historiqueA.length; i++) {
+        const historique = historiqueA[i];
+        this.historiqueA.push({
+          idChauffeur: historique.split('/')[0].split(':')[1],
+          distance: historique.split('/')[1].split(':')[1],
+          consommation: historique.split('/')[2].split(':')[1],
+          nomChauffeur: historique.split('/')[3].split(':')[1],
+        });
+      }
+    }
+    if (historiqueB.length > 1) {
+      for (let i = 1; i < historiqueB.length; i++) {
+        const historique = historiqueB[i];
+        this.historiqueB.push({
+          idChauffeur: historique.split('/')[0].split(':')[1],
+          distance: historique.split('/')[1].split(':')[1],
+          consommation: historique.split('/')[2].split(':')[1],
+          nomChauffeur: historique.split('/')[3].split(':')[1],
+        });
+      }
+    }
+    if (historiqueC.length > 1) {
+      for (let i = 1; i < historiqueC.length; i++) {
+        const historique = historiqueC[i];
+        this.historiqueC.push({
+          idChauffeur: historique.split('/')[0].split(':')[1],
+          distance: historique.split('/')[1].split(':')[1],
+          consommation: historique.split('/')[2].split(':')[1],
+          nomChauffeur: historique.split('/')[3].split(':')[1],
+        });
+      }
+    }
   }
 }

@@ -161,10 +161,11 @@ export class MissionsService {
   }
 
   // livrer commande
-  public livrerCommande(qrCode: string, idMaission: any) {
+  public livrerCommande(qrCode: string, idMaission: any, idCommandes: any) {
     let formData = new FormData();
     formData.append('qrCode', qrCode);
     formData.append('idMission', idMaission);
+    formData.append('idCommandes', idCommandes);
     return this.httpClient
       .put(erp + 'livrer-commande', formData)
       .pipe(catchError(this.handleError));
@@ -235,7 +236,7 @@ export class MissionsService {
       .put(erp + 'modifier-id-commandes', formData)
       .pipe(catchError(this.handleError));
   }
-  
+
   public majEtat(id: any, formData: any) {
     this.httpClient.put(erp + 'miseajouretat/' + id, formData).subscribe(
       (response) => console.log(response),
@@ -258,5 +259,49 @@ export class MissionsService {
       (response) => console.log(response),
       (error) => console.log(error)
     );
+  }
+
+  //get vehicule par sa matricule
+  public vehicule(matricule: string) {
+    return this.httpClient.get(erp + 'vehicule-matricule', {
+      params: {
+        matricule: matricule,
+      },
+      observe: 'body',
+    });
+  }
+
+  //modifier consommation
+  public modifierConsommation(
+    id: any,
+    kmActuel: any,
+    consommation: any,
+    historiqueConsommation: any,
+    reservoir: any
+  ) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    formData.append('kmactuel', Number(kmActuel));
+    formData.append('consommation', consommation);
+    formData.append('historiqueConsommation', historiqueConsommation);
+    formData.append('reservoir', reservoir);
+    return this.httpClient.put(erp + 'modifier-consommation', formData);
+  }
+
+  // envoyer notification du prochaine livraison
+  public envoyerNotificationProchaineLivraison(idCommandes: any) {
+    return this.httpClient.get(erp + 'envoyer-notification-livraison', {
+      params: {
+        idCommandes: idCommandes,
+      },
+      observe: 'body',
+    });
+  }
+
+  //get parmétres infos generals
+  public infosGenerals() {
+    return this.httpClient
+      .get(erp + 'info-general')
+      .pipe(catchError(this.handleError));
   }
 }

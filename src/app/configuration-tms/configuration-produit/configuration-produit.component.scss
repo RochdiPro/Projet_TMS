@@ -1,0 +1,84 @@
+/* Small devices (small phones, under 600px) */
+h3,
+h4 {
+  margin: 0;
+  padding: 0;
+  font-size: small;
+}
+
+.modifier-coefficient {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 30px;
+}
+
+input{
+  padding-left: 10px;
+  width: 100%;
+  border: 2px solid #dddfe3;
+  border-radius: 5px;
+  font-size: larger;
+  height: 30px;
+  outline: none;
+}
+
+.input {
+  width: 100%;
+  position: relative;
+}
+
+.erreur {
+  position: absolute;
+  left: 10px;
+}
+
+.boutons {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+}
+
+.mat-raised-button {
+  margin-left: auto;
+}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  h3,
+  h4 {
+    font-size: medium;
+  }
+  .erreur {
+    left: 20px;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .modifier-coefficient {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    row-gap: 0px;
+    gap: 30px;
+  }
+  h3 {
+    font-size: medium;
+  }
+  h4 {
+    font-size: small;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1620px) {
+  .modifier-coefficient {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    row-gap: 0px;
+    gap: 30px;
+  }
+  .erreur {
+    left: 20px;
+  }
+}

@@ -53,7 +53,6 @@ export class BoiteDialogueInfo implements OnInit {
       let detail = await this.serviceCommande
         .loadXML(date, nomFichier)
         .toPromise();
-
       //selon le type de la commande on appele la fonction qui permet l'extrait des details depuis le fichier xml
       this.typeDocument === 'Facture'
         ? (this.articles = await getDetail(detail, 'facture'))
@@ -76,6 +75,7 @@ export class BoiteDialogueInfo implements OnInit {
         this.articles = await getDetail(detail, 'bl');
       }
     }
+    console.log(this.articles);
     for (let i = 0; i < this.articles.length; i++) {
       // pour chaque article qu'on a recupérer depuis le fichier detail on construit avec ses données un objet article
       // avec les informations desirées et on l'ajoute a la listeArticlesDetail
@@ -900,7 +900,27 @@ export class BoiteDialogueCreerCommande implements OnInit {
         prix = bonLivraison.total_TTC;
       }
     }
-    let fraisLivraison = 7; //frais livraison temporaire jusqu'a avoir la formule
+    // calcul du frais livraison
+    // get coefficients frais livraison
+    let coefficientFraisLivraison = await this.serviceCommande.fraisLivraison().toPromise() as CoefficientsFraisLivraison;
+    let fraisLivraison = coefficientFraisLivraison.taxeFixe;
+    if (coefficientFraisLivraison.uniteLimite === "kg") {
+      if(Number(this.poidsTotalBrut) > coefficientFraisLivraison.limite) {
+        let poidsSupplimentaire = Number(this.poidsTotalBrut) - coefficientFraisLivraison.limite;
+        let nbrFoisAjoutTaxSupp = Math.ceil(poidsSupplimentaire/coefficientFraisLivraison.limiteTaxeSupp);
+        for (let i = 0; i < nbrFoisAjoutTaxSupp; i++) {
+          fraisLivraison += coefficientFraisLivraison.taxeSupplimentaire;
+        }
+      }
+    } else {
+      if(Number(this.volumeTotal) > coefficientFraisLivraison.limite) {
+        let volumeSupplimentaire = Number(this.volumeTotal) - coefficientFraisLivraison.limite;
+        let nbrFoisAjoutTaxSupp = Math.ceil(volumeSupplimentaire/coefficientFraisLivraison.limiteTaxeSupp);
+        for (let i = 0; i < nbrFoisAjoutTaxSupp; i++) {
+          fraisLivraison += coefficientFraisLivraison.taxeSupplimentaire;
+        }
+      }
+    }
     // get le score du client
     let scoreClient = 0;
     switch (this.data.commande.categorieClient) {
@@ -921,7 +941,16 @@ export class BoiteDialogueCreerCommande implements OnInit {
         break;
     }
 
-    let retard = 0; //provisoirement jusqu'a savoir comment calculer le retard
+    // calcul du retard
+    let dateCreationCommande;
+    if (this.data.modeManuel) {
+      let date = new Date(this.data.commande.dateCreation);
+      dateCreationCommande = date;
+    } else {
+      dateCreationCommande = this.data.commande.dateCreation;
+    }
+    var dateActuel = new Date();
+    let retard = dateActuel.getTime() - dateCreationCommande.getTime();
     this.score =
       prix * coefficientScoreCommande.prixFacture +
       fraisLivraison * coefficientScoreCommande.fraisLivraison +
@@ -1312,7 +1341,9 @@ export class BoiteDialogueDetailProduit implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log(this.data);
+  }
 }
 
 // -------------------------------------------------------------------------------------------------------------
@@ -2460,7 +2491,7 @@ async function getDetail(detail: any, typeCommande: string) {
             articles.push(new_obj);
           }
         }
-        if (xmldata.Produits[0].Produits_N_Lot) {
+        if (xmldata.Produits[0].Produits_N_Lot[0].Produit) {
           for (
             let i = 0;
             i < xmldata.Produits[0].Produits_N_Lot[0].Produit.length;
@@ -2490,10 +2521,14 @@ async function getDetail(detail: any, typeCommande: string) {
                 xmldata.Produits[0].Produits_N_Lot[0].Produit[
                   i
                 ].N_Lots[0].N_Lot[j].Qte[0];
-              numeroLot.date =
+              numeroLot.dateFabrication =
                 xmldata.Produits[0].Produits_N_Lot[0].Produit[
                   i
-                ].N_Lots[0].N_Lot[j].Date[0];
+                ].N_Lots[0].N_Lot[j].Date_Fabrication[0];
+              numeroLot.dateValidite =
+                xmldata.Produits[0].Produits_N_Lot[0].Produit[
+                  i
+                ].N_Lots[0].N_Lot[j].Date_Validite[0];
               numeroLots.push(numeroLot);
             }
             new_obj.numeroLots = numeroLots;
@@ -2545,4 +2580,28 @@ class Article {
     this.listeEmballage = listeEmballage;
     this.listeEmballageChoisi = listeEmballageChoisi;
   }
+}
+
+class CoefficientsFraisLivraison {
+  id: number;
+  taxeFixe: number;
+  limite: number;
+  uniteLimite: string;
+  taxeSupplimentaire: number;
+  limiteTaxeSupp: number;
+
+  constructor( 
+    taxeFixe: number, 
+    limite: number, 
+    uniteLimite: string, 
+    taxeSupplimentaire: number, 
+    limiteTaxeSupp: number
+) {
+    this.taxeFixe = taxeFixe
+    this.limite = limite
+    this.uniteLimite = uniteLimite
+    this.taxeSupplimentaire = taxeSupplimentaire
+    this.limiteTaxeSupp = limiteTaxeSupp
+  }
+
 }

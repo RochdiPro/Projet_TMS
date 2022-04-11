@@ -1,0 +1,150 @@
+/* Small devices (small phones, under 600px) */
+.full-width {
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-bottom: 60px;
+}
+
+h3,
+h4 {
+  margin: 0;
+  padding: 0;
+  font-size: small;
+}
+
+.modifier-coefficient {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 30px;
+}
+
+input,
+select {
+  padding-left: 10px;
+  width: 100%;
+  border: 2px solid #dddfe3;
+  border-radius: 5px;
+  font-size: larger;
+  height: 30px;
+  outline: none;
+}
+
+.input {
+  width: 100%;
+  position: relative;
+}
+
+.erreur {
+  position: absolute;
+  left: 10px;
+}
+
+.boutons {
+  margin-top: 10px;
+  width: 100%;
+  display: flex;
+}
+
+.mat-raised-button {
+  margin-left: auto;
+}
+
+.label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.label i:hover {
+  color: #f7b217;
+  cursor: help;
+}
+
+.info {
+  position: relative;
+}
+
+.hint {
+  position: absolute;
+  left: 20px;
+  top: -20px;
+  z-index: 99;
+  width: 200px;
+  padding: 10px;
+}
+
+.formule {
+  text-align: center;
+  font-size: small;
+  padding: 20px 0;
+  border: 1px solid #dddfe3;
+}
+
+.hover-coefficient {
+  color: #f7b217;
+}
+
+.data-folder {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+img {
+  width: 100%;
+}
+
+.structure:hover {
+  color: #f7b217;
+  cursor: pointer;
+}
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {
+  h3,
+  h4 {
+    font-size: medium;
+  }
+  .erreur {
+    left: 20px;
+  }
+  .formule {
+    font-size: medium;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+  .modifier-coefficient {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    row-gap: 0px;
+    gap: 30px;
+  }
+  h3 {
+    font-size: medium;
+  }
+  h4 {
+    font-size: small;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1620px) {
+  .modifier-coefficient {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+    row-gap: 0px;
+    gap: 30px;
+  }
+  .erreur {
+    left: 20px;
+  }
+}

@@ -1,1 +1,8 @@
-<h1>Scanner le Qr code s'il vous plait</h1>
+<div *ngIf="!chargementActive" class="flex-center">
+    <img src="../../../../../assets/images/TMS/mission/scanner-qr.PNG" alt="">
+    <p>Scanner le Qr code s'il vous plait</p>
+</div>
+<div *ngIf="chargementActive" class="flex-center">
+    <mat-spinner></mat-spinner>
+    <p *ngIf="chargementLong">Patientez un peu!</p>
+</div>

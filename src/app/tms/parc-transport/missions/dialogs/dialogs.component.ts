@@ -13,7 +13,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   MatDialog,
   MatDialogRef,
@@ -58,7 +58,7 @@ import { MissionsService } from '../services/missions.service';
 export class AffecterMultiChauffeur implements OnInit {
   chauffeurs: any;
   //liste des vehicules prive avec leurs chauffeurs compatibles
-  couplesVehiculeChauffeursPrives: any = [];
+  couplesVehiculeChauffeurs: any = [];
   copieVehiculeChauffeurs: any = [];
   commandeActive: Array<boolean> = [];
   vehiculeActive: Array<boolean> = [];
@@ -72,8 +72,7 @@ export class AffecterMultiChauffeur implements OnInit {
   commandeSelectionne: any;
   listeColisAffiche = false; //liste colis dans commande affectée est affiché ou non
   commandeDansVehiculeSelectionne: any;
-  couplesVehiculeChauffeurPrive: any = [];
-  couplesVehiculeChauffeurLoue: any = [];
+  couplesVehiculeChauffeur: any = [];
   indexVehiculeSelectionne = 0;
 
   constructor(
@@ -92,19 +91,9 @@ export class AffecterMultiChauffeur implements OnInit {
         v.vehicule.numVoyage = i + 1;
         v.vehicule.type = 'privé';
         this.vehiculesTot.push(Object.assign({}, v.vehicule));
-        this.couplesVehiculeChauffeurPrive.push({
+        this.couplesVehiculeChauffeur.push({
           vehicule: v.vehicule,
           chauffeur: {},
-          commandes: [],
-        });
-      });
-      this.vehiculesLoues.forEach((vehicule: any) => {
-        vehicule.numVoyage = i + 1;
-        vehicule.type = 'loué';
-        this.vehiculesTot.push(Object.assign({}, vehicule));
-        this.couplesVehiculeChauffeurLoue.push({
-          vehicule: vehicule,
-          chauffeur: { nom: '', tel: '' },
           commandes: [],
         });
       });
@@ -125,13 +114,7 @@ export class AffecterMultiChauffeur implements OnInit {
 
   //vehicules prive
   get vehicules() {
-    return this.data.vehiculesPrives;
-  }
-
-  get vehiculesLoues() {
-    let vehiculeLoue: any;
-    vehiculeLoue = this.data.vehiculesLoues;
-    return vehiculeLoue;
+    return this.data.vehiculesPrives.concat(this.data.vehiculesLoues);
   }
 
   // etat du div qui contient liste des colis dans voiture "show" pour afficher, "hide" pour cacher
@@ -213,17 +196,8 @@ export class AffecterMultiChauffeur implements OnInit {
     this.changerCommandeActive(index);
   }
 
-  get indexPrive() {
-    let index = this.couplesVehiculeChauffeurPrive.findIndex(
-      (couple: any) =>
-        couple.vehicule.matricule ===
-        this.vehiculesTot[this.indexVehiculeSelectionne].matricule
-    );
-    return index;
-  }
-
-  get indexLoue() {
-    let index = this.couplesVehiculeChauffeurLoue.findIndex(
+  get index() {
+    let index = this.couplesVehiculeChauffeur.findIndex(
       (couple: any) =>
         couple.vehicule.matricule ===
         this.vehiculesTot[this.indexVehiculeSelectionne].matricule
@@ -233,26 +207,16 @@ export class AffecterMultiChauffeur implements OnInit {
 
   choisirVehicule(i: number) {
     this.indexVehiculeSelectionne = i;
-    if (this.vehiculesTot[i].type === 'privé') {
-      this.typeVehicule = 'prive';
-      this.vehiculeChauffeurs =
-        this.couplesVehiculeChauffeursPrives[
-          this.indexPrive +
-            this.vehicules.length * (this.vehiculesTot[i].numVoyage - 1)
-        ];
-      this.listeCommandes =
-        this.couplesVehiculeChauffeurPrive[
-          this.indexPrive +
-            this.vehicules.length * (this.vehiculesTot[i].numVoyage - 1)
-        ].commandes;
-    } else {
-      this.typeVehicule = 'loue';
-      this.listeCommandes =
-        this.couplesVehiculeChauffeurLoue[
-          this.indexLoue +
-            this.vehiculesLoues.length * (this.vehiculesTot[i].numVoyage - 1)
-        ].commandes;
-    }
+    this.vehiculeChauffeurs =
+      this.couplesVehiculeChauffeurs[
+        this.index +
+          this.vehicules.length * (this.vehiculesTot[i].numVoyage - 1)
+      ];
+    this.listeCommandes =
+      this.couplesVehiculeChauffeur[
+        this.index +
+          this.vehicules.length * (this.vehiculesTot[i].numVoyage - 1)
+      ].commandes;
   }
 
   //si le volume ou le poids d'une commande va exceder celles du vehicule cette fonction n'aura aucun effet
@@ -344,9 +308,7 @@ export class AffecterMultiChauffeur implements OnInit {
     // nombre des pack affectées dans une vehicule specifique
     let nbrPackAffecte = 0;
     let i = 0;
-    let listeVehicule = this.couplesVehiculeChauffeurPrive.concat(
-      this.couplesVehiculeChauffeurLoue
-    );
+    let listeVehicule = this.couplesVehiculeChauffeur;
     listeVehicule.forEach((element: any) => {
       element.commandes.forEach((commande: any) => {
         let commandeFiltre = commande.colis.filter(
@@ -354,7 +316,7 @@ export class AffecterMultiChauffeur implements OnInit {
         );
         if (commandeFiltre.length > 0) {
           nbrPack += commandeFiltre[0].nombrePack;
-          if (i !== this.indexPrive) {
+          if (i !== this.index) {
             nbrPackAffecte += commandeFiltre[0].nombrePack;
           }
         }
@@ -472,56 +434,52 @@ export class AffecterMultiChauffeur implements OnInit {
             }
           });
         });
-        this.couplesVehiculeChauffeursPrives.push({
+        this.couplesVehiculeChauffeurs.push({
           vehicule: vehicule.vehicule,
           chauffeurs: chauffeurs,
         });
       });
     }
-    for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
+    for (let i = 0; i < this.couplesVehiculeChauffeurs.length; i++) {
       this.copieVehiculeChauffeurs.push({
-        vehicule: this.couplesVehiculeChauffeursPrives[i].vehicule,
-        chauffeurs: [...this.couplesVehiculeChauffeursPrives[i].chauffeurs],
+        vehicule: this.couplesVehiculeChauffeurs[i].vehicule,
+        chauffeurs: [...this.couplesVehiculeChauffeurs[i].chauffeurs],
       });
     }
   }
 
   // si un chauffeur est disponible pour plusieurs vehicules et on selectionne se chauffeur dans un vehicule on l'enleve pour les autres
   rafraichirListeChauffeur() {
-    for (let i = 0; i < this.couplesVehiculeChauffeursPrives.length; i++) {
-      this.couplesVehiculeChauffeursPrives[i].chauffeurs = [
+    for (let i = 0; i < this.couplesVehiculeChauffeurs.length; i++) {
+      this.couplesVehiculeChauffeurs[i].chauffeurs = [
         ...this.copieVehiculeChauffeurs[i].chauffeurs,
       ];
     }
     for (
       let i = 0;
-      i < this.couplesVehiculeChauffeurPrive.length / this.data.nombreVoyages;
+      i < this.couplesVehiculeChauffeur.length / this.data.nombreVoyages;
       i++
     ) {
       for (
         let j = 0;
-        j <
-        this.couplesVehiculeChauffeursPrives.length / this.data.nombreVoyages;
+        j < this.couplesVehiculeChauffeurs.length / this.data.nombreVoyages;
         j++
       ) {
-        this.couplesVehiculeChauffeursPrives[j].chauffeurs.forEach(
+        this.couplesVehiculeChauffeurs[j].chauffeurs.forEach(
           (chauffeurLoop: any) => {
             if (
               j !== i &&
-              this.couplesVehiculeChauffeurPrive[i].chauffeur.id_Employe ===
+              this.couplesVehiculeChauffeur[i].chauffeur.id_Employe ===
                 chauffeurLoop.id_Employe
             ) {
-              let index = this.couplesVehiculeChauffeursPrives[
+              let index = this.couplesVehiculeChauffeurs[
                 j
               ].chauffeurs.findIndex(
                 (chauffeur: any) =>
-                  this.couplesVehiculeChauffeurPrive[i].chauffeur.id_Employe ===
+                  this.couplesVehiculeChauffeur[i].chauffeur.id_Employe ===
                   chauffeur.id_Employe
               );
-              this.couplesVehiculeChauffeursPrives[j].chauffeurs.splice(
-                index,
-                1
-              );
+              this.couplesVehiculeChauffeurs[j].chauffeurs.splice(index, 1);
             }
           }
         );
@@ -529,23 +487,18 @@ export class AffecterMultiChauffeur implements OnInit {
     }
     //si on a plusieurs nombres de voyages on selectionne le chauffeur seulement pour le premier voyages et les autres sont les meme comme selectionnées
     for (
-      let i =
-        this.couplesVehiculeChauffeurPrive.length / this.data.nombreVoyages;
-      i < this.couplesVehiculeChauffeurPrive.length;
+      let i = this.couplesVehiculeChauffeur.length / this.data.nombreVoyages;
+      i < this.couplesVehiculeChauffeur.length;
       i++
     ) {
-      this.couplesVehiculeChauffeursPrives[i].chauffeurs = [];
-      this.couplesVehiculeChauffeurPrive[i].chauffeur =
-        this.couplesVehiculeChauffeurPrive[
-          i -
-            this.couplesVehiculeChauffeursPrives.length /
-              this.data.nombreVoyages
+      this.couplesVehiculeChauffeurs[i].chauffeurs = [];
+      this.couplesVehiculeChauffeur[i].chauffeur =
+        this.couplesVehiculeChauffeur[
+          i - this.couplesVehiculeChauffeurs.length / this.data.nombreVoyages
         ].chauffeur;
-      this.couplesVehiculeChauffeursPrives[i].chauffeurs.push(
-        this.couplesVehiculeChauffeurPrive[
-          i -
-            this.couplesVehiculeChauffeursPrives.length /
-              this.data.nombreVoyages
+      this.couplesVehiculeChauffeurs[i].chauffeurs.push(
+        this.couplesVehiculeChauffeur[
+          i - this.couplesVehiculeChauffeurs.length / this.data.nombreVoyages
         ].chauffeur
       );
     }
@@ -605,9 +558,7 @@ export class AffecterMultiChauffeur implements OnInit {
     let nbrPack = 0;
     // nombre des pack affectées dans une vehicule specifique
     let i = 0;
-    let listeVehicule = this.couplesVehiculeChauffeurPrive.concat(
-      this.couplesVehiculeChauffeurLoue
-    );
+    let listeVehicule = this.couplesVehiculeChauffeur;
     listeVehicule.forEach((element: any) => {
       element.commandes.forEach((commande: any) => {
         let commandeFiltre = commande.colis.filter(
@@ -663,9 +614,7 @@ export class AffecterMultiChauffeur implements OnInit {
       let nbrPack = 0;
       // nombre des pack affectées dans une vehicule specifique
       let i = 0;
-      let listeVehicule = this.couplesVehiculeChauffeurPrive.concat(
-        this.couplesVehiculeChauffeurLoue
-      );
+      let listeVehicule = this.couplesVehiculeChauffeur;
       listeVehicule.forEach((element: any) => {
         element.commandes.forEach((commande: any) => {
           let commandeFiltre = commande.colis.filter(
@@ -713,82 +662,44 @@ export class AffecterMultiChauffeur implements OnInit {
   // retourne le poids de la vehicule
   get poidsVehicule() {
     let poids = 0;
-    if (this.typeVehicule) {
-      this.typeVehicule === 'prive'
-        ? (poids =
-            this.couplesVehiculeChauffeurPrive[this.indexPrive].vehicule
-              .charge_utile)
-        : (poids =
-            this.couplesVehiculeChauffeurLoue[this.indexLoue].vehicule
-              .charge_utile);
-    }
+    poids = this.couplesVehiculeChauffeur[this.index].vehicule.charge_utile;
     return Number(poids.toFixed(4));
   }
 
   // retourne le volume de la vehicule
   get volumeVehicule() {
     let volume = 0;
-    if (this.typeVehicule) {
-      this.typeVehicule === 'prive'
-        ? (volume =
-            this.couplesVehiculeChauffeurPrive[this.indexPrive].vehicule
-              .longueur *
-            this.couplesVehiculeChauffeurPrive[this.indexPrive].vehicule
-              .largeur *
-            this.couplesVehiculeChauffeurPrive[this.indexPrive].vehicule
-              .hauteur)
-        : (volume =
-            this.couplesVehiculeChauffeurLoue[this.indexLoue].vehicule
-              .longueur *
-            this.couplesVehiculeChauffeurLoue[this.indexLoue].vehicule.largeur *
-            this.couplesVehiculeChauffeurLoue[this.indexLoue].vehicule.hauteur);
-    }
+    volume =
+      this.couplesVehiculeChauffeur[this.index].vehicule.longueur *
+      this.couplesVehiculeChauffeur[this.index].vehicule.largeur *
+      this.couplesVehiculeChauffeur[this.index].vehicule.hauteur;
     return Number((volume / 1000000).toFixed(4));
   }
 
   // retourne le poids des commandes dans vehicule
   get poidsCommandes() {
     let poids = 0;
-    if (this.typeVehicule) {
-      this.typeVehicule === 'prive'
-        ? this.couplesVehiculeChauffeurPrive[this.indexPrive].commandes.forEach(
-            (commande: any) => {
-              commande.colis.forEach((colis: any) => {
-                poids += colis.poidsBrut;
-              });
-            }
-          )
-        : this.couplesVehiculeChauffeurLoue[this.indexLoue].commandes.forEach(
-            (commande: any) => {
-              commande.colis.forEach((colis: any) => {
-                poids += colis.poidsBrut;
-              });
-            }
-          );
-    }
+    this.couplesVehiculeChauffeur[this.index].commandes.forEach(
+      (commande: any) => {
+        commande.colis.forEach((colis: any) => {
+          poids += colis.poidsBrut;
+        });
+      }
+    );
+
     return Number(poids.toFixed(4));
   }
 
   // retourne volume commandes
   get volumeCommandes() {
     let volume = 0;
-    if (this.typeVehicule) {
-      this.typeVehicule === 'prive'
-        ? this.couplesVehiculeChauffeurPrive[this.indexPrive].commandes.forEach(
-            (commande: any) => {
-              commande.colis.forEach((colis: any) => {
-                volume += colis.volume;
-              });
-            }
-          )
-        : this.couplesVehiculeChauffeurLoue[this.indexLoue].commandes.forEach(
-            (commande: any) => {
-              commande.colis.forEach((colis: any) => {
-                volume += colis.volume;
-              });
-            }
-          );
-    }
+    this.couplesVehiculeChauffeur[this.index].commandes.forEach(
+      (commande: any) => {
+        commande.colis.forEach((colis: any) => {
+          volume += colis.volume;
+        });
+      }
+    );
     return Number(volume.toFixed(4));
   }
 
@@ -816,15 +727,9 @@ export class AffecterMultiChauffeur implements OnInit {
     this.listeColisTot.forEach((colis: any) => {
       colis.nombrePack !== 0 ? (estValide = false) : '';
     });
-    this.couplesVehiculeChauffeurPrive.forEach((element: any) => {
+    this.couplesVehiculeChauffeur.forEach((element: any) => {
       element.commandes.length === 0 ? (estValide = false) : '';
       Object.keys(element.chauffeur).length === 0 ? (estValide = false) : '';
-    });
-    this.couplesVehiculeChauffeurLoue.forEach((element: any) => {
-      element.commandes.length === 0 ? (estValide = false) : '';
-      element.chauffeur.nom === '' || element.chauffeur.tel === ''
-        ? (estValide = false)
-        : '';
     });
     return estValide;
   }
@@ -832,11 +737,9 @@ export class AffecterMultiChauffeur implements OnInit {
   //   bouton ok
   valider() {
     if (!this.toutValide) return;
-    let couplesVehiculeChauffeurPrive = this.couplesVehiculeChauffeurPrive;
-    let couplesVehiculeChauffeurLoue = this.couplesVehiculeChauffeurLoue;
+    let couplesVehiculeChauffeur = this.couplesVehiculeChauffeur;
     this.dialogRef.close({
-      prive: couplesVehiculeChauffeurPrive,
-      loue: couplesVehiculeChauffeurLoue,
+      result: couplesVehiculeChauffeur,
     });
   }
 }
@@ -871,15 +774,15 @@ export class AffecterChauffeur implements OnInit {
     ) {
       this.typeVehicule = 'prive';
       this.vehicule = this.data.vehiculesPrives[0].vehicule;
-      await this.getListeChauffeurs();
-      this.verifierCompatibiliteChauffeur();
     } else if (
       this.data.vehiculesPrives.length === 0 &&
       this.data.vehiculesLoues.length === 1
     ) {
       this.typeVehicule = 'loue';
-      this.vehicule = this.data.vehiculesLoues[0];
+      this.vehicule = this.data.vehiculesLoues[0].vehicule;
     }
+    await this.getListeChauffeurs();
+    this.verifierCompatibiliteChauffeur();
     //activer la premiere commande par defaut
     this.commandeActive[0] = true;
     this.choisirCommande(this.data.mission[0]);
@@ -891,7 +794,7 @@ export class AffecterChauffeur implements OnInit {
 
   // permet d'avoir les chauffeurs compatibles ave le vehicule
   verifierCompatibiliteChauffeur() {
-    let categorie = this.data.vehiculesPrives[0].vehicule.categories.split('/');
+    let categorie = this.vehicule.categories.split('/');
     let chauffeurs: any = [];
     categorie.forEach((value: any) => {
       this.chauffeurs.forEach((chauffeur: any) => {
@@ -967,8 +870,7 @@ export class AffecterChauffeur implements OnInit {
   }
 
   async valider() {
-    let couplesVehiculeChauffeurPrive: any;
-    let couplesVehiculeChauffeurLoue: any;
+    let couplesVehiculeChauffeur: any;
     let commandes: any = [];
     for (let i = 0; i < this.data.mission.length; i++) {
       const commande = this.data.mission[i];
@@ -978,28 +880,16 @@ export class AffecterChauffeur implements OnInit {
         colis: this.listeColis,
       });
     }
-    if (this.typeVehicule === 'prive') {
-      couplesVehiculeChauffeurPrive = [
-        {
-          vehicule: this.vehicule,
-          chauffeur: this.chauffeurSelectionne,
-          commandes: commandes,
-        },
-      ];
-      couplesVehiculeChauffeurLoue = [];
-    } else {
-      couplesVehiculeChauffeurPrive = [];
-      couplesVehiculeChauffeurLoue = [
-        {
-          vehicule: this.vehicule,
-          chauffeur: this.chauffeurSelectionne,
-          commandes: commandes,
-        },
-      ];
-    }
+    couplesVehiculeChauffeur = [
+      {
+        vehicule: this.vehicule,
+        chauffeur: this.chauffeurSelectionne,
+        commandes: commandes,
+      },
+    ];
+
     this.dialogRef.close({
-      prive: couplesVehiculeChauffeurPrive,
-      loue: couplesVehiculeChauffeurLoue,
+      result: couplesVehiculeChauffeur,
     });
   }
 }
@@ -1060,11 +950,12 @@ export class DetailComponent implements OnInit {
         nom: this.data.mission.nomChauffeur,
         tel: this.data.mission.telephoneChauffeur,
       };
-      console.log(this.data.mission);
     } else {
-      this.chauffeur = await this.serviceChauffeur
+      this.serviceChauffeur
         .employe(Number(idChauffeur))
-        .toPromise();
+        .subscribe((chauffeur) => {
+          this.chauffeur = chauffeur;
+        });
     }
     await this.getListeCommandes();
   }
@@ -1084,7 +975,6 @@ export class DetailComponent implements OnInit {
   }
 
   async getListeCommandes() {
-    console.log(this.data.mission.idCommandes);
     let idCommandes = this.data.mission.idCommandes.split('/');
     for (let i = 0; i < idCommandes.length; i++) {
       const idCommande = Number(idCommandes[i]);
@@ -1240,6 +1130,8 @@ export class DetailCommande implements OnInit {
 export class ConfirmerLivraison implements OnInit {
   interval: any; //intervalle entre les keyup ==> on va specifier interval de 20ms pour ne pas autoriser l'ecriture que au scanner du code a barre
   qrCode = '';
+  chargementActive = false;
+  chargementLong = false;
 
   constructor(
     private dialogRef: MatDialogRef<ConfirmerLivraison>,
@@ -1252,12 +1144,20 @@ export class ConfirmerLivraison implements OnInit {
   // fonction pour scanner le Qr code de confirmation de livraison avec le scanner
   @HostListener('window:keyup', ['$event'])
   async keyEvent(event: KeyboardEvent) {
+    this.chargementActive = true;
+    setTimeout(() => {
+      this.chargementLong = true;
+    }, 2000);
     let reponse: any;
     if (this.interval) clearInterval(this.interval);
     if (event.code == 'Enter') {
       if (this.qrCode)
         reponse = await this.serviceMission
-          .livrerCommande(this.qrCode, this.data.mission.id)
+          .livrerCommande(
+            this.qrCode,
+            this.data.mission.id,
+            this.data.mission.idCommandes
+          )
           .toPromise();
       this.qrCode = '';
       if (reponse[0]) {
@@ -1272,9 +1172,10 @@ export class ConfirmerLivraison implements OnInit {
         Swal.fire({
           icon: 'error',
           title: 'Qr code invalide',
-          text: "Ce Qr code n'appartiens à aucune commande pour cette mission!",
         });
       }
+      this.chargementActive = false;
+      this.chargementLong = false;
       return;
     }
     if (event.key != 'Shift') this.qrCode += event.key;
@@ -1481,8 +1382,8 @@ export class ConfirmationAnnulationMission implements OnInit {
 })
 export class Trajet implements OnInit {
   // les coordonnées actuelles prise depuis le navigateur
-  currentLat: any;
-  currentLong: any;
+  latDepart: any;
+  longDepart: any;
 
   // lien map
   lien: any;
@@ -1516,25 +1417,21 @@ export class Trajet implements OnInit {
         await this.serviceMission.commande(idCommande).toPromise()
       );
     }
-    console.log(this.commandes);
   }
 
   get dragDropeActive() {
     let estActive = false;
-    this.data.mission.etat !== "En attente" ? estActive = false : estActive = true;
-    return estActive
+    this.data.mission.etat !== 'En attente'
+      ? (estActive = false)
+      : (estActive = true);
+    return estActive;
   }
 
   // avoir la position de début depuis le navigateur
-  chercherMoi() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.currentLat = position.coords.latitude;
-        this.currentLong = position.coords.longitude;
-      });
-    } else {
-      alert('Geolocation is not supported by this browser.');
-    }
+  async getPositionDepart() {
+    let infoGenerals = await this.serviceMission.infosGenerals().toPromise()
+    this.latDepart = infoGenerals.latitude;
+    this.longDepart = infoGenerals.longitude;
   }
 
   // retourne la position de destination d'une commande
@@ -1547,10 +1444,9 @@ export class Trajet implements OnInit {
 
   // créer le meilleur trajet possible
   async createTrajet() {
-    this.chercherMoi();
+    await this.getPositionDepart();
     let positions: any = [];
     let idCommandes = this.data.mission.idCommandes.split('/');
-    console.log(idCommandes);
     for (let i = 0; i < idCommandes.length; i++) {
       const idCommande = Number(idCommandes[i]);
       const commande = await this.serviceMission
@@ -1561,8 +1457,8 @@ export class Trajet implements OnInit {
         : '';
     }
     var debutChemin = {
-      latitude: this.currentLat,
-      longitude: this.currentLong,
+      latitude: this.latDepart,
+      longitude: this.longDepart,
     };
     var finChemin = positions[positions.length - 1];
     let pointStop = [];
@@ -1621,7 +1517,6 @@ export class Trajet implements OnInit {
     }
     idCommandes = idCommandes.slice(0, -1);
     this.data.mission.idCommandes = idCommandes;
-    console.log(idCommandes);
     await this.serviceMission
       .modifierIdCommandesDansMission(this.data.mission.id, idCommandes)
       .toPromise();
@@ -1638,5 +1533,347 @@ export class Trajet implements OnInit {
         '&travelmode=driving&waypoints=' +
         this.pointStop
     );
+  }
+}
+
+// ------------------------------ boite dialog plan chargement -------------------------------------------
+import { fabric } from 'fabric';
+import { kmactuelValidator } from '../../vehicule/kmactuel.validator';
+
+@Component({
+  templateUrl: 'plan-chargement.html',
+  styleUrls: ['plan-chargement.scss'],
+})
+export class PlanChargement implements OnInit {
+  lignes: any = [];
+  indexLigne = 0;
+  note: string;
+  canvas: fabric.StaticCanvas;
+  rows: fabric.StaticCanvas;
+  listeCanvasLignesEnregistrees: any;
+  listeCommandes: any = [];
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private service: MissionsService
+  ) {}
+
+  ngOnInit() {
+    this.getVehicule();
+  }
+
+  getVehicule() {
+    if (this.data.mission.typeVehicule === 'prive') {
+      this.service
+        .vehicule(this.data.mission.matricule)
+        .subscribe((vehicule) => {
+          this.creerLesCanvas(vehicule);
+        });
+    } else {
+      this.service
+        .filtrerVehiculeLoues('matricule', this.data.mission.matricule)
+        .subscribe((vehicule) => {
+          this.creerLesCanvas(vehicule[0]);
+        });
+    }
+  }
+
+  getCommandes() {
+    let commande: any;
+    let idCommandes = this.data.mission.idCommandes;
+    idCommandes = idCommandes.split('/'); //liste des id de commandes dans une mission
+    idCommandes = idCommandes.reverse(); //on inverse la liste car la derniére commande a livrer va etre la premiére a charger
+    // recupérer la liste des colis dans une mission
+    this.service
+      .getColisParIdMission(this.data.mission.id)
+      .subscribe(async (listeColis) => {
+        for (let i = 0; i < idCommandes.length; i++) {
+          // pour chaque commande on récupére ses informations
+          commande = await this.service.commande(idCommandes[i]).toPromise();
+          //recupérer la liste des article pour chaque commande
+          commande.articles = listeColis.filter(
+            (colis: any) => colis.idCommande == idCommandes[i]
+          );
+          // donner un couleur pour chaque commande
+          //le couleur va être utiliser pour identifier les articles de chaque commande
+          let objetsCommande: any = this.canvas
+            .getObjects()
+            .filter((obj: any) => Number(obj.idCommande) == idCommandes[i]);
+          let couleur = objetsCommande[0].item(0).fill;
+          commande.couleur = couleur;
+          this.listeCommandes.push(commande);
+        }
+      });
+  }
+
+  creerLesCanvas(vehicule: any) {
+    let divTop: any = document.getElementById('vueTop'); //recuperer le div 'vueTop'
+    while (divTop.firstChild) {
+      //supprimer le contenu du div top pour l'initialiser
+      divTop.removeChild(divTop.firstChild);
+    }
+    let divLigne: any = document.getElementById('vueLigne'); //recuperer le div 'vueTop' ('vueLigne' est la vue de l'arriére)
+    while (divLigne.firstChild) {
+      //supprimer le contenu du div vueLigne pour l'initialiser
+      divLigne.removeChild(divLigne.firstChild);
+    }
+    let canvaTop = document.createElement('canvas'); //creation du canva du vue top
+    canvaTop.id = 'canvas';
+    canvaTop.style.zIndex = '8';
+    canvaTop.style.border = '2px solid';
+    divTop.appendChild(canvaTop); //on ajoute le canva créé dans le divTop
+
+    let row = document.createElement('canvas'); //creation du canva vue ligne
+    row.id = 'row';
+    row.style.zIndex = '8';
+    row.style.border = '2px solid';
+    divLigne.appendChild(row);
+
+    this.canvas = new fabric.StaticCanvas('canvas', {
+      //creation de l'objet canva du vueTop a l'aide du biblio fabric js
+      width: (vehicule.largeur * 2.7) / 2,
+      height: (vehicule.longueur * 2.7) / 2,
+      selection: false,
+    });
+    this.rows = new fabric.StaticCanvas('row', {
+      //creation de l'objet canva statique du vueLigne a l'aide du biblio fabric js
+      width: (vehicule.largeur * 2.7) / 2,
+      height: (vehicule.hauteur * 2.7) / 2,
+      selection: false,
+    });
+    this.charger(vehicule);
+    this.getCommandes();
+  }
+
+  charger(vehicule: any) {
+    this.lignes = [];
+    this.indexLigne = 0;
+    this.note = this.data.mission.note;
+    this.canvas.clear();
+    this.rows.clear();
+
+    let canvas = new fabric.StaticCanvas('canvas', {
+      //creation de l'objet canva du vueTop a l'aide du biblio fabric js
+      width: (vehicule.largeur * 2.7) / 2,
+      height: (vehicule.longueur * 2.7) / 2,
+      selection: false,
+    });
+
+    canvas.loadFromJSON(this.data.mission.canvasTop, () => {
+      canvas.getObjects().forEach((obj: any) => {
+        obj.set('left', obj.left / 2);
+        obj.set('top', obj.top / 2);
+        obj.set('width', obj.width / 2);
+        obj.set('height', obj.height / 2);
+        obj.item(0).set('width', obj.width);
+        obj.item(0).set('height', obj.height);
+        obj.item(1).set('angle', 90);
+        obj.item(1).set('fontSize', 5);
+      });
+    });
+
+    let canvasJson = canvas.toJSON([
+      'id',
+      '_controlsVisibility',
+      'idCommande',
+      'idArticle',
+      'borderColor',
+    ]);
+    // affichage du canvas top
+    this.canvas.loadFromJSON(canvasJson, () => {
+      // making sure to render canvas at the end
+      this.canvas.renderAll();
+    });
+    this.listeCanvasLignesEnregistrees =
+      this.data.mission.canvasFace.split('|');
+    // charger les lignes du canvas faces enregistrées
+    for (let i = 0; i < this.listeCanvasLignesEnregistrees.length; i++) {
+      let row = new fabric.Canvas('', {
+        //creation de l'objet canva du vueLigne a l'aide du biblio fabric js
+        width: (vehicule.largeur * 2.7) / 2,
+        height: (vehicule.hauteur * 2.7) / 2,
+        selection: false,
+      });
+      row.loadFromJSON(this.listeCanvasLignesEnregistrees[i], () => {
+        this.lignes.push({
+          objects: row.getObjects(),
+          longueur: 0,
+          top: 2,
+          largeur: 0,
+        });
+        row.getObjects().forEach((obj: any) => {
+          obj.set('left', obj.left / 2);
+          obj.set('top', obj.top / 2);
+          obj.set('width', obj.width / 2);
+          obj.set('height', obj.height / 2);
+          obj.item(0).set('width', obj.width);
+          obj.item(0).set('height', obj.height);
+          obj.item(1).set('fontSize', 5);
+        });
+      });
+      this.listeCanvasLignesEnregistrees[i] = row.toJSON([
+        'id',
+        '_controlsVisibility',
+        'idCommande',
+        'idArticle',
+        'borderColor',
+      ]);
+      //definir longueur et largeur ligne
+      let canvasTopOjects = this.canvas.getObjects();
+      for (let i = 0; i < this.lignes.length; i++) {
+        this.lignes[i].objects.forEach((obj: any) => {
+          let objet = canvasTopOjects.filter((ob: any) => ob.id === obj.id)[0];
+          if (objet.height > this.lignes[i].longueur) {
+            this.lignes[i].longueur = objet.height - 0.5;
+          }
+          if (i > 0) {
+            this.lignes[i].top =
+              this.lignes[i - 1].longueur + this.lignes[i - 1].top;
+          }
+          this.lignes[i].largeur = this.canvas.getWidth();
+        });
+      }
+    }
+    //affichage premier ligne canvas face
+    this.rows.loadFromJSON(this.listeCanvasLignesEnregistrees[0], () => {
+      // making sure to render canvas at the end
+      this.rows.renderAll();
+    });
+  }
+
+  // fonction pour afficher la ligne selectionnée
+  changerLigne() {
+    let divLigne: any = document.getElementById('vueLigne');
+    this.rows.clear();
+    this.rows.loadFromJSON(
+      this.listeCanvasLignesEnregistrees[this.indexLigne],
+      () => {
+        // making sure to render canvas at the end
+        this.rows.renderAll();
+      }
+    );
+    this.scroll(divLigne);
+  }
+
+  // fonction pour faire le scroll vers le bas
+  scroll(el: HTMLElement) {
+    el.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+      inline: 'nearest',
+    });
+  }
+}
+
+// *********************************************** dialog cloturer mission ******************************
+@Component({
+  templateUrl: 'cloturer-mission.html',
+  styleUrls: ['cloturer-mission.scss'],
+})
+export class CloturerMission implements OnInit {
+  reservoir: number = 0;
+  mission: any;
+  vehicule: any;
+  consommationActuelle: number = 0;
+  distanceParcourue: number = 0;
+  form: FormGroup;
+  constructor(
+    private dialogRef: MatDialogRef<CloturerMission>,
+    @Inject(MAT_DIALOG_DATA) private data: any,
+    private serviceMission: MissionsService,
+    private fb: FormBuilder
+  ) {}
+
+  ngOnInit() {
+    this.form = this.fb.group({
+      kmActuel: [
+        0,
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
+      ]
+    });
+    this.mission = this.data.mission;
+    this.serviceMission
+      .vehicule(this.mission.matricule)
+      .subscribe((vehicule) => {
+        this.vehicule = vehicule;
+        this.reservoir = this.vehicule.reservoir;
+        this.kmActuel.setValue(this.vehicule.kmactuel)
+        localStorage.setItem('kmactuelV', this.vehicule.kmactuel)
+      });
+  }
+  get kmActuel(){
+    return this.form.get('kmActuel')
+  }
+
+  formatLabel(value: number) {
+    return value + '%';
+  }
+
+  changerHistorique(){
+    let historique = this.vehicule.historiqueConsommation;
+    this.calculerDitanceParcourue();
+    historique += "#idChauffeur:" + this.mission.idChauffeur + "/distance:" + this.distanceParcourue + "/consommation:" + this.consommationActuelle;
+    return historique;
+  }
+
+  calculerConsommationActuelle(){
+    this.calculerDitanceParcourue();
+    let carburantConsomme = ((this.vehicule.reservoir - this.reservoir)*this.vehicule.capaciteReservoir)/100;
+    let consommation = (carburantConsomme*100)/this.distanceParcourue;
+    this.consommationActuelle = Math.round((consommation + Number.EPSILON) * 100) / 100
+  }
+
+  calculerConsommation(){
+    let sommeConsommations = 0;
+    let consommation = 0;
+    let historiques = this.vehicule.historiqueConsommation.split('#');
+    if (historiques.length > 1) {
+      for (let i = 1; i < historiques.length; i++) {
+        const historique = historiques[i];
+        sommeConsommations += Number(historique.split('/')[2].split(':')[1])
+      }
+    }
+    sommeConsommations += this.consommationActuelle;
+    consommation = sommeConsommations/(historiques.length);
+    return consommation
+  }
+
+  calculerDitanceParcourue(){
+    let distanceParcourue = this.kmActuel.value - this.vehicule.kmactuel;
+    this.distanceParcourue = distanceParcourue;
+  }
+
+  enregistrer() {
+    let consommation = this.calculerConsommation();
+    let historique = this.changerHistorique()
+    this.calculerConsommationActuelle();
+    this.changerHistorique();
+    this.serviceMission
+      .modifierConsommation(
+        this.vehicule.id,
+        this.kmActuel.value,
+        consommation,
+        historique,
+        this.reservoir
+      )
+      .subscribe((result) => {
+        this.serviceMission
+          .modifierEtatMission(this.mission.id, 'Terminée')
+          .subscribe((result) => {
+            if (result) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Commande bien reçue',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              this.dialogRef.close();
+            }
+          });
+      });
   }
 }

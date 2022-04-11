@@ -1,0 +1,50 @@
+.container {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+img {
+  width: 50%;
+}
+#canva {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+// les divs qui permet de selectionner les lignes
+.selecteur {
+  z-index: 90;
+  position: absolute;
+  cursor: pointer;
+}
+
+.selecteur:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+// legend pour savoir a qui appartienne chaque commande
+.legend {
+  border: 2px solid;
+  padding: 10px;
+  min-width: 220px;
+  margin-bottom: 10px;
+}
+
+// div dans legend
+.legend > div {
+  display: flex;
+  margin: auto;
+  align-items: center;
+  gap: 10px;
+}
+
+// div note
+.note {
+  width: 300px;
+  padding: 20px;
+  margin-top: 20px;
+}

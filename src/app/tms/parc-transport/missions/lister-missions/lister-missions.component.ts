@@ -5,9 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
 import {
+  CloturerMission,
   ConfirmationAnnulationMission,
   DetailComponent,
   ModifierMission,
@@ -59,12 +58,25 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   destinationsOptimise: any = [];
   commande: any;
 
+  // variable utiliser pour activer et desactiver le bouton stop
+  boutonStopEstActive: boolean;
+
+  nom: any;
+  acces: any;
+  tms: any;
   constructor(
     public serviceMission: MissionsService,
     public datepipe: DatePipe,
-    private router: Router,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+  }
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -76,6 +88,14 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
 
   async ngOnInit() {
     await this.filtrerMission();
+  }
+
+  testerEtatCommandes(commandes: any) {
+    let toutesCommandesLivrees = true;
+    commandes.forEach((commande: any) => {
+      commande.etat !== 'Livrée' ? (toutesCommandesLivrees = false) : '';
+    });
+    return toutesCommandesLivrees;
   }
 
   viderNom() {
@@ -111,6 +131,13 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     // trie et mise a jour du paginator
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+    this.dataSource.data.forEach((mission) => {
+      this.serviceMission
+        .getCommandesParIdMission(mission.id)
+        .subscribe((commandes) => {
+          mission.boutonStop = this.testerEtatCommandes(commandes);
+        });
+    });
   }
   disableEnableDate() {
     //pour activer et desactiver le filtrage par date
@@ -194,6 +221,13 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
       data: { mission: mission },
     });
   }
+
+  ouvrirBoiteDialogCloturerMission(mission: any) {
+    const dialogRef = this.dialog.open(CloturerMission, {
+      width: '1000px',
+      data: { mission: mission }
+    })
+  }
 }
 
 export interface tableMissions {
@@ -210,4 +244,5 @@ export interface tableMissions {
   etat: String;
   date: Date;
   idMissionsLiees: String;
+  boutonStop: boolean;
 }

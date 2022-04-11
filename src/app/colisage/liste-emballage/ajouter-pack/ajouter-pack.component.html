@@ -19,9 +19,9 @@
                                 Ce champ est obligatoire
                             </mat-error>
                         </mat-form-field>
-                        <div id="nomEmballage" *ngIf="support">Nom d'emballage: <b>{{support ? support[0].nom_support :
+                        <div id="nomEmballage" *ngIf="support">Nom d'emballage: <b>{{support ? support.nomSupport :
                                 ''}}</b></div>
-                        <div id="typeEmballage" *ngIf="support">Type d'emballage: <b>{{support ? support[0].type_support
+                        <div id="typeEmballage" *ngIf="support">Type d'emballage: <b>{{support ? support.typeSupport
                                 :
                                 ''}}</b></div>
                     </div>
@@ -60,7 +60,7 @@
                     <!-- input nom pack -->
                     <mat-form-field appearance="fill" class="premier-input">
                         <mat-label style="text-transform: capitalize;">Nom du pack</mat-label>
-                        <input matInput formControlName="nom" required>
+                        <input matInput formControlName="nom" required id="nomPack">
                         <mat-error *ngIf="premierFormGroup.controls['nom'].hasError('required')">
                             Ce champ est obligatoire
                         </mat-error>
@@ -201,7 +201,8 @@
                             <!-- input field quantité -->
                             <mat-form-field appearance="fill" class="troisieme-stepper-input" style="margin-right: 2%;">
                                 <mat-label style="text-transform: capitalize;">Quantité dans l'emballage</mat-label>
-                                <input matInput formControlName="qte" required type="number" onkeyup="if(this.value<0)this.value=0" min="0">
+                                <input matInput formControlName="qte" required type="number"
+                                    onkeyup="if(this.value<0)this.value=0" min="0">
                                 <mat-error *ngIf="packControl.controls[i].get('qte').hasError('required')">
                                     Ce champ est obligatoire
                                 </mat-error>
@@ -300,18 +301,18 @@
             </div>
             <!-- afficher les information d'emballage a ajouter -->
             <mat-grid-list [cols]="breakpoint" rowHeight="2:1" (window:resize)="onResize($event)"
-                style="margin-left: 2.5%;">
+                style="margin-left: 2.5%;" *ngIf="support">
                 <mat-grid-tile>
                     <div class="w-100 titre">Nom D'emballage:</div>
                 </mat-grid-tile>
                 <mat-grid-tile>
-                    <div class="w-100">{{this.premierFormGroup.get('nom').value}}</div>
+                    <div class="w-100">{{support.nomSupport}}</div>
                 </mat-grid-tile>
                 <mat-grid-tile>
                     <div class="w-100 titre">Type D'emballage:</div>
                 </mat-grid-tile>
                 <mat-grid-tile>
-                    <div class="w-100">{{this.premierFormGroup.get('type').value}}</div>
+                    <div class="w-100">{{support.typeSupport}}</div>
                 </mat-grid-tile>
                 <mat-grid-tile>
                     <div class="w-100 titre">Catégorie:</div>
@@ -359,7 +360,10 @@
                     <div class="w-100 titre">Code à barre:</div>
                 </mat-grid-tile>
                 <mat-grid-tile>
-                    <div class="w-100"></div>
+                    <div class="w-100">
+                        <ngx-barcode [bc-value]="barcodeEmballage" [bc-display-value]="true" [bc-width]="0.8"
+                            [bc-height]="30" [bc-font-size]="12"></ngx-barcode>
+                    </div>
                 </mat-grid-tile>
             </mat-grid-list>
             <div style="float: right;">

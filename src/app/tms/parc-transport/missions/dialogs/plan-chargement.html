@@ -1,0 +1,34 @@
+<div class="container">
+    <!-- legend -->
+    <div class="legend" id="legend">
+        <div *ngFor="let commande of listeCommandes;">
+            <div [style.background-color]="commande.couleur" style="height: 14px; width: 14px;"></div>
+            <div class="position">
+                {{commande.nomClient}}: {{commande.adresse}}, {{commande.ville}}.
+            </div>
+        </div>
+    </div>
+    <!-- image tête camion -->
+    <img src="assets\images\Layer 0.png">
+    <!-- container des canvas -->
+    <div class="container" id="container">
+        <div id="canva">
+            <div class="selecteur" *ngFor="let ligne of lignes; let i = index" [style.width.px]="ligne.largeur"
+                [style.height.px]="ligne.longueur" [style.top.px]="ligne.top" [style.left.px]="0"
+                (click)="indexLigne = i; changerLigne()"></div>
+            <div id="vueTop">
+            </div>
+            <div class="label">Vue de top</div>
+            <div id="vueLigne"></div>
+            <div class="label">Vue de face</div>
+        </div>
+    </div>
+    <div class="note card">
+        <ng-container *ngIf="note === '' ; else elseTemplate">
+            <div style="width: 100%; text-align: center; color: lightgray;">Pas de note!</div>
+         </ng-container>
+         <ng-template #elseTemplate>
+            {{note}}
+         </ng-template>
+    </div>
+</div>

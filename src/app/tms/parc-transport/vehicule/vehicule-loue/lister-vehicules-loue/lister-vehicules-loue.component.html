@@ -8,6 +8,32 @@
         </button>
     </div>
     <!-- fin Bouton pour ajouter nouvelle vehicule -->
+    <div>
+        <section>
+           <mat-form-field class="filtres">
+              <mat-label>Matricule</mat-label>
+              <input matInput placeholder="Matricule" (keyup)="filtrerVehicule()" id="nom" [(ngModel)]="filtreMatricule">
+              <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="filtreMatricule = ''">
+                 <i class="fa fa-filter" aria-hidden="true"></i>
+              </button>
+           </mat-form-field>
+           <mat-form-field class="filtres">
+              <mat-label>Propriétaire</mat-label>
+              <input matInput placeholder="Propriétaire" (keyup)="filtrerVehicule()" id="nom" [(ngModel)]="filtreProprietaire">
+              <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="filtreProprietaire = ''">
+                 <i class="fa fa-filter" aria-hidden="true"></i>
+              </button>
+           </mat-form-field>
+           <mat-form-field class="filtres">
+              <mat-label>Disponibilité</mat-label>
+              <mat-select [(value)]="filtreDisponibilte" (selectionChange)="filtrerVehicule()">
+                 <mat-option></mat-option>
+                 <mat-option value="Disponible">Disponible</mat-option>
+                 <mat-option value="En mission">En mission</mat-option>
+              </mat-select>
+           </mat-form-field>
+        </section>
+     </div>
     <table class="mb-0 table" [formGroup]="form">
         <thead>
             <tr>

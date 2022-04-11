@@ -39,12 +39,12 @@
             <div class="chauffeur" *ngIf="this.vehiculesTot[indexVehiculeSelectionne]">
                 <i class="fas fa-user"></i>
                 <ng-container
-                    *ngIf="this.indexPrive + (this.vehicules.length * (this.vehiculesTot[indexVehiculeSelectionne].numVoyage - 1)) < this.couplesVehiculeChauffeurPrive.length / this.data.nombreVoyages; else chauffeurDejaAffecte">
-                    <mat-form-field *ngIf="typeVehicule === 'prive'">
+                    *ngIf="this.index + (this.vehicules.length * (this.vehiculesTot[indexVehiculeSelectionne].numVoyage - 1)) < this.couplesVehiculeChauffeur.length / this.data.nombreVoyages; else chauffeurDejaAffecte">
+                    <mat-form-field *ngIf="vehiculeChauffeurs">
                         <mat-label>Chauffeur</mat-label>
                         <mat-select placeholder="Chauffeur" name="chauffeur"
                             (selectionChange)="rafraichirListeChauffeur()"
-                            [(ngModel)]="couplesVehiculeChauffeurPrive[indexPrive].chauffeur">
+                            [(ngModel)]="couplesVehiculeChauffeur[index].chauffeur">
                             <mat-option *ngFor="let chauffeur of vehiculeChauffeurs.chauffeurs" [value]="chauffeur">
                                 {{chauffeur.nom}}
                             </mat-option>
@@ -52,36 +52,24 @@
                     </mat-form-field>
                 </ng-container>
                 <ng-template #chauffeurDejaAffecte>
-                    <div *ngIf="typeVehicule === 'prive'" style="display: flex; flex-direction: column;">
+                    <div style="display: flex; flex-direction: column;">
                         <div style="font-size: 0.8em;">Chauffeur</div>
                         <div>
-                            {{couplesVehiculeChauffeurPrive[indexPrive].chauffeur.nom}}
+                            {{couplesVehiculeChauffeur[index].chauffeur.nom}}
                         </div>
                     </div>
                 </ng-template>
-                <mat-form-field *ngIf="typeVehicule === 'loue'">
-                    <mat-label>Chauffeur</mat-label>
-                    <input matInput placeholder="nom chauffeur"
-                        [(ngModel)]="this.couplesVehiculeChauffeurLoue[this.indexLoue + (this.vehiculesLoues.length * (this.vehiculesTot[indexVehiculeSelectionne].numVoyage - 1))].chauffeur.nom">
-                    <mat-icon matSuffix>mode_edit</mat-icon>
-                </mat-form-field>
-                <mat-form-field *ngIf="typeVehicule === 'loue'">
-                    <mat-label>Téléphone</mat-label>
-                    <input matInput placeholder="nom chauffeur"
-                        [(ngModel)]="this.couplesVehiculeChauffeurLoue[this.indexLoue + (this.vehiculesLoues.length * (this.vehiculesTot[indexVehiculeSelectionne].numVoyage - 1))].chauffeur.tel">
-                    <mat-icon matSuffix>phone_enabled</mat-icon>
-                </mat-form-field>
 
             </div>
             <!-- section pour afficher le poids et le volume du vehicule -->
             <div class="info-vehicule"
-                *ngIf="couplesVehiculeChauffeurPrive[indexPrive] || couplesVehiculeChauffeurLoue[indexLoue]">
+                *ngIf="couplesVehiculeChauffeur[index]">
                 <div class="poids"><b>Charge vehicule: </b> {{poidsVehicule}}kg</div>
                 <div class="volume"><b>Volume vehicule: </b> {{volumeVehicule}}m³</div>
             </div>
             <!-- liste des commandes affectées dans le vehicule -->
             <div class="commandes"
-                *ngIf="couplesVehiculeChauffeurPrive[indexPrive] || couplesVehiculeChauffeurLoue[indexLoue]">
+                *ngIf="couplesVehiculeChauffeur[index]">
                 <div class="entete">
                     <h2>Commandes</h2>
                     <div class="poids"><b>poids: </b>{{poidsCommandes}}kg</div>
@@ -147,7 +135,7 @@
         <!-- bouton valider -->
         <div class="valider">
             <a role="button" [ngClass]="{'active': toutValide}"
-                *ngIf="listeColisTot && couplesVehiculeChauffeurPrive && couplesVehiculeChauffeurLoue"
+                *ngIf="listeColisTot && couplesVehiculeChauffeur"
                 (click)="valider()">Valider</a>
         </div>
     </div>

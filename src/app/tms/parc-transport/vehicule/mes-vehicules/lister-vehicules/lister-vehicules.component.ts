@@ -1,6 +1,27 @@
+/*  Constructeur: get droit d'accées depuis sessionStorage
+
+Liste des methodes:
+* chargerVehicules: get la liste des vehicules.
+* chargerCarburants: get liste de carburants.
+* chargerVehicule: get vehicule par id.
+* calculerKilometrageProchainEntretien: afficher kilometrage restant pour le prochain entretien.
+* ouvrirDetailVehicule: ouvrir boite dialog detail vehicule.
+* ouvrirMiseAJourVehicule: ouvrir boite dialog de mise a jour de vehicule.
+* ouvrirMiseAJourConsommation: ouvrir boite dialog de mise a jour du consommation du vehicule.
+* ouvrirReclamation: ouvrir boite dialog de reclamation.
+* ouvrirNotifications: ouvrir boite dialog de notification.
+* ouvrirEntretien: ouvrir dialogue entretien.
+* supprimerVehicule: supprimer vehicule.
+* afficherBadgeDeNotification: afficher le Badge rouge de notification.
+* filtrerVehicule: filtrer vehicule par matricule et disponibilité.
+* selectionnerCarburant: aprés selection du carburant activer l'input prix et afficher le prix du carburant.
+* miseAJourCarburant: modifier prix carburant.
+* miseAJourCarburant: modifier prix carburant.
+*/
+
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AjouterCarburantComponent, BoiteDialogueEntretien, DetailVehiculeComponent, MajVehiculeComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent } from '../../dialogs/dialogs.component';
@@ -27,11 +48,22 @@ export class ListerVehiculesComponent implements OnInit {
   acces: any;
   tms: any;
 
+  // categorie utilisé pour le filtrage par categorie vehicule
+  carosserie = [
+    //types de carosserie des véhicules et leur catégories de permis accordées
+    { name: 'DEUX ROUES', value: 'A/A1/B/B+E/C/C+E/D/D1/D+E/H' },
+    { name: 'VOITURES PARTICULIÈRES', value: 'B/B+E/C/C+E/D/D1/D+E/H' },
+    { name: 'POIDS LOURDS', value: 'C/C+E' },
+    { name: 'POIDS LOURDS ARTICULÉS', value: 'C+E' },
+  ];
+
+    // variables des filtres
+    filtreMatricule: string = "";
+    filtreCategorie: string = "";
+    filtreDisponibilte: string = "";
+
   //constructeur
   constructor(private dialog: MatDialog, public service: VehiculeService, public _router: Router) {
-    sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1004000");
-
     this.nom = sessionStorage.getItem('Utilisateur'); 
     this.acces = sessionStorage.getItem('Acces'); 
 
@@ -50,15 +82,17 @@ export class ListerVehiculesComponent implements OnInit {
     this.chargerCarburants();
   }
   
-  //charger la liste des vehicules
+  //get la liste des vehicules
   async chargerVehicules() {
     this.vehicules = await this.service.vehicules().toPromise();
   }
 
+  // get liste de carburants
   async chargerCarburants() {
     this.carburants = await this.service.carburants().toPromise()
   }
 
+  // get vehicule par id
   async chargerVehicule(id: any) {
     this.vehicule = await this.service.vehicule(id).toPromise();
   }
@@ -106,7 +140,7 @@ export class ListerVehiculesComponent implements OnInit {
     return result.type + ': ' + (result.kilometrage - vehicule.kmactuel);
   }
 
-  //bouton de detail vehicule
+  //ouvrir boite dialog detail vehicule
   ouvrirDetailVehicule(id: any): void { //ouvrir la boite de dialogue de détails vehicule
     const dialogRef = this.dialog.open(DetailVehiculeComponent, {
       width: '450px',
@@ -116,7 +150,7 @@ export class ListerVehiculesComponent implements OnInit {
     });
   }
 
-  // bouton de mise a jour de vehicule
+  //ouvrir boite dialog de mise a jour de vehicule
   ouvrirMiseAJourVehicule(id: any): void { //ouvrir la boite de dialogue de mise a jour vehicule
     const dialogRef = this.dialog.open(MajVehiculeComponent, {
       width: '450px',
@@ -129,19 +163,19 @@ export class ListerVehiculesComponent implements OnInit {
     });
   }
 
-  //bouton de mise a jour du consommation du vehicule
-  ouvrirMiseAJourConsommation(id: any): void { //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
+  //ouvrir boite dialog de mise a jour du consommation du vehicule
+  ouvrirMiseAJourConsommation(vehicule: any): void { //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
     const dialogRef = this.dialog.open(MiseAJourConsommationComponent, {
-      width: '600px',
+      width: '1000px',
       autoFocus: false,
-      data: { id: id }
+      data: { vehicule: vehicule }
     });
     dialogRef.afterClosed().subscribe(res => {
       this.chargerVehicules();
     })
   }
 
-  // bouton de reclamation
+  // ouvrir boite dialog de reclamation
   ouvrirReclamation(id: any): void { //ouvrir la boite de dialogue de reclamation
     const dialogRef = this.dialog.open(ReclamationComponent, {
       width: '500px',
@@ -153,12 +187,7 @@ export class ListerVehiculesComponent implements OnInit {
     })
   }
 
-  // Bouton pour ajouter nouvelle vehicule
-  ouvrirAjouterVehicule(): void { //ouvrir la boite de dialogue Ajouter nouvelle vehicule
-    
-  }
-
-  // bouton de notification
+  // ouvrir boite dialog de notification
   ouvrirNotifications(id: any): void { //ouvrir la boite de dialogue de notification
     this.chargerVehicule(id);
     const dialogRef = this.dialog.open(NotificationComponent, {
@@ -171,7 +200,7 @@ export class ListerVehiculesComponent implements OnInit {
     })
   }
 
-  //Bouton ouvrir dialogue entretien
+  //ouvrir dialogue entretien
   ouvrirEntretien(vehicule: any) {
     const dialogRef = this.dialog.open(BoiteDialogueEntretien, {
       width: '600px',
@@ -182,32 +211,52 @@ export class ListerVehiculesComponent implements OnInit {
     });
   }
 
-  //Bouton supprimer vehicule
+  //supprimer vehicule
   async supprimerVehicule(id: any) { //supprimer vehicule
     Swal.fire({
-      title: 'Êtes-vous sûr?',
-      text: "Vous allez supprimer le vehicul!",
-      icon: 'warning',
+      title: 'Mot de passe',
+      input: 'password',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Supprimer!',
-      cancelButtonText: 'Annuler'
-    }).then(async (result) => {
+      confirmButtonText: 'ok',
+      showLoaderOnConfirm: true,
+      preConfirm: (pass) => {
+        if(pass !== "infonet") {
+          Swal.showValidationMessage(
+            `Mot de passe incorrecte`)
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
       if (result.isConfirmed) {
-        await this.service.supprimerVehicule(id).toPromise();
-        this.chargerVehicules();
-        Swal.fire(
-          'Supprimé!',
-          'Le vehicul a été supprimé.',
-          'success'
-        )
+        Swal.fire({
+          title: 'Êtes-vous sûr?',
+          text: "Vous allez supprimer le vehicul!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Supprimer!',
+          cancelButtonText: 'Annuler'
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await this.service.supprimerVehicule(id).toPromise();
+            this.chargerVehicules();
+            Swal.fire(
+              'Supprimé!',
+              'Le vehicul a été supprimé.',
+              'success'
+            )
+          }
+        })
       }
     })
 
   }
 
-  //Badge rouge de notification
+  //afficher le Badge rouge de notification
   afficherBadgeDeNotification(vehicule: any) { //affiche le badge rouge de existance du notification
     let entretien = vehicule.kmprochainentretien - vehicule.kmactuel;
     let dateVisite = new Date(vehicule.datevisite);
@@ -230,12 +279,26 @@ export class ListerVehiculesComponent implements OnInit {
     return this.notification;
   }
 
+
+  // filtrer vehicule par matricule et disponibilité
+  filtrerVehicule(){
+    this.filtreMatricule == undefined ? this.filtreMatricule = "": "";
+    this.filtreDisponibilte == undefined ? this.filtreDisponibilte = "": "";
+    this.service.filtrerVehicule(this.filtreMatricule,"",this.filtreDisponibilte).subscribe((result) => {
+      this.vehicules = result;
+    })
+  }
+
+
   //partie de modification carburant
-  selectionnerCarburant() { //selectionner le type de carburant et afficher son prix
+  //aprés selection du carburant activer l'input prix et afficher le prix du carburant
+  selectionnerCarburant() { 
     this.form.controls.prix.enable();
     this.form.controls['prix'].setValue(this.carburant.prixCarburant);
   }
-  ouvrirAjouterCarburant() { //ouvrir la boite de dialogue ajouter carburant
+
+  //ouvrir la boite de dialogue ajouter carburant
+  ouvrirAjouterCarburant() { 
     const dialogRef = this.dialog.open(AjouterCarburantComponent, {
       width: '400px',
       autoFocus: false,
@@ -244,7 +307,9 @@ export class ListerVehiculesComponent implements OnInit {
       this.chargerCarburants();
     });
   }
-  async miseAJourCarburant() { //modifier prix carburant
+
+  //modifier prix carburant
+  async miseAJourCarburant() { 
     var formData: any = new FormData();
     formData.append("id", this.carburant.id);
     formData.append("nom", this.carburant.nom);

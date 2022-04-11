@@ -1,0 +1,120 @@
+.contenaire {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 20px;
+}
+.menu-config {
+  padding: 20px;
+  width: 100%;
+  height: 292px;
+  display: flex;
+  flex-direction: column;
+}
+
+a {
+  padding: 15px;
+  font-size: large;
+}
+a:not(:last-child) {
+  border-bottom: 1px solid #dddfe3;
+}
+a:not(.active):hover {
+  cursor: pointer;
+  animation: hover 300ms ease-in;
+}
+
+@keyframes hover {
+  0% {
+    background-color: transparent;
+  }
+  100% {
+    background-color: #dddfe3;
+  }
+}
+a:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+a:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.contenu-config {
+  width: 100%;
+}
+
+.config {
+  padding: 20px;
+}
+
+.active {
+  background-color: #3f6ad8;
+  animation: active 300ms ease-in;
+  color: white !important;
+}
+
+@keyframes active {
+  0% {
+    background-color: #dddfe3;
+  }
+  100% {
+    background-color: #3f6ad8;
+  }
+}
+
+.active:hover {
+  background-color: #3f6ad8;
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .contenaire {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 20px;
+  }
+  .menu-config {
+    padding: 20px;
+    width: 250px;
+    height: 292px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  a {
+    padding: 15px;
+    font-size: large;
+  }
+  a:not(:last-child) {
+    border-bottom: 1px solid #dddfe3;
+  }
+  a:hover {
+    background-color: #dddfe3;
+    cursor: pointer;
+  }
+  a:first-child {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+  }
+
+  a:last-child {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+
+  .contenu-config {
+    width: calc(100% - 270px);
+  }
+
+  .config {
+    padding: 20px;
+  }
+}

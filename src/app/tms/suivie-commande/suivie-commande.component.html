@@ -1,0 +1,134 @@
+<div class="app-page-title">
+   <div class="page-title-wrapper">
+      <div class="page-title-heading">
+         <div class="page-title-icon">
+            <i class="pe-7s-map-marker text-success">
+            </i>
+         </div>
+         Suivi Des Commandes
+      </div>
+   </div>
+</div>
+<div class="container">
+   <div class="main-card mb-3 card">
+      <div class="panel">
+         <div class="info-commandes">
+            <!-- arriére plan suivi commande -->
+            <img src="../../../assets/images/backgroung-suivi-commande.jpg" id="bg" alt="">
+            <!-- section de recherche commande -->
+            <section class="recherche" [@statusRecherche]="statusRecherche" *ngIf="rechercheEstActive">
+               <h1>Chercher avec tracking number</h1>
+               <i class="fas fa-search icon icon-recherche"></i>
+               <div id="champ-tracking">
+                  <p>Ecrivez votre numéro de suivi</p>
+                  <div class="input-group rounded input-chercher">
+                     <input type="search" class="form-control rounded" placeholder="Tracking number" aria-label="Search"
+                        aria-describedby="search-addon" [(ngModel)]="trackingNumber"
+                        (keyup.enter)="rechercheCommande()" />
+                     <span class="input-group-text border-0" id="search-addon" (click)="rechercheCommande()"
+                        style="cursor: pointer;">
+                        <i class="fas fa-search"></i>
+                     </span>
+                  </div>
+               </div>
+            </section>
+            <!-- section info commande -->
+            <section class="commande-dispo" *ngIf="infoCommandeEstActive" [@statusInfoCommande]="statusInfoCommande">
+               <!-- bref descriptif du commande -->
+               <div class="content-header ">
+                  <div class="panel-title">Bref descriptif de l'envoi</div>
+                  <i class="fas fa-map-marker-alt icon"></i>
+                  <h2 class="header">
+                     Numéro de suivi:
+                     <em>{{commande.trackingNumber}}
+                        <a role="button" (click)="refaireRecherche()" style="cursor: pointer;"><i
+                              class="fas fa-redo-alt"></i></a>
+                     </em>
+                  </h2>
+               </div>
+               <div class="content--wide">
+                  <div class="statut-suivi">
+                     <ul>
+                        <li class="tracking-status processing" [ngClass]="{'translation-etat': enTransit}">
+                           <span class="status-wrapper">
+                              <i class="fas fa-truck-loading" *ngIf="!enTransit"></i>
+                              <i class="fas fa-check" *ngIf="enTransit"></i>
+                           </span>
+                           <div class="status-lbl" *ngIf="!enTransit">En cours d'expédition</div>
+                           <div class="status-lbl" *ngIf="enTransit">Expédié</div>
+                        </li>
+                        <li class="tracking-status ">
+                           <span class="status-wrapper" *ngIf="enTransit">
+                              <i class="fas fa-angle-double-right" *ngIf="!livree"></i>
+                              <i class="fas fa-check" *ngIf="livree"></i>
+                           </span>
+                           <div class="status-lbl">En cours de livraison</div>
+                        </li>
+                        <li class="tracking-status translation-etat ">
+                           <span class="status-wrapper" *ngIf="livree">
+                              <i class="fas fa-check-circle"></i>
+                           </span>
+                           <div class="status-lbl">Livré</div>
+                        </li>
+                     </ul>
+                  </div>
+
+                  <div class="adress-details">
+                     <div class="address">
+                        <div class="shipment-address">
+                           <span class="address-span">
+                              <span class="address-font-bold">{{adresseLivreur}}</span>
+                           </span>
+                        </div>
+                        <div class="amx-h-cell-no-border amx-h-cell-align-middle">
+                           <i class="fas fa-arrow-right fleche"></i>
+                        </div>
+                        <div class="shipment-address" style="margin: 0 10px">
+                           <span class="address-span">
+                              <span class="address-font-bold">{{commande.ville}}</span>
+                           </span>
+                        </div>
+
+                     </div>
+                  </div>
+               </div>
+            </section>
+            <!-- section commande non disponible -->
+            <section class="commande-nondispo" *ngIf="pasCommandeEstActive" [@statusPasCommande]="statusPasCommande">
+               <h1 class="pasDispo">Commande n'est pas encore disponible pour livraison <br> ou elle est inexistante
+               </h1>
+               <a role="button" class="redo" (click)="refaireRecherche()"><i class="fas fa-redo-alt"></i></a>
+               <a role="button" (click)="refaireRecherche()" id="ressayer">Essayer de nouveau</a>
+            </section>
+         </div>
+      </div>
+   </div>
+   <!-- Historique de la commande -->
+   <div class="main-card mb-3 card" *ngIf="infoCommandeEstActive" [@statusInfoCommande]="statusInfoCommande">
+      <h2 id="titre-historique">Historique De La Commande</h2>
+      <div class="content--wide">
+         <table class="table table-striped">
+            <thead>
+               <tr>
+                  <th style="text-align: center;" class="fit">Date</th>
+                  <th>Etat</th>
+               </tr>
+            </thead>
+            <tbody>
+               <tr *ngFor="let histo of historique">
+                  <td style="text-align: center;">
+                     <div class="table-cell fit">
+                        {{histo.date}}
+                        <span class="secondLine">{{histo.heure}}</span>
+                     </div>
+                  </td>
+                  <td>
+                     {{afficherEtat(histo.etat)}}
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </div>
+
+   </div>
+</div>

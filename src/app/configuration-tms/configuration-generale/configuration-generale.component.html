@@ -1,0 +1,121 @@
+<h2>Information Générale</h2>
+<div [formGroup]="formConfigurationInformationsGeneral">
+    <!-- champ nom de societé -->
+    <div class="champ">
+        <h3>Nom de la société</h3>
+        <div class="input">
+            <input type="text" formControlName="nomSociete">
+            <div *ngIf="(nomSociete.invalid && nomSociete.touched) || nomSociete.dirty" class="erreur">
+                <small *ngIf="nomSociete.errors?.required" class="text-danger" [@enterAnimation]>le nom de la société
+                    est requis</small>
+            </div>
+        </div>
+    </div>
+    <!-- champ matricule fiscale -->
+    <div class="champ">
+        <h3>Matricule fiscale</h3>
+        <div class="input">
+            <input type="text" formControlName="matriculeFiscale">
+            <div *ngIf="(matriculeFiscale.invalid && matriculeFiscale.touched) || matriculeFiscale.dirty"
+                class="erreur">
+                <small *ngIf="matriculeFiscale.errors?.required" class="text-danger" [@enterAnimation]>la matricule
+                    fiscale est requise</small>
+            </div>
+        </div>
+    </div>
+    <!-- champ  N°: Registre de commerce -->
+    <div class="champ">
+        <h3> N°: Registre de commerce</h3>
+        <div class="input">
+            <input type="text" formControlName="registreCommerce">
+            <div *ngIf="(registreCommerce.invalid && registreCommerce.touched) || registreCommerce.dirty"
+                class="erreur">
+                <small *ngIf="registreCommerce.errors?.required" class="text-danger" [@enterAnimation]>N°: Registre de
+                    commerce est requis</small>
+            </div>
+        </div>
+    </div>
+    <!-- champ numéro de téléphone -->
+    <div class="champ">
+        <h3>Numéro de téléphone</h3>
+        <div class="input">
+            <input type="tel" formControlName="numeroTelephone">
+            <div *ngIf="(numeroTelephone.invalid && numeroTelephone.touched) || numeroTelephone.dirty" class="erreur">
+                <small *ngIf="numeroTelephone.errors?.required" class="text-danger" [@enterAnimation]>le numéro de
+                    téléphone est
+                    requis</small>
+                <small *ngIf="numeroTelephone.errors?.pattern" class="text-danger" [@enterAnimation]>Veuillez fournir un
+                    numéro de
+                    téléphone valide</small>
+            </div>
+        </div>
+    </div>
+    <!-- champ Numéro Fax -->
+    <div class="champ">
+        <h3>Numéro Fax</h3>
+        <div class="input">
+            <input type="tel" formControlName="numeroFax">
+            <div *ngIf="(numeroFax.invalid && numeroFax.touched) || numeroFax.dirty" class="erreur">
+                <small *ngIf="numeroFax.errors?.required" class="text-danger" [@enterAnimation]>le numéro de fax est
+                    requis</small>
+                <small *ngIf="numeroFax.errors?.pattern" class="text-danger" [@enterAnimation]>Veuillez fournir un
+                    numéro de téléphone valide</small>
+            </div>
+        </div>
+    </div>
+    <!-- champ adresse mail -->
+    <div class="champ">
+        <h3>Adresse mail</h3>
+        <div class="input">
+            <input type="email" formControlName="adresseEmail">
+            <div *ngIf="(email.invalid && email.touched) || email.dirty" class="erreur">
+                <small *ngIf="email.errors?.required" class="text-danger" [@enterAnimation]>L'adresse e-mail est
+                    requise</small>
+                <small *ngIf="email.errors?.pattern" class="text-danger" [@enterAnimation]>Veuillez fournir une adresse
+                    email
+                    valide</small>
+            </div>
+        </div>
+    </div>
+    <!-- champ Site web -->
+    <div class="champ">
+        <h3>Site web</h3>
+        <div class="input">
+            <input type="url" formControlName="siteWeb">
+            <div *ngIf="(siteWeb.invalid && siteWeb.touched) || siteWeb.dirty" class="erreur">
+                <small *ngIf="siteWeb.errors?.required" class="text-danger" [@enterAnimation]>le site web est
+                    requis</small>
+                <small *ngIf="siteWeb.errors?.pattern" class="text-danger" [@enterAnimation]>Veuillez fournir un numéro
+                    de
+                    téléphone valide</small>
+            </div>
+        </div>
+    </div>
+    <!-- champ Banque  -->
+    <div class="champ">
+        <h3>Banque</h3>
+        <div class="input">
+            <input type="text" formControlName="banque">
+            <div *ngIf="(banque.invalid && banque.touched) || banque.dirty" class="erreur">
+                <small *ngIf="banque.errors?.required" class="text-danger" [@enterAnimation]>La banque est
+                    requise</small>
+            </div>
+        </div>
+    </div>
+    <!-- champ RIB bancaire  -->
+    <div class="champ">
+        <h3>RIB bancaire</h3>
+        <div class="input">
+            <input type="text" formControlName="rib">
+            <div *ngIf="(rib.invalid && rib.touched) || rib.dirty" class="erreur">
+                <small *ngIf="rib.errors?.required" class="text-danger" [@enterAnimation]>Le RIB bancaire est
+                    requis</small>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- bouton enregistrer -->
+<div class="boutons">
+    <button mat-raised-button color="primary" [disabled]="formConfigurationInformationsGeneral.invalid"
+        (click)="enregistrer()">Enregistrer</button>
+</div>

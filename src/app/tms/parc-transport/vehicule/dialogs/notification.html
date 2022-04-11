@@ -6,8 +6,8 @@
 
 <h1 mat-dialog-title>Notifications</h1>
 <div mat-dialog-content>
-    <div class="card-body" *ngIf="vehicule && carburants">
-        <div class="alert alert-light fade show" role="alert" *ngIf="testePresenceNotification()">Pas De Notifications
+    <div class="card-body" *ngIf="vehicule">
+        <div class="alert alert-light fade show" role="alert" *ngIf="notificationExiste">Pas De Notifications
         </div>
         <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="reclamationExiste">
             <!-- bouton supprimer reclamation -->
@@ -27,7 +27,7 @@
             </div>
         </div>
         <!-- notification d'entretien -->
-        <div *ngIf="testExistanceEntretien()">
+        <div *ngIf="entretienExiste">
             <div class="alert alert-warning fade show alerte" role="alert"
                 *ngFor="let entretien of this.listeEntretien">
                 <i class="fas fa-exclamation-triangle"></i> {{entretien.type}} dans:
@@ -35,24 +35,24 @@
             </div>
         </div>
         <!-- notification de visite technique -->
-        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExpirationVisite()">
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="visiteExiste">
             <i class="fas fa-exclamation-triangle"></i> Visite Technique Le: {{vehicule.datevisite | date:'dd-MM-y'}}
         </div>
         <!-- notification expiration assurance -->
-        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExpirationAssurance()">
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="assuranceExiste">
             <i class="fas fa-exclamation-triangle"></i> Expiration De L'Assurance Du Vehicule Le:
             {{vehicule.dateassurance |
             date:'dd-MM-y'}}
         </div>
         <!-- notification expiration taxes -->
-        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testExpirationTaxe()">
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="taxeExiste">
             <i class="fas fa-exclamation-triangle"></i> Expiration Des Taxes Du Vehicule Le: {{vehicule.datetaxe |
             date:'dd-MM-y'}}
         </div>
         <!-- notification consommation anormale -->
-        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="testConsommation()">
+        <div class="alert alert-warning fade show alerte" role="alert" *ngIf="consommationAnormale">
             <i class="fas fa-exclamation-triangle"></i> Consommation Actuelle Anormale:
-            {{consommationActuelle}}
+            {{consommationActuelle}}L/100km
         </div>
     </div>
 </div>

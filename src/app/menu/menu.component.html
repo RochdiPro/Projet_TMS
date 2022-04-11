@@ -174,15 +174,21 @@
                      </a>
                      <ul>
                         <li>
-                           <a routerLink="/Menu/Menu_Colisage/Packaging">
+                           <a routerLink="/Menu/Menu_Colisage/Produits">
                               <i class="metismenu-icon"></i>
-                              Emballages
+                              Produits
                            </a>
                         </li>
                         <li>
                            <a routerLink="/Menu/Menu_Colisage/Supports">
                               <i class="metismenu-icon"></i>
                               Supports de chargement
+                           </a>
+                        </li>
+                        <li>
+                           <a routerLink="/Menu/Menu_Colisage/Packaging">
+                              <i class="metismenu-icon"></i>
+                              Emballages
                            </a>
                         </li>
                         <li>
@@ -236,7 +242,7 @@
                            </ul>
 
                         </li>
-                        <li>
+                        <li *ngIf="tms >= 2">
 
                            <a routerLink="/Menu/TMS/plan-chargement">
                               <i class="metismenu-icon"></i>
@@ -244,8 +250,22 @@
                            </a>
 
                         </li>
+                        <li>
+
+                           <a routerLink="/Menu/TMS/suivie-commande">
+                              <i class="metismenu-icon"></i>
+                              Suivie De Commande
+                           </a>
+
+                        </li>
 
                      </ul>
+                  </li>
+                  <li *ngIf="tms >= 4">
+                     <a href="/Menu/Configuration">
+                        <i class="metismenu-icon pe-7s-diamond"></i>
+                        Configuration
+                     </a>
                   </li>
 
                </ul>

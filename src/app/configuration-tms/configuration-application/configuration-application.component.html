@@ -1,0 +1,39 @@
+<h2>Configuration Application</h2>
+<div [formGroup]="formConfigurationServeur">
+    <div class="champ">
+        <h3>Adresser IP</h3>
+        <div class="input">
+            <input type="text" formControlName="adresseIP" placeholder="ex: 1.1.1.1:0000">
+            <div *ngIf="(adresseIP.invalid && adresseIP.touched) || adresseIP.dirty" class="erreur">
+                <small *ngIf="adresseIP.errors?.required" class="text-danger" [@enterAnimation]>l'adresse IP est
+                    requise</small>
+                <small *ngIf="adresseIP.errors?.pattern" class="text-danger" [@enterAnimation]>Veuillez fournir une
+                    adresse IP
+                    valide</small>
+            </div>
+        </div>
+    </div>
+    <div class="champ">
+        <h3>Clé API Google Maps *</h3>
+        <div class="input">
+            <input type="text" formControlName="apiGoogle">
+            <div *ngIf="(apiGoogle.invalid && apiGoogle.touched) || apiGoogle.dirty" class="erreur">
+                <small *ngIf="apiGoogle.errors?.required" class="text-danger" [@enterAnimation]>le clé API est
+                    requis</small>
+            </div>
+        </div>
+    </div>
+    <div class="champ">
+        <h3>Adresse Email **</h3>
+        <div class="input">
+            <input type="text" [value]="email" disabled>
+        </div>
+    </div>
+    <small>* &nbsp; : Pour savoir comment obtenir un clé API de google maps visiter le <a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">lien</a> suivant.</small><br>
+    <small>** : Pour changer l'adresse email utilisée pour l'envoie des notifications contacter INFONET SERVICES.</small>
+</div>
+
+<div class="boutons">
+    <button mat-raised-button color="primary" [disabled]="formConfigurationServeur.invalid"
+        (click)="enregistrer()">Enregistrer</button>
+</div>

@@ -11,6 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {
   ConfirmerLivraison,
   DetailCommande,
+  PlanChargement,
 } from '../dialogs/dialogs.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -94,41 +95,53 @@ export class MissionsChauffeurComponent implements OnInit {
   zoom = 15;
 
   // les coordonnées actuelles prise depuis le navigateur
-  currentLat: any;
-  currentLong: any;
+  latDepart: any;
+  longDepart: any;
 
   // lien map
   lien: any;
 
   //from des controles utilisées pour choisir la date du mission
-  formDate: FormGroup; 
+  formDate: FormGroup;
 
   //date d'aujourd'hui
-  aujoudhui: Date = new Date(); 
+  aujoudhui: Date = new Date();
 
   // afficher le filtre date ou non
   filtreDateAffiche = false;
 
-   // point de depart
-   origine: any;
+  // point de depart
+  origine: any;
 
-   // point finale 
-   finChemin: any;
- 
-   // les points de stops
-   pointStop: any;
+  // point finale
+  finChemin: any;
+
+  // les points de stops
+  pointStop: any;
+
+  nom: any;
+  acces: any;
+  tms: any;
 
   constructor(
     private fb: FormBuilder,
     private serviceMission: MissionsService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+  }
 
   async ngOnInit() {
     this.formDate = this.fb.group({
       date: [this.aujoudhui, [Validators.required]],
     });
-    this.chercherMoi();
+    await this.getPositionDepart();
     await this.getMissionsParIdChauffeur();
     // selon la valeur de l'état initiale on affiche initialement la tab convenable
     if (this.etatInitiale === 'En cours') {
@@ -137,25 +150,25 @@ export class MissionsChauffeurComponent implements OnInit {
       this.enCoursEstClique = true;
     } else if (this.etatInitiale === 'En attente') {
       this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('En attente');
-      this.missionsAffiche =  this.missionsFiltreeParEtat;
+      this.missionsAffiche = this.missionsFiltreeParEtat;
       this.enAttenteEstClique = true;
       this.filtreDateAffiche = true;
-      this.filtrerMissionsParDate()
+      this.filtrerMissionsParDate();
     } else {
       this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('Terminée');
-      this.missionsAffiche =  this.missionsFiltreeParEtat;
+      this.missionsAffiche = this.missionsFiltreeParEtat;
       this.termineEstClique = true;
     }
 
     this.lien =
       'https://www.google.com/maps/embed/v1/directions?key=AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8&origin=' +
-      this.currentLat +
+      this.latDepart +
       '/' +
-      this.currentLong +
+      this.longDepart +
       '&destination=' +
-      this.currentLat +
+      this.latDepart +
       '/' +
-      this.currentLong;
+      this.longDepart;
   }
 
   // get liste des missions
@@ -163,6 +176,7 @@ export class MissionsChauffeurComponent implements OnInit {
     this.missions = await this.serviceMission
       .getMissionsChauffeur(this.idChauffeur)
       .toPromise();
+    this.missions = this.missions.filter((mission: any) => mission.canvasTop !== "")
   }
 
   // filtrer la liste des missions par leurs Etat
@@ -172,8 +186,9 @@ export class MissionsChauffeurComponent implements OnInit {
   // filtrer la liste des missions par date
   filtrerMissionsParDate() {
     this.missionsAffiche = this.missionsFiltreeParEtat.filter(
-      (f: any) => new Date(f.date).getDate() === this.formDate.get('date').value.getDate()
-    )
+      (f: any) =>
+        new Date(f.date).getDate() === this.formDate.get('date').value.getDate()
+    );
   }
 
   // diminuer la date dans le date picker par un jour
@@ -181,7 +196,7 @@ export class MissionsChauffeurComponent implements OnInit {
     let dateChoisi = this.formDate.get('date').value;
     dateChoisi.setDate(dateChoisi.getDate() - 1);
     this.formDate.get('date').setValue(dateChoisi);
-    this.filtrerMissionsParDate()
+    this.filtrerMissionsParDate();
   }
 
   // augmenter le date dans le date picker par un jour
@@ -189,7 +204,7 @@ export class MissionsChauffeurComponent implements OnInit {
     let dateChoisi = this.formDate.get('date').value;
     dateChoisi.setDate(dateChoisi.getDate() + 1);
     this.formDate.get('date').setValue(dateChoisi);
-    this.filtrerMissionsParDate()
+    this.filtrerMissionsParDate();
   }
 
   // pour avoir l'etat initiale. On verifie si on a une mission en cours pour donner un etat initiale = En cours si non l'etatInitiale = En attente
@@ -245,7 +260,7 @@ export class MissionsChauffeurComponent implements OnInit {
     setTimeout(() => {
       this.missionsFiltreeParEtat = this.filtrerMissionsParEtat('En attente');
       this.filtreDateAffiche = true;
-      this.filtrerMissionsParDate()
+      this.filtrerMissionsParDate();
     }, 300);
     setTimeout(() => {
       this.toggleTableMissions();
@@ -307,13 +322,14 @@ export class MissionsChauffeurComponent implements OnInit {
   }
 
   // fonction qui permet de commancer une mission
-  async lancerMission(id: number) {
-    await this.serviceMission.modifierEtatMission(id, 'En cours').toPromise();
+  async lancerMission(mission: any) {
+    await this.serviceMission.modifierEtatMission(mission.id, 'En cours').toPromise();
     await this.getMissionsParIdChauffeur();
     // pour refraichir la mission selectionnée aprés qu'on a modifié l'etat du mission
     this.missionSelectionnee = this.filtrerMissionsParEtat('En cours')[0];
     // on change la tab active vers celle en cours
     this.cliquerEnCours();
+    this.serviceMission.envoyerNotificationProchaineLivraison(mission.idCommandes).subscribe();
   }
 
   // le status et le toggle sont utilisée pour les animation lors de ouverture et la fermeture du volet details mission et details commande
@@ -372,33 +388,13 @@ export class MissionsChauffeurComponent implements OnInit {
       panelClass: 'custom-dialog-livraison',
       data: { mission: mission },
     });
-    dialogRef.afterClosed().subscribe(async () => {
-      await this.getCommandesMission(this.missionSelectionnee);
-
-      if (
-        this.commandesLivrees.length != 0 &&
-        this.commandesNonLivrees.length == 0
-      ) {
-        await this.serviceMission
-          .modifierEtatMission(this.missionSelectionnee.id, 'Terminée')
-          .toPromise();
-        await this.getMissionsParIdChauffeur();
-        this.missionSelectionnee = this.filtrerMissionsParEtat('Terminée')[0];
-        this.cliquerTerminee();
-      }
-    });
   }
 
   // avoir la position de début depuis le navigateur
-  chercherMoi() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.currentLat = position.coords.latitude;
-        this.currentLong = position.coords.longitude;
-      });
-    } else {
-      alert('Geolocation is not supported by this browser.');
-    }
+  async getPositionDepart() {
+    let infoGenerals = await this.serviceMission.infosGenerals().toPromise()
+    this.latDepart = infoGenerals.latitude;
+    this.longDepart = infoGenerals.longitude;
   }
 
   // retourne la position de destination d'une commande
@@ -411,7 +407,7 @@ export class MissionsChauffeurComponent implements OnInit {
 
   // créer le meilleur trajet possible
   async createTrajet() {
-    this.chercherMoi();
+    await this.getPositionDepart();
     let positions: any = [];
     let idCommandes = this.missionSelectionnee.idCommandes.split('/');
     for (let i = 0; i < idCommandes.length; i++) {
@@ -424,8 +420,8 @@ export class MissionsChauffeurComponent implements OnInit {
         : '';
     }
     var debutChemin = {
-      latitude: this.currentLat,
-      longitude: this.currentLong,
+      latitude: this.latDepart,
+      longitude: this.longDepart,
     };
     var finChemin = positions[positions.length - 1];
     let pointStop = [];
@@ -473,7 +469,28 @@ export class MissionsChauffeurComponent implements OnInit {
     }
   }
 
-  ouvrirMap() { //ouvrir le trajet dans google maps
-    window.open("https://www.google.com/maps/dir/?api=1&origin=" + this.origine + "&destination=" + this.finChemin + "&travelmode=driving&waypoints=" + this.pointStop);
-}
+  ouvrirMap() {
+    //ouvrir le trajet dans google maps
+    window.open(
+      'https://www.google.com/maps/dir/?api=1&origin=' +
+        this.origine +
+        '&destination=' +
+        this.finChemin +
+        '&travelmode=driving&waypoints=' +
+        this.pointStop
+    );
+  }
+
+  // ouvrir la boite dialogue plan chargement
+  ouvrirPlanChargement() {
+    const dialogRef = this.dialog.open(PlanChargement, {
+      width: '1200px',
+      maxWidth: '95vw',
+      maxHeight: '95vh',
+      panelClass: 'custom-dialog-plan-chargement',
+      data: {
+        mission: this.missionSelectionnee
+      },
+    });
+  }
 }

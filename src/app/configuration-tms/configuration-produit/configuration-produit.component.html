@@ -1,0 +1,82 @@
+<div class="coefficients" [formGroup]="formParametreExcel">
+    <h3>Inforamtions commande</h3>
+    <div class="modifier-coefficient">
+        <!-- champ id -->
+        <h4>id</h4>
+        <div class="input">
+            <input type="text" formControlName="id">
+            <div *ngIf="(id.invalid && id.touched) || id.dirty" class="erreur">
+                <small *ngIf="id.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                    requis</small>
+            </div>
+        </div>
+        <!-- champ nom -->
+        <h4>nom</h4>
+        <div class="input">
+            <input type="text" formControlName="nom">
+            <div *ngIf="(nom.invalid && nom.touched) || nom.dirty" class="erreur">
+                <small *ngIf="nom.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                    requis</small>
+            </div>
+        </div>
+        <!-- champ marque -->
+        <h4>marque</h4>
+        <div class="input">
+            <input type="text" formControlName="marque">
+            <div *ngIf="(marque.invalid && marque.touched) || marque.dirty" class="erreur">
+                <small *ngIf="marque.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                    requis</small>
+            </div>
+        </div>
+        <!-- champ unite -->
+        <h4>unite</h4>
+        <div class="input">
+            <input type="text" formControlName="unite">
+            <div *ngIf="(unite.invalid && unite.touched) || unite.dirty" class="erreur">
+                <small *ngIf="unite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                    requis</small>
+            </div>
+        </div>
+        <!-- champ valeur unite -->
+        <h4>valeur unite</h4>
+        <div class="input">
+            <input type="text" formControlName="valeurUnite">
+            <div *ngIf="(valeurUnite.invalid && valeurUnite.touched) || valeurUnite.dirty" class="erreur">
+                <small *ngIf="valeurUnite.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                    requis</small>
+            </div>
+        </div>
+        <!-- champ code a barre -->
+        <h4>code à barre</h4>
+        <div class="input">
+            <input type="text" formControlName="codeBarre">
+            <div *ngIf="(codeBarre.invalid && codeBarre.touched) || codeBarre.dirty" class="erreur">
+                <small *ngIf="codeBarre.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                    requis</small>
+            </div>
+        </div>
+        <!-- champ type1 -->
+        <h4>type1</h4>
+        <div class="input">
+            <input type="text" formControlName="type1">
+            <div *ngIf="(type1.invalid && type1.touched) || type1.dirty" class="erreur">
+                <small *ngIf="type1.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                    requis</small>
+            </div>
+        </div>
+        <!-- champ type2 -->
+        <h4>type2</h4>
+        <div class="input">
+            <input type="text" formControlName="type2">
+            <div *ngIf="(type2.invalid && type2.touched) || type2.dirty" class="erreur">
+                <small *ngIf="type2.errors?.required" class="text-danger" [@enterAnimation]>ce champ est
+                    requis</small>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="boutons">
+    <button mat-raised-button color="primary" [disabled]="formParametreExcel.invalid"
+        (click)="enregistrerParametreExcel()">Enregistrer</button>
+</div>

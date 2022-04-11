@@ -11,9 +11,6 @@ export class MenuComponent implements OnInit {
   acces: any;
   tms: any;
   constructor() {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1002000');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

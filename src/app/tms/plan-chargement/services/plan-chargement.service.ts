@@ -77,11 +77,12 @@ export class PlanChargementService {
   }
 
   // enregistrer plan chargement
-  public enregistrerPlanChargement(id: number, canvasTop: string, canvasFace: string) {
+  public enregistrerPlanChargement(id: number, canvasTop: string, canvasFace: string, note: string) {
     let formData: any = new FormData();
     formData.append('id', id);
     formData.append('canvasTop', canvasTop);
     formData.append('canvasFace', canvasFace);
+    formData.append('note', note);
     return this.httpClient
       .put(erp + 'enregistrer-canvas', formData)
       .pipe(catchError(this.handleError));

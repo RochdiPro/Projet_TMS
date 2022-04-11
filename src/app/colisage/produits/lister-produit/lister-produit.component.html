@@ -1,0 +1,88 @@
+<div *ngIf="wms >= 1">
+    <!-- des champs de filtrage du tableau liste produits -->
+    <div class="filtres">
+        <!-- filtrage par id de produit -->
+        <mat-form-field class="custom-width">
+            <mat-label>ID</mat-label>
+            <input matInput placeholder="ID" id="id" [(ngModel)]="filtreId" (keyup)="filtrerProduits()">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <!-- filtrage selon marque -->
+        <mat-form-field class="custom-width">
+            <mat-label>Marque</mat-label>
+            <input matInput placeholder="Marque" id="marque" [(ngModel)]="filtreMarque" (keyup)="filtrerProduits()">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <!-- filtrage selon nom produit -->
+        <mat-form-field class="custom-width">
+            <mat-label>Nom</mat-label>
+            <input matInput placeholder="Nom" id="nom" [(ngModel)]="filtreNom" (keyup)="filtrerProduits()">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+    </div>
+    <!-- Table liste produits -->
+    <div class="mat-elevation-z8">
+        <mat-table [dataSource]="dataSource" matSort>
+
+            <!-- Colonne id -->
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> ID </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="id"> {{element.id_Produit}} </mat-cell>
+            </ng-container>
+
+            <!-- Colonne marque -->
+            <ng-container matColumnDef="marque">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Marque
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="marque">{{element.marque}}</mat-cell>
+            </ng-container>
+
+            <!-- Colonne nom -->
+            <ng-container matColumnDef="nom">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Nom
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Nom"> {{element.nom_Produit}} </mat-cell>
+            </ng-container>
+
+            <!-- Colonne unite -->
+            <ng-container matColumnDef="unite">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Unité
+                </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Unité"> {{element.unite}} </mat-cell>
+            </ng-container>
+
+            <!-- Colonne valeur unite -->
+            <ng-container matColumnDef="valeurUnite">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Valeur Unité </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Valeur Unité">{{element.valeur_Unite}}</mat-cell>
+            </ng-container>
+
+            <!-- Colonne code a barre -->
+            <ng-container matColumnDef="codeBarre">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Code à Barre </mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="Unité"> {{element.code_Barre}} </mat-cell>
+            </ng-container>
+
+            <!-- Colonne type1 -->
+            <ng-container matColumnDef="type1">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> type1</mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="type1"> {{element.type1}}
+                </mat-cell>
+            </ng-container>
+            <!-- Colonne type2 -->
+            <ng-container matColumnDef="type2">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> type2</mat-header-cell>
+                <mat-cell *matCellDef="let element" data-label="type2"> {{element.type2}} </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+        </mat-table>
+
+
+        <mat-paginator [pageSizeOptions]="[30, 50, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+</div>

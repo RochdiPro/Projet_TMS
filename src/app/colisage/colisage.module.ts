@@ -24,19 +24,24 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 import { AgmCoreModule } from '@agm/core';
 
-
-
 import { ColisageComponent } from './colisage.component';
 import { ListeEmballageComponent } from './liste-emballage/liste-emballage.component';
 import { SupportsComponent } from './supports/supports.component';
-import { AjouterSupportComponent } from './supports/ajouter-support/ajouter-support.component'
+import { AjouterSupportComponent } from './supports/ajouter-support/ajouter-support.component';
 import { ListerSupportsComponent } from './supports/lister-supports/lister-supports.component';
-import { ModifierSupportComponent } from './supports/modifier-support/modifier-support.component'
+import { ModifierSupportComponent } from './supports/modifier-support/modifier-support.component';
 import { CommandeComponent } from './commande/commande.component';
 import { AjouterCommandeComponent } from './commande/ajouter-commande/ajouter-commande.component';
-import { BoiteDialogueInfo, BoiteDialogueCreerCommande, BoiteDialogueEmballer, BoiteDialogueDetailProduit, BoiteDialogueModifierPositionComponent, BoiteDialogueModifierColisage, InformationCommandeComponent } from './commande/dialogs/dialogs.component';
+import {
+  BoiteDialogueInfo,
+  BoiteDialogueCreerCommande,
+  BoiteDialogueEmballer,
+  BoiteDialogueDetailProduit,
+  BoiteDialogueModifierPositionComponent,
+  BoiteDialogueModifierColisage,
+  InformationCommandeComponent,
+} from './commande/dialogs/dialogs.component';
 import { ListerCommandeComponent } from './commande/lister-commande/lister-commande.component';
-
 
 import { ColisageRoutingModule } from './colisage-routing.module';
 import { AjouterPackComponent } from './liste-emballage/ajouter-pack/ajouter-pack.component';
@@ -44,6 +49,11 @@ import { AjouterProduitComponent } from './liste-emballage/ajouter-produit/ajout
 import { ListerEmballageComponent } from './liste-emballage/lister-emballage/lister-emballage.component';
 import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-emballage/menu-ajouter-emballage.component';
 
+import { NgxBarcodeModule } from 'ngx-barcode';
+import { ProduitsComponent } from './produits/produits.component';
+import { ListerProduitComponent } from './produits/lister-produit/lister-produit.component';
+import { AjouterProduitsComponent } from './produits/ajouter-produit/ajouter-produits.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -51,7 +61,8 @@ import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-em
     ListeEmballageComponent,
     SupportsComponent,
     ListerSupportsComponent,
-    AjouterSupportComponent, ModifierSupportComponent,
+    AjouterSupportComponent,
+    ModifierSupportComponent,
     CommandeComponent,
     AjouterCommandeComponent,
     BoiteDialogueInfo,
@@ -65,7 +76,10 @@ import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-em
     ListerEmballageComponent,
     BoiteDialogueModifierPositionComponent,
     BoiteDialogueModifierColisage,
-    InformationCommandeComponent
+    InformationCommandeComponent,
+    ProduitsComponent,
+    ListerProduitComponent,
+    AjouterProduitsComponent,
   ],
   imports: [
     CommonModule,
@@ -93,10 +107,15 @@ import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-em
     MatCheckboxModule,
     AgmCoreModule.forRoot({
       apiKey: 'AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8',
-      libraries: ['places']
+      libraries: ['places'],
     }),
+    NgxBarcodeModule,
+    MatProgressBarModule
   ],
-  providers: [MatDatepickerModule, DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
-
+  providers: [
+    MatDatepickerModule,
+    DatePipe,
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' },
+  ],
 })
-export class ColisageModule { }
+export class ColisageModule {}

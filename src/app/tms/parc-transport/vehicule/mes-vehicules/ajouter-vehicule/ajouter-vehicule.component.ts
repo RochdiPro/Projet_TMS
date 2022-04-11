@@ -1,3 +1,10 @@
+/*  Constructeur: get droit d'accées depuis sessionStorage
+Liste Méthodes:
+* chargerCarburants: get liste carburants;
+* enregistrerVehicule: créer nouveau vehicule.
+* annuler: retour a la liste de vehicules sans enregistrer.
+* testTypeMatricule: tester le type de matricule si elle est TUN ou RS.
+*/
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -46,9 +53,6 @@ export class AjouterVehiculeComponent implements OnInit {
     public service: VehiculeService,
     public router: Router
   ) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1002000');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 
@@ -68,6 +72,10 @@ export class AjouterVehiculeComponent implements OnInit {
       couleur: ['', [Validators.required]],
       car: ['', [Validators.required]],
       consommationnormale: [
+        '',
+        [Validators.required, Validators.pattern('^[0-9]*$')],
+      ],
+      capaciteReservoir: [
         '',
         [Validators.required, Validators.pattern('^[0-9]*$')],
       ],
@@ -119,13 +127,14 @@ export class AjouterVehiculeComponent implements OnInit {
     this.testTypeMatricule();
   }
 
+  // get liste carburants
   async chargerCarburants() {
     this.carburants = await this.service.carburants().toPromise();
   }
 
   // Bouton Enregistrer
+  //créer nouveau vehicule
   async enregistrerVehicule() {
-    //enregistrer les données
     var formData: any = new FormData();
     let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
     let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
@@ -249,6 +258,12 @@ export class AjouterVehiculeComponent implements OnInit {
     formData.append('description', '');
     formData.append('etatVehicule', 'Disponible');
     formData.append('positionVehicule', 'Sfax');
+    formData.append('consommationActuelle', 0);
+    formData.append('historiqueConsommation', '');
+    formData.append(
+      'capaciteReservoir',
+      this.caracteristiquesFormGroup.get('capaciteReservoir').value
+    );
     Swal.fire({
       title: 'Voulez vous enregistrer?',
       showCancelButton: true,
@@ -264,14 +279,16 @@ export class AjouterVehiculeComponent implements OnInit {
       }
     });
   }
+
+  // retour a la liste de vehicules sans enregistrer
   annuler() {
     this.router.navigateByUrl(
       '/Menu/TMS/Parc/Vehicules/Mes-Vehicules/lister-vehicules'
     );
   }
 
+  //tester le type de matricule si elle est TUN ou RS
   testTypeMatricule(): void {
-    //tester le type de matricule si elle est TUN ou RS
     let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
     let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
     if (typeMatriculeEstTUN) {

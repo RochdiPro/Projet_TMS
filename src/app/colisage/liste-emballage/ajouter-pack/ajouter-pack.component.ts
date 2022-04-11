@@ -72,6 +72,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   listeSupports: any;
   interval: any; //intervalle entre les keyup ==> on va specifier interval de 20ms pour ne pas autoriser l'ecriture que au scanner du code a barre
   barcode = '';
+  inputSupport: any;
   support: any;
   supportSelectionne: any;
   longueur: any;
@@ -93,9 +94,6 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     private formBuilder: FormBuilder,
     public _router: Router
   ) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1000200');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 
@@ -160,6 +158,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   // fonction qui permet de scanner le code a barre avec le scanner
   scannerCodeBarreSupport(codeBarreScanne: any) {
+    let element = document.getElementById('nomPack');
     // reinitialisation de l'intervalle
     if (this.interval) clearInterval(this.interval);
     // à la fin de l'ecriture du code a barre le scanner termine par l'event qui simule la touche Entrée
@@ -170,6 +169,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.premierFormGroup.get('codeBarre').setValue(this.barcode);
       // on reinitialise la variable barcode
       this.barcode = '';
+      element.focus();
       return;
     }
     // quelques scanner debuter le saisie du code a barre par introduir un event simulair pour le Shift donc on l'elimine
@@ -180,12 +180,12 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   // fonction qui permet de réaliser les fonctionnalitées necessaires aprés la saisie du code à barre
   async gestionCodeBarreSupport(codeBarre: any) {
     // charger liste des supports
-    this.support = await this.serviceSupport
+    this.inputSupport = await this.serviceSupport
       .filtrerSupports('code_barre', codeBarre)
       .toPromise();
     //si le support n'est pas existant on lance une alerte avec possibilité de creation du support
-    if (this.support.length === 0) {
-      this.support = undefined;
+    if (this.inputSupport.length === 0) {
+      this.inputSupport = undefined;
       Swal.fire({
         title: 'Support inexistant!',
         text: "Ajoutez le dans la liste des support avant de l'utiliser.",
@@ -203,12 +203,13 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
         }
       });
     } else {
-      this.longueur = this.support[0].longueur;
-      this.largeur = this.support[0].largeur;
-      this.hauteur = this.support[0].hauteur;
-      this.volume = this.support[0].volume;
-      this.poidsEmballage = this.support[0].poids_emballage;
-      this.typeEmballage = this.support[0].type_support;
+      this.longueur = this.inputSupport[0].longueur;
+      this.largeur = this.inputSupport[0].largeur;
+      this.hauteur = this.inputSupport[0].hauteur;
+      this.volume = this.inputSupport[0].volume;
+      this.poidsEmballage = this.inputSupport[0].poidsEmballage;
+      this.typeEmballage = this.inputSupport[0].typeSupport;
+      this.support = this.inputSupport[0];
 
       this.premierFormGroup.get('valider').setValue('validé');
     }
@@ -216,12 +217,13 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   // selectionner support manuellement
   selectionnerSupport() {
+    this.support = this.supportSelectionne;
     this.longueur = this.supportSelectionne.longueur;
     this.largeur = this.supportSelectionne.largeur;
     this.hauteur = this.supportSelectionne.hauteur;
     this.volume = this.supportSelectionne.volume;
-    this.poidsEmballage = this.supportSelectionne.poids_emballage;
-    this.typeEmballage = this.supportSelectionne.type_support;
+    this.poidsEmballage = this.supportSelectionne.poidsEmballage;
+    this.typeEmballage = this.supportSelectionne.typeSupport;
     this.premierFormGroup.get('valider').setValue('validé');
   }
 
@@ -417,6 +419,11 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   reinitialiserStepper() {
     //reinitialiser le stepper
     this.packClique.clear();
+    this.support = undefined;
+    this.packSelectionne = [];
+    while (this.packControl.length !== 0) {
+      this.packControl.removeAt(0)
+    }
   }
 
   // fonction qui permet de choisir entre deux mode de selection du support (manuel ou avec scanner)
@@ -426,7 +433,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       this.premierFormGroup.get('typeSelectionEmballage').value === 'manuel'
     ) {
       this.premierFormGroup.get('codeBarre').setValue('');
-      this.support = undefined;
+      this.inputSupport = undefined;
       this.premierFormGroup.get('codeBarre').disable();
       this.premierFormGroup.get('codeBarre').setValidators([]);
       this.premierFormGroup.get('codeBarre').updateValueAndValidity();
@@ -456,9 +463,17 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
 
   //fonction pour generer le code pour le code a barre
   genererCodeBarre() {
+    let support;
+    if (
+      this.premierFormGroup.get('typeSelectionEmballage').value === 'manuel'
+    ) {
+      support = this.supportSelectionne;
+    } else {
+      support = this.inputSupport[0];
+    }
     this.barcodeEmballage = '';
     let idComposant = 'PROD';
-    let idSupport = 'S' + this.supportSelectionne.id_support;
+    let idSupport = 'S' + support.id;
     let fragilite = this.premierFormGroup.get('fragilite').value
       ? 'FRAO'
       : 'FRAN';
@@ -514,7 +529,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     formData.append('poids_emballage_total', this.poidsToltalBrut);
     formData.append(
       'code_barre',
-      this.premierFormGroup.get('codeBarrePack').value
+      this.barcodeEmballage
     );
     await this.serviceEmballage.creerProduitEmballe(formData).toPromise();
     // aprés l'enregistrement en retourne a la page liste des packs
@@ -528,7 +543,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
   }
   onResize(event: any) {
     //lors du changement de l'ecran on modifie le breakpoint du mat-grid pour avoir un nouveau layout
-    this.breakpoint = event.target.innerWidth <= 400 ? 2 : 6;
+    this.breakpoint = event.target.innerWidth <= 768 ? 2 : 6;
   }
 }
 

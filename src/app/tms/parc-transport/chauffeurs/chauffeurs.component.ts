@@ -36,9 +36,6 @@ export class ChauffeursComponent implements OnInit {
     public datepipe: DatePipe,
     public sanitizer: DomSanitizer
   ) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1002000');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

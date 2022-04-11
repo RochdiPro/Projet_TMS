@@ -1,3 +1,16 @@
+/*
+Liste des méthodes:
+* date: creation du formControl date d'une facon dynamique selon le longueur du liste de vehicule.
+* nouveauDate: creation nouveaux formControls dateDebut et dateFin.
+* ajouterDatePicker: ajout du nouveaux dateDebut et dateFin au formControl array date.
+* supprimerDate: supprimer formControl date qui a était crée dynamiquement.
+* majControlleur: pour chaque vehicul on ajoute un fomControll date.
+* chargerVehicules: get liste vehicules.
+* ouvrirDetailVehiculeLoue: ouvrir la boite de dialogue de détails vehicule loué.
+* supprimerVehiculeLoue: supprimer vehicule Loue.
+* changerDate: changengemetn date debut et fin de location.
+* filtrerVehicule: filtrer vehicule par matricule, proprietaire et disponibilité.
+*/
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -22,6 +35,12 @@ export class ListerVehiculesLoueComponent implements OnInit {
   nom: any;
   acces: any;
   tms: any;
+
+  // variables des filtres
+  filtreMatricule: string = '';
+  filtreProprietaire: string = '';
+  filtreDisponibilte: string = '';
+
   constructor(
     public service: VehiculeService,
     private dialog: MatDialog,
@@ -29,17 +48,13 @@ export class ListerVehiculesLoueComponent implements OnInit {
     public _location: Location,
     public fb: FormBuilder
   ) {
-    sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1002000");
-
-    this.nom = sessionStorage.getItem('Utilisateur'); 
-    this.acces = sessionStorage.getItem('Acces'); 
-
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
     const numToSeparate = this.acces;
-    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
-  
-    this.tms = Number( arrayOfDigits[3])
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
   }
 
   ngOnInit(): void {
@@ -49,31 +64,32 @@ export class ListerVehiculesLoueComponent implements OnInit {
     this.chargerVehicules();
   }
 
-  //creation du formControl date d'une facon dynamique selon la longue du liste de vehicule
+  //creation du formControl date d'une facon dynamique selon le longueur du liste de vehicule
   date(): FormArray {
     //get le formControl date
     return this.form.get('date') as FormArray;
   }
 
+  //creation nouveaux formControls dateDebut et dateFin
   nouveauDate(dateDebut: any, dateFin: any): FormGroup {
-    //creation nouveaux formControls dateDebut et dateFin
     return this.fb.group({
       dateDebut: [dateDebut, Validators.required],
       dateFin: [dateFin, Validators.required],
     });
   }
 
+  // ajout du nouveaux dateDebut et dateFin au formControl array date
   ajouterDatePicker(dateDebut: any, dateFin: any) {
-    // ajout du nouveaux dateDebut et dateFin au formControl array date
     this.date().push(this.nouveauDate(dateDebut, dateFin));
   }
 
+  // supprimer formControl date qui a était crée dynamiquement
   supprimerDate() {
     this.date().clear();
   }
 
+  //pour chaque vehicul on ajoute un fomControll date
   majControlleur() {
-    //creation des formControls date d'une facon dynamique
     this.supprimerDate();
     this.vehiculesLoues.forEach((vehicule: any) => {
       this.ajouterDatePicker(
@@ -84,7 +100,7 @@ export class ListerVehiculesLoueComponent implements OnInit {
   }
   //Fin creation du formControl date
 
-  //charger liste vehicules
+  //get liste vehicules
   async chargerVehicules() {
     this.vehiculesLoues = await this.service.vehiculesLoues().toPromise();
     this.majControlleur();
@@ -97,41 +113,59 @@ export class ListerVehiculesLoueComponent implements OnInit {
     });
   }
 
-  //bouton de detail vehicule loué
+  //ouvrir la boite de dialogue de détails vehicule loué
   ouvrirDetailVehiculeLoue(id: any): void {
-    //ouvrir la boite de dialogue de détails vehicule loué
     const dialogRef = this.dialog.open(DetailVehiculeLoueComponent, {
       width: '450px',
       panelClass: 'custom-dialog',
       autoFocus: false,
-      data: {id: id}
+      data: { id: id },
     });
   }
 
-  //Bouton supprimer vehicule Loue
+  //supprimer vehicule Loue
   supprimerVehiculeLoue(id: any): void {
-    //supprimer vehicule
     Swal.fire({
-      title: 'Êtes-vous sûr?',
-      text: 'Vous allez supprimer le vehicul!',
-      icon: 'warning',
+      title: 'Mot de passe',
+      input: 'password',
+      inputAttributes: {
+        autocapitalize: 'off',
+      },
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Supprimer!',
-      cancelButtonText: 'Annuler',
-    }).then(async (result) => {
+      confirmButtonText: 'ok',
+      showLoaderOnConfirm: true,
+      preConfirm: (pass) => {
+        if (pass !== 'infonet') {
+          Swal.showValidationMessage(`Mot de passe incorrecte`);
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    }).then((result) => {
       if (result.isConfirmed) {
-        await this.service.supprimerVehiculeLoue(id).toPromise();
-        this.chargerVehicules();
-        Swal.fire('Supprimé!', 'Le vehicul a été supprimé.', 'success');
+        //supprimer vehicule
+        Swal.fire({
+          title: 'Êtes-vous sûr?',
+          text: 'Vous allez supprimer le vehicul!',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Supprimer!',
+          cancelButtonText: 'Annuler',
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await this.service.supprimerVehiculeLoue(id).toPromise();
+            this.chargerVehicules();
+            Swal.fire('Supprimé!', 'Le vehicul a été supprimé.', 'success');
+          }
+        });
       }
     });
   }
 
   //Utilisé dans le date picker de modification
+  //changengemetn date debut et fin de location
   async changerDate(id: any, index: any) {
-    //changengemetn date debut et fin de location
     var formData: any = new FormData();
     formData.append('id', id);
     formData.append(
@@ -155,4 +189,14 @@ export class ListerVehiculesLoueComponent implements OnInit {
       }
     });
   }
+
+    //filtrer vehicule par matricule, proprietaire et disponibilité
+    filtrerVehicule(){
+      this.filtreMatricule == undefined ? this.filtreMatricule = "": "";
+      this.filtreProprietaire == undefined ? this.filtreProprietaire = "": "";
+      this.filtreDisponibilte == undefined ? this.filtreDisponibilte = "": "";
+      this.service.filtrerVehiculeLoues(this.filtreMatricule,this.filtreProprietaire,this.filtreDisponibilte).subscribe((result) => {
+        this.vehiculesLoues = result;
+      })
+    }
 }

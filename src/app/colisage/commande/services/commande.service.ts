@@ -11,6 +11,9 @@ const infonet = '/INFONET/';
 export class CommandeService {
   handleError: any;
 
+  // changer cette valeur pour spécifier s'il s'agit d'un mode manuel ou pas
+  public modeManuel = true;
+
   constructor(private httpClient: HttpClient) {}
 
   //charger la liste des factures
@@ -268,17 +271,13 @@ export class CommandeService {
   }
 
   // get le fichier xml d'une commande
-  public loadXML(date: string, nomFichier: string) {
+  public loadXML(date: string, nomFichier: string): Observable<any> {
     return this.httpClient
-      .get('assets/DATA/' + date + '/Xmls/' + nomFichier, {
-        headers: new HttpHeaders()
-          .set('Content-Type', 'text/xml')
-          .append('Access-Control-Allow-Methods', 'GET')
-          .append('Access-Control-Allow-Origin', '*')
-          .append(
-            'Access-Control-Allow-Headers',
-            'Access-Control-Allow-Headers, Access-Control-Allow-Origin, Access-Control-Request-Method'
-          ),
+      .get(erp + 'detail-commande-manuel', {
+        params: {
+          date: date,
+          nomFichier: nomFichier,
+        },
         responseType: 'blob',
       })
       .pipe(catchError(this.handleError));
@@ -316,5 +315,12 @@ export class CommandeService {
       (response) => console.log(response),
       (error) => console.log(error)
     );
+  }
+
+  //get coefficients frais de livraison
+  public fraisLivraison() {
+    return this.httpClient
+      .get(erp + 'frais-livraison')
+      .pipe(catchError(this.handleError));
   }
 }
