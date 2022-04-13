@@ -25,6 +25,20 @@ const routes: Routes = [
             (m) => m.ConfigurationTmsModule
           ),
       },
+      {
+        path: 'Menu-RH',
+        loadChildren: () =>
+          import('./RH/rh.module').then(
+            (m) => m.RhModule
+          ),
+      },
+      {
+        path: 'Menu-init/Menu-client',
+        loadChildren: () =>
+          import('./init/client/client.module').then(
+            (m) => m.ClientModule
+          ),
+      },
     ],
   },
 ];

@@ -1,0 +1,226 @@
+ 
+  <div class="row">
+    <div class="col-md-3 mb-3">
+        <mat-label for="filtreclient_par">Choisir un filtre</mat-label>
+        <mat-select id="filtreclient_par" name="filtreclient_par" (selectionChange)="ChoixFiltre($event)">
+            <mat-option *ngFor="let filtre of liste_Filtres" [value]="filtre">
+                <span *ngIf="filtre=='id_clt'">Code Client</span>
+                <span *ngIf="filtre=='adresse'">Adresse</span>
+                <span *ngIf="filtre=='banque1'">Banque 1</span>
+                <span *ngIf="filtre=='banque2'">Banque 2</span>
+                <span *ngIf="filtre=='bloque_vente'">Vente Bloquée</span>
+                <span *ngIf="filtre=='categorie_fiscale'">Categorie Fiscale</span>
+                <span *ngIf="filtre=='categorie_client'">Categorie Client</span>
+                <span *ngIf="filtre=='code_tva'">Identifiant Fiscal</span>
+                <span *ngIf="filtre=='contact'">Contact</span>
+                <span *ngIf="filtre=='date_livraison_identite'">Date livraison pièce d'identité</span>
+                <span *ngIf="filtre=='debut_exoneration'">Date debut exoneration / suspension</span>
+                <span *ngIf="filtre=='description'">Description</span>
+                <span *ngIf="filtre=='email'">Email</span>
+                <span *ngIf="filtre=='fax'">Fax</span>
+                <span *ngIf="filtre=='fin_exoneration'">Date fin exoneration / suspension</span>
+                <span *ngIf="filtre=='image'">Image</span>
+                <span *ngIf="filtre=='image_type'">Type d'image</span>
+                <span *ngIf="filtre=='n_attestation_exoneration'">Numéro d'attestation exoneration / suspension</span>
+                <span *ngIf="filtre=='n_piece_identite'">Numéro de pièce d'identité</span>
+                <span *ngIf="filtre=='nom_client'">Nom Client</span>
+                <span *ngIf="filtre=='pays'">Pays</span>
+                <span *ngIf="filtre=='plafond'">Plafond</span>
+                <span *ngIf="filtre=='reduction_tva'">Taux de réduction Tva</span>
+                <span *ngIf="filtre=='region'">Region</span>
+                <span *ngIf="filtre=='representant'">Representant</span>
+                <span *ngIf="filtre=='rib1'">Rib 1</span>
+                <span *ngIf="filtre=='rib2'">Rib 2</span>
+                <span *ngIf="filtre=='risque'">Risque</span>
+                <span *ngIf="filtre=='site_web'">Site Web</span>
+                <span *ngIf="filtre=='solde_facture'">Solde de facture</span>
+                <span *ngIf="filtre=='tel1'">Telephone</span>
+                <span *ngIf="filtre=='tel2'">Telephone 2</span>
+                <span *ngIf="filtre=='timbre_fiscal'">Timbre fiscal</span>
+                <span *ngIf="filtre=='type_piece_identite'">Type de pièce d'identité</span>
+                <span *ngIf="filtre=='ville'">Ville</span>
+                <span *ngIf="filtre=='date_creation'">Date de création de client</span>
+            </mat-option>
+        </mat-select>
+    </div>
+    <div class="search-wrapper active" *ngIf="filtre==='' || filtre==='ville' || filtre==='type_piece_identite' || filtre==='site_web' || filtre==='representant' || filtre==='region' || filtre==='pays'
+   || filtre==='nom_client' || filtre==='n_piece_identite' || filtre==='image_type' || filtre==='description' || filtre==='contact' || filtre==='categorie_client' ||
+    filtre==='categorie_fiscale' || filtre==='banque2' || filtre==='banque1' || filtre==='adresse'">
+        <div class="input-holder">
+            <input type="text" class="search-input" placeholder="Saisir pour chercher" [(ngModel)]="valeurRecherche"
+                (keyup)=filtrerClientParLettre() id="valeurRecherche" name="valeurRecherche">
+
+            <button class="search-icon" (click)="filtrerClient()"><span></span></button>
+        </div>
+    </div>
+
+    <div class="search-wrapper active"
+        *ngIf="filtre==='tel2' || filtre==='tel1' || filtre==='solde_facture' || filtre==='risque' || filtre==='rib2' || filtre==='rib1'
+        || filtre==='reduction_tva' || filtre==='plafond' || filtre==='n_attestation_exoneration' || filtre==='fax' || filtre==='code_tva' || filtre==='id_clt' ">
+        <div class="input-holder">
+            <input type="number" class="search-input" placeholder="Saisir une valeur numérique"
+                [(ngModel)]="valeurRecherche" (keyup)=filtrerClientParLettre() id="valeurRecherche"
+                name="valeurRecherche">
+            <button class="search-icon" (click)="filtrerClient()"><span></span></button>
+        </div>
+    </div>
+    <div class="search-wrapper active"
+        *ngIf="filtre==='date_livraison_identite' || filtre==='debut_exoneration' || filtre==='fin_exoneration' || filtre==='date_creation' ">
+        <div class="input-holder">
+            <input matInput [(ngModel)]="valeurRecherche" [matDatepicker]="picker" disabled placeholder="MM/DD/YYYY"
+                #rechercheParDate style="width: 200px; padding: 10px;" (dateChange)=filtrerClientParDate()>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker disabled="false"></mat-datepicker>
+            <button class="search-icon" (click)="filtrerClient()"><span></span></button>
+        </div>
+    </div>
+    <div class="search-wrapper active" *ngIf="filtre==='timbre_fiscal' ">
+        <div class="input-holder">
+
+            <mat-select style="width: 200px;padding: 10px" [(ngModel)]="valeurRecherche"
+                (selectionChange)="validerRechercheTimbreFiscal($event)" placeholder="Choisir une valeur"
+                id="valeurRecherche" name="valeurRecherche">
+                <mat-option value="1">Avec timbre</mat-option>
+                <mat-option value="0">Sans timbre</mat-option>
+            </mat-select>
+
+            <button class="search-icon" (click)="filtrerClient()"><span></span></button>
+        </div>
+
+    </div>
+    <div class="search-wrapper active" *ngIf="filtre==='bloque_vente' ">
+        <div class="input-holder">
+
+            <mat-select style="width: 200px;padding: 10px" [(ngModel)]="valeurRecherche"
+                (selectionChange)="validerRechercheTimbreFiscal($event)" placeholder="Choisir une valeur"
+                id="valeurRecherche" name="valeurRecherche">
+                <mat-option value="1">Vente bloquée</mat-option>
+                <mat-option value="0">Vente autorisée</mat-option>
+            </mat-select>
+
+            <button class="search-icon" (click)="filtrerClient()"><span></span></button>
+        </div>
+
+    </div>
+  
+</div>  
+<mat-progress-bar mode="indeterminate" *ngIf='chargementEnCours'></mat-progress-bar>
+ 
+<div class="position-relative custom-control">
+    <section>
+        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 20%;width: 10%;">
+            <mat-label>ID</mat-label>
+            <input matInput placeholder="ID" formControlName="id_Clt" (keyup)="filtre_fr()" id="id">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;width: 10%;">
+            <mat-label>Nom</mat-label>
+            <input matInput placeholder="Nom" formControlName="nom_Client" (keyup)="filtre_fr()" id="id">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;width: 12%;">
+            <mat-label>Categorie Client</mat-label>
+            <input matInput placeholder="Categorie Client" formControlName="categorie_Client"
+                (keyup)="filtre_fr()" id="id">
+            <i matSuffix class="fa fa-filter" aria-hidden="true" style="margin-left: 1%;width: 7%;"></i>
+        </mat-form-field>
+
+        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;width: 7%;">
+            <mat-label>Code Tva</mat-label>
+            <input matInput placeholder="Code Tva" formControlName="code_Tva" (keyup)="filtre_fr()" id="responsable">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;width: 10%;">
+            <mat-label>Email</mat-label>
+            <input matInput placeholder="Email" formControlName="email" (keyup)="filtre_fr()" id="etat">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;width: 10%;">
+            <mat-label>Tel</mat-label>
+            <input matInput placeholder="Tel" formControlName="tel1" (keyup)="filtre_fr()" id="type_be">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+    </section>
+</div>
+
+
+<div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+        <!--Colonne id -->
+        <ng-container matColumnDef="editer">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="ID">
+                <i class="pe-7s-pen" title="Modifier Client"
+                    routerLink="/Menu/Menu-init/Menu-client/Modifer-client/{{element.id_Clt}}">
+                </i>
+            </mat-cell>
+        </ng-container>
+
+        <!--Colonne id -->
+        <ng-container matColumnDef="Image">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Image </mat-header-cell>
+            <!-- <mat-cell *matCellDef="let element" data-label="ID" > {{element.id_Fr}} </mat-cell>   -->
+            <mat-cell *matCellDef="let element" data-label="Image">
+                <img src="data:image/png;base64,{{element.image}}"
+                    style="height: 50px;width: 50px;margin-top: 2px; margin-bottom: 2px;" />
+            </mat-cell>
+        </ng-container>
+        <!--Colonne responsable -->
+        <ng-container matColumnDef="id_Clt">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> id_Clt </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="id_Clt"> {{element.id_Clt}}</mat-cell>
+        </ng-container>
+
+
+        <!--Colonne Ancien ID -->
+        <ng-container matColumnDef="nom_Client">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Nom Client </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Nom Client"> {{element.nom_Client}} </mat-cell>
+        </ng-container>
+        <!--Colonne Réclamation -->
+        <ng-container matColumnDef="categorie_Client">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Categorie Client </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Categorie Client"> {{element.categorie_Client}} </mat-cell>
+        </ng-container>
+
+        <!--Colonne Réclamation -->
+        <ng-container matColumnDef="code_Tva">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Code Tva </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label=" Code Tva"> {{element.code_Tva}} </mat-cell>
+        </ng-container>
+
+        <!--Colonne email -->
+        <ng-container matColumnDef="email">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Email </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Email"> {{element.email}} </mat-cell>
+        </ng-container>
+        <!--Colonne tel1 -->
+        <ng-container matColumnDef="tel1">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Tel </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Tel"> {{element.tel1}} </mat-cell>
+        </ng-container>
+
+
+        <!--Colonne supprimer -->
+        <ng-container matColumnDef="sup">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element" style="text-align: center;" data-label=" ">
+                <i class="pe-7s-search"
+                    routerLink="/Menu/Menu-init/Menu-client/Visualiser-client/{{element.id_Clt}}"
+                    title="Visualiser Client" style="color: green;" >
+                </i>
+                <i class="pe-7s-cloud-download" title="Télécharger PDF" (click)="genererPdfClient(element.id_Clt)"
+                    style="color: darkblue; margin-left: 15px;">
+                </i>
+                <i class="pe-7s-trash" (click)="supprimerClient(element.id_Clt)" title="Supprimer Client"
+                    style="color: red;  margin-left: 15px;">
+                </i>
+
+            </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </table>
+
+    <mat-paginator [pageSizeOptions]="[10,50,100]" showFirstLastButtons></mat-paginator>
+</div>

@@ -1,5 +1,5 @@
 <div *ngIf="wms >= 2">
-    <h1>Importer/Restorer Liste Des Produits </h1>
+    <h1>Importer/Restaurer Liste Des Produits </h1>
     <div class="grid">
         <div class="importer border">
             <h2>Importer une liste des produits</h2>
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="backup border">
-            <h2>Restorer la liste des produits</h2>
+            <h2>Restaurer la liste des produits</h2>
             <p>Les sauvegardes disponibles:</p>
             <ul *ngIf="backups">
                 <li *ngIf="backups.dateBackup1 != null">{{backups.dateBackup1 | date: "dd-MM-yyyy"}}<button mat-icon-button (click)="restaurerListeProduit('1')"><mat-icon>restore</mat-icon></button></li>

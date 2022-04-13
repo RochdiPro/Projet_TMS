@@ -12,7 +12,7 @@ export class CommandeService {
   handleError: any;
 
   // changer cette valeur pour spécifier s'il s'agit d'un mode manuel ou pas
-  public modeManuel = true;
+  public modeManuel = false;
 
   constructor(private httpClient: HttpClient) {}
 

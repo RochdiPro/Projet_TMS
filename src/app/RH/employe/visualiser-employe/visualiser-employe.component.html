@@ -1,0 +1,118 @@
+<div   class="grid-container">
+     
+     <div class="grid-item item1">
+        <div class="zoom">
+            <img id="myimage" src="data:image/png;base64,{{employe.image}}" width="200" height="200"
+                style="margin-left: 10px;" (click)="afficherImage(employe.id_Employe)" />
+        </div>
+    </div>
+    <div class="grid-item item2">
+        <mat-label style="border-bottom: 1px solid #DEDEDE;font-weight: bold;font-size: 20px;"> {{employe.nom}}
+        </mat-label>
+    </div>  
+    <div class="grid-item item3" style="margin-top: -40px;">
+        <mat-label style="font-weight: bold;border-bottom: 1px solid #DEDEDE;"> Informations Générales </mat-label>
+
+
+        <div class="row">
+
+            <mat-label><strong> Role   : </strong></mat-label>
+            <mat-label>{{employe.role}}</mat-label>
+        </div>
+        <div class="row">
+            <mat-label><strong> Acces  : </strong></mat-label>
+            <mat-label>{{employe.acces}}</mat-label>
+        </div>
+        <div class="row">
+            <mat-label><strong> Catégorie permis  : </strong></mat-label>
+            <mat-label>{{employe.categorie_Permis}}</mat-label>
+        </div>
+        <div class="row">
+            <mat-label><strong> Email: </strong></mat-label>
+            <mat-label>{{employe.email}}</mat-label>
+        </div>
+        <div class="row">
+            <mat-label><strong> Téléphone: </strong></mat-label>
+            <mat-label>{{employe.tel}}</mat-label>
+        </div> 
+        <div class="row">
+            <mat-label><strong> Date d'embauche </strong></mat-label>
+            <mat-label>{{employe.date_de_embauche | date:'dd-MM-yyyy' }}</mat-label>
+        </div>        
+        
+    </div>
+    
+
+    <div class="grid-item item5">
+        <mat-tab-group headerPosition="above">
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    
+                    <mat-icon class="example-tab-icon">contact_page</mat-icon>
+                    Coordonnées
+                </ng-template>
+                <div class="row">
+                    
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Pays : </strong></mat-label>
+                        <mat-label>{{employe.pays}}</mat-label>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Ville : </strong></mat-label>
+                        <mat-label>{{employe.ville}}</mat-label>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Adresse : </strong></mat-label>
+                        <mat-label>{{employe.adresse}}</mat-label>
+                    </div>
+                </div>
+                <div class="row">
+                  
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Type de pièce d'identité : </strong></mat-label>
+                        <mat-label>{{employe.type_Piece_Identite}}</mat-label>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Numéro de pièce d'identité : </strong></mat-label>
+                        <mat-label>{{employe.n_Piece_Identite}}</mat-label>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Délivre le : </strong></mat-label>
+                        <mat-label>{{employe.date_de_naissance | date:'dd-MM-yyyy'}}</mat-label>
+                    </div>
+                </div>
+                 
+            </mat-tab>            
+
+            <mat-tab>
+                 
+                <ng-template mat-tab-label>
+                    <mat-icon class="example-tab-icon">attach_money</mat-icon>
+                    Identité bancaire
+                </ng-template>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Banque : </strong></mat-label>
+                        <mat-label>{{employe.banque}}</mat-label>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Rib : </strong></mat-label>
+                        <mat-label>{{employe.rib}}</mat-label>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <mat-label><strong> Cnss : </strong></mat-label>
+                        <mat-label>{{employe.cnss}}</mat-label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-12">
+                        <mat-label><strong> Description : </strong></mat-label>
+                        <mat-label>{{employe.description}}</mat-label>
+                    </div>                     
+                </div>                
+            </mat-tab>
+            
+            
+        </mat-tab-group>
+    </div>
+</div>

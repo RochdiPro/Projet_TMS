@@ -1,0 +1,180 @@
+ 
+<div class="row">
+    <div class="col-md-3 mb-3">
+        <mat-label for="filtre_par">Choisir un filtre</mat-label>
+        <mat-select id="filtre_par" name="filtre_par" (selectionChange)="ChoixFiltre($event)">
+            <mat-option *ngFor="let filtre of liste_Filtres" [value]="filtre">
+                <span *ngIf="filtre=='id_employe'">ID Employé</span>
+                <span *ngIf="filtre=='acces'">Acces</span>   
+                <span *ngIf="filtre=='adresse'">Adresse</span>
+                <span *ngIf="filtre=='banque'">Banque</span>  
+                <span *ngIf="filtre=='date_piece_identite'">date_piece_identite</span>  
+                <span *ngIf="filtre=='date_de_embauche'">Date d'embouche</span>
+                <span *ngIf="filtre=='date_de_naissance'">Date de naissance</span>
+                <span *ngIf="filtre=='description'">Description</span>     
+                <span *ngIf="filtre=='email'">Email</span>          
+                <span *ngIf="filtre=='image'">Image</span> 
+                <span *ngIf="filtre=='image_type'">Image Type</span> 
+                <span *ngIf="filtre=='n_piece_identite'">Numéro de pièce d'identité</span>
+                <span *ngIf="filtre=='nom'">Nom</span>
+                <span *ngIf="filtre=='pays'">pays</span>
+                <span *ngIf="filtre=='rib'">Rib </span>               
+                <span *ngIf="filtre=='role'">role </span>               
+                <span *ngIf="filtre=='tel'">Telephone</span>             
+                <span *ngIf="filtre=='type_piece_identite'">Type de pièce d'identité</span>
+                <span *ngIf="filtre=='ville'">Ville</span>
+                <span *ngIf="filtre=='date_creation'">Date de création d'Employé</span>
+            </mat-option>
+        </mat-select>
+    </div>
+    <div class="search-wrapper active" *ngIf="filtre==='' || filtre==='ville' || filtre==='type_piece_identite' ||  filtre==='pays'
+   || filtre==='nom' || filtre==='n_piece_identite' || filtre==='image_type' || filtre==='description' ||  filtre==='categorie_employe' ||
+    filtre==='banque' || filtre==='adresse' || filtre==='acces'">
+        <div class="input-holder">
+            <input type="text" class="search-input" placeholder="Saisir pour chercher" [(ngModel)]="valeurRecherche"
+                (keyup)=filtrerParLettre() id="valeurRecherche" name="valeurRecherche">
+            <button class="search-icon" (click)="filtrer()"><span></span></button>
+        </div>
+    </div>
+
+    <div class="search-wrapper active"
+        *ngIf="filtre==='tel' || filtre==='rib' || filtre==='id_employe' ">
+        <div class="input-holder">
+            <input type="number" class="search-input" placeholder="Saisir une valeur numérique"
+                [(ngModel)]="valeurRecherche" (keyup)=filtrerParLettre() id="valeurRecherche"
+                name="valeurRecherche">
+            <button class="search-icon" (click)="filtrer()"><span></span></button>
+        </div>
+    </div>
+    <div class="search-wrapper active"
+        *ngIf="filtre==='date_livraison_identite' || filtre==='date_de_naissance' || filtre==='date_de_embauche' || filtre==='date_creation' ">
+        <div class="input-holder">
+            <input matInput [(ngModel)]="valeurRecherche" [matDatepicker]="picker" disabled placeholder="MM/DD/YYYY"
+                #rechercheParDate style="width: 200px; padding: 10px;">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker disabled="false"></mat-datepicker>
+            <button class="search-icon" (click)="filtrer()"><span></span></button>
+        </div>
+    </div>
+  
+  
+</div>
+
+
+<div class="position-relative custom-control">
+    <section>
+        <mat-form-field class="custom-width" [formGroup]="form">
+            <mat-label>ID</mat-label>
+            <input matInput placeholder="ID" formControlName="id_Employe" (keyup)="filtre_emp()" id="id">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form">
+            <mat-label>Nom</mat-label>
+            <input matInput placeholder="Nom" formControlName="nom" (keyup)="filtre_emp()" id="id">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form">
+            <mat-label>Role</mat-label>
+            <input matInput placeholder="Categorie local" formControlName="role"
+                (keyup)="filtre_emp()" id="id">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+ 
+        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;">
+            <mat-label>Acces</mat-label>
+            <input matInput placeholder="+216" formControlName="acces" (keyup)="filtre_emp()" id="responsable">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form">
+            <mat-label>Pays</mat-label>
+            <input matInput placeholder="Email" formControlName="pays" (keyup)="filtre_emp()" id="etat">
+            <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+        </mat-form-field>
+        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;">
+          <mat-label>Ville</mat-label>
+          <input matInput placeholder="Tel" formControlName="ville" (keyup)="filtre_emp()" id="type_be">
+          <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
+      </mat-form-field>
+     
+    </section>
+ </div>
+ 
+ <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+        <!--Colonne id -->
+        <ng-container matColumnDef="editer">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="ID">
+                <i class="pe-7s-pen" title="Modifier  "
+                    routerLink="/Menu/Menu-RH/Menu-employee/Modifer-employee/{{element.id_Employe}}">
+                </i>
+            </mat-cell>
+        </ng-container>
+ 
+        <!--Colonne id -->
+        <ng-container matColumnDef="id_Employe">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Id </mat-header-cell>
+              <mat-cell *matCellDef="let element" data-label="Id"> {{element.id_Employe}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="Image">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Image </mat-header-cell>
+              <mat-cell *matCellDef="let element" data-label="Image"> <img src="data:image/png;base64,{{element.image}}"
+                style="height: 50px;width: 50px;margin-top: 2px; margin-bottom: 2px;" /> </mat-cell>
+        </ng-container>
+
+     
+        <!--Colonne responsable -->
+        <ng-container matColumnDef="nom">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Nom </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Nom"> {{element.nom}}</mat-cell>
+        </ng-container>
+ 
+ 
+        <!--Colonne Ancien ID -->
+        <ng-container matColumnDef="role">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Role </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Role"> {{element.role}} </mat-cell>
+        </ng-container>
+        <!--Colonne Réclamation -->
+        <ng-container matColumnDef="acces">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Acces </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Acces"> {{element.acces}} </mat-cell>
+        </ng-container>
+ 
+        <!--Colonne Réclamation -->
+        <ng-container matColumnDef="pays">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>Pays </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Pays"> {{element.pays}} </mat-cell>
+        </ng-container>
+ 
+        <!--Colonne email -->
+        <ng-container matColumnDef="ville">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Ville </mat-header-cell>
+            <mat-cell *matCellDef="let element" data-label="Ville"> {{element.ville}} </mat-cell>
+        </ng-container>
+       
+        <!--Colonne supprimer -->
+        <ng-container matColumnDef="Supprimer">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let element" style="text-align: center;">
+                 
+                <i class="pe-7s-search" routerLink="/Menu/Menu-RH/Menu-employee/Visualiser-employee/{{element.id_Employe}}"
+                    title="Visualiser produit" style="color: green;">
+                </i>
+                <i class="pe-7s-cloud-download" title="Télécharger PDF" (click)="genererPdf(element.id_Employe)"
+                    style="color: darkblue; margin-left: 15px;">
+                </i>
+                 <i class="pe-7s-trash" (click)="supprimeremploye(element.id_Employe)" title="Supprimer employe"
+                    style="color: red; margin-left: 15px;">
+                </i>
+ 
+            </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </table>
+ 
+    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+ </div> 
+ 
