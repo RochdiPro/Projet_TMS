@@ -14,6 +14,7 @@ import { ConfigurationServeurComponent } from './configuration-application/confi
 import { HttpClient } from '@angular/common/http';
 import { AppInitService } from './services/app-init.service';
 import { ConfigurationProduitComponent } from './configuration-produit/configuration-produit.component';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { ConfigurationProduitComponent } from './configuration-produit/configura
     AgmCoreModule.forRoot(),
     ReactiveFormsModule,
     MatInputModule,
+    MatSlideToggleModule
   ],
   providers: [
     {

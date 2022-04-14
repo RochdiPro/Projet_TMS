@@ -140,8 +140,7 @@
                                     [(ngModel)]="fin_exoneration_tva">
                             </mat-date-range-input>
                             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                            <mat-date-range-picker #picker2 [startAt]="debut_exoneration_tva"
-                                [endAt]="fin_exoneration_tva"></mat-date-range-picker>
+                            <mat-date-range-picker #picker2 [startAt]="debut_exoneration_tva"></mat-date-range-picker>
                         </mat-form-field>
                     </div>
                 </div>
@@ -165,8 +164,7 @@
                                     [(ngModel)]="fin_exoneration_tva">
                             </mat-date-range-input>
                             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                            <mat-date-range-picker #picker2 [startAt]="debut_exoneration_tva"
-                                [endAt]="fin_exoneration_tva"></mat-date-range-picker>
+                            <mat-date-range-picker #picker2 [startAt]="debut_exoneration_tva"></mat-date-range-picker>
                         </mat-form-field>
                     </div>
                 </div>
@@ -190,8 +188,7 @@
                                     [(ngModel)]="fin_exoneration_tva">
                             </mat-date-range-input>
                             <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                            <mat-date-range-picker #picker2 [startAt]="debut_exoneration_tva"
-                                [endAt]="fin_exoneration_tva"></mat-date-range-picker>
+                            <mat-date-range-picker #picker2 [startAt]="debut_exoneration_tva"></mat-date-range-picker>
                         </mat-form-field>
                     </div>
                 </div>
@@ -359,8 +356,6 @@
                             <mat-label>Téléphone</mat-label>
                             <input type="number" matInput formControlName="Tel1" id="Tel1" name="Tel1"
                                 placeholder="(+216)99-999-999" [(ngModel)]=ClientData.tel1>
-                            <mat-error *ngIf="ContactForm.get('Tel1').invalid">
-                                {{MessageErreurTel()}}</mat-error>
                         </mat-form-field>
 
 

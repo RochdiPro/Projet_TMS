@@ -74,6 +74,7 @@ export class AffecterMultiChauffeur implements OnInit {
   commandeDansVehiculeSelectionne: any;
   couplesVehiculeChauffeur: any = [];
   indexVehiculeSelectionne = 0;
+  modeDeconnecte : boolean;
 
   constructor(
     private dialogRef: MatDialogRef<AffecterMultiChauffeur>,
@@ -84,6 +85,8 @@ export class AffecterMultiChauffeur implements OnInit {
   ) {}
 
   async ngOnInit() {
+    let configurationApplication = await this.serviceMission.configurationApplication().toPromise()
+    this.modeDeconnecte = configurationApplication.modeManuel;
     await this.getListeChauffeurs();
     this.verifierCompatibiliteChauffeur();
     for (let i = 0; i < this.data.nombreVoyages; i++) {
@@ -154,7 +157,12 @@ export class AffecterMultiChauffeur implements OnInit {
   }
 
   async getListeChauffeurs() {
-    this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+    if (this.modeDeconnecte) {
+      this.chauffeurs = await this.serviceChauffeur.getChauffeursManuel().toPromise();
+      
+    } else {
+      this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+    }
   }
 
   changerCommandeActive(i: number) {
@@ -759,6 +767,7 @@ export class AffecterChauffeur implements OnInit {
   commandeActive: Array<boolean> = []; //liste des valeurs boolean pour avoir quel commande est active
   listeColis: any;
   vehicule: any;
+  modeDeconnecte: boolean;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private serviceChauffeur: ChauffeurService,
@@ -767,6 +776,8 @@ export class AffecterChauffeur implements OnInit {
   ) {}
 
   async ngOnInit() {
+    let configurationApplication = await this.serviceMission.configurationApplication().toPromise()
+    this.modeDeconnecte = configurationApplication.modeManuel;
     //tester si le vehicule s'agit d'un vehicule prive ou vehicule loue
     if (
       this.data.vehiculesPrives.length === 1 &&
@@ -789,7 +800,11 @@ export class AffecterChauffeur implements OnInit {
   }
 
   async getListeChauffeurs() {
-    this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+    if (this.modeDeconnecte) {
+      this.chauffeurs = await this.serviceChauffeur.getChauffeursManuel().toPromise();
+    } else {
+      this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+    }
   }
 
   // permet d'avoir les chauffeurs compatibles ave le vehicule
@@ -1195,6 +1210,7 @@ export class ModifierMission implements OnInit {
   listeChauffeursCompatibles: any;
   vehiculeSelectionne: any;
   chauffeurSelectionne: any = { nom: '', tel: '' };
+  modeDeconnecte: boolean;
   constructor(
     private dialogRef: MatDialogRef<ModifierMission>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -1202,6 +1218,8 @@ export class ModifierMission implements OnInit {
   ) {}
 
   async ngOnInit() {
+    let configurationApplication = await this.serviceMission.configurationApplication().toPromise()
+    this.modeDeconnecte = configurationApplication.modeManuel;
     this.getTypeVehicule();
     await this.getListeVehicule();
     this.getVehiculeInitiale();
@@ -1222,9 +1240,15 @@ export class ModifierMission implements OnInit {
     this.chauffeurSelectionne = { nom: '', tel: '' };
     if (this.typeEstPrive) {
       let vehicules: any = await this.serviceMission.vehicules().toPromise();
-      this.listeChauffeurs = await this.serviceMission
-        .getChauffeurs()
-        .toPromise();
+      if (this.modeDeconnecte) {
+        this.listeChauffeurs = await this.serviceMission
+          .getChauffeursManuel()
+          .toPromise();
+      } else {
+        this.listeChauffeurs = await this.serviceMission
+          .getChauffeurs()
+          .toPromise();
+      }
       vehicules.forEach((vehicule: any) => {
         let volumeUtile =
           vehicule.longueur * vehicule.largeur * vehicule.hauteur;

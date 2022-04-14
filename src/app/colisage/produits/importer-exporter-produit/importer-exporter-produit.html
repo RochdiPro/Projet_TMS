@@ -17,10 +17,19 @@
                     <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever</mat-icon>
                 </div>
             </div>
+            <h2>Exporter la liste des produits</h2>
+            <div class="contenaire">
+                <div class="file-upload">
+                    Exporter
+                    <button mat-mini-fab color="primary" class="upload-btn" (click)="exporterListeProduit()">
+                        <mat-icon>file_upload</mat-icon>
+                    </button>
+                </div>
+            </div>
         </div>
         <div class="backup border">
             <h2>Restaurer la liste des produits</h2>
-            <p>Les sauvegardes disponibles:</p>
+            <p id="label-backup">Les sauvegardes disponibles:</p>
             <ul *ngIf="backups">
                 <li *ngIf="backups.dateBackup1 != null">{{backups.dateBackup1 | date: "dd-MM-yyyy"}}<button mat-icon-button (click)="restaurerListeProduit('1')"><mat-icon>restore</mat-icon></button></li>
                 <li *ngIf="backups.dateBackup2 != null">{{backups.dateBackup2 | date: "dd-MM-yyyy"}}<button mat-icon-button (click)="restaurerListeProduit('2')"><mat-icon>restore</mat-icon></button></li>

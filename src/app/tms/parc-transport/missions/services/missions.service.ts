@@ -214,6 +214,17 @@ export class MissionsService {
       })
       .pipe(catchError(this.handleError));
   }
+  //get liste des chauffeurs du mode non connecté
+  public getChauffeursManuel() {
+    return this.httpClient
+      .get(erp + 'Filtre_Employee', {
+        params: {
+          Champ: 'role',
+          Valeur: 'chauffeur',
+        },
+      })
+      .pipe(catchError(this.handleError));
+  }
 
   //get position by id
   public getPositionById(id: any) {
@@ -304,4 +315,11 @@ export class MissionsService {
       .get(erp + 'info-general')
       .pipe(catchError(this.handleError));
   }
+
+    //get configuration application
+    public configurationApplication() {
+      return this.httpClient
+        .get(erp + 'configuration-application')
+        .pipe(catchError(this.handleError));
+    }
 }

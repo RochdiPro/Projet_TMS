@@ -89,4 +89,10 @@ export class ProduitService {
       .post(erp + 'creer-backup-produits', formData)
       .pipe(catchError(this.handleError));
   }
+
+    // api exporter liste produit
+    public exporterListeProduit() {
+      return this.httpClient
+        .get(erp + 'exporter-produits', {responseType: 'blob'});
+    }
 }

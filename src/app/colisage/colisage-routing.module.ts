@@ -8,7 +8,7 @@ import { AjouterProduitComponent } from './liste-emballage/ajouter-produit/ajout
 import { ListeEmballageComponent } from './liste-emballage/liste-emballage.component';
 import { ListerEmballageComponent } from './liste-emballage/lister-emballage/lister-emballage.component';
 import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-emballage/menu-ajouter-emballage.component';
-import { AjouterProduitsComponent } from './produits/ajouter-produit/ajouter-produits.component';
+import { ImporterExporterProduitsComponent } from './produits/importer-exporter-produit/importer-exporter-produit.component';
 import { ListerProduitComponent } from './produits/lister-produit/lister-produit.component';
 import { ProduitsComponent } from './produits/produits.component';
 import { AjouterSupportComponent } from './supports/ajouter-support/ajouter-support.component';
@@ -48,7 +48,7 @@ const routes: Routes = [
     path: 'Produits',
     component: ProduitsComponent,
     children: [
-      { path: 'ajout-produit', component: AjouterProduitsComponent },
+      { path: 'ajout-produit', component: ImporterExporterProduitsComponent },
       { path: 'liste-produits', component: ListerProduitComponent }
     ],
   },

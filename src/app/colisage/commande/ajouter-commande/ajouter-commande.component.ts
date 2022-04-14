@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfigurationApplication } from 'src/app/configuration-tms/classes/configuration-application';
 import {
   BoiteDialogueCreerCommande,
   BoiteDialogueInfo,
@@ -96,7 +97,8 @@ export class AjouterCommandeComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.estManuel = this.serviceCommande.modeManuel;
+    let config: ConfigurationApplication = await this.serviceCommande.configurationApplication().toPromise();
+    this.estManuel = config.modeManuel;
     // ajout des formControls dans le formGroup des filtres
     this.filtreFormGroup = this.fb.group({
       type: 'Facture',
@@ -221,7 +223,11 @@ export class AjouterCommandeComponent implements OnInit {
 
   // recupérer la liste des clients
   async getListeClients() {
-    this.listeClients = await this.serviceCommande.clients().toPromise();
+    if (this.estManuel) {
+      this.listeClients = await this.serviceCommande.clientsManuel().toPromise();
+    } else {
+      this.listeClients = await this.serviceCommande.clients().toPromise();
+    }
   }
 
   // charger la liste des commandes en mode manuel pour la date dans le datePicker

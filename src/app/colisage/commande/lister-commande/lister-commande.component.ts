@@ -55,7 +55,8 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
   async ngOnInit() {
-    this.estManuel = this.serviceCommande.modeManuel;
+    let configurationApplication = await this.serviceCommande.configurationApplication().toPromise()
+    this.estManuel = configurationApplication.modeManuel;
     await this.getListeCommandes();
   }
 

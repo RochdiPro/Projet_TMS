@@ -52,7 +52,7 @@ import { MenuAjouterEmballageComponent } from './liste-emballage/menu-ajouter-em
 import { NgxBarcodeModule } from 'ngx-barcode';
 import { ProduitsComponent } from './produits/produits.component';
 import { ListerProduitComponent } from './produits/lister-produit/lister-produit.component';
-import { AjouterProduitsComponent } from './produits/ajouter-produit/ajouter-produits.component';
+import { ImporterExporterProduitsComponent } from './produits/importer-exporter-produit/importer-exporter-produit.component';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
@@ -79,7 +79,7 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
     InformationCommandeComponent,
     ProduitsComponent,
     ListerProduitComponent,
-    AjouterProduitsComponent,
+    ImporterExporterProduitsComponent,
   ],
   imports: [
     CommonModule,

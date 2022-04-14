@@ -78,10 +78,11 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
 
     this.wms = Number(arrayOfDigits[4]);
 
-    this.modeManuel = service.modeManuel;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    let configurationApplication = await this.service.configurationApplication().toPromise()
+    this.modeManuel = configurationApplication.modeManuel;
     this.chargerFicheProduit();
     this.creerFormGroups();
     this.dataSourceProduits.filterPredicate = (data, filter: string) => {

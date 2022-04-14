@@ -29,8 +29,17 @@
             <input type="text" [value]="email" disabled>
         </div>
     </div>
-    <small>* &nbsp; : Pour savoir comment obtenir un clé API de google maps visiter le <a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">lien</a> suivant.</small><br>
-    <small>** : Pour changer l'adresse email utilisée pour l'envoie des notifications contacter INFONET SERVICES.</small>
+    <div class="champ">
+        <h3>Mode manuel</h3>
+        <div class="input">
+            <mat-slide-toggle color="primary" formControlName="modeManuel"> </mat-slide-toggle>
+        </div>
+    </div>
+    <small>* &nbsp; : Pour savoir comment obtenir un clé API de google maps visiter le <a
+            href="https://developers.google.com/maps/documentation/embed/get-api-key" target="blank">lien</a>
+        suivant.</small><br>
+    <small>** : Pour changer l'adresse email utilisée pour l'envoie des notifications contacter INFONET
+        SERVICES.</small>
 </div>
 
 <div class="boutons">

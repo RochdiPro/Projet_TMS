@@ -7,11 +7,11 @@ import { Backup } from '../classes/backup';
 import { ProduitService } from '../services/produit.service';
 const erp = '/ERP/';
 @Component({
-  selector: 'app-ajouter-produit',
-  templateUrl: './ajouter-produit.component.html',
-  styleUrls: ['./ajouter-produit.component.scss'],
+  selector: 'importer-exporter-produit',
+  templateUrl: './importer-exporter-produit.html',
+  styleUrls: ['./importer-exporter-produit.scss'],
 })
-export class AjouterProduitsComponent implements OnInit {
+export class ImporterExporterProduitsComponent implements OnInit {
   fileName = '';
   uploadProgress: number;
   uploadSub: Subscription;
@@ -39,9 +39,9 @@ export class AjouterProduitsComponent implements OnInit {
 
   //get les backups enregistrés
   getBackup() {
-    this.service.getBackup().subscribe(res => {
+    this.service.getBackup().subscribe((res) => {
       this.backups = res;
-    })
+    });
   }
 
   onFileSelected(event: any) {
@@ -57,18 +57,20 @@ export class AjouterProduitsComponent implements OnInit {
           reportProgress: true,
           observe: 'events',
         })
-        .pipe(finalize(() => {
-          this.reset();
-          Swal.fire({
-            icon: 'success',
-            title: 'Liste des produits est bien enregistrée',
-            showConfirmButton: false,
-            timer: 1500,
-          });
-          this.service.ajouterBackup(file).subscribe(() => {
-            this.getBackup();
-          });
-        }));
+        .pipe(
+          finalize(() => {
+            this.reset();
+            Swal.fire({
+              icon: 'success',
+              title: 'Liste des produits est bien enregistrée',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            this.service.ajouterBackup(file).subscribe(() => {
+              this.getBackup();
+            });
+          })
+        );
 
       this.uploadSub = upload$.subscribe((event) => {
         if (event.type == HttpEventType.UploadProgress) {
@@ -91,31 +93,46 @@ export class AjouterProduitsComponent implements OnInit {
   restaurerListeProduit(numBackup: string) {
     Swal.fire({
       title: 'Êtes-vous sûr?',
-      text: "La liste des produits actuelle sera écrasée!",
+      text: 'La liste des produits actuelle sera écrasée!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'oui',
-      cancelButtonText: 'non'
+      cancelButtonText: 'non',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.service.restaurerListeProduit(numBackup).subscribe((success) => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Liste des produits est restaurée avec succès',
-            showConfirmButton: false,
-            timer: 1500
-          })
-        },
-        (error) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'Echec de restauration!'
-          })
-        });
+        this.service.restaurerListeProduit(numBackup).subscribe(
+          (success) => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Liste des produits est restaurée avec succès',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          },
+          (error) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'Echec de restauration!',
+            });
+          }
+        );
       }
-    })
+    });
+  }
+
+  exporterListeProduit() {
+    this.service.exporterListeProduit().subscribe((response: any) => {
+      let blob: any = new Blob([response], { type: 'text/xml; charset=utf-8' });
+      var downloadURL = window.URL.createObjectURL(response);
+      var link = document.createElement('a');
+      link.href = downloadURL;
+      link.download = "liste-produits.xml";
+      link.click();
+    }),
+      (error: any) => console.log('Error downloading the file'),
+      () => console.info('File downloaded successfully');
   }
 }
