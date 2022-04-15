@@ -101,4 +101,10 @@ export class EmballageService {
       .get<ConfigurationApplication>(erp + 'configuration-application')
       .pipe(catchError(this.handleError));
   }
+
+  //exporter liste des emballages
+  public exporterEmballages() {
+    return this.httpClient
+    .get(erp + "exporter-emballages", {responseType: 'blob'});
+  }
 }

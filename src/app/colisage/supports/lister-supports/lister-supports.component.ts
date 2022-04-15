@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { SupportService } from '../services/support.service';
 
@@ -9,19 +12,35 @@ import { SupportService } from '../services/support.service';
 })
 export class ListerSupportsComponent implements OnInit {
   listeSupports: any;
-   // variables de droits d'accés
-   nom: any;
-   acces: any;
-   wms: any;
-  constructor(private serviceSupport: SupportService, public router: Router) {
-    this.nom = sessionStorage.getItem('Utilisateur'); 
-    this.acces = sessionStorage.getItem('Acces'); 
+  // variables de droits d'accés
+  nom: any;
+  acces: any;
+  wms: any;
 
+  displayedColumns: string[] = [
+    'id',
+    'nomSupport',
+    'typeSupport',
+    'poidsEmballage',
+    'dimensions',
+    'volume'
+  ];
+  dataSource: MatTableDataSource<Support>;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+
+  ngAfterViewInit() {
+    
+  }
+  constructor(private serviceSupport: SupportService, public router: Router) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
     const numToSeparate = this.acces;
-    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
-  
-    this.wms = Number( arrayOfDigits[4])
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.wms = Number(arrayOfDigits[4]);
   }
 
   ngOnInit(): void {
@@ -31,6 +50,9 @@ export class ListerSupportsComponent implements OnInit {
   // get le liste des supports
   async chargerListeSupports() {
     this.listeSupports = await this.serviceSupport.supports().toPromise();
+    this.dataSource = new MatTableDataSource<Support>(this.listeSupports);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   modifierSupport(support: any) {
@@ -42,4 +64,16 @@ export class ListerSupportsComponent implements OnInit {
     await this.serviceSupport.supprimerSupport(support.id_support).toPromise();
     this.chargerListeSupports(); //actualisation du liste support aprés supprimation
   }
+}
+
+export interface Support {
+  id: number;
+  nomSupport: string;
+  typeSupport: string;
+  poidsEmballage: number;
+  longueur: number;
+  largeur: number;
+  hauteur: number;
+  volume: number;
+  codeBarre: string;
 }

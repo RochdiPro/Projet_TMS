@@ -48,6 +48,12 @@ ul {
   padding-right: 10px;
 }
 
+.footer{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 
 //pour mobile
 @media only screen and (max-width: 760px),

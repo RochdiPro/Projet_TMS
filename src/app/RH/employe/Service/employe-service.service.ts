@@ -101,27 +101,12 @@ export class EmployeServiceService {
     }).pipe(catchError(this.gererErreur)
     );
   }
-  // récupérer les pays 
-  ListerPays(): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Pays', { observe: 'body' }).pipe(catchError(this.gererErreur)
-    );
-  }
   // récupérer les catégories banques  
   ListerBanques(): Observable<any> {
     return this.http.get(infonet + 'Categorie_Banque', { observe: 'body' }).pipe(catchError(this.gererErreur)
     );
   }
-  // récupérer les catégories  
-  ListerCategorieEmploye(): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Employe', { observe: 'body' }).pipe(catchError(this.gererErreur)
-    );
-  }
   
-  // récupérer les categories de pièce d'identité du Client 
-  ListerCategoriePiece(): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Piece', { observe: 'body' }).pipe(catchError(this.gererErreur)
-    );
-  }
   // récupérer la liste des Employes
   ListeEmployes(): Observable<any> {
     return this.http.get(erp + 'Employees')
@@ -165,10 +150,4 @@ export class EmployeServiceService {
       catchError(this.gererErreur)
     );
   }
-
-    //  get lise des locals 
-    locals( ) : Observable<any>{
-      return this.http.get(infonet + 'Locals', { observe: 'body' }).pipe(catchError(this.gererErreur)
-      );
-    }
 }

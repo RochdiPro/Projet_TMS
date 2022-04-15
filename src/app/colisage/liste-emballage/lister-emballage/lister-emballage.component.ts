@@ -110,6 +110,19 @@ export class ListerEmballageComponent implements OnInit {
     let nomProduit = produits.nomProduit.split('/');
     return nomProduit;
   }
+
+  //exporter liste emballage
+  exporterListeEmballages() {
+    this.service.exporterEmballages().subscribe((response: any) => {
+      var downloadURL = window.URL.createObjectURL(response);
+      var link = document.createElement('a');
+      link.href = downloadURL;
+      link.download = "liste-emballages.xml";
+      link.click();
+    }),
+      (error: any) => console.log('Error downloading the file'),
+      () => console.info('File downloaded successfully');
+  }
 }
 
 //interface table Emballage

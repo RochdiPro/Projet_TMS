@@ -77,7 +77,7 @@ export class AjouterSupportComponent implements OnInit {
     await this._router.navigate(['/Menu/Menu_Colisage/Supports/Liste_Support']); //naviguer vers liste support aprés l'enregistrement
     Swal.fire({
       icon: 'success',
-      title: 'Produit bien ajouté',
+      title: 'Support bien ajouté',
       showConfirmButton: false,
       timer: 1500,
     });
