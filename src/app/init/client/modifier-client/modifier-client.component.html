@@ -201,12 +201,12 @@
                         </mat-form-field>
                     </div>
                 </div>
-                <div class="row" >              
-                        <mat-form-field class="full-width">
-                            <mat-label>Description</mat-label>
-                            <textarea matInput formControlName="Description" id="Description" name="Description"
-                                placeholder="Description" [(ngModel)]=ClientData.description></textarea>
-                        </mat-form-field>
+                <div class="row">
+                    <mat-form-field class="full-width">
+                        <mat-label>Description</mat-label>
+                        <textarea matInput formControlName="Description" id="Description" name="Description"
+                            placeholder="Description" [(ngModel)]=ClientData.description></textarea>
+                    </mat-form-field>
                 </div>
             </form>
         </mat-step>
@@ -227,7 +227,8 @@
                     <div class="col-md-3 mb-3">
                         <mat-form-field>
                             <mat-label for="rib1"> RIB1 </mat-label>
-                            <input type="text" matInput formControlName="Rib1" id="Rib1" name="Rib1" [(ngModel)]=ClientData.rib1>
+                            <input type="text" matInput formControlName="Rib1" id="Rib1" name="Rib1"
+                                [(ngModel)]=ClientData.rib1>
                             <mat-error *ngIf="Informations_Banques_Form.get('Rib1').invalid">
                                 {{MessageErreurRib()}}</mat-error>
                         </mat-form-field>
@@ -254,13 +255,15 @@
                     <div class="col-md-3 mb-3">
                         <mat-form-field>
                             <mat-label for="Plafond"> Plafond </mat-label>
-                            <input type="number" matInput formControlName="Plafond" id="Plafond" name="Plafond" [(ngModel)]=ClientData.plafond>
+                            <input type="number" matInput formControlName="Plafond" id="Plafond" name="Plafond"
+                                [(ngModel)]=ClientData.plafond>
                         </mat-form-field>
                     </div>
                     <div class="col-md-3 mb-3">
                         <mat-form-field>
                             <mat-label for="Risque"> Risque </mat-label>
-                            <input type="number" matInput formControlName="Risque" id="Risque" name="Risque" [(ngModel)]=ClientData.risque>
+                            <input type="number" matInput formControlName="Risque" id="Risque" name="Risque"
+                                [(ngModel)]=ClientData.risque>
                         </mat-form-field>
                     </div>
                     <div class="col-md-3 mb-3">
@@ -311,7 +314,7 @@
                         <mat-form-field>
                             <mat-label for="Pays"> Pays </mat-label>
                             <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays"
-                                (selectionChange)="ChoixPays($event)" [(ngModel)]=ClientData.pays>
+                                [(ngModel)]=ClientData.pays>
                                 <mat-option value=" "></mat-option>
                                 <mat-option *ngFor="let pays of  categorie_pays" [value]="pays.nom">
                                     {{pays.nom}}</mat-option>
@@ -342,11 +345,11 @@
                             </mat-select>
                         </mat-form-field>
                     </div>
-                   <div class="col-md-3 mb-3">
+                    <div class="col-md-3 mb-3">
                         <mat-form-field>
                             <mat-label>Email</mat-label>
-                            <input type="email" matInput formControlName="Email" placeholder="Ex. pat@example.com" pattern=".+@.+."
-                                [(ngModel)]=ClientData.email>
+                            <input type="email" matInput formControlName="Email" placeholder="Ex. pat@example.com"
+                                pattern=".+@.+." [(ngModel)]=ClientData.email>
                             <mat-error *ngIf="ContactForm.get('Email').invalid">
                                 {{MessageErreurEmail()}}</mat-error>
                         </mat-form-field>

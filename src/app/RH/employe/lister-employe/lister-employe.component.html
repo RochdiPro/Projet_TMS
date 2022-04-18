@@ -62,35 +62,35 @@
 
 
 <div class="position-relative custom-control">
-    <section>
-        <mat-form-field class="custom-width" [formGroup]="form">
+    <section class="filtres">
+        <mat-form-field class="filtre" [formGroup]="form">
             <mat-label>ID</mat-label>
             <input matInput placeholder="ID" formControlName="id_Employe" (keyup)="filtre_emp()" id="id">
             <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
         </mat-form-field>
-        <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-form-field class="filtre" [formGroup]="form">
             <mat-label>Nom</mat-label>
             <input matInput placeholder="Nom" formControlName="nom" (keyup)="filtre_emp()" id="id">
             <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
         </mat-form-field>
-        <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-form-field class="filtre" [formGroup]="form">
             <mat-label>Role</mat-label>
             <input matInput placeholder="Categorie local" formControlName="role"
                 (keyup)="filtre_emp()" id="id">
             <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
         </mat-form-field>
  
-        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;">
+        <mat-form-field class="filtre" [formGroup]="form" style="margin-left: 1%;">
             <mat-label>Acces</mat-label>
             <input matInput placeholder="+216" formControlName="acces" (keyup)="filtre_emp()" id="responsable">
             <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
         </mat-form-field>
-        <mat-form-field class="custom-width" [formGroup]="form">
+        <mat-form-field class="filtre" [formGroup]="form">
             <mat-label>Pays</mat-label>
             <input matInput placeholder="Email" formControlName="pays" (keyup)="filtre_emp()" id="etat">
             <i matSuffix class="fa fa-filter" aria-hidden="true"></i>
         </mat-form-field>
-        <mat-form-field class="custom-width" [formGroup]="form" style="margin-left: 1%;">
+        <mat-form-field class="filtre" [formGroup]="form" style="margin-left: 1%;">
           <mat-label>Ville</mat-label>
           <input matInput placeholder="Tel" formControlName="ville" (keyup)="filtre_emp()" id="type_be">
           <i matSuffix class="fa fa-filter" aria-hidden="true"></i>

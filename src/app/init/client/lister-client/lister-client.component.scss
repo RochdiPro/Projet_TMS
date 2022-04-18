@@ -1,73 +1,90 @@
 table {
   width: 100%;
-  overflow-x: scroll !important; 
-
+  overflow-x: scroll !important;
 }
 
-.mat-column-id{
+.mat-column-id {
   width: 100%;
   text-align: center;
 }
 
+.filtres {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.filtre {
+  width: 15%;
+}
+
 @media only screen and (max-width: 768px) {
-.mat-table {
-  border: 0;
-  vertical-align: middle;
-}
+  .filtres {
+    flex-direction: column;
+    gap: 0px;
+  }
 
-.mat-table caption {
-  font-size: 1em;
-}
+  .filtre {
+    width: 100%;
+  }
 
-.mat-table .mat-row {
-  border-bottom: 5px solid #ddd;
-  display: block;
-  min-height: auto;
-}
+  .mat-table {
+    border: 0;
+    vertical-align: middle;
+  }
 
-.mat-table .mat-cell {
-  border-bottom: 1px solid #ddd;
-  display: block;
-  font-size: 1em;
-  text-align: right;
-  font-weight: bold;
-  height: auto;
-  margin-bottom: 4%;
-  padding-right: 5%;
-  padding-bottom: 4%;
-}
-.mat-table .mat-cell:before {
-  content: attr(data-label);
-  float: left;
-  text-transform: uppercase;
-  font-weight: normal;
-  margin-left: 5%;
+  .mat-table caption {
+    font-size: 1em;
+  }
 
-  font-size: 0.85em;
-}
-.mat-table .mat-cell:last-child {
-  border-bottom: 0;
-}
-.mat-table .mat-cell:first-child {
-  margin-top: 4%;
-}
-.mat-table .mat-cell:last-of-type{
-  padding-right: 5%;
-}
-.mat-table .mat-cell:first-of-type{
-  padding-left: 0;
-}
-.mat-table .mat-header-cell {
+  .mat-table .mat-row {
+    border-bottom: 5px solid #ddd;
+    display: block;
+    min-height: auto;
+  }
 
-  border: 10px solid;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-}
-.mat-header-row{
+  .mat-table .mat-cell {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: 1em;
+    text-align: right;
+    font-weight: bold;
+    height: auto;
+    margin-bottom: 4%;
+    padding-right: 5%;
+    padding-bottom: 4%;
+  }
+  .mat-table .mat-cell:before {
+    content: attr(data-label);
+    float: left;
+    text-transform: uppercase;
+    font-weight: normal;
+    margin-left: 5%;
+
+    font-size: 0.85em;
+  }
+  .mat-table .mat-cell:last-child {
+    border-bottom: 0;
+  }
+  .mat-table .mat-cell:first-child {
+    margin-top: 4%;
+  }
+  .mat-table .mat-cell:last-of-type {
+    padding-right: 5%;
+  }
+  .mat-table .mat-cell:first-of-type {
+    padding-left: 0;
+  }
+  .mat-table .mat-header-cell {
+    border: 10px solid;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  .mat-header-row {
     min-height: 0;
-}
+  }
 }

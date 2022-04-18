@@ -1,4 +1,10 @@
-import { animate, state, style, transition, trigger } from '@angular/animations';
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -14,7 +20,7 @@ import { EmployeServiceService } from '../Service/employe-service.service';
 import { FormControl, FormGroup } from '@angular/forms';
 var pdfMake = require('pdfmake/build/pdfmake.js');
 var pdfFonts = require('pdfmake/build/vfs_fonts.js');
- 
+
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 export class table {
   id_Employe: string;
@@ -23,24 +29,29 @@ export class table {
   acces: string;
   pays: string;
   ville: string;
-  
 }
-
 
 @Component({
   selector: 'app-lister-employe',
   templateUrl: './lister-employe.component.html',
   styleUrls: ['./lister-employe.component.scss'],
- 
 })
-
 export class ListerEmployeComponent implements OnInit {
-
   typeFiltre: MatTableFilter;
   entiterFiltre: any;
-  Employes:  any ; 
+  Employes: any;
   dataSource = new MatTableDataSource<table>();
-  displayedColumns: string[] =  ['editer', 'Image', 'id_Employe', 'nom', 'role', 'acces', 'pays', 'ville',   'Supprimer'];
+  displayedColumns: string[] = [
+    'editer',
+    'Image',
+    'id_Employe',
+    'nom',
+    'role',
+    'acces',
+    'pays',
+    'ville',
+    'Supprimer',
+  ];
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
   contenu_developper: any | null;
@@ -53,26 +64,31 @@ export class ListerEmployeComponent implements OnInit {
   modele: any;
   modeleSrc: any;
   chargementEnCours: any;
- 
-  date:any;
-  
-  form = new FormGroup({ 
-    id_Employe: new FormControl(""),
-    nom: new FormControl(""),
-    role: new FormControl(""), 
-    acces: new FormControl("") ,
-    pays: new FormControl("") ,
-    ville: new FormControl("")      
+
+  date: any;
+
+  form = new FormGroup({
+    id_Employe: new FormControl(''),
+    nom: new FormControl(''),
+    role: new FormControl(''),
+    acces: new FormControl(''),
+    pays: new FormControl(''),
+    ville: new FormControl(''),
   });
-  constructor(private datePipe: DatePipe, private _snackBar: MatSnackBar, private http: HttpClient, private serviceClient: EmployeServiceService, private router: Router, public datepipe: DatePipe) {
+  constructor(
+    private datePipe: DatePipe,
+    private _snackBar: MatSnackBar,
+    private http: HttpClient,
+    private serviceClient: EmployeServiceService,
+    private router: Router,
+    public datepipe: DatePipe
+  ) {
     this.ouvrirMessageChargement();
     this.chargementModele();
-    this.ListerEmployes();    
+    this.ListerEmployes();
     this.Filtres();
     this.modelePdfBase64();
-    sessionStorage.setItem('Utilisateur', "rochdi");
-
-
+    sessionStorage.setItem('Utilisateur', 'rochdi');
   }
 
   ngAfterViewInit() {
@@ -90,55 +106,65 @@ export class ListerEmployeComponent implements OnInit {
   // liste des champs de Employes
   Filtres() {
     //recuperer la liste des champs du Employes
-    this.serviceClient.obtenirListeChampsClient().subscribe((reponse: Response) => {
-      this.liste_Filtres = reponse;
-    });
+    this.serviceClient
+      .obtenirListeChampsClient()
+      .subscribe((reponse: Response) => {
+        this.liste_Filtres = reponse;
+      });
   }
- 
-  filtre_emp()
-  { 
 
-    this.serviceClient.filtre_6champs(
-      "id_Employe", this.form.get('id_Employe')?.value,
-     "nom", this.form.get('nom')?.value,
-      "role", this.form.get('role')?.value,
-      "acces", this.form.get('acces')?.value,
-      "pays", this.form.get('pays')?.value,
-      "ville", this.form.get('ville')?.value,).subscribe((data) => {
-      this.dataSource.data = data as table[];
-      this.Employes = data;
-      this.Employes = this.Employes.sort((a:any, b:any) => a.id_Employe > b.id_Employe ? -1 : 1);
-      this.dataSource.data = data as table[]; 
-      this.Employes.paginator = this.paginator;
-
-    });
-
+  filtre_emp() {
+    this.serviceClient
+      .filtre_6champs(
+        this.form.get('id_Employe')?.value,
+        this.form.get('nom')?.value,
+        this.form.get('role')?.value,
+        this.form.get('acces')?.value,
+        this.form.get('pays')?.value,
+        this.form.get('ville')?.value
+      )
+      .subscribe((data) => {
+        this.dataSource.data = data as table[];
+        this.Employes = data;
+        this.Employes = this.Employes.sort((a: any, b: any) =>
+          a.id_Employe > b.id_Employe ? -1 : 1
+        );
+        this.dataSource.data = data as table[];
+        this.Employes.paginator = this.paginator;
+      });
   }
   // récuperer la liste des Employes
   ListerEmployes(): void {
     this.chargementEnCours = true;
-    this.serviceClient.ListeEmployes().subscribe(data => {    
-      
+    this.serviceClient.ListeEmployes().subscribe((data) => {
       this.Employes = data;
-      this.Employes = this.Employes.sort((a:any, b:any) => a.id_Employe > b.id_Employe ? -1 : 1);
+      this.Employes = this.Employes.sort((a: any, b: any) =>
+        a.id_Employe > b.id_Employe ? -1 : 1
+      );
       this.dataSource.data = data as table[];
-      this.Employes.paginator = this.paginator; 
-      console.log(this.Employes)
+      this.Employes.paginator = this.paginator;
+      console.log(this.Employes);
       this.chargementEnCours = false;
     });
-
   }
   // filter liste clients par date
   filtrerClientParDate() {
-    this.valeurRecherche = this.datePipe.transform(this.valeurRecherche, 'yyyy-MM-dd');
+    this.valeurRecherche = this.datePipe.transform(
+      this.valeurRecherche,
+      'yyyy-MM-dd'
+    );
     this.chargementEnCours = true;
-    this.serviceClient.filtrerEmployes(this.filtre, this.valeurRecherche).subscribe((data: any) => {
-      this.Employes = data;
-      this.Employes = this.Employes.sort((a:any, b:any) => a.id_Employe > b.id_Employe ? -1 : 1);
-      this.dataSource.data = data as table[]; 
-      this.Employes.paginator = this.paginator;
-      this.chargementEnCours = false;
-    });
+    this.serviceClient
+      .filtrerEmployes(this.filtre, this.valeurRecherche)
+      .subscribe((data: any) => {
+        this.Employes = data;
+        this.Employes = this.Employes.sort((a: any, b: any) =>
+          a.id_Employe > b.id_Employe ? -1 : 1
+        );
+        this.dataSource.data = data as table[];
+        this.Employes.paginator = this.paginator;
+        this.chargementEnCours = false;
+      });
   }
   //supprimer Client par son identifiant
   supprimeremploye(element: any) {
@@ -147,26 +173,17 @@ export class ListerEmployeComponent implements OnInit {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Oui, supprimez-le',
-      cancelButtonText: 'Non, garde le'
+      cancelButtonText: 'Non, garde le',
     }).then((result) => {
       if (result.value) {
         this.serviceClient.SupprimerEmployes(element);
         this.ListerEmployes();
-        Swal.fire(
-          'Employe Supprimé avec succès!',
-          '',
-          'success'
-        )
+        Swal.fire('Employe Supprimé avec succès!', '', 'success');
         this.ListerEmployes();
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        Swal.fire(
-          'Annulé',
-          '',
-          'error'
-        )
+        Swal.fire('Annulé', '', 'error');
       }
-    })
-
+    });
   }
   // récuperer valeur du filtre choisi
   ChoixFiltre(event: MatSelectChange) {
@@ -178,68 +195,71 @@ export class ListerEmployeComponent implements OnInit {
     if (this.filtre == '') {
       Swal.fire({
         icon: 'error',
-        text: 'Vous devez choisir un filtre de recherche!'
-      }
-      )
+        text: 'Vous devez choisir un filtre de recherche!',
+      });
       this.ListerEmployes();
-    }
-    else if (this.valeurRecherche == '') {
+    } else if (this.valeurRecherche == '') {
       Swal.fire({
         icon: 'error',
-        text: 'Vous n' + "'" + 'avez pas saisi une valeur de recherche!'
-      }
-      )
+        text: 'Vous n' + "'" + 'avez pas saisi une valeur de recherche!',
+      });
       this.ListerEmployes();
-    }
-    else if (this.valeurRecherche == null) {
+    } else if (this.valeurRecherche == null) {
       Swal.fire({
         icon: 'error',
-        text: 'Vous n' + "'" + 'avez pas saisi une valeur de recherche!'
-      }
-      )
+        text: 'Vous n' + "'" + 'avez pas saisi une valeur de recherche!',
+      });
       this.ListerEmployes();
-    }
-    else {
+    } else {
       if (this.filtre != '') {
-        if (this.filtre == 'date_livraison_identite' || this.filtre == 'debut_exoneration' || this.filtre == 'fin_exoneration'
-          || this.filtre == 'date_creation') {
-          this.valeurRecherche = this.datePipe.transform(this.valeurRecherche, 'yyyy-MM-dd');
+        if (
+          this.filtre == 'date_livraison_identite' ||
+          this.filtre == 'debut_exoneration' ||
+          this.filtre == 'fin_exoneration' ||
+          this.filtre == 'date_creation'
+        ) {
+          this.valeurRecherche = this.datePipe.transform(
+            this.valeurRecherche,
+            'yyyy-MM-dd'
+          );
         }
         this.chargementEnCours = true;
-        this.serviceClient.filtrerEmployes(this.filtre, this.valeurRecherche).subscribe((data: any) => {
-          this.Employes = data;
-          this.Employes = this.Employes.sort((a:any, b:any) => a.id_Employe > b.id_Employe ? -1 : 1);
-          this.dataSource.data = data as table[]; 
-          this.Employes.paginator = this.paginator;
-          this.chargementEnCours = false;
-        });
+        this.serviceClient
+          .filtrerEmployes(this.filtre, this.valeurRecherche)
+          .subscribe((data: any) => {
+            this.Employes = data;
+            this.Employes = this.Employes.sort((a: any, b: any) =>
+              a.id_Employe > b.id_Employe ? -1 : 1
+            );
+            this.dataSource.data = data as table[];
+            this.Employes.paginator = this.paginator;
+            this.chargementEnCours = false;
+          });
       }
     }
   }
   //filtre activer par keyup
   filtrerParLettre() {
-
-    if (this.valeurRecherche != '' && (this.filtre == '')) {
+    if (this.valeurRecherche != '' && this.filtre == '') {
       Swal.fire({
         icon: 'error',
-        text: 'Vous devez choisir un filtre de recherche!'
-      }
-      )
+        text: 'Vous devez choisir un filtre de recherche!',
+      });
       this.ListerEmployes();
     }
     if (this.filtre != '' && this.valeurRecherche != '') {
-      this.serviceClient.filtrerEmployes(this.filtre, this.valeurRecherche).subscribe((reponse: any) => {
-
-        this.Employes = new MatTableDataSource(reponse);
-      });
+      this.serviceClient
+        .filtrerEmployes(this.filtre, this.valeurRecherche)
+        .subscribe((reponse: any) => {
+          this.Employes = new MatTableDataSource(reponse);
+        });
     }
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
   // temps d'attente avant transformation d'image
   delai(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   // Transformer le modele au 64 et enlever le peremier code
@@ -252,180 +272,201 @@ export class ListerEmployeComponent implements OnInit {
 
       this.modeleSrc = atob(this.modeleSrc);
 
-      this.modeleSrc = this.modeleSrc.replace(/^data:image\/[a-z]+;base64,/, "");
-
-    }
+      this.modeleSrc = this.modeleSrc.replace(
+        /^data:image\/[a-z]+;base64,/,
+        ''
+      );
+    };
     lecteur.readAsDataURL(this.modele);
   }
   //definir template pour pdf
   async chargementModele() {
-    this.http.get('../../assets/images/employee.jpg', { responseType: 'blob' }).subscribe((reponse: any) => {
-      this.modele = reponse;
-      return this.modele;
-
-    }, err => console.error(err),
-      () => console.log(this.modele))
+    this.http
+      .get('../../assets/images/employee.jpg', { responseType: 'blob' })
+      .subscribe(
+        (reponse: any) => {
+          this.modele = reponse;
+          return this.modele;
+        },
+        (err) => console.error(err),
+        () => console.log(this.modele)
+      );
   }
 
-  // generer PDF 
+  // generer PDF
   genererPdf(id: any) {
- 
     this.serviceClient.Employe(id).subscribe((reponse: any) => {
       this.detail = reponse;
 
-      
+      var d = this.detail.date_de_permis;
 
-        var d= this.detail.date_de_permis;
-  
-        this.date="";
-        if (d === null) {
-          this.date =  this.datepipe.transform(d, 'dd/MM/yyyy')  
-        }
-       
-      
-        let dd = {
-      
-          footer: function (currentPage: any, pageCount: any) {
-            return {
-              margin: 35,
-              columns: [
-                {
-                  fontSize: 9,
-                  text: [
-      
-                    {
-                      text: currentPage.toString() + '/' + pageCount,
-                    }
-                  ],
-                  alignment: 'center'
-                }
-              ]
-            };
+      this.date = '';
+      if (d === null) {
+        this.date = this.datepipe.transform(d, 'dd/MM/yyyy');
+      }
+
+      let dd = {
+        footer: function (currentPage: any, pageCount: any) {
+          return {
+            margin: 35,
+            columns: [
+              {
+                fontSize: 9,
+                text: [
+                  {
+                    text: currentPage.toString() + '/' + pageCount,
+                  },
+                ],
+                alignment: 'center',
+              },
+            ],
+          };
+        },
+
+        pageMargins: [30, 125, 40, 60],
+        background: [
+          {
+            image: 'data:image/jpeg;base64,' + this.modeleSrc,
+            width: 600,
           },
-      
-          pageMargins: [30, 125, 40, 60],
-          background: [{
-            image: 'data:image/jpeg;base64,' + this.modeleSrc, width: 600
-          }],
-          content: [
-            {
-              columns: [
-      
-                {
-      
-                  image: 'data:image/jpeg;base64,' + this.detail.image,
-                  width: 150,
-                  height: 170
-                 
-      
-                },
-                {
-                  width: '80%',
-                  text: '\n\n' +
-                    'Nom du Employé : ' + this.detail.nom + '\n\n' + 'Rôle : ' + this.detail.role + '\n\n' + 'Accès : ' + this.detail.acces
-                    + '\n\n' + 'Email : ' + this.detail.email + '\n\n' + 'Téléphones : ' + '\t' + this.detail.tel
-                },
-      
-      
-              ], columnGap: 40,
-      
-            },
-           
-            {
-              columns: [
-      
-                {
-                  width: '50%',
-                  text: '\n\n\n' + 'Pays : ' + this.detail.pays,
-                },
-      
-                {
-                  width: '50%',
-                  text: '\n\n\n' + 'Ville : ' + this.detail.ville,
-                } 
-              ]
-            },
-             
-            {
-              columns: [
-      
-                {
-                  width: '50%',
-                  text: '\n\n' + 'Type de la pièce d' + "'" + ' identité : ' + this.detail.type_piece_identite
-                },
-      
-                {
-                  width: '50%',
-                  text: '\n\n' + 'Numéro de la pièce d' + "'" + ' identité : ' + this.detail.n_piece_identite
-                }
-              ]
-            },      
-      
-            {
-              columns: [
-      
-                {
-                  width: '50%',
-                  text: '\n\n' + 'Banque 1 : ' + this.detail.banque,
-                },
-      
-                {
-                  width: '50%',
-                  text: '\n\n' + 'Rib 1 : ' + this.detail.rib,
-                }
-              ]
-            } ,
-      
-            {
-              columns: [
-                {
-                  width: '40%',
-                  text: '\n\n' + 'Code Cnss : ' + this.detail.cnss
-                },
-      
-                {
-                  width: '40%',
-                  text: '\n\n' + 'Situation Familiale : ' +this.detail.situation_Familiale
-                },
-      
-                {
-                  width: '20%',
-                  text: '\n\n' + 'Enfant a Charge : ' + this.detail.Enfant_A_Charge,
-                }
-              ]
-            } ,
-      
-            /////666666
-            {
-              columns: [
-                {
-                  width: '40%',
-                  text: '\n\n' + 'Date de permis : ' + this.date
-                },
-      
-                {
-                  width: '40%',
-                  text: '\n\n' + 'Numéro de permis : ' + this.detail.permis
-                },
-      
-                {
-                  width: '20%',
-                  text: '\n\n' + 'Categorie de permis : ' + this.detail.categorie_permis,
-                }
-              ]
-            } ,
-      
-            {
-              text: '\n\n' + 'Description : ' + '\t' + this.detail.description,
-      
-      
-      
-            },
-          ]
-        };
-      
+        ],
+        content: [
+          {
+            columns: [
+              {
+                image: 'data:image/jpeg;base64,' + this.detail.image,
+                width: 150,
+                height: 170,
+              },
+              {
+                width: '80%',
+                text:
+                  '\n\n' +
+                  'Nom du Employé : ' +
+                  this.detail.nom +
+                  '\n\n' +
+                  'Rôle : ' +
+                  this.detail.role +
+                  '\n\n' +
+                  'Accès : ' +
+                  this.detail.acces +
+                  '\n\n' +
+                  'Email : ' +
+                  this.detail.email +
+                  '\n\n' +
+                  'Téléphones : ' +
+                  '\t' +
+                  this.detail.tel,
+              },
+            ],
+            columnGap: 40,
+          },
 
-      pdfMake.createPdf(dd).open(); 
+          {
+            columns: [
+              {
+                width: '50%',
+                text: '\n\n\n' + 'Pays : ' + this.detail.pays,
+              },
+
+              {
+                width: '50%',
+                text: '\n\n\n' + 'Ville : ' + this.detail.ville,
+              },
+            ],
+          },
+
+          {
+            columns: [
+              {
+                width: '50%',
+                text:
+                  '\n\n' +
+                  'Type de la pièce d' +
+                  "'" +
+                  ' identité : ' +
+                  this.detail.type_piece_identite,
+              },
+
+              {
+                width: '50%',
+                text:
+                  '\n\n' +
+                  'Numéro de la pièce d' +
+                  "'" +
+                  ' identité : ' +
+                  this.detail.n_piece_identite,
+              },
+            ],
+          },
+
+          {
+            columns: [
+              {
+                width: '50%',
+                text: '\n\n' + 'Banque 1 : ' + this.detail.banque,
+              },
+
+              {
+                width: '50%',
+                text: '\n\n' + 'Rib 1 : ' + this.detail.rib,
+              },
+            ],
+          },
+
+          {
+            columns: [
+              {
+                width: '40%',
+                text: '\n\n' + 'Code Cnss : ' + this.detail.cnss,
+              },
+
+              {
+                width: '40%',
+                text:
+                  '\n\n' +
+                  'Situation Familiale : ' +
+                  this.detail.situation_Familiale,
+              },
+
+              {
+                width: '20%',
+                text:
+                  '\n\n' + 'Enfant a Charge : ' + this.detail.Enfant_A_Charge,
+              },
+            ],
+          },
+
+          /////666666
+          {
+            columns: [
+              {
+                width: '40%',
+                text: '\n\n' + 'Date de permis : ' + this.date,
+              },
+
+              {
+                width: '40%',
+                text: '\n\n' + 'Numéro de permis : ' + this.detail.permis,
+              },
+
+              {
+                width: '20%',
+                text:
+                  '\n\n' +
+                  'Categorie de permis : ' +
+                  this.detail.categorie_permis,
+              },
+            ],
+          },
+
+          {
+            text: '\n\n' + 'Description : ' + '\t' + this.detail.description,
+          },
+        ],
+      };
+
+      pdfMake.createPdf(dd).open();
     });
   }
 }

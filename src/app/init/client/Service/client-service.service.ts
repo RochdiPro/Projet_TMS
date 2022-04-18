@@ -22,23 +22,16 @@ export class ClientServiceService {
     return throwError(
       'Veuillez réessayer plus tard.');
   }
-  filtre_6champs (champ1 : any, valeur1 : any, champ2 : any, valeur2 : any, champ3 : any, valeur3 : any ,champ4 : any, valeur4 : any, champ5 : any, valeur5 : any, champ6 : any, valeur6 : any)
+  filtre_6champs (id_Clt: any, nom_Client: any, categorie_Client: any, code_Tva: any, email: any, tel1: any)
   {
     return this.http.get(erp + 'Filtre_Client_6_Champs', {
       params: {
-        Champ1: champ1,
-        Valeur1: valeur1,
-        Champ2: champ2,
-        Valeur2: valeur2,
-        Champ3: champ3,
-        Valeur3: valeur3,
-        Champ4: champ4,
-        Valeur4: valeur4,
-        Champ5: champ5,
-        Valeur5: valeur5,
-        Champ6: champ6,
-        Valeur6: valeur6,
-        
+        id_Clt: id_Clt,
+        nom_Client: nom_Client,
+        categorie_Client: categorie_Client,
+        code_Tva: code_Tva,
+        email: email,
+        tel1: tel1
       }, observe: 'body'
     }).pipe()
 
@@ -78,40 +71,7 @@ export class ClientServiceService {
     }).pipe(catchError(this.gererErreur)
     );
   }
-  // récupérer la ville  du Client 
-  ListerVille(pays: any): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Ville', {
-      params: {
-        Pays: pays
-      }, observe: 'body'
-    }).pipe(catchError(this.gererErreur)
-    );
-  }
-  // récupérer les pays 
-  ListerPays(): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Pays', { observe: 'body' }).pipe(catchError(this.gererErreur)
-    );
-  }
-  // récupérer les catégories banques du Client 
-  ListerBanques(): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Banque', { observe: 'body' }).pipe(catchError(this.gererErreur)
-    );
-  }
-  // récupérer les catégories du Client 
-  ListerCategorieClient(): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Client', { observe: 'body' }).pipe(catchError(this.gererErreur)
-    );
-  }
-  // récupérer les categories fiscales du Client 
-  ListerCategorieFiscale(): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Fiscale', { observe: 'body' }).pipe(catchError(this.gererErreur)
-    );
-  }
-  // récupérer les categories de pièce d'identité du Client 
-  ListerCategoriePiece(): Observable<any> {
-    return this.http.get(infonet + 'Categorie_Piece', { observe: 'body' }).pipe(catchError(this.gererErreur)
-    );
-  }
+
   // récupérer la liste des Clients
   ListeClients(): Observable<any> {
     return this.http.get(erp + 'Clients')

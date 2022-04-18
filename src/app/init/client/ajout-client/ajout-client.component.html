@@ -4,9 +4,9 @@
     <mat-step [stepControl]="Informations_Generales_Form">
         <form [formGroup]="Informations_Generales_Form">
 
-            <ng-template matStepLabel>Informations Générales</ng-template> 
+            <ng-template matStepLabel>Informations Générales</ng-template>
             <div class="row">
-                <div class="col-md-3 mb-3"> 
+                <div class="col-md-3 mb-3">
                     <mat-form-field>
 
                         <mat-label for="Nom_Client"> Nom du Client </mat-label>
@@ -31,17 +31,18 @@
 
                 </div>
                 <div class="col-md-3 mb-3">
-                    <mat-form-field> 
+                    <mat-form-field>
                         <mat-label for="Representant"> Représentant </mat-label>
-                        <input type="text" matInput formControlName="Representant" id="Representant" name="Representant"  >
-                       
-                    </mat-form-field> 
+                        <input type="text" matInput formControlName="Representant" id="Representant"
+                            name="Representant">
+
+                    </mat-form-field>
 
                 </div>
-               
+
             </div>
             <div class="row">
-                
+
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Categorie_Fiscale">Categorie Fiscale </mat-label>
@@ -105,7 +106,7 @@
                 </div>
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
-                        <mat-label> 
+                        <mat-label>
                             Délivrée le
                         </mat-label>
                         <input matInput formControlName="Date_Livraison_Identite" [matDatepicker]="picker"
@@ -115,7 +116,7 @@
                     </mat-form-field>
 
                 </div>
-               
+
             </div>
             <div class="row" *ngIf="choix_Categorie_Fiscale==='Exonéré_tva'">
                 <div class="col-md-3 mb-3">
@@ -290,7 +291,8 @@
                     <mat-form-field>
 
                         <mat-label for="banque1"> Banque </mat-label>
-                        <mat-select (selectionChange)="ChoixBanque1($event)"  formControlName="Banque1" id="Banque1" name="Banque1" placeholder="Banque" required>
+                        <mat-select (selectionChange)="ChoixBanque1($event)" formControlName="Banque1" id="Banque1"
+                            name="Banque1" placeholder="Banque" required>
                             <mat-option></mat-option>
                             <mat-option *ngFor="let banque of  categorie_banque" [value]="banque.nom">
                                 {{banque.nom}}</mat-option>
@@ -316,8 +318,9 @@
                     <mat-form-field>
 
                         <mat-label for="banque2"> Banque 2</mat-label>
-                        <mat-select (selectionChange)="ChoixBanque2($event)" formControlName="Banque2" id="Banque2" name="Banque2" placeholder="Banque 2">
-                         
+                        <mat-select (selectionChange)="ChoixBanque2($event)" formControlName="Banque2" id="Banque2"
+                            name="Banque2" placeholder="Banque 2">
+
                             <mat-option *ngFor="let banque of categorie_banque" [value]="banque.nom">
                                 {{banque.nom}}</mat-option>
                         </mat-select>
@@ -370,7 +373,7 @@
             <ng-template matStepLabel>Contact</ng-template>
             <div class="row">
 
-               
+
 
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
@@ -388,8 +391,7 @@
                     <mat-form-field>
 
                         <mat-label for="Pays"> Pays </mat-label>
-                        <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays"
-                            (selectionChange)="ChoixPays($event)" required>
+                        <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays" required>
                             <mat-option></mat-option>
                             <mat-option *ngFor="let pays of  categorie_pays" [value]="pays.nom">
                                 {{pays.nom}}</mat-option>
@@ -439,12 +441,13 @@
 
 
                 </div>
-               
+
                 <div class="col-md-3 mb-3">
 
                     <mat-form-field>
                         <mat-label>Email</mat-label>
-                        <input type="email" matInput formControlName="Email" placeholder="Ex. pat@example.com" pattern=".+@.+." required>
+                        <input type="email" matInput formControlName="Email" placeholder="Ex. pat@example.com"
+                            pattern=".+@.+." required>
                         <mat-error *ngIf="ContactForm.get('Email').invalid">
                             {{MessageErreurEmail()}}</mat-error>
                     </mat-form-field>
@@ -495,7 +498,7 @@
                 </div>
                 <div class="col-md-3 mb-3">
 
-                      <mat-form-field>
+                    <mat-form-field>
                         <mat-label> Image du Client </mat-label>
 
                         <ngx-mat-file-input matInput id="Image" name="Image" formControlName="Image"
@@ -504,7 +507,7 @@
 
 
                         </ngx-mat-file-input>
-                    </mat-form-field>  
+                    </mat-form-field>
                 </div>
             </div>
             <div>
@@ -686,5 +689,5 @@
             </div>
         </form>
     </mat-step>
-     
+
 </mat-vertical-stepper>
