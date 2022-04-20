@@ -27,17 +27,17 @@
             </mat-form-field>
         </div>
         <!-- fin input field prix carburant -->
-        <!-- div contenant les boutons -->
-        <div mat-dialog-actions class="float-right">
-            <!-- bouton Annuler -->
-            <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterCarburant()">Annuler</button>
-            <!-- fin bouton Annuler -->
-
-            <!-- Bouton enregistrer carburant -->
-            <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid"
-                (click)="enregistrerCarburant()">Enregistrer</button>
-            <!-- fin Bouton enregistrer carburant -->
-        </div>
-
+        
     </form>
+    <!-- div contenant les boutons -->
+    <div mat-dialog-actions class="float-right">
+        <!-- bouton Annuler -->
+        <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterCarburant()">Annuler</button>
+        <!-- fin bouton Annuler -->
+
+        <!-- Bouton enregistrer carburant -->
+        <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid"
+            (click)="enregistrerCarburant()">Enregistrer</button>
+        <!-- fin Bouton enregistrer carburant -->
+    </div>
 </div>

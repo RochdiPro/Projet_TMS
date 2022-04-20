@@ -90,7 +90,7 @@ export class ModifierClientComponent implements OnInit {
     // troisieme formulaire contenant les contacts du Client avec les controles sur les champs
 
     this.ContactForm = this.fb.group({
-      Pays: [{ value: 'Tunisie', disabled: true }],
+      Pays: [''],
       Region: [''],
       Ville: [''],
       Email: ['', [Validators.email]],
@@ -130,180 +130,44 @@ export class ModifierClientComponent implements OnInit {
   }
   // récupérer la liste des pays
   Categorie_pays() {
-    this.categorie_pays = [
-      {
-        nom: 'Tunisie',
-        valeur: '',
-      },
-    ];
+    this.serviceClient.ListerPays().subscribe((reponse: Response) => {
+      this.categorie_pays = reponse;
+    });
   }
 
   // récupérer la liste des categories banques
   Categorie_Banques() {
-    let banques = [
-      {
-        nom: 'Banque Internationale Arabe de Tunisie «  BIAT »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque de l’Habitat « BH »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Société Tunisienne de Banque « STB »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Nationale Agricole « BNA »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Tunisienne de Solidarité « BTS »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque de Tunisie et des Emirats « BTE »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Tuniso-Libyenne « BTL »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Tunisian Saudi Bank « TSB »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Zitouna',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Al Baraka Bank',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Al Wifak International Bank',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Amen Bank',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Attijari Bank',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Arab Tunisian Bank « ATB »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Arab Banking Corporation « ABC »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque de Tunisie « BT »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Tuniso Koweitienne « BTK »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Qatar National Bank- Tunis « QNB-Tunis »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Union Bancaire de Commerce et d’Industrie «  UBCI »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Union Internationale de Banque «  UIB »',
-        valeur: 'Tunisie',
-      },
-    ];
-
-    this.categorie_banque = banques.sort(function (a, b) {
-      return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
+    this.serviceClient.ListerBanques().subscribe((reponse: Response) => {
+      let banques: any = reponse;
+      this.categorie_banque = banques.sort(function (a: any, b: any) {
+        return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
+      });
     });
   }
 
   // récupérer la liste des categories fiscale
   Categorie_fiscale() {
-    this.categorie_fiscale = [
-      {
-        nom: 'Assujetti_tva',
-        valeur: '',
-      },
-      {
-        nom: 'Non_Assujetti_tva',
-        valeur: '',
-      },
-      {
-        nom: 'Exonéré_tva',
-        valeur: '',
-      },
-      {
-        nom: 'Exonéré_tva_et_Fodec',
-        valeur: '',
-      },
-      {
-        nom: 'Suspension_tva',
-        valeur: '',
-      },
-      {
-        nom: 'Cession_a_quai',
-        valeur: '',
-      },
-      {
-        nom: 'Reduction_tva',
-        valeur: '',
-      },
-    ];
+    this.serviceClient
+      .ListerCategorieFiscale()
+      .subscribe((reponse: Response) => {
+        this.categorie_fiscale = reponse;
+      });
   }
 
   // récupérer la liste des categories pièce d'identité
   Categorie_Piece_Identite() {
-    this.categorie_piece = [
-      {
-        nom: 'Cin',
-        valeur: '',
-      },
-      {
-        nom: 'Patente',
-        valeur: '',
-      },
-      {
-        nom: 'Passeport',
-        valeur: '',
-      },
-      {
-        nom: 'Carte séjour',
-        valeur: '',
-      },
-    ];
+    this.serviceClient.ListerCategoriePiece().subscribe((reponse: Response) => {
+      this.categorie_piece = reponse;
+    });
   }
 
   // récupérer la liste des categories Clients
   Categorie_Client() {
-    this.categorie_Client = [
-      {
-        nom: 'Passager',
-        valeur: '35',
-      },
-      {
-        nom: 'Fidèle',
-        valeur: '30',
-      },
-      {
-        nom: 'SuperFidèle',
-        valeur: '25',
-      },
-      {
-        nom: 'Revendeur',
-        valeur: '50.0',
-      },
-    ];
+    this.serviceClient
+      .ListerCategorieClient()
+      .subscribe((reponse: Response) => {
+        this.categorie_Client = reponse;
+      });
   }
 
   //récupérer image de la base
@@ -343,108 +207,27 @@ export class ModifierClientComponent implements OnInit {
         if (this.ClientData.fin_Exoneration > '1900-01-30') {
           this.fin_exoneration_tva = new Date(this.ClientData.fin_Exoneration);
         }
-        let villes = [
-          {
-            nom: 'Sfax',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Ariana',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Ben_Arous',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Gabes',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Gafsa',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Jendouba',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Kairouan',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Kasserine',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Kebili',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Manouba',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Kef',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Mahdia',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Mednine',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Monastir',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Nabeul',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Sidi_Bouzid',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Siliana',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Sousse',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Tataouine',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Tozeur',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Tunis',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Zaghouan',
-            valeur: 'Tunisie',
-          },
-          {
-            nom: 'Beja',
-            valeur: 'Tunisie',
-          },
-        ];
-        this.categorie_ville = villes.sort(function (a, b) {
-          return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
-        });
+        // afficher ville selon pays
+        this.serviceClient
+          .ListerVille(this.ClientData.pays)
+          .subscribe((reponse: Response) => {
+            let villes: any = reponse;
+            this.categorie_ville = villes.sort(function (a: any, b: any) {
+              return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
+            });
+          });
+        // afficher région selon ville
         // afficher région selon ville
         this.serviceClient
           .ListerRegion(this.ClientData.ville)
           .subscribe((reponse: Response) => {
             this.categorie_region = reponse;
+            this.categorie_region = this.categorie_region.sort(function (
+              a: any,
+              b: any
+            ) {
+              return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
+            });
           });
       });
   }
@@ -470,6 +253,18 @@ export class ModifierClientComponent implements OnInit {
   // fonction activée lors de choix du categorie fiscale
   CategorieFiscaleSelectionner(event: MatSelectChange) {
     this.choix_Categorie_Fiscale = event.value;
+  }
+
+  // fonction activée lors de choix du pays
+  ChoixPays(event: MatSelectChange) {
+    this.pays = event.value;
+    // récupérer la liste des ville du pays choisi
+    this.serviceClient.ListerVille(this.pays).subscribe((reponse: Response) => {
+      let villes: any = reponse;
+      this.categorie_ville = villes.sort(function (a: any, b: any) {
+        return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
+      });
+    });
   }
 
   // fonction activée lors de choix du ville

@@ -218,12 +218,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="float-right">
-                        <!-- bouton Annuler -->
-                        <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
-                        <button mat-button matStepperNext>Suivant</button>
-                    </div>
                 </form>
+                <div class="float-right">
+                    <!-- bouton Annuler -->
+                    <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
+                    <button mat-button matStepperNext>Suivant</button>
+                </div>
             </mat-step>
             <mat-step [stepControl]="entretienEtPapierFormGroup">
                 <form [formGroup]="entretienEtPapierFormGroup">
@@ -417,15 +417,15 @@
                             </mat-form-field>
                         </div>
                     </div>
-                    <div class="float-right">
-                        <!-- bouton Annuler -->
-                        <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
-                        <button mat-button matStepperPrevious>Back</button>
-                        <!-- Bouton Enregistrer -->
-                        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerVehicule()"
-                            [disabled]="caracteristiquesFormGroup.invalid || entretienEtPapierFormGroup.invalid">Enregistrer</button>
-                    </div>
                 </form>
+                <div class="float-right">
+                    <!-- bouton Annuler -->
+                    <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <!-- Bouton Enregistrer -->
+                    <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerVehicule()"
+                        [disabled]="caracteristiquesFormGroup.invalid || entretienEtPapierFormGroup.invalid">Enregistrer</button>
+                </div>
             </mat-step>
         </mat-vertical-stepper>
     </div>

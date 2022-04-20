@@ -9,19 +9,26 @@ table {
 }
 
 .filtres {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
 }
 
 .filtre {
-  width: 15%;
+  width: 100%;
+  padding-right: 10px;
+}
+
+.filtre:first-child {
+  grid-column-start: 3;
 }
 
 @media only screen and (max-width: 768px) {
   .filtres {
-    flex-direction: column;
-    gap: 0px;
+    grid-template-columns: 1fr;
+  }
+
+  .filtre:first-child {
+    grid-column-start: 1;
   }
 
   .filtre {

@@ -1,9 +1,4 @@
-import { HttpClient, HttpEventType } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { finalize } from 'rxjs/operators';
-import Swal from 'sweetalert2';
-const erp = '/ERP/';
 
 @Component({
   selector: 'app-menu-emballage',
@@ -15,10 +10,8 @@ export class MenuAjouterEmballageComponent implements OnInit {
   nom: any;
   acces: any;
   wms: any;
-  fileName: any;
-  uploadProgress: number;
-  uploadSub: Subscription;
-  constructor(private http: HttpClient) {
+
+  constructor() {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 
@@ -30,41 +23,4 @@ export class MenuAjouterEmballageComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
-
-    if (file) {
-      this.fileName = file.name;
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const upload$ = this.http
-        .post(erp + 'upload-fichier-emballages', formData, {
-          reportProgress: true,
-          observe: 'events',
-        })
-        .pipe(
-          finalize(() => {
-            this.reset();
-            Swal.fire({
-              icon: 'success',
-              title: 'Liste des emballages est bien importée',
-              showConfirmButton: false,
-              timer: 1500,
-            });
-          })
-        );
-
-      this.uploadSub = upload$.subscribe((event) => {
-        if (event.type == HttpEventType.UploadProgress) {
-          this.uploadProgress = Math.round(100 * (event.loaded / event.total));
-        }
-      });
-    }
-  }
-
-  reset() {
-    this.uploadProgress = null;
-    this.uploadSub = null;
-  }
 }

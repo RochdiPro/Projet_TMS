@@ -1,0 +1,93 @@
+<section>
+    <h2>Colisage</h2>
+    <mat-accordion>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Emballages
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="buttons">
+                <div class="file-upload">
+                    <input type="file" class="file-input" accept="text/xml" (change)="onFileEmballageSelected($event)" #fileEmballageUpload>
+                    <div class="file-upload">
+                        {{fileName || "Pas de fichier sélectionné."}}
+                        <button mat-mini-fab color="primary" class="upload-btn" (click)="fileEmballageUpload.click()" matTooltip="Importer liste emballages" matTooltipPosition="right">
+                            <mat-icon>attach_file</mat-icon>
+                        </button>
+                    </div>
+                    <div class="progress">
+                        <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress" *ngIf="uploadProgress">
+                        </mat-progress-bar>
+                        <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever</mat-icon>
+                    </div>
+                </div>
+                <div class="file-download">
+                    Exporter la liste des emballages
+                    <button mat-mini-fab color="primary" (click)="exporterListeEmballages()"
+                        matTooltip="Exporter" matTooltipPosition="right">
+                        <mat-icon>file_download</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Produits
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="buttons">
+                <div class="file-upload">
+                    <input type="file" class="file-input" accept="text/xml" (change)="onFileProduitSelected($event)" #fileProduitUpload>
+                    <div class="file-upload">
+                        {{fileName || "Pas de fichier sélectionné."}}
+                        <button mat-mini-fab color="primary" class="upload-btn" (click)="fileProduitUpload.click()" matTooltip="Importer liste produits" matTooltipPosition="right">
+                            <mat-icon>attach_file</mat-icon>
+                        </button>
+                    </div>
+                    <div class="progress">
+                        <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress" *ngIf="uploadProgress">
+                        </mat-progress-bar>
+                        <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever</mat-icon>
+                    </div>
+                </div>
+                <div class="file-download">
+                    Exporter la liste des produits
+                    <button mat-mini-fab color="primary" class="upload-btn" (click)="exporterListeProduit()">
+                        <mat-icon>file_download</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Supports de chargement
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="buttons">
+                <div class="file-upload">
+                    <input type="file" class="file-input" accept="text/xml" (change)="onFileSupportSelected($event)" #fileSupportUpload>
+                    <div class="file-upload">
+                        {{fileName || "Pas de fichier sélectionné."}}
+                        <button mat-mini-fab color="primary" class="upload-btn" (click)="fileSupportUpload.click()" matTooltip="Importer liste supports" matTooltipPosition="right">
+                            <mat-icon>attach_file</mat-icon>
+                        </button>
+                    </div>
+                    <div class="progress">
+                        <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress" *ngIf="uploadProgress">
+                        </mat-progress-bar>
+                        <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever</mat-icon>
+                    </div>
+                </div>
+                <div class="file-download">
+                    Exporter la liste des supports
+                    <button mat-mini-fab color="primary" class="upload-btn" (click)="exporterListeSupports()">
+                        <mat-icon>file_download</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+</section>

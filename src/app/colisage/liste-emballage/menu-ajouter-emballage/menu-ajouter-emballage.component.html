@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-md-4 d-flex align-items-stretch card-hover">
+    <div class="col-md-6 d-flex align-items-stretch card-hover">
         <div class="main-card mb-3 card" style="width: 100%;" routerLink="/Menu/Menu_Colisage/Packaging/Ajouter_Produit">
             <div class="card-header"> <i class="header-icon lnr-license icon-gradient bg-plum-plate pe-7s-shopbag"
                     routerLink="/Menu/Menu_Colisage/Packaging/Ajouter_Produit"> </i> Emballage d'un produit
@@ -19,7 +19,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4 d-flex align-items-stretch card-hover">
+    <div class="col-md-6 d-flex align-items-stretch card-hover">
         <div class="main-card mb-3 card" style="width: 100%;" routerLink="/Menu/Menu_Colisage/Packaging/Ajouter_Pack">
             <div class="card-header">
                 <i class="header-icon lnr-license icon-gradient bg-plum-plate pe-7s-box2"
@@ -37,28 +37,6 @@
             </div>
             <div class="d-block text-right card-footer">
                 <a routerLink="/Menu/Menu_Colisage/Packaging/Ajouter_Pack" class="btn-wide btn"><i class="fas fa-arrow-right" style="color: #6184db;"></i></a>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4 d-flex align-items-stretch card-hover">
-        <input type="file" class="file-input" accept="text/xml" (change)="onFileSelected($event)" #fileUpload>
-        <div class="main-card mb-3 card" style="width: 100%;" (click)="fileUpload.click()">
-            <div class="card-header">
-                <i class="header-icon lnr-license icon-gradient bg-plum-plate pe-7s-upload"
-                (click)="fileUpload.click()">
-                </i> Importer une liste des emballages
-
-            </div>
-            <div class="card-body">
-                <div class="tab-content">
-                    <div class="tab-pane active" id="tab-eg1-0" role="tabpanel">
-                        <p> {{fileName || "Pas de fichier sélectionné."}} </p>
-                    </div>
-
-                </div>
-            </div>
-            <div class="d-block text-right card-footer">
-                <a role="button" (click)="fileUpload.click()" class="btn-wide btn"><i class="fas fa-arrow-right" style="color: #6184db;"></i></a>
             </div>
         </div>
     </div>

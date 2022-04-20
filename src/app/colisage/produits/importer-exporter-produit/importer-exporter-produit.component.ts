@@ -123,16 +123,4 @@ export class ImporterExporterProduitsComponent implements OnInit {
     });
   }
 
-  exporterListeProduit() {
-    this.service.exporterListeProduit().subscribe((response: any) => {
-      let blob: any = new Blob([response], { type: 'text/xml; charset=utf-8' });
-      var downloadURL = window.URL.createObjectURL(response);
-      var link = document.createElement('a');
-      link.href = downloadURL;
-      link.download = "liste-produits.xml";
-      link.click();
-    }),
-      (error: any) => console.log('Error downloading the file'),
-      () => console.info('File downloaded successfully');
-  }
 }

@@ -90,9 +90,4 @@ export class ProduitService {
       .pipe(catchError(this.handleError));
   }
 
-    // api exporter liste produit
-    public exporterListeProduit() {
-      return this.httpClient
-        .get(erp + 'exporter-produits', {responseType: 'blob'});
-    }
 }

@@ -15,6 +15,11 @@ import { HttpClient } from '@angular/common/http';
 import { AppInitService } from './services/app-init.service';
 import { ConfigurationProduitComponent } from './configuration-produit/configuration-produit.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import { ImporterExporterComponent } from './importer-exporter/importer-exporter.component';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatIconModule} from '@angular/material/icon';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+import {MatTooltipModule} from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -24,6 +29,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     ConfigurationCommandeComponent,
     ConfigurationServeurComponent,
     ConfigurationProduitComponent,
+    ImporterExporterComponent,
   ],
   imports: [
     CommonModule,
@@ -32,7 +38,11 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
     AgmCoreModule.forRoot(),
     ReactiveFormsModule,
     MatInputModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatProgressBarModule,
+    MatTooltipModule
   ],
   providers: [
     {

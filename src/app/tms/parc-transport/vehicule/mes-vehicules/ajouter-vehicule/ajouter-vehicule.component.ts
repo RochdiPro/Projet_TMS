@@ -73,7 +73,7 @@ export class AjouterVehiculeComponent implements OnInit {
       car: ['', [Validators.required]],
       consommationnormale: [
         '',
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('[+]?([0-9]*[.])?[0-9]+')],
       ],
       capaciteReservoir: [
         '',

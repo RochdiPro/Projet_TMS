@@ -142,20 +142,6 @@
                 </mat-error>
             </mat-form-field>
         </div>
-        <!-- input carburant consommé -->
-        <div class="position-relative form-group">
-            <mat-form-field class="full-width">
-                <mat-label>Carburant Consommé En TND</mat-label>
-                <input matInput placeholder="Ex. 100" formControlName="montantConsomme" name="montantConsomme"
-                    id="montantConsomme" value="{{vehicule.montantConsomme}}" type="text">
-                <mat-error *ngIf="form.controls['montantConsomme'].hasError('required')">
-                    Champ <strong>Obligatoire</strong>
-                </mat-error>
-                <mat-error *ngIf="form.controls['montantConsomme'].hasError('pattern')">
-                    Seuls les <strong>chiffres</strong> sont autorisés
-                </mat-error>
-            </mat-form-field>
-        </div>
         <!-- input carburant -->
         <div class="position-relative form-group">
             <mat-form-field class="full-width">

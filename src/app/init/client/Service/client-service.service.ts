@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 const erp = '/ERP/';
-const infonet = '/INFONET/';
+const infonet = '/ERP/';
 
 @Injectable({
   providedIn: 'root'
@@ -111,6 +111,40 @@ export class ClientServiceService {
   ModifierClient(Client: any): Observable<any> {
     return this.http.post(erp + 'Modifier_Client', Client).pipe(
       catchError(this.gererErreur)
+    );
+  }
+  // récupérer la ville  du Client 
+  ListerVille(pays: any): Observable<any> {
+    return this.http.get(infonet + 'Categorie_Ville', {
+      params: {
+        Pays: pays
+      }, observe: 'body'
+    }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer les pays 
+  ListerPays(): Observable<any> {
+    return this.http.get(infonet + 'Categorie_Pays', { observe: 'body' }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer les catégories banques du Client 
+  ListerBanques(): Observable<any> {
+    return this.http.get(infonet + 'Categorie_Banque', { observe: 'body' }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer les catégories du Client 
+  ListerCategorieClient(): Observable<any> {
+    return this.http.get(infonet + 'Categorie_Client', { observe: 'body' }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer les categories fiscales du Client 
+  ListerCategorieFiscale(): Observable<any> {
+    return this.http.get(infonet + 'Categorie_Fiscale', { observe: 'body' }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer les categories de pièce d'identité du Client 
+  ListerCategoriePiece(): Observable<any> {
+    return this.http.get(infonet + 'Categorie_Piece', { observe: 'body' }).pipe(catchError(this.gererErreur)
     );
   }
 }

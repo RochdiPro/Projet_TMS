@@ -165,4 +165,24 @@ export class ConfigurationTmsService {
       .put(erp + 'modifier-configuration-excel-produit', config)
       .pipe(catchError(this.handleError));
   }
+
+  // api exporter liste produit
+  public exporterListeProduit() {
+    return this.httpClient.get(erp + 'exporter-produits', {
+      responseType: 'blob',
+    });
+  }
+
+  //exporter liste des emballages
+  public exporterEmballages() {
+    return this.httpClient.get(erp + 'exporter-emballages', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des supports
+  public exporterSupports() {
+    return this.httpClient.get(erp + 'exporter-supports', {
+      responseType: 'blob',
+    });
+  }
 }

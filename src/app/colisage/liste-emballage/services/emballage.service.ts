@@ -102,9 +102,4 @@ export class EmballageService {
       .pipe(catchError(this.handleError));
   }
 
-  //exporter liste des emballages
-  public exporterEmballages() {
-    return this.httpClient
-    .get(erp + "exporter-emballages", {responseType: 'blob'});
-  }
 }

@@ -39,6 +39,13 @@ const routes: Routes = [
             (m) => m.ClientModule
           ),
       },
+      {
+        path: 'Menu-init/Menu-donnees',
+        loadChildren: () =>
+          import('./init/donnees/donnees.module').then(
+            (m) => m.DonneesModule
+          ),
+      },
     ],
   },
 ];

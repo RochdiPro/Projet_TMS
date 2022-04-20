@@ -314,7 +314,7 @@
                         <mat-form-field>
                             <mat-label for="Pays"> Pays </mat-label>
                             <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays"
-                                [(ngModel)]=ClientData.pays>
+                                (selectionChange)="ChoixPays($event)" [(ngModel)]=ClientData.pays>
                                 <mat-option value=" "></mat-option>
                                 <mat-option *ngFor="let pays of  categorie_pays" [value]="pays.nom">
                                     {{pays.nom}}</mat-option>

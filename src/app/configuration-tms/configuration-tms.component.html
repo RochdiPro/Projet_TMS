@@ -17,6 +17,7 @@
             <a role="button" [ngClass]="{'active': positionEstActive}" (click)="changerCategorieConfig('position')">Position</a>
             <a role="button" [ngClass]="{'active': commandeEstActive}" (click)="changerCategorieConfig('commande')">Commande</a>
             <a role="button" [ngClass]="{'active': produitEstActive}" (click)="changerCategorieConfig('produit')">Produit</a>
+            <a role="button" [ngClass]="{'active': importerExporterEstActive}" (click)="changerCategorieConfig('importer/exporter')">Importer/Exporter</a>
         </div>
         <div class = "contenu-config">
             <div class="card config" *ngIf="generalEstActive" [@enterAnimation]>
@@ -33,6 +34,9 @@
             </div>
             <div class="card config" *ngIf="produitEstActive" [@enterAnimation]>
                 <app-configuration-produit></app-configuration-produit>
+            </div>
+            <div *ngIf="importerExporterEstActive" [@enterAnimation]>
+                <app-importer-exporter></app-importer-exporter>
             </div>
         </div>
     </div>

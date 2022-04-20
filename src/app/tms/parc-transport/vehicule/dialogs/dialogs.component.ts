@@ -684,47 +684,42 @@ export class MajVehiculeComponent implements OnInit {
     await this.getCarburant();
     this.form = this.fb.group({
       kmactuel: [
-        this.vehicule.kmactuel,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        {value: this.vehicule.kmactuel, disabled: true}
       ],
       kmProchainVidangeHuileMoteur: [
         this.vehicule.kilometrageProchainVidangeHuileMoteur,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('^[0-9]*$'),kmactuelValidator],
       ],
       kmProchainVidangeLiquideRefroidissement: [
         this.vehicule.kilometrageProchainVidangeLiquideRefroidissement,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
       ],
       kmProchainVidangeHuileBoiteVitesse: [
         this.vehicule.kilometrageProchainVidangeHuileBoiteVitesse,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
       ],
       kmProchainChangementFiltreClimatiseur: [
         this.vehicule.kilometrageProchainChangementFiltreClimatiseur,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
       ],
       kmProchainChangementFiltreCarburant: [
         this.vehicule.kilometrageProchainChangementFiltreCarburant,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
       ],
       kmProchainChangementBougies: [
         this.vehicule.kilometrageProchainChangementBougies,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
       ],
       kmProchainChangementCourroies: [
         this.vehicule.kilometrageProchainChangementCourroies,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
       ],
       kmProchainChangementPneus: [
         this.vehicule.kilometrageProchainChangementPneus,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
+        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
       ],
       consommationnormale: [
         this.vehicule.consommationNormale,
-        [Validators.required, Validators.pattern('^[0-9]*$')],
-      ],
-      montantConsomme: [
-        this.vehicule.montantConsomme,
         [Validators.required, Validators.pattern('^[0-9]*$')],
       ],
       carburant: [this.vehicule.carburant, [Validators.required]],
@@ -740,6 +735,7 @@ export class MajVehiculeComponent implements OnInit {
   // get vehicule par id
   async chargerVehicule(id: any) {
     this.vehicule = await this.service.vehicule(id).toPromise();
+    localStorage.setItem('kmactuelV', this.vehicule.kmactuel);
   }
 
   // get liste des carburants
@@ -793,7 +789,6 @@ export class MajVehiculeComponent implements OnInit {
       'consommationNormale',
       this.form.get('consommationnormale').value
     );
-    formData.append('montantConsomme', this.form.get('montantConsomme').value);
     formData.append('carburant', this.form.get('carburant').value);
     formData.append(
       'distanceparcourie',
