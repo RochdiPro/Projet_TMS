@@ -5,10 +5,11 @@ a {
     border-radius: 10%;
 }
 img {
-    width: 18vw;
+    width: 15vw;
     padding-top: -10%;
     border-radius: 10%;
     box-shadow: 15px 15px 15px grey;
+    background-color: white;
 }
 .menu-parc {
     position: relative;
@@ -35,7 +36,6 @@ a{
 }
 @media only screen and (max-width: 760px), (min-device-width: 768px) and (max-device-width: 1024px) {
     .inline {
-        display: block;
         align-items: center;
     }
     img {
@@ -46,11 +46,12 @@ a{
     }
 
     .menu-parc {
-        position: relative;
+        position: absolute;
         text-align: center;
         width: 100%;
         left: 50%;
-        transform: translate(-50%, 0%);
+        top: 50%;
+        transform: translate(-50%, -50%);
     }
 
 }

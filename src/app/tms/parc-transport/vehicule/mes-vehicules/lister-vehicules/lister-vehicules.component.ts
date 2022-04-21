@@ -24,7 +24,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { AjouterCarburantComponent, BoiteDialogueEntretien, DetailVehiculeComponent, MajVehiculeComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent } from '../../dialogs/dialogs.component';
+import { BoiteDialogueEntretien, DetailVehiculeComponent, MajVehiculeComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent } from '../../dialogs/dialogs.component';
 import { VehiculeService } from '../../services/vehicule.service';
 
 @Component({
@@ -288,39 +288,6 @@ export class ListerVehiculesComponent implements OnInit {
       this.vehicules = result;
     })
   }
-
-
-  //partie de modification carburant
-  //aprés selection du carburant activer l'input prix et afficher le prix du carburant
-  selectionnerCarburant() { 
-    this.form.controls.prix.enable();
-    this.form.controls['prix'].setValue(this.carburant.prixCarburant);
-  }
-
-  //ouvrir la boite de dialogue ajouter carburant
-  ouvrirAjouterCarburant() { 
-    const dialogRef = this.dialog.open(AjouterCarburantComponent, {
-      width: '400px',
-      autoFocus: false,
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      this.chargerCarburants();
-    });
-  }
-
-  //modifier prix carburant
-  async miseAJourCarburant() { 
-    var formData: any = new FormData();
-    formData.append("id", this.carburant.id);
-    formData.append("nom", this.carburant.nom);
-    formData.append("prixCarburant", this.form.get('prix').value);
-    await this.service.modifierCarburant(formData).toPromise();
-    this.chargerCarburants();
-    this.form.controls.prix.setValue("");
-    this.form.controls.prix.disable();
-  }
-
-  // fin partie de modification carburant
 }
 
 

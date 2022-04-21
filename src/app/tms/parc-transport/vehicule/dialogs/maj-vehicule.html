@@ -28,6 +28,9 @@
                 <mat-error *ngIf="form.controls['kmProchainVidangeHuileMoteur'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
                 </mat-error>
+                <mat-error *ngIf="form.controls['kmProchainVidangeHuileMoteur'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
+                </mat-error>
             </mat-form-field>
         </div>
         <!-- input kilometrage prochain vidange liquide refroidissement -->
@@ -41,6 +44,9 @@
                 </mat-error>
                 <mat-error *ngIf="form.controls['kmProchainVidangeLiquideRefroidissement'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+                <mat-error *ngIf="form.controls['kmProchainVidangeLiquideRefroidissement'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
                 </mat-error>
             </mat-form-field>
         </div>
@@ -56,6 +62,9 @@
                 <mat-error *ngIf="form.controls['kmProchainVidangeHuileBoiteVitesse'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
                 </mat-error>
+                <mat-error *ngIf="form.controls['kmProchainVidangeHuileBoiteVitesse'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
+                </mat-error>
             </mat-form-field>
         </div>
         <!-- input kilometrage prochain changement filtre climatiseur -->
@@ -69,6 +78,9 @@
                 </mat-error>
                 <mat-error *ngIf="form.controls['kmProchainChangementFiltreClimatiseur'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+                <mat-error *ngIf="form.controls['kmProchainChangementFiltreClimatiseur'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
                 </mat-error>
             </mat-form-field>
         </div>
@@ -84,6 +96,9 @@
                 <mat-error *ngIf="form.controls['kmProchainChangementFiltreCarburant'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
                 </mat-error>
+                <mat-error *ngIf="form.controls['kmProchainChangementFiltreCarburant'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
+                </mat-error>
             </mat-form-field>
         </div>
         <!-- input kilometrage prochain changement bougies -->
@@ -97,6 +112,9 @@
                 </mat-error>
                 <mat-error *ngIf="form.controls['kmProchainChangementBougies'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+                <mat-error *ngIf="form.controls['kmProchainChangementBougies'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
                 </mat-error>
             </mat-form-field>
         </div>
@@ -112,6 +130,9 @@
                 <mat-error *ngIf="form.controls['kmProchainChangementCourroies'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
                 </mat-error>
+                <mat-error *ngIf="form.controls['kmProchainChangementCourroies'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
+                </mat-error>
             </mat-form-field>
         </div>
         <!-- input kilometrage prochain changement pneus -->
@@ -125,6 +146,9 @@
                 </mat-error>
                 <mat-error *ngIf="form.controls['kmProchainChangementPneus'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+                <mat-error *ngIf="form.controls['kmProchainChangementPneus'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
                 </mat-error>
             </mat-form-field>
         </div>

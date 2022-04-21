@@ -5,15 +5,8 @@ import { ParcTransportComponent } from './parc-transport.component';
 import { ParcTransportRoutingModule } from './parc-transport-routing.module';
 import { MenuComponent } from './menu/menu.component';
 
-
 @NgModule({
-  declarations: [
-    ParcTransportComponent,
-    MenuComponent
-  ],
-  imports: [
-    CommonModule,
-    ParcTransportRoutingModule
-  ]
+  declarations: [ParcTransportComponent, MenuComponent],
+  imports: [CommonModule, ParcTransportRoutingModule],
 })
-export class ParcTransportModule { }
+export class ParcTransportModule {}

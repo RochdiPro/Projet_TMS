@@ -6,39 +6,6 @@
       <mat-icon>add</mat-icon>
    </button>
    <!-- fin Bouton pour ajouter nouvelle vehicule -->
-   <div class="row">
-      <!-- partie de modification carburant -->
-      <form [formGroup]="form">
-         <mat-form-field class="ml-3 custom-width">
-            <mat-label>Carburant</mat-label>
-            <mat-select formControlName="carb" name="carburant" id="carburant" [(value)]="carburant"
-               (selectionChange)="selectionnerCarburant()" required>
-               <mat-option *ngFor="let carb of carburants" [value]="carb">
-                  {{carb.nom}}
-               </mat-option>
-               <mat-option>
-                  <a (click)="ouvrirAjouterCarburant()" style="width: auto; display: block;" *ngIf="tms >= 2">+
-                     Ajouter</a>
-               </mat-option>
-            </mat-select>
-         </mat-form-field>
-         <mat-form-field class="ml-3 custom-width">
-            <mat-label>Prix Carburant</mat-label>
-            <input matInput formControlName="prix" name="prix" id="prix" type="text">
-            <mat-error *ngIf="form.controls['prix'].hasError('required')">
-               Champ <strong>Obligatoire</strong>
-            </mat-error>
-            <mat-error *ngIf="form.controls['prix'].hasError('pattern')">
-               Seuls les <strong>chiffres</strong> sont autorisés
-            </mat-error>
-         </mat-form-field>
-         <button mat-mini-fab color="primary" class="mb-2 ml-2" (click)="miseAJourCarburant()" [disabled]="form.invalid"
-            *ngIf="tms >= 3">
-            <i class="fas fa-gas-pump"></i>
-         </button>
-      </form>
-      <!-- fin partie de modification carburant -->
-   </div>
    <div>
       <section>
          <mat-form-field class="filtres">

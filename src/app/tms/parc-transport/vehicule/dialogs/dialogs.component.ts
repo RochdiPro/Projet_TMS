@@ -11,63 +11,6 @@ import Swal from 'sweetalert2';
 import { kmactuelValidator } from '../kmactuel.validator';
 import { VehiculeService } from '../services/vehicule.service';
 
-//*****************************************Boite de dialogue Ajouter carburant****************************************
-/**
- * Boite de dilogue pour ajouter un nouveau type de carburant
- * Listes des méthodes: 
-    - enregistrerCarburant: ajouter nouveau carburant.
-    - fermerAjouterCarburant: fermer la boite de dialogue.
- */
-@Component({
-  selector: 'app-ajouter-carburant',
-  templateUrl: './ajouter-carburant.html',
-  styleUrls: ['./ajouter-carburant.scss'],
-})
-export class AjouterCarburantComponent {
-  //declaration des variables
-  form: FormGroup;
-
-  //constructeur
-  constructor(
-    public dialogRef: MatDialogRef<AjouterCarburantComponent>,
-    public service: VehiculeService,
-    public fb: FormBuilder,
-    public _router: Router
-  ) {
-    this.form = this.fb.group({
-      nom: ['', [Validators.required]],
-      prixCarburant: [
-        '',
-        [Validators.required, Validators.pattern('[+-]?([0-9]*[.])?[0-9]+')],
-      ],
-    });
-  }
-
-  //ajouter nouveau carburant
-  async enregistrerCarburant() {
-    var formData: any = new FormData();
-    formData.append('nom', this.form.get('nom').value);
-    formData.append('prixCarburant', this.form.get('prixCarburant').value);
-    Swal.fire({
-      title: 'Voulez vous enregistrer?',
-      showCancelButton: true,
-      confirmButtonText: 'Oui',
-      cancelButtonText: 'Non',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await this.service.creerCarburant(formData).toPromise();
-        this.fermerAjouterCarburant();
-        Swal.fire('Carburant enregistré!', '', 'success');
-      }
-    });
-  }
-
-  //fermer la boite de dialogue
-  fermerAjouterCarburant(): void {
-    this.dialogRef.close();
-  }
-}
-
 //********************************************boite de dialogue detail vehicule **************************************
 /**
  * Boite dialogue permet d'afficher les informations d'un vehicule

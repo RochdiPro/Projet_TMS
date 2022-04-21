@@ -26,7 +26,6 @@ import { MatStepperModule } from '@angular/material/stepper';
 
 import { VehiculeComponent } from './vehicule.component';
 import {
-  AjouterCarburantComponent,
   DetailVehiculeComponent,
   MajVehiculeComponent,
   MiseAJourConsommationComponent,
@@ -53,7 +52,6 @@ registerLocaleData(localeFr, 'fr');
   declarations: [
     VehiculeComponent,
     MesVehiculesComponent,
-    AjouterCarburantComponent,
     DetailVehiculeComponent,
     MajVehiculeComponent,
     BoiteDialogueEntretien,
