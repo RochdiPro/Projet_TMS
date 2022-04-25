@@ -23,7 +23,8 @@ export class ListerSupportsComponent implements OnInit {
     'typeSupport',
     'poidsEmballage',
     'dimensions',
-    'volume'
+    'volume',
+    'actions'
   ];
   dataSource: MatTableDataSource<Support>;
 

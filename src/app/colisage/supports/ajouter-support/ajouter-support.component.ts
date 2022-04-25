@@ -58,7 +58,7 @@ export class AjouterSupportComponent implements OnInit {
         Number(this.form.get('longueur').value) *
         Number(this.form.get('largeur').value) *
         0.000001; //pour convertir de cm3 vers m3
-      this.form.get('volume').setValue(volume); //afficher resultat calcul dans le champ volume
+      this.form.get('volume').setValue(Number(volume).toFixed(3)); //afficher resultat calcul dans le champ volume
     }
   }
 
@@ -67,11 +67,11 @@ export class AjouterSupportComponent implements OnInit {
     var formData = new FormData();
     formData.append('nomSupport', this.form.get('nom_Support').value);
     formData.append('typeSupport', this.form.get('type_Support').value);
-    formData.append('poidsEmballage', this.form.get('poids_Emballage').value);
-    formData.append('longueur', this.form.get('longueur').value);
-    formData.append('largeur', this.form.get('largeur').value);
-    formData.append('hauteur', this.form.get('hauteur').value);
-    formData.append('volume', this.form.get('volume').value);
+    formData.append('poidsEmballage', Number(this.form.get('poids_Emballage').value).toFixed(3));
+    formData.append('longueur', Number(this.form.get('longueur').value).toFixed(3));
+    formData.append('largeur', Number(this.form.get('largeur').value).toFixed(3));
+    formData.append('hauteur', Number(this.form.get('hauteur').value).toFixed(3));
+    formData.append('volume', Number(this.form.get('volume').value).toFixed(3));
     formData.append('codeBarre', this.form.get('code_Barre').value);
     await this.serviceSupport.creerSupport(formData).toPromise();
     await this._router.navigate(['/Menu/Menu_Colisage/Supports/Liste_Support']); //naviguer vers liste support aprés l'enregistrement

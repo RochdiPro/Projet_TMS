@@ -3,7 +3,7 @@
     <h1>Ajouter Un Véhicule Loué </h1>
     <div>
         <form [formGroup]="form" novalidate>
-    
+
             <!-- Champ d'ajot matricule -->
             <div>
                 <label for="matricule" class="">Matricule Du Vehicule</label>
@@ -18,7 +18,8 @@
                                     {{ typematricule.value }}
                                 </mat-option>
                             </mat-select>
-                            <mat-error *ngIf="form.controls['typematricule'].hasError('required')"> Veuillez choisir un type
+                            <mat-error *ngIf="form.controls['typematricule'].hasError('required')"> Veuillez choisir un
+                                type
                                 de
                                 matricule </mat-error>
                         </mat-form-field>
@@ -88,7 +89,8 @@
                                 {{ carosseries.name }}
                             </mat-option>
                         </mat-select>
-                        <mat-error *ngIf="form.controls['carosserie'].hasError('required')"> Veuillez choisir une catégorie
+                        <mat-error *ngIf="form.controls['carosserie'].hasError('required')"> Veuillez choisir une
+                            catégorie
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -96,7 +98,7 @@
                 <div class="proprietaire">
                     <mat-form-field class="full-width">
                         <mat-label>Proprietaire</mat-label>
-                        <input matInput placeholder="Ex. 100000" formControlName="proprietaire" name="proprietaire"
+                        <input matInput formControlName="proprietaire" name="proprietaire"
                             id="proprietaire" type="text" required>
                         <mat-error *ngIf="form.controls['proprietaire'].hasError('required')">
                             Champ <strong>Obligatoire</strong>
@@ -114,20 +116,6 @@
                         </mat-error>
                         <mat-error *ngIf="form.controls['telephone'].hasError('pattern')">
                             Verifier que le numéro se compose de <strong>8 chiffres</strong>
-                        </mat-error>
-                    </mat-form-field>
-                </div>
-                <!-- input Field charge utile -->
-                <div class="charge">
-                    <mat-form-field class="full-width">
-                        <mat-label>Charge Utile Maximale En Kg</mat-label>
-                        <input matInput placeholder="Ex. 600" formControlName="chargeUtile" name="chargeUtile" id="chargeUtile"
-                            type="number" required>
-                        <mat-error *ngIf="form.controls['chargeUtile'].hasError('required')">
-                            Champ <strong>Obligatoire</strong>
-                        </mat-error>
-                        <mat-error *ngIf="form.controls['chargeUtile'].hasError('pattern')">
-                            Seuls les <strong>chiffres</strong> sont autorisés
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -170,6 +158,20 @@
                         </mat-error>
                     </mat-form-field>
                 </div>
+                <!-- input Field charge utile -->
+                <div class="charge">
+                    <mat-form-field class="full-width">
+                        <mat-label>Charge Utile Maximale En Kg</mat-label>
+                        <input matInput placeholder="Ex. 600" formControlName="chargeUtile" name="chargeUtile"
+                            id="chargeUtile" type="number" required>
+                        <mat-error *ngIf="form.controls['chargeUtile'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['chargeUtile'].hasError('pattern')">
+                            Seuls les <strong>chiffres</strong> sont autorisés
+                        </mat-error>
+                    </mat-form-field>
+                </div>
                 <!-- periode de Location -->
                 <div class="periode">
                     <mat-form-field class="full-width">
@@ -189,7 +191,7 @@
         <!-- bouton Annuler -->
         <button mat-button color="warn" class="mb-2 mr-2" (click)="fermerAjouterVehicule()">Annuler</button>
         <!-- fin bouton Annuler -->
-    
+
         <!-- Bouton Enregistrer -->
         <button mat-button color="primary" class="mb-2 mr-2" [disabled]="form.invalid"
             (click)="enregistrerVehicule()">Enregistrer</button>

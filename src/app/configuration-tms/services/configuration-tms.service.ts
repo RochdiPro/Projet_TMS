@@ -185,4 +185,28 @@ export class ConfigurationTmsService {
       responseType: 'blob',
     });
   }
+  //exporter liste des supports
+  public exporterCommandes() {
+    return this.httpClient.get(erp + 'exporter-commandes', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des vehicules
+  public exporterVehicules() {
+    return this.httpClient.get(erp + 'exporter-vehicules', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des vehicules loués
+  public exporterVehiculesLoues() {
+    return this.httpClient.get(erp + 'exporter-vehicules-loues', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des carburants
+  public exporterCarburants() {
+    return this.httpClient.get(erp + 'exporter-carburants', {
+      responseType: 'blob',
+    });
+  }
 }

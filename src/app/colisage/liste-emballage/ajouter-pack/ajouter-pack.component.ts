@@ -520,13 +520,13 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     } else {
       formData.append('fragile', 'Non');
     }
-    formData.append('hauteur', Number(this.hauteur));
-    formData.append('longueur', Number(this.longueur));
-    formData.append('largeur', Number(this.largeur));
-    formData.append('volume', Number(this.volume));
-    formData.append('poids_unitaire', this.poidsToltalNet);
-    formData.append('poids_total_net', this.poidsToltalNet);
-    formData.append('poids_emballage_total', this.poidsToltalBrut);
+    formData.append('hauteur', Number(this.hauteur).toFixed(3));
+    formData.append('longueur', Number(this.longueur).toFixed(3));
+    formData.append('largeur', Number(this.largeur).toFixed(3));
+    formData.append('volume', Number(this.volume).toFixed(3));
+    formData.append('poids_unitaire', Number(this.poidsToltalNet).toFixed(3));
+    formData.append('poids_total_net', Number(this.poidsToltalNet).toFixed(3));
+    formData.append('poids_emballage_total', Number(this.poidsToltalBrut).toFixed(3));
     formData.append(
       'code_barre',
       this.barcodeEmballage

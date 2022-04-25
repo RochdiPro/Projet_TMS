@@ -43,10 +43,12 @@ ul {
 // style des filtres
 .filtres {
   padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
 }
 // width des inputs du filtre
 .custom-width {
-  width: 20%;
+  width: 100%;
   padding-right: 10px;
 }
 

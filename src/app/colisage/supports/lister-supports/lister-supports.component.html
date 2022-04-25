@@ -1,48 +1,64 @@
 <div class="mat-elevation-z8" *ngIf="wms>=1">
-   <mat-table [dataSource]="dataSource" matSort>
- 
-     <!-- id Column -->
-     <ng-container matColumnDef="id">
-       <mat-header-cell *matHeaderCellDef matSort> Id </mat-header-cell>
-       <mat-cell *matCellDef="let element" data-label="Id"> {{element.id}} </mat-cell>
-     </ng-container>
- 
-     <!-- nomSupport Column -->
-     <ng-container matColumnDef="nomSupport">
-       <mat-header-cell *matHeaderCellDef matSort> Nom </mat-header-cell>
-       <mat-cell *matCellDef="let element" data-label="Nom"> {{element.nomSupport}} </mat-cell>
-     </ng-container>
- 
-     <!-- typeSupport Column -->
-     <ng-container matColumnDef="typeSupport">
-       <mat-header-cell *matHeaderCellDef matSort> Type </mat-header-cell>
-       <mat-cell *matCellDef="let element" data-label="Type"> {{element.typeSupport}} </mat-cell>
-     </ng-container>
- 
-     <!-- poidsEmballage Column -->
-     <ng-container matColumnDef="poidsEmballage">
-       <mat-header-cell *matHeaderCellDef matSort> Poids </mat-header-cell>
-       <mat-cell *matCellDef="let element" data-label="Poids"> {{element.poidsEmballage}} </mat-cell>
-     </ng-container>
- 
-     <!-- dimensions Column -->
-     <ng-container matColumnDef="dimensions">
-       <mat-header-cell *matHeaderCellDef matSort> Dimensions </mat-header-cell>
-       <mat-cell *matCellDef="let element" data-label="Dimensions"> {{element.longueur + "x" + element.largeur + "x" + element.hauteur}} </mat-cell>
-     </ng-container>
- 
-     <!-- volume Column -->
-     <ng-container matColumnDef="volume">
-       <mat-header-cell *matHeaderCellDef matSort> Volume </mat-header-cell>
-       <mat-cell *matCellDef="let element" data-label="Volume"> {{element.volume}} </mat-cell>
-     </ng-container>
- 
-     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-   </mat-table>
- 
-   <mat-paginator [pageSizeOptions]="[5, 10, 20]"
-                  showFirstLastButtons 
-                  aria-label="Select page of periodic elements">
-   </mat-paginator>
- </div>
+  <mat-table [dataSource]="dataSource" matSort>
+
+    <!-- id Column -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef matSort> Id </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Id"> {{element.id}} </mat-cell>
+    </ng-container>
+
+    <!-- nomSupport Column -->
+    <ng-container matColumnDef="nomSupport">
+      <mat-header-cell *matHeaderCellDef matSort> Nom </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Nom"> {{element.nomSupport}} </mat-cell>
+    </ng-container>
+
+    <!-- typeSupport Column -->
+    <ng-container matColumnDef="typeSupport">
+      <mat-header-cell *matHeaderCellDef matSort> Type </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Type"> {{element.typeSupport}} </mat-cell>
+    </ng-container>
+
+    <!-- poidsEmballage Column -->
+    <ng-container matColumnDef="poidsEmballage">
+      <mat-header-cell *matHeaderCellDef matSort> Poids </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Poids"> {{element.poidsEmballage}} </mat-cell>
+    </ng-container>
+
+    <!-- dimensions Column -->
+    <ng-container matColumnDef="dimensions">
+      <mat-header-cell *matHeaderCellDef matSort> Dimensions </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Dimensions"> {{element.longueur + "x" + element.largeur + "x" +
+        element.hauteur}} </mat-cell>
+    </ng-container>
+
+    <!-- volume Column -->
+    <ng-container matColumnDef="volume">
+      <mat-header-cell *matHeaderCellDef matSort> Volume </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Volume"> {{element.volume}} </mat-cell>
+    </ng-container>
+
+    <!-- actions Column -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef matSort> </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <!-- Bouton modifier vehicule -->
+        <button class="mb-2  btn " (click)="modifierSupport(element)" *ngIf="wms >= 3">
+          <mat-icon aria-hidden="false" aria-label="modifier">edit</mat-icon>
+        </button>
+        <!-- fin Bouton modifier vehicule -->
+        <!-- Bouton supprimer vehicule -->
+        <button class="mb-2  btn " (click)="supprimerSupport(element)" *ngIf="wms >= 4">
+          <mat-icon aria-hidden="false" aria-label="Supprimer" style="color: #ff0000;">delete_outline</mat-icon>
+        </button>
+        <!-- fin Bouton supprimer vehicule -->
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+  </mat-paginator>
+</div>

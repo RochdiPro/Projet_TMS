@@ -11,7 +11,12 @@ const erp = '/ERP/';
   styleUrls: ['./importer-exporter.component.scss']
 })
 export class ImporterExporterComponent implements OnInit {
-  fileName: any;
+  fileNameEmballage: any;
+  fileNameProduit: any;
+  fileNameSupport: any;
+  fileNameCommande: any;
+  fileNameVehicule: any;
+  fileNameVehiculeLoue: any;
   uploadProgress: number;
   uploadSub: Subscription;
 
@@ -59,11 +64,63 @@ export class ImporterExporterComponent implements OnInit {
         () => console.info('File downloaded successfully');
     }
 
+    //exporter liste commandes
+    exporterListeCommandes() {
+      this.service.exporterCommandes().subscribe((response: any) => {
+        var downloadURL = window.URL.createObjectURL(response);
+        var link = document.createElement('a');
+        link.href = downloadURL;
+        link.download = "liste-commandes.xml";
+        link.click();
+      }),
+        (error: any) => console.log('Error downloading the file'),
+        () => console.info('File downloaded successfully');
+    }
+
+    //exporter liste vehicules
+    exporterListeVehicules() {
+      this.service.exporterVehicules().subscribe((response: any) => {
+        var downloadURL = window.URL.createObjectURL(response);
+        var link = document.createElement('a');
+        link.href = downloadURL;
+        link.download = "liste-vehicules.xml";
+        link.click();
+      }),
+        (error: any) => console.log('Error downloading the file'),
+        () => console.info('File downloaded successfully');
+    }
+
+    //exporter liste commandes
+    exporterListeVehiculesLoues() {
+      this.service.exporterVehiculesLoues().subscribe((response: any) => {
+        var downloadURL = window.URL.createObjectURL(response);
+        var link = document.createElement('a');
+        link.href = downloadURL;
+        link.download = "liste-vehicules-loues.xml";
+        link.click();
+      }),
+        (error: any) => console.log('Error downloading the file'),
+        () => console.info('File downloaded successfully');
+    }
+
+    //exporter liste carburants
+    exporterListeCarburants() {
+      this.service.exporterCarburants().subscribe((response: any) => {
+        var downloadURL = window.URL.createObjectURL(response);
+        var link = document.createElement('a');
+        link.href = downloadURL;
+        link.download = "liste-carburanrs.xml";
+        link.click();
+      }),
+        (error: any) => console.log('Error downloading the file'),
+        () => console.info('File downloaded successfully');
+    }
+
     onFileEmballageSelected(event: any) {
       const file: File = event.target.files[0];
   
       if (file) {
-        this.fileName = file.name;
+        this.fileNameEmballage = file.name;
         const formData = new FormData();
         formData.append('file', file);
   
@@ -96,7 +153,7 @@ export class ImporterExporterComponent implements OnInit {
       const file: File = event.target.files[0];
   
       if (file) {
-        this.fileName = file.name;
+        this.fileNameSupport = file.name;
         const formData = new FormData();
         formData.append('file', file);
   
@@ -129,7 +186,7 @@ export class ImporterExporterComponent implements OnInit {
       const file: File = event.target.files[0];
   
       if (file) {
-        this.fileName = file.name;
+        this.fileNameProduit = file.name;
         const formData = new FormData();
         formData.append('file', file);
   
@@ -144,6 +201,138 @@ export class ImporterExporterComponent implements OnInit {
               Swal.fire({
                 icon: 'success',
                 title: 'Liste des produits est bien importée',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            })
+          );
+  
+        this.uploadSub = upload$.subscribe((event) => {
+          if (event.type == HttpEventType.UploadProgress) {
+            this.uploadProgress = Math.round(100 * (event.loaded / event.total));
+          }
+        });
+      }
+    }
+
+    onFileCommandeSelected(event: any) {
+      const file: File = event.target.files[0];
+  
+      if (file) {
+        this.fileNameCommande = file.name;
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        const upload$ = this.http
+          .post(erp + 'importer-fichier-commandes', formData, {
+            reportProgress: true,
+            observe: 'events',
+          })
+          .pipe(
+            finalize(() => {
+              this.reset();
+              Swal.fire({
+                icon: 'success',
+                title: 'Liste des commandes est bien importée',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            })
+          );
+  
+        this.uploadSub = upload$.subscribe((event) => {
+          if (event.type == HttpEventType.UploadProgress) {
+            this.uploadProgress = Math.round(100 * (event.loaded / event.total));
+          }
+        });
+      }
+    }
+
+    onFileVehiculesSelected(event: any) {
+      const file: File = event.target.files[0];
+  
+      if (file) {
+        this.fileNameVehicule = file.name;
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        const upload$ = this.http
+          .post(erp + 'importer-vehicules', formData, {
+            reportProgress: true,
+            observe: 'events',
+          })
+          .pipe(
+            finalize(() => {
+              this.reset();
+              Swal.fire({
+                icon: 'success',
+                title: 'Liste des vehicules est bien importée',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            })
+          );
+  
+        this.uploadSub = upload$.subscribe((event) => {
+          if (event.type == HttpEventType.UploadProgress) {
+            this.uploadProgress = Math.round(100 * (event.loaded / event.total));
+          }
+        });
+      }
+    }
+
+    onFileVehiculesLouesSelected(event: any) {
+      const file: File = event.target.files[0];
+  
+      if (file) {
+        this.fileNameVehiculeLoue = file.name;
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        const upload$ = this.http
+          .post(erp + 'importer-vehicules-loues', formData, {
+            reportProgress: true,
+            observe: 'events',
+          })
+          .pipe(
+            finalize(() => {
+              this.reset();
+              Swal.fire({
+                icon: 'success',
+                title: 'Liste des vehicules loués est bien importée',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            })
+          );
+  
+        this.uploadSub = upload$.subscribe((event) => {
+          if (event.type == HttpEventType.UploadProgress) {
+            this.uploadProgress = Math.round(100 * (event.loaded / event.total));
+          }
+        });
+      }
+    }
+
+    onFileCarburantSelected(event: any) {
+      const file: File = event.target.files[0];
+  
+      if (file) {
+        this.fileNameVehiculeLoue = file.name;
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        const upload$ = this.http
+          .post(erp + 'importer-carburants', formData, {
+            reportProgress: true,
+            observe: 'events',
+          })
+          .pipe(
+            finalize(() => {
+              this.reset();
+              Swal.fire({
+                icon: 'success',
+                title: 'Liste des carburants est bien importée',
                 showConfirmButton: false,
                 timer: 1500,
               });
