@@ -242,4 +242,23 @@ export class VehiculeService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  //get coefficients infos generals
+  public getConfigurationApplication() {
+    return this.httpClient
+      .get(erp + 'configuration-application')
+      .pipe(catchError(this.handleError));
+  }
+
+  //get liste des chauffeurs
+  public getChauffeursManuel() {
+    return this.httpClient
+      .get(erp + 'Filtre_Employee', {
+        params: {
+          Champ: 'role',
+          Valeur: 'chauffeur',
+        },
+      })
+      .pipe(catchError(this.handleError));
+  }
 }

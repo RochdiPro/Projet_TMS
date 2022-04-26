@@ -8,7 +8,10 @@ import {
 } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { kmactuelValidator } from '../kmactuel.validator';
+import {
+  kmactuelConsommationValidator,
+  kmactuelValidator,
+} from '../kmactuel.validator';
 import { VehiculeService } from '../services/vehicule.service';
 
 //********************************************boite de dialogue detail vehicule **************************************
@@ -611,6 +614,7 @@ export class MajVehiculeComponent implements OnInit {
   vehicule: any;
   idVehicule: any;
   carburants: any;
+  kmActuelDesactive = true;
 
   //constructeur
   constructor(
@@ -626,40 +630,70 @@ export class MajVehiculeComponent implements OnInit {
     await this.chargerVehicule(this.idVehicule);
     await this.getCarburant();
     this.form = this.fb.group({
-      kmactuel: [
-        {value: this.vehicule.kmactuel, disabled: true}
-      ],
+      kmactuel: [{ value: this.vehicule.kmactuel, disabled: true }],
       kmProchainVidangeHuileMoteur: [
         this.vehicule.kilometrageProchainVidangeHuileMoteur,
-        [Validators.required, Validators.pattern('^[0-9]*$'),kmactuelValidator],
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
       ],
       kmProchainVidangeLiquideRefroidissement: [
         this.vehicule.kilometrageProchainVidangeLiquideRefroidissement,
-        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
       ],
       kmProchainVidangeHuileBoiteVitesse: [
         this.vehicule.kilometrageProchainVidangeHuileBoiteVitesse,
-        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
       ],
       kmProchainChangementFiltreClimatiseur: [
         this.vehicule.kilometrageProchainChangementFiltreClimatiseur,
-        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
       ],
       kmProchainChangementFiltreCarburant: [
         this.vehicule.kilometrageProchainChangementFiltreCarburant,
-        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
       ],
       kmProchainChangementBougies: [
         this.vehicule.kilometrageProchainChangementBougies,
-        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
       ],
       kmProchainChangementCourroies: [
         this.vehicule.kilometrageProchainChangementCourroies,
-        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
       ],
       kmProchainChangementPneus: [
         this.vehicule.kilometrageProchainChangementPneus,
-        [Validators.required, Validators.pattern('^[0-9]*$'), kmactuelValidator],
+        [
+          Validators.required,
+          Validators.pattern('^[0-9]*$'),
+          kmactuelValidator,
+        ],
       ],
       consommationnormale: [
         this.vehicule.consommationNormale,
@@ -684,6 +718,57 @@ export class MajVehiculeComponent implements OnInit {
   // get liste des carburants
   async getCarburant() {
     this.carburants = await this.service.carburants().toPromise();
+  }
+
+  activerModificationKmActuel() {
+    Swal.fire({
+      title: 'Êtes-vous sûr?',
+      text: "Pour eviter les fautes de calcul de la consommation, cette action va supprimer les enregistrement qui ne sont pas encores enregistrées dans l'historique de consommation et va supposer que le vehicule est en plein carburant. Veuillez faire un plein avant de procéder!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ok',
+      cancelButtonText: 'annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Mot de passe',
+          input: 'password',
+          inputAttributes: {
+            autocapitalize: 'off',
+          },
+          showCancelButton: true,
+          confirmButtonText: 'ok',
+          showLoaderOnConfirm: true,
+          preConfirm: (pass) => {
+            if (pass !== 'infonet') {
+              Swal.showValidationMessage(`Mot de passe incorrecte`);
+            }
+          },
+          allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.kmActuelDesactive = false;
+            this.form.get('kmactuel').enable();
+            this.form
+              .get('kmactuel')
+              .setValidators([
+                Validators.required,
+                Validators.pattern('^[0-9]*$'),
+                kmactuelValidator,
+              ]);
+          }
+        });
+      }
+    })
+  }
+
+  desactiverModificationKmActuel() {
+    this.kmActuelDesactive = true;
+    this.form.get('kmactuel').setValidators([]);
+    this.form.get('kmactuel').setValue(this.vehicule.kmactuel);
+    this.form.get('kmactuel').disable();
   }
 
   // fermer boite de dialogue mise a jour vehicule
@@ -797,6 +882,7 @@ export class MiseAJourConsommationComponent implements OnInit {
   chauffeur = '';
   idInvalide = false;
   reservoirEstPlein = false;
+  modeManuel = false;
 
   checkBoxRemplirreservoir = false;
   sliderReservoirEstActive = true;
@@ -808,28 +894,44 @@ export class MiseAJourConsommationComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.form = this.fb.group({
-      kmActuel: [
-        0,
-        [
-          Validators.required,
-          Validators.pattern('^[0-9]*$'),
-          kmactuelValidator,
+    this.service.getConfigurationApplication().subscribe((data) => {
+      this.modeManuel = data.modeManuel;
+      this.form = this.fb.group({
+        kmActuel: [
+          0,
+          [
+            Validators.required,
+            Validators.pattern('^[0-9]*$'),
+            kmactuelValidator,
+            kmactuelConsommationValidator,
+          ],
         ],
-      ],
-      idChauffeur: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
-      montantConsomme: [
-        { value: '', disabled: true },
-        [Validators.required, Validators.pattern('[+]?([0-9]*[.])?[0-9]+')],
-      ],
+        idChauffeur: [
+          '',
+          [Validators.required, Validators.pattern('^[0-9]*$')],
+        ],
+        montantConsomme: [
+          { value: '', disabled: true },
+          [Validators.required, Validators.pattern('[+]?([0-9]*[.])?[0-9]+')],
+        ],
+      });
+      this.vehicule = this.data.vehicule;
+      this.reservoir = this.vehicule.reservoir;
+      this.kmActuel.setValue(this.vehicule.kmactuel);
+      localStorage.setItem('kmactuelV', this.vehicule.kmactuel);
+      localStorage.setItem(
+        'capaciteReservoir',
+        this.vehicule.capaciteReservoir
+      );
+      localStorage.setItem('reservoir', this.vehicule.reservoir);
+      localStorage.setItem(
+        'consommationNormale',
+        this.vehicule.consommationNormale
+      );
+      this.getCarburant();
+      this.getChauffeurs();
+      this.reservoirEstPlein = this.testerReservoirPlein();
     });
-    this.vehicule = this.data.vehicule;
-    this.reservoir = this.vehicule.reservoir;
-    this.kmActuel.setValue(this.vehicule.kmactuel);
-    localStorage.setItem('kmactuelV', this.vehicule.kmactuel);
-    this.getCarburant();
-    this.getChauffeurs();
-    this.reservoirEstPlein = this.testerReservoirPlein();
   }
 
   // tester si le reservoir est initialement plein
@@ -846,9 +948,16 @@ export class MiseAJourConsommationComponent implements OnInit {
 
   // get liste des chauffeurs
   getChauffeurs() {
-    this.service.getChauffeurs().subscribe((chauffeurs) => {
-      this.chauffeurs = chauffeurs;
-    });
+    console.log(this.modeManuel);
+    if (this.modeManuel) {
+      this.service.getChauffeursManuel().subscribe((chauffeurs) => {
+        this.chauffeurs = chauffeurs;
+      });
+    } else {
+      this.service.getChauffeurs().subscribe((chauffeurs) => {
+        this.chauffeurs = chauffeurs;
+      });
+    }
   }
 
   // formatter la valeur du label qui s'affiche lors du changement du position du slider

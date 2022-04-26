@@ -8,11 +8,20 @@
                 <mat-label>Kilométrage Actuel</mat-label>
                 <input matInput placeholder="Ex. 100000" formControlName="kmactuel" name="km-actuel" id="km-actuel"
                     value="{{vehicule.kmactuel}}" type="text">
+                <button mat-button matSuffix mat-icon-button aria-label="Filtre" type="button" *ngIf="kmActuelDesactive" (click)="activerModificationKmActuel()">
+                    <mat-icon>lock</mat-icon>
+                </button>
+                <button mat-button matSuffix mat-icon-button aria-label="Filtre" type="button" *ngIf="!kmActuelDesactive" (click)="desactiverModificationKmActuel()">
+                    <mat-icon>lock_open</mat-icon>
+                </button>
                 <mat-error *ngIf="form.controls['kmactuel'].hasError('required')">
                     Champ <strong>Obligatoire</strong>
                 </mat-error>
                 <mat-error *ngIf="form.controls['kmactuel'].hasError('pattern')">
                     Seuls les <strong>chiffres</strong> sont autorisés
+                </mat-error>
+                <mat-error *ngIf="form.controls['kmactuel'].hasError('kmvalide')">
+                    Kilométrage <strong>Invalide</strong>
                 </mat-error>
             </mat-form-field>
         </div>

@@ -56,6 +56,10 @@
                 *ngIf="form.controls['kmActuel'].hasError('kmvalide') && !(form.controls['kmActuel'].hasError('pattern') || form.controls['kmActuel'].hasError('required'))">
                 Kilométrage Actuel <strong>Invalide</strong>
             </mat-error>
+            <mat-error
+                *ngIf="form.controls['kmActuel'].hasError('kmconsovalide') && !(form.controls['kmActuel'].hasError('pattern') || form.controls['kmActuel'].hasError('required'))">
+                Kilométrage possible est <strong>dépassé</strong>
+            </mat-error>
         </mat-form-field>
         <div class="carburant">
             <div>Carburant restant:</div>

@@ -343,7 +343,27 @@ export class CommandeService {
   //get configuration application
   public configurationApplication() {
     return this.httpClient
-    .get<ConfigurationApplication>(erp + 'configuration-application')
-    .pipe(catchError(this.handleError))
+      .get<ConfigurationApplication>(erp + 'configuration-application')
+      .pipe(catchError(this.handleError));
+  }
+
+  public filtrerCommandes(
+    reference: string,
+    client: string,
+    ville: string,
+    adresse: string,
+    trackingNumber: string,
+    etat: string
+  ) {
+    return this.httpClient.get(erp + 'filtrer-commandes', {
+      params: {
+        reference: reference,
+        client: client,
+        ville: ville,
+        adresse: adresse,
+        trackingNumber: trackingNumber,
+        etat: etat
+      }
+    }).pipe(catchError(this.handleError));
   }
 }
