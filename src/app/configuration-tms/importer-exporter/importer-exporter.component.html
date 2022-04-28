@@ -1,6 +1,7 @@
 <section>
     <h2>Colisage</h2>
     <mat-accordion>
+        <!-- panel importer/exporter emballage -->
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -35,6 +36,7 @@
                 </div>
             </div>
         </mat-expansion-panel>
+        <!--panel importer/exporter produits -->
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -68,6 +70,7 @@
                 </div>
             </div>
         </mat-expansion-panel>
+        <!-- panel importer/exporter support -->
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -101,6 +104,7 @@
                 </div>
             </div>
         </mat-expansion-panel>
+        <!-- panel importer/ exporter commandes -->
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -139,6 +143,7 @@
 <section>
     <h2>Gestion de transport</h2>
     <mat-accordion>
+        <!-- panel importer/exporter vehicules -->
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -173,6 +178,7 @@
                 </div>
             </div>
         </mat-expansion-panel>
+        <!-- panel importer/exporter vehicules loués -->
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -207,6 +213,7 @@
                 </div>
             </div>
         </mat-expansion-panel>
+        <!-- panel importer/exporter carburants -->
         <mat-expansion-panel>
             <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -218,7 +225,7 @@
                     <input type="file" class="file-input" accept="text/xml" (change)="onFileCarburantSelected($event)"
                         #fileCarburantsUpload>
                     <div class="file-upload">
-                        {{fileNameVehiculeLoue || "Pas de fichier sélectionné."}}
+                        {{fileNameCarburant || "Pas de fichier sélectionné."}}
                         <button mat-mini-fab color="primary" class="upload-btn" (click)="fileCarburantsUpload.click()"
                             matTooltip="Importer liste carburants" matTooltipPosition="right">
                             <mat-icon>attach_file</mat-icon>
@@ -235,6 +242,41 @@
                 <div class="file-download">
                     Exporter la liste des vehicules loués
                     <button mat-mini-fab color="primary" (click)="exporterListeCarburants()" matTooltip="Exporter"
+                        matTooltipPosition="right">
+                        <mat-icon>file_download</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-expansion-panel>
+        <!-- panel importer/exporter missions -->
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Missions
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="buttons">
+                <div class="file-upload">
+                    <input type="file" class="file-input" accept="text/xml" (change)="onFileMissionSelected($event)"
+                        #fileMissionsUpload>
+                    <div class="file-upload">
+                        {{fileNameMission || "Pas de fichier sélectionné."}}
+                        <button mat-mini-fab color="primary" class="upload-btn" (click)="fileMissionsUpload.click()"
+                            matTooltip="Importer liste carburants" matTooltipPosition="right">
+                            <mat-icon>attach_file</mat-icon>
+                        </button>
+                    </div>
+                    <div class="progress">
+                        <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress"
+                            *ngIf="uploadProgress">
+                        </mat-progress-bar>
+                        <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever
+                        </mat-icon>
+                    </div>
+                </div>
+                <div class="file-download">
+                    Exporter la liste des vehicules loués
+                    <button mat-mini-fab color="primary" (click)="exporterListeMissions()" matTooltip="Exporter"
                         matTooltipPosition="right">
                         <mat-icon>file_download</mat-icon>
                     </button>

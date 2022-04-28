@@ -209,4 +209,10 @@ export class ConfigurationTmsService {
       responseType: 'blob',
     });
   }
+  //exporter liste des missions
+  public exporterMissions() {
+    return this.httpClient.get(erp + 'exporter-missions', {
+      responseType: 'blob',
+    });
+  }
 }

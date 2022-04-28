@@ -1,3 +1,25 @@
+<!-- des champs de filtrage du tableau liste supports -->
+<div class="filtres" *ngIf="wms >= 1">
+  <!-- filtrage par id -->
+  <mat-form-field class="custom-width" [formGroup]="filtres" id="id">
+      <mat-label>Id</mat-label>
+      <input matInput placeholder="id" formControlName="id" (keyup)="filtrerCommandes()">
+      <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('id')"></i>
+  </mat-form-field>
+  <!-- filtrage selon nom support -->
+  <mat-form-field class="custom-width" [formGroup]="filtres">
+      <mat-label>Nom</mat-label>
+      <input matInput placeholder="Nom" formControlName="nom" (keyup)="filtrerCommandes()">
+      <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('nom')"></i>
+  </mat-form-field>
+  <!-- filtrage selon type -->
+  <mat-form-field class="custom-width" [formGroup]="filtres">
+      <mat-label>Type</mat-label>
+      <input matInput placeholder="type" formControlName="type" (keyup)="filtrerCommandes()">
+      <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('type')"></i>
+  </mat-form-field>
+
+</div>
 <div class="mat-elevation-z8" *ngIf="wms>=1">
   <mat-table [dataSource]="dataSource" matSort>
 

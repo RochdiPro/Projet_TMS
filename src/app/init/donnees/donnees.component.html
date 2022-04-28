@@ -82,7 +82,7 @@
                <span *ngIf="categorie  == 'Categorie_Pays'">Catégorie Pays</span>
                <span *ngIf="categorie  == 'Categorie_Employe'">Catégorie Employé</span>
             </h3>
-            <div class=pull-right *ngIf="ajoutAction===false"><button type="button" class="btn btn-primary"
+            <div class=pull-right *ngIf="!ajoutAction && !modificationAction"><button type="button" class="btn btn-primary"
                   style="margin-top: 20px;" (click)="activerAjout()" [disabled]="click">Ajouter Données</button></div>
             <div class="text-center" *ngIf="ajoutAction===true">
                <form [formGroup]="Nom_donnees">
@@ -97,6 +97,21 @@
             <div class="border border-light p-3 mb-4" *ngIf="ajoutAction===true">
                <div class="text-center">
                   <button type="button" class="btn btn-primary" (click)="ajouterDonneesCategorie() ">Valider</button>
+               </div>
+            </div>
+            <div class="text-center" *ngIf="modificationAction">
+               <form [formGroup]="Nom_donnees">
+                  <input type="text" placeholder="Nom" name="Nom" id="Nom" [formControl]="Nom_donnees.get('Nom')"
+                     class="form-control">
+               </form>
+               <form [formGroup]="Valeur_donnees">
+                  <input type="text" placeholder="Valeur" name="Valeur" id="Valeur"
+                     [formControl]="Valeur_donnees.get('Valeur')" class="form-control">
+               </form>
+            </div>
+            <div class="border border-light p-3 mb-4" *ngIf="modificationAction">
+               <div class="text-center">
+                  <button type="button" class="btn btn-primary" (click)="modifierDonneesCategorie() ">Valider</button>
                </div>
             </div>
             <br>
@@ -114,8 +129,12 @@
 
                      <td>{{categorie.nom}}</td>
                      <td>{{categorie.valeur}}</td>
-                     <td><i class="pe-7s-trash" style="color: red;" title="Supprimer donnée"
-                           (click)="SupprimerDonneesCategorie(categorie.nom)"></i></td>
+                     <td>
+                        <i class="pe-7s-trash" style="color: red;" title="Supprimer donnée"
+                           (click)="SupprimerDonneesCategorie(categorie.tag)"></i>
+                        <i class="pe-7s-note" style="color: black;" title="Modifier donnée"
+                           (click)="activerModifier(categorie)"></i>
+                        </td>
                   </tr>
                </tbody>
             </table>

@@ -27,6 +27,9 @@ export class DonneesComponent implements OnInit {
   select4: any;
   nom_categorie_choisie: any;
   nom_categorie_choisie2: any;
+  modificationAction: boolean = false;
+  objetModifier: any;
+
   constructor(public donneesService: EditService, private fb: FormBuilder) {
     //recupérer la liste des categories des données
     this.donneesService
@@ -165,6 +168,7 @@ export class DonneesComponent implements OnInit {
   //activer l'action ajout données
   activerAjout() {
     this.ajoutAction = true;
+    this.modificationAction = false;
   }
   //Ajouter données à une catégorie
   ajouterDonneesCategorie() {
@@ -212,5 +216,45 @@ export class DonneesComponent implements OnInit {
         Swal.fire('Annulé', '', 'error');
       }
     });
+  }
+
+  //activer l'action modifier données
+  activerModifier(categorie: any) {
+    this.ajoutAction = false;
+    this.modificationAction = true;
+    this.objetModifier = categorie;
+    this.Nom_donnees.get('Nom').setValue(categorie.nom);
+    this.Valeur_donnees.get('Valeur').setValue(categorie.valeur);
+  }
+  //Modifier données du catégorie
+  modifierDonneesCategorie() {
+    this.donneesService
+      .supprimerDonneesCategorie(this.objetModifier.nom, this.categorie)
+      .subscribe(
+        () => {
+          var formDataDonnees: any = new FormData();
+          formDataDonnees.append('Categorie', this.Nom_donnees.get('Nom').value);
+          formDataDonnees.append('Valeur', this.Valeur_donnees.get('Valeur').value);
+          this.donneesService
+            .ajouterDonneesCategorie(formDataDonnees, this.categorie)
+            .subscribe(
+              () => {
+                Swal.fire('Donnée modifiée avec succès.');
+                this.nom_categorie;
+                this.Nom_donnees.get('Nom').setValue("");
+                this.Valeur_donnees.controls.Valeur.setValue('');
+                this.modificationAction = false;
+                this.CategorieSelectionnee(this.categorie);
+
+              },
+              (error) => {
+                console.log(error);
+              }
+            );
+        },
+        (error) => {
+          console.log(error);
+        }
+      );
   }
 }

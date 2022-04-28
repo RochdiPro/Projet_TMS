@@ -780,7 +780,7 @@ export class MajVehiculeComponent implements OnInit {
   async miseAJourVehicule() {
     var formData: any = new FormData();
     formData.append('id', this.idVehicule);
-    formData.append('kmactuel', this.form.get('kmactuel').value);
+    formData.append('kmActuel', this.form.get('kmactuel').value);
     formData.append(
       'kilometrageProchainVidangeHuileMoteur',
       this.form.get('kmProchainVidangeHuileMoteur').value
@@ -828,6 +828,10 @@ export class MajVehiculeComponent implements OnInit {
       new Date(this.form.get('dateassurance').value)
     );
     formData.append('datetaxe', new Date(this.form.get('datetaxe').value));
+    let reservoir = this.kmActuelDesactive ? this.vehicule.reservoir : 100;
+    let historiqueConsommation = this.kmActuelDesactive? this.vehicule.historiqueConsommation : "";
+    formData.append('reservoir', reservoir);
+    formData.append('historique', historiqueConsommation);
     Swal.fire({
       title: 'Voulez vous enregistrer les modifications?',
       showCancelButton: true,

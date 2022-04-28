@@ -1,4 +1,16 @@
+/**
+ Constructeur: get droit d'accées depuis sessionStorage
+ Liste des methodes:
+ * createFiltresFormGroup: créer le formGroup des filtres.
+ * filtrerCommandes: filtrer la liste des supports.
+ * viderChamp: vider le champ de filtre.
+ * chargerListeSupports: get le liste des supports.
+ * modifierSupport: modifier un support.
+ * supprimerSupport: supprimer un support.
+ */
+
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -27,6 +39,7 @@ export class ListerSupportsComponent implements OnInit {
     'actions'
   ];
   dataSource: MatTableDataSource<Support>;
+  filtres: FormGroup;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -34,7 +47,7 @@ export class ListerSupportsComponent implements OnInit {
   ngAfterViewInit() {
     
   }
-  constructor(private serviceSupport: SupportService, public router: Router) {
+  constructor(private serviceSupport: SupportService, public router: Router, private fb: FormBuilder) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 
@@ -45,7 +58,34 @@ export class ListerSupportsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.createFiltresFormGroup();
     this.chargerListeSupports();
+  }
+
+    //créer le formGroup des filtres
+    createFiltresFormGroup() {
+      this.filtres = this.fb.group({
+        id: '',
+        nom: '',
+        type: '',
+      });
+    }
+
+  // filtrer la liste des supports
+  filtrerCommandes() {
+    this.serviceSupport.filtrerSupportsTroisChamps(
+      this.filtres.get('id').value,
+      this.filtres.get('nom').value,
+      this.filtres.get('type').value,
+    ).subscribe((data) => {
+      this.dataSource.data = data;
+    });
+  }
+
+  //vider le champ de filtre
+  viderChamp(champ: string) {
+    this.filtres.get(champ).setValue('');
+    this.filtrerCommandes();
   }
 
   // get le liste des supports
@@ -56,11 +96,13 @@ export class ListerSupportsComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
+  //modifier un support
   modifierSupport(support: any) {
     this.serviceSupport.supp = support; //on enregistre le support dans une variable dans le SupportService pour le passer a l'interface de modification
     this.router.navigate(['/Menu/Menu_Colisage/Supports/Modifier_Support']); //navigation vers l'interface modifier support
   }
 
+  //supprimer un support
   async supprimerSupport(support: any) {
     await this.serviceSupport.supprimerSupport(support.id_support).toPromise();
     this.chargerListeSupports(); //actualisation du liste support aprés supprimation
