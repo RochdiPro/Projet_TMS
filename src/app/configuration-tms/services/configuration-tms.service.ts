@@ -215,4 +215,16 @@ export class ConfigurationTmsService {
       responseType: 'blob',
     });
   }
+  //exporter liste des employés
+  public exporterEmployes() {
+    return this.httpClient.get(erp + 'exporter-tous-employes', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des clients
+  public exporterClients() {
+    return this.httpClient.get(erp + 'exporter-tous-clients', {
+      responseType: 'blob',
+    });
+  }
 }

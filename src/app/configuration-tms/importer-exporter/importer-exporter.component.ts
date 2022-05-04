@@ -41,6 +41,8 @@ export class ImporterExporterComponent implements OnInit {
   fileNameVehiculeLoue: any;
   fileNameCarburant: any;
   fileNameMission: any;
+  fileNameEmploye: any;
+  fileNameClient: any;
   uploadProgress: number;
   uploadSub: Subscription;
 
@@ -135,6 +137,32 @@ export class ImporterExporterComponent implements OnInit {
         var link = document.createElement('a');
         link.href = downloadURL;
         link.download = "liste-carburanrs.xml";
+        link.click();
+      }),
+        (error: any) => console.log('Error downloading the file'),
+        () => console.info('File downloaded successfully');
+    }
+
+    //exporter liste missions
+    exporterListeEmployes() {
+      this.service.exporterEmployes().subscribe((response: any) => {
+        var downloadURL = window.URL.createObjectURL(response);
+        var link = document.createElement('a');
+        link.href = downloadURL;
+        link.download = "liste-employés.xml";
+        link.click();
+      }),
+        (error: any) => console.log('Error downloading the file'),
+        () => console.info('File downloaded successfully');
+    }
+
+    //exporter liste missions
+    exporterListeClients() {
+      this.service.exporterClients().subscribe((response: any) => {
+        var downloadURL = window.URL.createObjectURL(response);
+        var link = document.createElement('a');
+        link.href = downloadURL;
+        link.download = "liste-clients.xml";
         link.click();
       }),
         (error: any) => console.log('Error downloading the file'),
@@ -404,6 +432,73 @@ export class ImporterExporterComponent implements OnInit {
               Swal.fire({
                 icon: 'success',
                 title: 'Liste des missions est bien importée',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            })
+          );
+  
+        this.uploadSub = upload$.subscribe((event) => {
+          if (event.type == HttpEventType.UploadProgress) {
+            this.uploadProgress = Math.round(100 * (event.loaded / event.total));
+          }
+        });
+      }
+    }
+
+    // importer la liste des employes depuis un fichier xml
+    onFileEmployesSelected(event: any) {
+      const file: File = event.target.files[0];
+  
+      if (file) {
+        this.fileNameEmploye = file.name;
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        const upload$ = this.http
+          .post(erp + 'Importer_Employes', formData, {
+            reportProgress: true,
+            observe: 'events',
+          })
+          .pipe(
+            finalize(() => {
+              this.reset();
+              Swal.fire({
+                icon: 'success',
+                title: 'Liste des employés est bien importée',
+                showConfirmButton: false,
+                timer: 1500,
+              });
+            })
+          );
+  
+        this.uploadSub = upload$.subscribe((event) => {
+          if (event.type == HttpEventType.UploadProgress) {
+            this.uploadProgress = Math.round(100 * (event.loaded / event.total));
+          }
+        });
+      }
+    }
+    // importer la liste des missions depuis un fichier xml
+    onFileClientSelected(event: any) {
+      const file: File = event.target.files[0];
+  
+      if (file) {
+        this.fileNameClient = file.name;
+        const formData = new FormData();
+        formData.append('file', file);
+  
+        const upload$ = this.http
+          .post(erp + 'Importer_Clients', formData, {
+            reportProgress: true,
+            observe: 'events',
+          })
+          .pipe(
+            finalize(() => {
+              this.reset();
+              Swal.fire({
+                icon: 'success',
+                title: 'Liste des clients est bien importée',
                 showConfirmButton: false,
                 timer: 1500,
               });

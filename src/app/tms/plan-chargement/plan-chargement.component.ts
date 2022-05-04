@@ -303,8 +303,17 @@ export class PlanChargementComponent implements OnInit {
           this.listeCommandes.push(this.commande);
           this.listeCommandesModeManuel.push(commandeManuel);
         }
+        let j =0;
+        this.listeCommandes.forEach((cmd: any) => {
+          cmd.articles.forEach((article: any) => {
+            j++
+            article.num = j +"";
+          });
+        });
+        let i =0;
         this.listeCommandesModeManuel.forEach((cmd: any) => {
           cmd.articles.forEach((article: any) => {
+            i++
             //pour chaque article on identifie ses dimensions
             let dimensions = article.dimensions.split('x');
             let longueur = Number(dimensions[0]) * 2.7;
@@ -314,6 +323,7 @@ export class PlanChargementComponent implements OnInit {
             article.longueur = longueur;
             article.largeur = largeur;
             article.hauteur = hauteur;
+            article.num = i+ "";
           });
         });
 
@@ -1240,7 +1250,7 @@ export class PlanChargementComponent implements OnInit {
           lockUniScaling: true,
         });
         // nom de l'article
-        var text = new fabric.Text(article.emballage, {
+        var text = new fabric.Text(article.num, {
           fontSize: 10,
           originX: 'center',
           originY: 'center',
@@ -1307,7 +1317,7 @@ export class PlanChargementComponent implements OnInit {
           stroke: 'black',
           strokeWidth: 1,
         });
-        var text = new fabric.Text(article.emballage, {
+        var text = new fabric.Text(article.num, {
           fontSize: 10,
           originX: 'center',
           originY: 'center',
@@ -1904,7 +1914,7 @@ export class PlanChargementComponent implements OnInit {
       strokeWidth: 1,
       lockUniScaling: true,
     });
-    var text = new fabric.Text(colis.emballage, {
+    var text = new fabric.Text(colis.num, {
       fontSize: 10,
       originX: 'center',
       originY: 'center',
@@ -1941,7 +1951,7 @@ export class PlanChargementComponent implements OnInit {
       stroke: 'black',
       strokeWidth: 1,
     });
-    var text = new fabric.Text(colis.emballage, {
+    var text = new fabric.Text(colis.num, {
       fontSize: 10,
       originX: 'center',
       originY: 'center',

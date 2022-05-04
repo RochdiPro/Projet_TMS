@@ -288,6 +288,12 @@ export class ListerVehiculesComponent implements OnInit {
       this.vehicules = result;
     })
   }
+
+  //ouvrir page de modification du vehicule
+  ouvrirModificationVehicule(vehicule: any) {
+    this.service.vehiculeAModifier = vehicule;
+    this._router.navigate(["/Menu/TMS/Parc/Vehicules/Mes-Vehicules/modifier-vehicule"]);
+  }
 }
 
 

@@ -187,12 +187,13 @@
             </mat-expansion-panel-header>
             <div class="buttons">
                 <div class="file-upload">
-                    <input type="file" class="file-input" accept="text/xml" (change)="onFileVehiculesLouesSelected($event)"
-                        #fileVehiculesLouesUpload>
+                    <input type="file" class="file-input" accept="text/xml"
+                        (change)="onFileVehiculesLouesSelected($event)" #fileVehiculesLouesUpload>
                     <div class="file-upload">
                         {{fileNameVehiculeLoue || "Pas de fichier sélectionné."}}
-                        <button mat-mini-fab color="primary" class="upload-btn" (click)="fileVehiculesLouesUpload.click()"
-                            matTooltip="Importer liste vehicules loués" matTooltipPosition="right">
+                        <button mat-mini-fab color="primary" class="upload-btn"
+                            (click)="fileVehiculesLouesUpload.click()" matTooltip="Importer liste vehicules loués"
+                            matTooltipPosition="right">
                             <mat-icon>attach_file</mat-icon>
                         </button>
                     </div>
@@ -277,6 +278,82 @@
                 <div class="file-download">
                     Exporter la liste des vehicules loués
                     <button mat-mini-fab color="primary" (click)="exporterListeMissions()" matTooltip="Exporter"
+                        matTooltipPosition="right">
+                        <mat-icon>file_download</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+    <h2>RH</h2>
+    <mat-accordion>
+        <!-- panel importer/exporter employes -->
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Employés
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="buttons">
+                <div class="file-upload">
+                    <input type="file" class="file-input" accept="text/xml" (change)="onFileEmployesSelected($event)"
+                        #fileEmployesUpload>
+                    <div class="file-upload">
+                        {{fileNameEmploye || "Pas de fichier sélectionné."}}
+                        <button mat-mini-fab color="primary" class="upload-btn" (click)="fileEmployesUpload.click()"
+                            matTooltip="Importer liste carburants" matTooltipPosition="right">
+                            <mat-icon>attach_file</mat-icon>
+                        </button>
+                    </div>
+                    <div class="progress">
+                        <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress"
+                            *ngIf="uploadProgress">
+                        </mat-progress-bar>
+                        <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever
+                        </mat-icon>
+                    </div>
+                </div>
+                <div class="file-download">
+                    Exporter la liste des employés
+                    <button mat-mini-fab color="primary" (click)="exporterListeEmployes()" matTooltip="Exporter"
+                        matTooltipPosition="right">
+                        <mat-icon>file_download</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </mat-expansion-panel>
+    </mat-accordion>
+    <h2>Données</h2>
+    <mat-accordion>
+        <!-- panel importer/exporter clients -->
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Clients
+                </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="buttons">
+                <div class="file-upload">
+                    <input type="file" class="file-input" accept="text/xml" (change)="onFileClientSelected($event)"
+                        #fileClientsUpload>
+                    <div class="file-upload">
+                        {{fileNameClient || "Pas de fichier sélectionné."}}
+                        <button mat-mini-fab color="primary" class="upload-btn" (click)="fileClientsUpload.click()"
+                            matTooltip="Importer liste carburants" matTooltipPosition="right">
+                            <mat-icon>attach_file</mat-icon>
+                        </button>
+                    </div>
+                    <div class="progress">
+                        <mat-progress-bar class="progress-bar" mode="determinate" [value]="uploadProgress"
+                            *ngIf="uploadProgress">
+                        </mat-progress-bar>
+                        <mat-icon class="cancel-upload" (click)="cancelUpload()" *ngIf="uploadProgress">delete_forever
+                        </mat-icon>
+                    </div>
+                </div>
+                <div class="file-download">
+                    Exporter la liste des clients
+                    <button mat-mini-fab color="primary" (click)="exporterListeClients()" matTooltip="Exporter"
                         matTooltipPosition="right">
                         <mat-icon>file_download</mat-icon>
                     </button>

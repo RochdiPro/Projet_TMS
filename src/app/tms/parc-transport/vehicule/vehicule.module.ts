@@ -46,6 +46,7 @@ import { MatSliderModule } from '@angular/material/slider';
 import localeFr from '@angular/common/locales/fr';
 
 import { VehiculeRoutingModule } from './vehicule-routing.module';
+import { ModifierVehiculeComponent } from './mes-vehicules/modifier-vehicule/modifier-vehicule.component';
 registerLocaleData(localeFr, 'fr');
 
 @NgModule({
@@ -65,7 +66,8 @@ registerLocaleData(localeFr, 'fr');
     AjouterVehiculeComponent,
     ListerVehiculesComponent,
     ListerVehiculesLoueComponent,
-    HistoriqueConsommation
+    HistoriqueConsommation,
+    ModifierVehiculeComponent
   ],
   imports: [
     CommonModule,

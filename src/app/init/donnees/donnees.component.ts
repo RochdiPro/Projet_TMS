@@ -229,7 +229,7 @@ export class DonneesComponent implements OnInit {
   //Modifier données du catégorie
   modifierDonneesCategorie() {
     this.donneesService
-      .supprimerDonneesCategorie(this.objetModifier.nom, this.categorie)
+      .supprimerDonneesCategorie(this.objetModifier.tag, this.categorie)
       .subscribe(
         () => {
           var formDataDonnees: any = new FormData();

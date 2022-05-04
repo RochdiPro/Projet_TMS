@@ -7,6 +7,7 @@ const infonet = '/INFONET/';
   providedIn: 'root',
 })
 export class VehiculeService {
+  vehiculeAModifier: any;
   handleError: any;
   constructor(private httpClient: HttpClient) {}
 
@@ -39,6 +40,13 @@ export class VehiculeService {
       .put(erp + 'modifier-vehicule', formData)
       .pipe(catchError(this.handleError));
   }
+
+    //modifier les informations d'un vehicule
+    public modifierVehicule(formData: any) {
+      return this.httpClient
+        .put(erp + 'modifier-infos-vehicule', formData)
+        .pipe(catchError(this.handleError));
+    }
 
   //filtrer vehicule
   public filtrerVehicule(

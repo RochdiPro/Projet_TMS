@@ -75,8 +75,8 @@
                <!-- fin bouton de detail vehicule -->
 
                <!-- bouton de mise a jour de vehicule -->
-               <button class="mb-2  btn " (click)="ouvrirMiseAJourVehicule(vehicule.id)" *ngIf="tms >= 3">
-                  <i class="fas fa-edit"></i>
+               <button mat-icon-button class="mb-2  btn " (click)="ouvrirMiseAJourVehicule(vehicule.id)" *ngIf="tms >= 3">
+                  <mat-icon>car_repair</mat-icon>
                </button>
                <!-- fin bouton de mise a jour de vehicule -->
 
@@ -87,8 +87,16 @@
                <!-- fin bouton de mise a jour du consommation du vehicule -->
 
                <!-- bouton de mise a jour du consommation du vehicule -->
-               <button mat-icon-button class="mb-2  btn " (click)="ouvrirEntretien(vehicule)" *ngIf="tms >= 3">
-                  <mat-icon>car_repair</mat-icon>
+               <button class="mb-2  btn " (click)="ouvrirEntretien(vehicule)" *ngIf="tms >= 3">
+                  <i class="fas fa-wrench"></i>
+               </button>
+               <!-- fin bouton de mise a jour du consommation du vehicule -->
+
+               <!-- bouton de modification du vehicule -->
+               <button class="mb-2  btn " *ngIf="tms >= 4">
+                  <a role="button" (click)="ouvrirModificationVehicule(vehicule)">
+                     <i class="fas fa-pen"></i>
+                  </a>
                </button>
                <!-- fin bouton de mise a jour du consommation du vehicule -->
 
