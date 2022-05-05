@@ -8,6 +8,7 @@ const infonet = '/INFONET/';
 })
 export class VehiculeService {
   vehiculeAModifier: any;
+  vehiculeLoueAModifier: any;
   handleError: any;
   constructor(private httpClient: HttpClient) {}
 
@@ -41,12 +42,12 @@ export class VehiculeService {
       .pipe(catchError(this.handleError));
   }
 
-    //modifier les informations d'un vehicule
-    public modifierVehicule(formData: any) {
-      return this.httpClient
-        .put(erp + 'modifier-infos-vehicule', formData)
-        .pipe(catchError(this.handleError));
-    }
+  //modifier les informations d'un vehicule
+  public modifierVehicule(formData: any) {
+    return this.httpClient
+      .put(erp + 'modifier-infos-vehicule', formData)
+      .pipe(catchError(this.handleError));
+  }
 
   //filtrer vehicule
   public filtrerVehicule(
@@ -165,6 +166,11 @@ export class VehiculeService {
   //lister les vehicules loués
   public vehiculesLoues() {
     return this.httpClient.get(erp + 'vehicules-loues');
+  }
+
+  // modifier vehicule loue
+  public modifierVehiculeLoue(formData: any) {
+    return this.httpClient.put(erp + 'modifier-vehicule-loue', formData);
   }
 
   //importer les données d'un vehicule loué par ID

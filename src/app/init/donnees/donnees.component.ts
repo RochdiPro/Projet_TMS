@@ -233,19 +233,24 @@ export class DonneesComponent implements OnInit {
       .subscribe(
         () => {
           var formDataDonnees: any = new FormData();
-          formDataDonnees.append('Categorie', this.Nom_donnees.get('Nom').value);
-          formDataDonnees.append('Valeur', this.Valeur_donnees.get('Valeur').value);
+          formDataDonnees.append(
+            'Categorie',
+            this.Nom_donnees.get('Nom').value
+          );
+          formDataDonnees.append(
+            'Valeur',
+            this.Valeur_donnees.get('Valeur').value
+          );
           this.donneesService
             .ajouterDonneesCategorie(formDataDonnees, this.categorie)
             .subscribe(
               () => {
                 Swal.fire('Donnée modifiée avec succès.');
                 this.nom_categorie;
-                this.Nom_donnees.get('Nom').setValue("");
+                this.Nom_donnees.get('Nom').setValue('');
                 this.Valeur_donnees.controls.Valeur.setValue('');
                 this.modificationAction = false;
                 this.CategorieSelectionnee(this.categorie);
-
               },
               (error) => {
                 console.log(error);
@@ -256,5 +261,49 @@ export class DonneesComponent implements OnInit {
           console.log(error);
         }
       );
+  }
+
+  //reinitialiser les données
+  reinitialiser() {
+    Swal.fire({
+      title: 'Êtes-vous sûr?',
+      text: "Les données que vous avez ajouté seront supprimé",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'ok',
+      cancelButtonText: 'annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Mot de passe',
+          input: 'password',
+          inputAttributes: {
+            autocapitalize: 'off',
+          },
+          showCancelButton: true,
+          confirmButtonText: 'ok',
+          showLoaderOnConfirm: true,
+          preConfirm: (pass) => {
+            if (pass !== 'infonet') {
+              Swal.showValidationMessage(`Mot de passe incorrecte`);
+            }
+          },
+          allowOutsideClick: () => !Swal.isLoading(),
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.donneesService.initialiserDonnees().subscribe(()=>{
+              Swal.fire({
+                icon: 'success',
+                title: 'Les données ont été reinitialisées avec succés',
+                showConfirmButton: false,
+                timer: 1500
+              })
+            });
+          }
+        });
+      }
+    })
   }
 }

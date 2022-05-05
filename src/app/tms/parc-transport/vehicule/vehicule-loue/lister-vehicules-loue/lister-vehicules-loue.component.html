@@ -71,6 +71,12 @@
                     </button>
                     <!-- fin bouton de detail vehicule -->
 
+                    <!-- bouton modifier vehicule -->
+                    <button class="mb-2  btn icon" (click)="ouvrirModifier(vehicule)">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <!-- fin bouton de detail vehicule -->
+
                     <!-- Bouton supprimer vehicule -->
                     <button class="mb-2  btn icon" *ngIf="tms >= 4">
                         <i class="fas fa-trash-alt" style="color: #ff0000;"

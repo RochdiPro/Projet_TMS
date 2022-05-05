@@ -199,4 +199,10 @@ export class ListerVehiculesLoueComponent implements OnInit {
         this.vehiculesLoues = result;
       })
     }
+
+    //ouvrire component modifier vehicule loue
+    ouvrirModifier(vehicule: any) {
+      this.service.vehiculeLoueAModifier = vehicule;
+      this._router.navigateByUrl('/Menu/TMS/Parc/Vehicules/Vehicules-Loues/modifier-vehicule')
+    }
 }

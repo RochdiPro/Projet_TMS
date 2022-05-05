@@ -55,4 +55,9 @@ export class EditService {
       return of(result as T);
     };
   }
+
+  //Initialiser données
+  initialiserDonnees() {
+    return this.http.post<any>(infonet + "Init_Donnees",{});
+  }
 }

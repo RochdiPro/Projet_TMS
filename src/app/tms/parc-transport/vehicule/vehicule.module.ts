@@ -47,6 +47,7 @@ import localeFr from '@angular/common/locales/fr';
 
 import { VehiculeRoutingModule } from './vehicule-routing.module';
 import { ModifierVehiculeComponent } from './mes-vehicules/modifier-vehicule/modifier-vehicule.component';
+import { ModifierVehiculeLoueComponent } from './vehicule-loue/modifier-vehicule-loue/modifier-vehicule-loue.component';
 registerLocaleData(localeFr, 'fr');
 
 @NgModule({
@@ -67,7 +68,8 @@ registerLocaleData(localeFr, 'fr');
     ListerVehiculesComponent,
     ListerVehiculesLoueComponent,
     HistoriqueConsommation,
-    ModifierVehiculeComponent
+    ModifierVehiculeComponent,
+    ModifierVehiculeLoueComponent
   ],
   imports: [
     CommonModule,

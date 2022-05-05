@@ -6,6 +6,7 @@ import { MesVehiculesComponent } from './mes-vehicules/mes-vehicules.component';
 import { ModifierVehiculeComponent } from './mes-vehicules/modifier-vehicule/modifier-vehicule.component';
 import { AjouterVehiculeLoueComponent } from './vehicule-loue/ajouter-vehicule-loue/ajouter-vehicule-loue.component';
 import { ListerVehiculesLoueComponent } from './vehicule-loue/lister-vehicules-loue/lister-vehicules-loue.component';
+import { ModifierVehiculeLoueComponent } from './vehicule-loue/modifier-vehicule-loue/modifier-vehicule-loue.component';
 import { VehiculeLoueComponent } from './vehicule-loue/vehicule-loue.component';
 
 const routes: Routes = [
@@ -23,7 +24,8 @@ const routes: Routes = [
     component: VehiculeLoueComponent,
     children: [
       { path: 'ajouter-vehicule', component: AjouterVehiculeLoueComponent },
-      { path: 'lister-vehicules', component:  ListerVehiculesLoueComponent}
+      { path: 'lister-vehicules', component:  ListerVehiculesLoueComponent},
+      { path: 'modifier-vehicule', component:  ModifierVehiculeLoueComponent}
     ],
   },
 ];

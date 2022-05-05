@@ -103,6 +103,7 @@ export class ModifierVehiculeComponent implements OnInit {
         this.caracteristiquesFormGroup.get('numeroVoiture').setValue(matricule[1]);
         this.caracteristiquesFormGroup.get('numeroVoiture').setValidators([Validators.required]);
       }
+      this.categorie = this.vehicule.categories
       this.entretienEtPapierFormGroup = this.fb.group({
         kmactuel: [this.vehicule.kmactuel, [Validators.required, Validators.pattern('^[0-9]*$')]],
         kmProchainVidangeHuileMoteur: [
