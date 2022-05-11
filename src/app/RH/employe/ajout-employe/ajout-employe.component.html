@@ -174,7 +174,8 @@
                     <mat-form-field>
 
                         <mat-label for="Pays"> Pays </mat-label>
-                        <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays" required>
+                        <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays"
+                            (selectionChange)="ChoixPays($event)" required>
                             <mat-option></mat-option>
                             <mat-option *ngFor="let pays of  categorie_pays" [value]="pays.nom">
                                 {{pays.nom}}</mat-option>
@@ -188,7 +189,8 @@
                     <mat-form-field>
 
                         <mat-label for="Ville"> Ville </mat-label>
-                        <mat-select formControlName="Ville" id="Ville" name="Ville" placeholder="Ville">
+                        <mat-select formControlName="Ville" id="Ville" name="Ville" placeholder="Ville"
+                            (selectionChange)="ChoixVille($event)">
                             <mat-option></mat-option>
                             <mat-option *ngFor="let ville of  categorie_ville" [value]="ville.nom">
                                 {{ville.nom}}</mat-option>
@@ -314,7 +316,8 @@
                 </div>
                 <h4>code Accés :
                     {{Acces.get('vente').value}}-{{Acces.get('achat').value}}-{{Acces.get('tms').value}}-{{Acces.get('wms').value}}-{{Acces.get('config').value}}-{{Acces.get('rh').value}}
-                    <i class="pe-7s-next"> </i> {{Acces.get('Acces').value}} </h4>
+                    <i class="pe-7s-next"> </i> {{Acces.get('Acces').value}}
+                </h4>
 
             </div>
 

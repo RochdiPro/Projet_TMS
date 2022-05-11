@@ -97,16 +97,15 @@ export class AjouterCommandeComponent implements OnInit {
   }
 
   async ngOnInit() {
-    let config: ConfigurationApplication = await this.serviceCommande.configurationApplication().toPromise();
-    this.estManuel = config.modeManuel;
-    // ajout des formControls dans le formGroup des filtres
     this.filtreFormGroup = this.fb.group({
       type: 'Facture',
       id: '',
       ville: '',
       date: this.date,
     });
-    // await this.getListeClients();
+    let config: ConfigurationApplication = await this.serviceCommande.configurationApplication().toPromise();
+    this.estManuel = config.modeManuel;
+    // ajout des formControls dans le formGroup des filtres
 
     if (this.estManuel) {
       // si le mode est manuel:
@@ -119,9 +118,11 @@ export class AjouterCommandeComponent implements OnInit {
       this.datesDispo = await this.serviceCommande
         .datesDisponibles()
         .toPromise();
-      let dateDivise = this.datesDispo[this.datesDispo.length - 1].split('-');
-      let date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
-      this.filtreFormGroup.get('date').setValue(new Date(date));
+      if (this.datesDispo.length != 0) {
+        let dateDivise = this.datesDispo[this.datesDispo.length - 1].split('-');
+        let date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
+        this.filtreFormGroup.get('date').setValue(new Date(date));
+      }
       this.getCommandesModeManuel();
     } else {
       // pour le mode non manuel on recupére la liste des factures et des bls depuis la base des données

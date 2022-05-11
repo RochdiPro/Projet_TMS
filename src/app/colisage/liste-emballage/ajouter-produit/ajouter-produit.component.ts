@@ -81,10 +81,10 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    this.creerFormGroups();
     let configurationApplication = await this.service.configurationApplication().toPromise()
     this.modeManuel = configurationApplication.modeManuel;
     this.chargerFicheProduit();
-    this.creerFormGroups();
     this.dataSourceProduits.filterPredicate = (data, filter: string) => {
       //forcer le filtre a chercher que dans la colonne nom_produit
       return data.nom_Produit.toLowerCase().includes(filter);

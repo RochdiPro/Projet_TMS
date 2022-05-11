@@ -94,39 +94,76 @@ export class EmployeServiceService {
       .pipe(catchError(this.gererErreur));
   }
 
+  // récupérer la region  
+  ListerRegion(ville: any): Observable<any> {
+    return this.http.get(erp + 'Categorie_Region', {
+      params: {
+        Ville: ville
+      }, observe: 'body'
+    }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer la ville   
+  ListerVille(pays: any): Observable<any> {
+    return this.http.get(erp + 'Categorie_Ville', {
+      params: {
+        Pays: pays
+      }, observe: 'body'
+    }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer les pays 
+  ListerPays(): Observable<any> {
+    return this.http.get(erp + 'Categorie_Pays', { observe: 'body' }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer les catégories banques  
+  ListerBanques(): Observable<any> {
+    return this.http.get(erp + 'Categorie_Banque', { observe: 'body' }).pipe(catchError(this.gererErreur)
+    );
+  }
+  // récupérer les catégories  
+  ListerCategorieEmploye(): Observable<any> {
+    return this.http.get(erp + 'Categorie_Employe', { observe: 'body' }).pipe(catchError(this.gererErreur)
+    );
+  }
+  
+  // récupérer les categories de pièce d'identité du Client 
+  ListerCategoriePiece(): Observable<any> {
+    return this.http.get(erp + 'Categorie_Piece', { observe: 'body' }).pipe(catchError(this.gererErreur)
+    );
+  }
   // récupérer la liste des Employes
   ListeEmployes(): Observable<any> {
-    return this.http.get(erp + 'Employees').pipe(catchError(this.gererErreur));
+    return this.http.get(erp + 'Employees')
+      .pipe(catchError(this.gererErreur)
+      );
   }
   //  récupérer le Client selon son identifient
-  Employe(id: any): Observable<any> {
-    return this.http
-      .get(erp + 'Employee', {
-        params: {
-          Id: id,
-        },
-        observe: 'body',
-      })
-      .pipe(catchError(this.gererErreur));
+  Employe(id: any): Observable<any> {   
+   
+    return this.http.get(erp + 'Employee', {
+      params: {
+        Id: id
+      }, observe: 'body'
+    }).pipe(catchError(this.gererErreur)
+    );
   }
-  // ajouter un Client
+  // ajouter un Client 
   ajouterEmployes(Client: any) {
-    return this.http.post(erp + 'Creer_Employee', Client, {
-      observe: 'response',
-    });
+
+    return this.http.post(erp + 'Creer_Employee', Client, { observe: "response" })
   }
 
-  // suppression d'un employé par identifiant
+  // suppression d'un employé par identifiant 
   SupprimerEmployes(formData: any) {
-    return this.http
-      .delete(erp + 'Supprimer_Employe', {
-        params: {
-          Id: formData,
-        },
-        observe: 'response',
-      })
-      .toPromise()
-      .then((response) => {
+
+    return this.http.delete(erp + 'Supprimer_Employee/', {
+      params: {
+        Id: formData
+      }, observe: 'response'
+    }).toPromise()
+      .then(response => {
         console.log(response);
       })
       .catch(console.log);
@@ -134,9 +171,15 @@ export class EmployeServiceService {
 
   // modification d'un employé par id
   ModifierEmployes(data: any): Observable<any> {
-    console.log(data);
-    return this.http
-      .post(erp + 'Modifier_Employee', data)
-      .pipe(catchError(this.gererErreur));
+    console.log(data)
+    return this.http.post(erp + 'Modifier_Employee', data).pipe(
+      catchError(this.gererErreur)
+    );
   }
+
+    //  get lise des locals 
+    locals( ) : Observable<any>{
+      return this.http.get(erp + 'Locals', { observe: 'body' }).pipe(catchError(this.gererErreur)
+      );
+    }
 }

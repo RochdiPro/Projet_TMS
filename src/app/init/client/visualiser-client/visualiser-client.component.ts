@@ -65,6 +65,7 @@ export class VisualiserClientComponent implements OnInit {
   Client() {
     this.serviceClient.Client(this.id_client).subscribe((resp: any) => {
       this.client = resp;
+      console.log(resp);
       this.debut_exoneration_tva = new Date(this.client.debut_Exoneration);
       this.debut_exoneration_tva = this.datePipe.transform(
         this.debut_exoneration_tva,

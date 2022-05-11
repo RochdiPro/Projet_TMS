@@ -458,13 +458,7 @@ export class DetailVehiculeComponent implements OnInit {
               fontSize: 12,
             },
             {
-              text:
-                (
-                  (this.vehicule.montantConsomme /
-                    this.carburant.prixCarburant /
-                    this.vehicule.distanceparcourie) *
-                  100
-                ).toFixed(2) + 'L/100Km',
+              text: this.vehicule.consommation + "L/100km",
               bold: true,
               margin: [157.5, 0, 0, 0],
               fontSize: 12,

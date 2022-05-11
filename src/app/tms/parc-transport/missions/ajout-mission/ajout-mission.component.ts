@@ -441,7 +441,7 @@ export class AjoutMissionComponent implements OnInit {
   // get tous les vehicules avec l'état disponible
   async getVehiculeDisponibles() {
     let listeVehiculesPrives = await this.serviceVehicule
-      .filtrerVehicule('', '', 'Disponible')
+      .filtrerVehicule('', 'Disponible')
       .toPromise();
     return listeVehiculesPrives;
   }

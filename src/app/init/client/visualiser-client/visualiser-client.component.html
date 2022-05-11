@@ -55,7 +55,7 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <mat-label><strong> Adresse : </strong></mat-label>
-                        <mat-label>{{client.addresse}}</mat-label>
+                        <mat-label>{{client.adresse}}</mat-label>
                     </div>
                     <div class="col-md-3 mb-3">
                         <mat-label><strong> Pays : </strong></mat-label>
@@ -74,7 +74,7 @@
                 <div class="row">
                     <div class="col-md-3 mb-3">
                         <mat-label><strong> Téléphone : </strong></mat-label>
-                        <mat-label>{{client.tel2}}</mat-label>
+                        <mat-label>{{client.tel1}}</mat-label>
                     </div>
                     <div class="col-md-3 mb-3">
                         <mat-label><strong> Fax : </strong></mat-label>
@@ -218,35 +218,6 @@
                         <mat-label>{{client.rib2}}</mat-label>
                     </div>
                 </div>
-            </mat-tab>
-            <mat-tab>
-                <ng-template mat-tab-label>
-                    <mat-icon class="example-tab-icon">shoping_cart</mat-icon>
-                    Vente
-                </ng-template>
-                <form [formGroup]="Vente">
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <mat-label><strong> Solde facture : </strong></mat-label>
-                            <mat-label>{{client.solde_Facture}}</mat-label>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <mat-label><strong> Plafond : </strong></mat-label>
-                            <mat-label>{{client.plafond}}</mat-label>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <mat-label><strong> Risque : </strong></mat-label>
-                            <mat-label>{{client.risque}}</mat-label>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <mat-label><strong> Bloque vente : </strong></mat-label>
-                            <mat-checkbox matInput formControlName="Bloque_Vente" color="primary" id="Bloque_Vente"
-                                name="Bloque_Vente" [(ngModel)]="client.bloque_Vente" [disabled]=true
-                                style="margin-top:10px">
-                            </mat-checkbox>
-                        </div>
-                    </div>
-                </form>
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>

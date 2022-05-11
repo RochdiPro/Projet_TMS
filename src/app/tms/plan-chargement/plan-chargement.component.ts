@@ -1448,6 +1448,11 @@ export class PlanChargementComponent implements OnInit {
       event.previousIndex,
       event.currentIndex
     );
+    moveItemInArray(
+      this.listeCommandesModeManuel,
+      event.previousIndex,
+      event.currentIndex
+    );
     let idCommandes = '';
     for (let i = 0; i < this.listeCommandes.length; i++) {
       const commande = this.listeCommandes[i];
@@ -1455,10 +1460,11 @@ export class PlanChargementComponent implements OnInit {
     }
     idCommandes = idCommandes.slice(0, -1);
     this.mission.idCommandes = idCommandes;
-    await this.servicePlanChargement
+    this.servicePlanChargement
       .modifierIdCommandesDansMission(this.mission.id, idCommandes)
-      .toPromise();
-    this.createPlanChargementAuto();
+      .subscribe(()=> {
+        this.createPlanChargementAuto();
+      })
   }
 
   // initialiser les racines de l'algorithme qui va placer les articles automatiquement

@@ -3,7 +3,7 @@
       <div class="page-title-wrapper">
          <div class="page-title-heading">
             <div class="page-title-icon">
-               <i class="pe-7s-box2 text-success">
+               <i class="fas fa-boxes text-success">
                </i>
             </div>
             Emballage
@@ -17,13 +17,15 @@
                <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav" id="tab">
                   <!-- bouton lister -->
                   <li class="nav-item">
-                     <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Packaging/Liste_Pack">
+                     <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Packaging/Liste_Pack"
+                        (click)="activerLister()" [ngClass]="{'active': listerEstActive}">
                         <span>Lister</span>
                      </a>
                   </li>
                   <!-- bouton ajouter -->
                   <li class="nav-item" *ngIf="wms >= 2">
-                     <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Packaging/Menu_Ajouter">
+                     <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Packaging/Menu_Ajouter"
+                        (click)="activerAjouter()" [ngClass]="{'active': ajouterEstActive}">
                         <span>Ajouter</span>
                      </a>
                   </li>

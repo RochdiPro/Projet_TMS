@@ -50,13 +50,7 @@
                             placeholder="Categorie Fiscale" (selectionChange)="CategorieFiscaleSelectionner($event)"
                             required>
                             <mat-option *ngFor="let fiscale of categorie_fiscale" [value]="fiscale.nom">
-                                <span *ngIf="fiscale.nom=='Assujetti_tva'">Assujetti à la Tva</span>
-                                <span *ngIf="fiscale.nom=='Non_Assujetti_tva'">Non Assujetti à la Tva</span>
-                                <span *ngIf="fiscale.nom=='Exonéré_tva'">Exonéré de tva</span>
-                                <span *ngIf="fiscale.nom=='Exonéré_tva_et_Fodec'">Exonéré de Tva et Fodec</span>
-                                <span *ngIf="fiscale.nom=='Suspension_tva'">Suspension de Tva</span>
-                                <span *ngIf="fiscale.nom=='Cession_a_quai'">Cession à Quai</span>
-                                <span *ngIf="fiscale.nom=='Reduction_tva'">Reduction de Tva</span>
+                                {{fiscale.nom}}
                             </mat-option>
                         </mat-select>
                         <mat-error *ngIf="Informations_Generales_Form.get('Categorie_Fiscale').invalid">

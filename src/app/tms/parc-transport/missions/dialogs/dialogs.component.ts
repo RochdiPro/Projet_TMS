@@ -1164,16 +1164,16 @@ export class ConfirmerLivraison implements OnInit {
   ngOnInit() {}
 
   // fonction pour scanner le Qr code de confirmation de livraison avec le scanner
-  @HostListener('window:keyup', ['$event'])
+  @HostListener('window:keydown', ['$event'])
   async keyEvent(event: KeyboardEvent) {
-    this.chargementActive = true;
-    setTimeout(() => {
-      this.chargementLong = true;
-    }, 2000);
     let reponse: any;
     if (this.interval) clearInterval(this.interval);
     if (event.code == 'Enter') {
-      if (this.qrCode)
+      if (this.qrCode) {
+        this.chargementActive = true;
+        setTimeout(() => {
+          this.chargementLong = true;
+        }, 2000);
         reponse = await this.serviceMission
           .livrerCommande(
             this.qrCode,
@@ -1181,6 +1181,7 @@ export class ConfirmerLivraison implements OnInit {
             this.data.mission.idCommandes
           )
           .toPromise();
+      }
       this.qrCode = '';
       if (reponse[0]) {
         Swal.fire({
@@ -1201,7 +1202,7 @@ export class ConfirmerLivraison implements OnInit {
       return;
     }
     if (event.key != 'Shift') this.qrCode += event.key;
-    this.interval = setInterval(() => (this.qrCode = ''), 20);
+    this.interval = setInterval(() => (this.qrCode = ''), 40);
   }
 }
 

@@ -23,17 +23,25 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { interval, Subscription } from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-import { BoiteDialogueEntretien, DetailVehiculeComponent, MajVehiculeComponent, MiseAJourConsommationComponent, NotificationComponent, ReclamationComponent } from '../../dialogs/dialogs.component';
+import {
+  BoiteDialogueEntretien,
+  DetailVehiculeComponent,
+  MajVehiculeComponent,
+  MiseAJourConsommationComponent,
+  NotificationComponent,
+  ReclamationComponent,
+} from '../../dialogs/dialogs.component';
 import { VehiculeService } from '../../services/vehicule.service';
 
 @Component({
   selector: 'app-lister-vehicules',
   templateUrl: './lister-vehicules.component.html',
-  styleUrls: ['./lister-vehicules.component.scss']
+  styleUrls: ['./lister-vehicules.component.scss'],
 })
 export class ListerVehiculesComponent implements OnInit {
-
   //Declaration des variables
   vehicules: any;
   carburants: any;
@@ -57,31 +65,41 @@ export class ListerVehiculesComponent implements OnInit {
     { name: 'POIDS LOURDS ARTICULÉS', value: 'C+E' },
   ];
 
-    // variables des filtres
-    filtreMatricule: string = "";
-    filtreCategorie: string = "";
-    filtreDisponibilte: string = "";
+  // variables des filtres
+  filtreMatricule: string = '';
+  filtreCategorie: string = '';
+  filtreDisponibilte: string = '';
+
+  timeInterval: Subscription;
 
   //constructeur
-  constructor(private dialog: MatDialog, public service: VehiculeService, public _router: Router) {
-    this.nom = sessionStorage.getItem('Utilisateur'); 
-    this.acces = sessionStorage.getItem('Acces'); 
-
+  constructor(
+    private dialog: MatDialog,
+    public service: VehiculeService,
+    public _router: Router
+  ) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
     const numToSeparate = this.acces;
-    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
-  
-    this.tms = Number( arrayOfDigits[3])
-   }
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+  }
 
   ngOnInit(): void {
     this.form.get('carb').setValidators([Validators.required]);
-    this.form.get('prix').setValidators([Validators.required, Validators.pattern("(^[0-9]{1,9})+(\.[0-9]{1,4})?$")]);
+    this.form
+      .get('prix')
+      .setValidators([
+        Validators.required,
+        Validators.pattern('(^[0-9]{1,9})+(.[0-9]{1,4})?$'),
+      ]);
     this.form.controls.prix.disable();
-    this.chargerVehicules();
+    this.filtrerVehicule();
     this.chargerCarburants();
   }
-  
+
   //get la liste des vehicules
   async chargerVehicules() {
     this.vehicules = await this.service.vehicules().toPromise();
@@ -89,7 +107,7 @@ export class ListerVehiculesComponent implements OnInit {
 
   // get liste de carburants
   async chargerCarburants() {
-    this.carburants = await this.service.carburants().toPromise()
+    this.carburants = await this.service.carburants().toPromise();
   }
 
   // get vehicule par id
@@ -102,176 +120,191 @@ export class ListerVehiculesComponent implements OnInit {
     let listeEntretien = [
       {
         type: 'Vidange huile moteur',
-        kilometrage: vehicule.kilometrageProchainVidangeHuileMoteur
+        kilometrage: vehicule.kilometrageProchainVidangeHuileMoteur,
       },
       {
         type: 'Vidange liquide de refroidissement',
-        kilometrage: vehicule.kilometrageProchainVidangeLiquideRefroidissement
+        kilometrage: vehicule.kilometrageProchainVidangeLiquideRefroidissement,
       },
       {
         type: 'Vidange huile boite de vitesse',
-        kilometrage: vehicule.kilometrageProchainVidangeHuileBoiteVitesse
+        kilometrage: vehicule.kilometrageProchainVidangeHuileBoiteVitesse,
       },
       {
         type: 'Changement filtre climatiseur',
-        kilometrage: vehicule.kilometrageProchainChangementFiltreClimatiseur
+        kilometrage: vehicule.kilometrageProchainChangementFiltreClimatiseur,
       },
       {
         type: 'Changement filtre essence/gazoil',
-        kilometrage: vehicule.kilometrageProchainChangementFiltreCarburant
+        kilometrage: vehicule.kilometrageProchainChangementFiltreCarburant,
       },
       {
         type: 'Changement bougies',
-        kilometrage: vehicule.kilometrageProchainChangementBougies
+        kilometrage: vehicule.kilometrageProchainChangementBougies,
       },
       {
         type: 'Changement courroies',
-        kilometrage: vehicule.kilometrageProchainChangementCourroies
+        kilometrage: vehicule.kilometrageProchainChangementCourroies,
       },
       {
         type: 'Changement pneus',
-        kilometrage: vehicule.kilometrageProchainChangementPneus
-      }
-    ]
+        kilometrage: vehicule.kilometrageProchainChangementPneus,
+      },
+    ];
 
     var result = listeEntretien.reduce(function (res, obj) {
-      return (obj.kilometrage < res.kilometrage) ? obj : res;
+      return obj.kilometrage < res.kilometrage ? obj : res;
     });
     return result.type + ': ' + (result.kilometrage - vehicule.kmactuel);
   }
 
   //ouvrir boite dialog detail vehicule
-  ouvrirDetailVehicule(id: any): void { //ouvrir la boite de dialogue de détails vehicule
+  ouvrirDetailVehicule(id: any): void {
+    //ouvrir la boite de dialogue de détails vehicule
     const dialogRef = this.dialog.open(DetailVehiculeComponent, {
       width: '450px',
-      panelClass: "custom-dialog",
+      panelClass: 'custom-dialog',
       autoFocus: false,
-      data: {id: id}
+      data: { id: id },
     });
   }
 
   //ouvrir boite dialog de mise a jour de vehicule
-  ouvrirMiseAJourVehicule(id: any): void { //ouvrir la boite de dialogue de mise a jour vehicule
+  ouvrirMiseAJourVehicule(id: any): void {
+    //ouvrir la boite de dialogue de mise a jour vehicule
     const dialogRef = this.dialog.open(MajVehiculeComponent, {
       width: '450px',
-      panelClass: "custom-dialog",
+      panelClass: 'custom-dialog',
       autoFocus: false,
-      data: {id: id}
+      data: { id: id },
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       this.chargerVehicules();
     });
   }
 
   //ouvrir boite dialog de mise a jour du consommation du vehicule
-  ouvrirMiseAJourConsommation(vehicule: any): void { //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
+  ouvrirMiseAJourConsommation(vehicule: any): void {
+    //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
     const dialogRef = this.dialog.open(MiseAJourConsommationComponent, {
       width: '1000px',
       autoFocus: false,
-      data: { vehicule: vehicule }
+      data: { vehicule: vehicule },
     });
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       this.chargerVehicules();
-    })
+    });
   }
 
   // ouvrir boite dialog de reclamation
-  ouvrirReclamation(id: any): void { //ouvrir la boite de dialogue de reclamation
+  ouvrirReclamation(id: any): void {
+    //ouvrir la boite de dialogue de reclamation
     const dialogRef = this.dialog.open(ReclamationComponent, {
       width: '500px',
       autoFocus: false,
-      data: {id: id}
+      data: { id: id },
     });
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       this.chargerVehicules();
-    })
+    });
   }
 
   // ouvrir boite dialog de notification
-  ouvrirNotifications(id: any): void { //ouvrir la boite de dialogue de notification
+  ouvrirNotifications(id: any): void {
+    //ouvrir la boite de dialogue de notification
     this.chargerVehicule(id);
     const dialogRef = this.dialog.open(NotificationComponent, {
       width: '600px',
       autoFocus: false,
-      data: {id: id }
+      data: { id: id },
     });
-    dialogRef.afterClosed().subscribe(res => {
+    dialogRef.afterClosed().subscribe((res) => {
       this.chargerVehicules();
-    })
+    });
   }
 
   //ouvrir dialogue entretien
   ouvrirEntretien(vehicule: any) {
     const dialogRef = this.dialog.open(BoiteDialogueEntretien, {
       width: '600px',
-      data: { vehicule: vehicule }
+      data: { vehicule: vehicule },
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result) => {
       this.chargerVehicules();
     });
   }
 
   //supprimer vehicule
-  async supprimerVehicule(id: any) { //supprimer vehicule
+  async supprimerVehicule(id: any) {
+    //supprimer vehicule
     Swal.fire({
       title: 'Mot de passe',
       input: 'password',
       inputAttributes: {
-        autocapitalize: 'off'
+        autocapitalize: 'off',
       },
       showCancelButton: true,
       confirmButtonText: 'ok',
       showLoaderOnConfirm: true,
       preConfirm: (pass) => {
-        if(pass !== "infonet") {
-          Swal.showValidationMessage(
-            `Mot de passe incorrecte`)
+        if (pass !== 'infonet') {
+          Swal.showValidationMessage(`Mot de passe incorrecte`);
         }
       },
-      allowOutsideClick: () => !Swal.isLoading()
+      allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
           title: 'Êtes-vous sûr?',
-          text: "Vous allez supprimer le vehicul!",
+          text: 'Vous allez supprimer le vehicul!',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
           cancelButtonColor: '#d33',
           confirmButtonText: 'Supprimer!',
-          cancelButtonText: 'Annuler'
+          cancelButtonText: 'Annuler',
         }).then(async (result) => {
           if (result.isConfirmed) {
             await this.service.supprimerVehicule(id).toPromise();
             this.chargerVehicules();
-            Swal.fire(
-              'Supprimé!',
-              'Le vehicul a été supprimé.',
-              'success'
-            )
+            Swal.fire('Supprimé!', 'Le vehicul a été supprimé.', 'success');
           }
-        })
+        });
       }
-    })
-
+    });
   }
 
   //afficher le Badge rouge de notification
-  afficherBadgeDeNotification(vehicule: any) { //affiche le badge rouge de existance du notification
+  afficherBadgeDeNotification(vehicule: any) {
+    //affiche le badge rouge de existance du notification
     let entretien = vehicule.kmprochainentretien - vehicule.kmactuel;
     let dateVisite = new Date(vehicule.datevisite);
     let dateAssurance = new Date(vehicule.dateassurance);
     let dateTaxe = new Date(vehicule.datetaxe);
     var DifferenceVisite = dateVisite.getTime() - this.datePresent.getTime();
-    var DifferenceVisiteJ = DifferenceVisite / (1000 * 3600 * 24);    //calculer nombre de jours restants pour la prochaine visite technique
-    var DifferenceAssurance = dateAssurance.getTime() - this.datePresent.getTime();
-    var DifferenceAssuranceJ = DifferenceAssurance / (1000 * 3600 * 24);  //calculer nombre de jours restants pour l'expiration de l'assurance
+    var DifferenceVisiteJ = DifferenceVisite / (1000 * 3600 * 24); //calculer nombre de jours restants pour la prochaine visite technique
+    var DifferenceAssurance =
+      dateAssurance.getTime() - this.datePresent.getTime();
+    var DifferenceAssuranceJ = DifferenceAssurance / (1000 * 3600 * 24); //calculer nombre de jours restants pour l'expiration de l'assurance
     var DifferenceTaxe = dateTaxe.getTime() - this.datePresent.getTime();
-    var DifferenceTaxeJ = DifferenceTaxe / (1000 * 3600 * 24);  //calculer nombre de jours restants pour l'expiration des taxes
-    let carburant = this.carburants.filter((x: any) => x.nom == vehicule.carburant);
+    var DifferenceTaxeJ = DifferenceTaxe / (1000 * 3600 * 24); //calculer nombre de jours restants pour l'expiration des taxes
+    let carburant = this.carburants.filter(
+      (x: any) => x.nom == vehicule.carburant
+    );
     let prixCarburant = carburant[0].prixCarburant;
-    let consommationActuelle = (((vehicule.montantConsomme / prixCarburant) / vehicule.distanceparcourie) * 100).toFixed(2);
-    if (entretien < 1000 || vehicule.sujet !== "" || DifferenceVisiteJ < 30 || DifferenceAssuranceJ < 30 || DifferenceTaxeJ < 30 || vehicule.consommationNormale + 1 < consommationActuelle) {   //tester la condition pour afficher le badge de notification
+    let consommationActuelle = (
+      (vehicule.montantConsomme / prixCarburant / vehicule.distanceparcourie) *
+      100
+    ).toFixed(2);
+    if (
+      entretien < 1000 ||
+      vehicule.sujet !== '' ||
+      DifferenceVisiteJ < 30 ||
+      DifferenceAssuranceJ < 30 ||
+      DifferenceTaxeJ < 30 ||
+      vehicule.consommationNormale + 1 < consommationActuelle
+    ) {
+      //tester la condition pour afficher le badge de notification
       this.notification = false;
     } else {
       this.notification = true;
@@ -279,12 +312,11 @@ export class ListerVehiculesComponent implements OnInit {
     return this.notification;
   }
 
-
   // filtrer vehicule par matricule et disponibilité
-  filtrerVehicule(){
-    this.filtreMatricule == undefined ? this.filtreMatricule = "": "";
-    this.filtreDisponibilte == undefined ? this.filtreDisponibilte = "": "";
-    this.service.filtrerVehicule(this.filtreMatricule,"",this.filtreDisponibilte).subscribe((result) => {
+  filtrerVehicule() {
+    this.filtreMatricule == undefined ? (this.filtreMatricule = '') : '';
+    this.filtreDisponibilte == undefined ? (this.filtreDisponibilte = '') : '';
+    this.service.filtrerVehicule(this.filtreMatricule, this.filtreDisponibilte).subscribe((result) => {
       this.vehicules = result;
     })
   }
@@ -292,8 +324,8 @@ export class ListerVehiculesComponent implements OnInit {
   //ouvrir page de modification du vehicule
   ouvrirModificationVehicule(vehicule: any) {
     this.service.vehiculeAModifier = vehicule;
-    this._router.navigate(["/Menu/TMS/Parc/Vehicules/Mes-Vehicules/modifier-vehicule"]);
+    this._router.navigate([
+      '/Menu/TMS/Parc/Vehicules/Mes-Vehicules/modifier-vehicule',
+    ]);
   }
 }
-
-

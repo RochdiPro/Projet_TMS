@@ -52,14 +52,12 @@ export class VehiculeService {
   //filtrer vehicule
   public filtrerVehicule(
     matricule: string,
-    categories: string,
     etatVehicule: string
   ) {
     return this.httpClient
       .get(erp + 'filtre-vehicule', {
         params: {
           matricule: matricule,
-          categories: categories,
           etatVehicule: etatVehicule,
         },
         observe: 'body',
