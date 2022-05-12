@@ -36,6 +36,8 @@ export class ModifierVehiculeLoueComponent implements OnInit {
   categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
   minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
   vehicule: any;
+  matriculeExiste = false;
+  matricules: string[];
 
   // variables de droits d'accés
   nom: any;
@@ -73,30 +75,40 @@ export class ModifierVehiculeLoueComponent implements OnInit {
           this.vehicule.charge_utile,
           [Validators.required, Validators.pattern('^[0-9]*$')],
         ],
-        longueur: [this.vehicule.longueur, [Validators.required, Validators.pattern('^[0-9]*$')]],
-        largeur: [this.vehicule.largeur, [Validators.required, Validators.pattern('^[0-9]*$')]],
-        hauteur: [this.vehicule.hauteur, [Validators.required, Validators.pattern('^[0-9]*$')]],
+        longueur: [
+          this.vehicule.longueur,
+          [Validators.required, Validators.pattern('^[0-9]*$')],
+        ],
+        largeur: [
+          this.vehicule.largeur,
+          [Validators.required, Validators.pattern('^[0-9]*$')],
+        ],
+        hauteur: [
+          this.vehicule.hauteur,
+          [Validators.required, Validators.pattern('^[0-9]*$')],
+        ],
         dateDebut: [new Date(this.vehicule.date_debut_location)],
         dateFin: [new Date(this.vehicule.date_fin_location)],
       });
-      let matricule = []
-      if(this.vehicule.matricule[0] === "R") {
-        this.typeMatriculeSelectionne = "RS";
-        matricule = this.vehicule.matricule.split("RS");
+      let matricule = [];
+      if (this.vehicule.matricule[0] === 'R') {
+        this.typeMatriculeSelectionne = 'RS';
+        matricule = this.vehicule.matricule.split('RS');
         this.form.get('typematricule').setValue('RS');
         this.form.get('matriculeRS').setValue(matricule[1]);
         this.form.get('matriculeRS').setValidators([Validators.required]);
       } else {
-        this.typeMatriculeSelectionne = "TUN";
-        matricule = this.vehicule.matricule.split("TUN");
+        this.typeMatriculeSelectionne = 'TUN';
+        matricule = this.vehicule.matricule.split('TUN');
         this.form.get('typematricule').setValue('TUN');
         this.form.get('matriculetun1').setValue(matricule[0]);
         this.form.get('matriculetun1').setValidators([Validators.required]);
         this.form.get('matriculetun2').setValue(matricule[1]);
         this.form.get('matriculetun2').setValidators([Validators.required]);
       }
-      this.categorie = this.vehicule.categories
+      this.categorie = this.vehicule.categories;
       this.testTypeMatricule();
+      this.getListeMatricules();
     }
   }
 
@@ -160,65 +172,120 @@ export class ModifierVehiculeLoueComponent implements OnInit {
 
   //créer nouveau vehicule
   async enregistrerVehicule() {
-    var formData: any = new FormData();
+    Swal.fire({
+      title: 'Êtes vous sûr?',
+      text: 'Ces données sont trés sensibles! Les changements ne sont pas recommandés',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Oui',
+      cancelButtonText: 'Non',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        var formData: any = new FormData();
+        let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
+        let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
+        if (typeMatriculeEstTUN) {
+          //tester le type de matricule selectionné pour l'enregistrer
+          this.matricule = '';
+          this.matricule = this.form
+            .get('matriculetun1')
+            .value.toString()
+            .concat('TUN');
+          this.matricule = this.matricule.concat(
+            this.form.get('matriculetun2').value.toString()
+          );
+        } else if (typeMatriculeEstRS) {
+          this.matricule = '';
+          var rsstr = 'RS';
+          this.matricule = rsstr.concat(this.form.get('matriculers').value);
+        }
+        formData.append('id', this.vehicule.id);
+        formData.append('matricule', this.matricule);
+        formData.append('marque', this.form.get('marque').value);
+        formData.append('modele', this.form.get('modele').value);
+        formData.append('couleur', this.form.get('couleur').value);
+        formData.append('proprietaire', this.form.get('proprietaire').value);
+        formData.append('num_proprietaire', this.form.get('telephone').value);
+        formData.append('categories', this.categorie);
+        formData.append('charge_utile', this.form.get('chargeUtile').value);
+        formData.append('longueur', this.form.get('longueur').value);
+        formData.append('largeur', this.form.get('largeur').value);
+        formData.append('hauteur', this.form.get('hauteur').value);
+        formData.append('etat_vehicule', 'Disponible');
+        formData.append('position_vehicule', 'Sfax');
+        formData.append(
+          'date_debut_location',
+          new Date(this.form.get('dateDebut').value)
+        );
+        formData.append(
+          'date_fin_location',
+          new Date(this.form.get('dateFin').value)
+        );
+        Swal.fire({
+          title: 'Voulez vous enregistrer?',
+          showDenyButton: true,
+          showCancelButton: true,
+          confirmButtonText: 'Enregistrer',
+          denyButtonText: `Ne pas enregistrer`,
+          cancelButtonText: 'Annuler',
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await this.service.modifierVehiculeLoue(formData).toPromise();
+            this.router.navigateByUrl(
+              '/Menu/TMS/Parc/Vehicules/Vehicules-Loues/lister-vehicules'
+            );
+            Swal.fire('Vehicul enregistré!', '', 'success');
+          } else if (result.isDenied) {
+            this.router.navigateByUrl(
+              '/Menu/TMS/Parc/Vehicules/Vehicules-Loues/lister-vehicules'
+            );
+          }
+        });
+      }
+    });
+  }
+
+  getListeMatricules() {
+    this.service
+      .getMatriculesVehiculesPrives()
+      .subscribe((matriculesPrives: any) => {
+        this.service
+          .getMatriculesVehiculesLoues()
+          .subscribe((matriculesLoues: any) => {
+            this.matricules = matriculesPrives.concat(matriculesLoues);
+          });
+      });
+  }
+
+  verifierMatricule() {
     let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
     let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
     if (typeMatriculeEstTUN) {
       //tester le type de matricule selectionné pour l'enregistrer
       this.matricule = '';
-      this.matricule = this.form
-        .get('matriculetun1')
-        .value.toString()
-        .concat('TUN');
+      this.matricule = (this.form.get('matriculetun1').value + '').concat(
+        'TUN'
+      );
       this.matricule = this.matricule.concat(
-        this.form.get('matriculetun2').value.toString()
+        this.form.get('matriculetun2').value
       );
     } else if (typeMatriculeEstRS) {
       this.matricule = '';
       var rsstr = 'RS';
       this.matricule = rsstr.concat(this.form.get('matriculers').value);
     }
-    formData.append('id', this.vehicule.id);
-    formData.append('matricule', this.matricule);
-    formData.append('marque', this.form.get('marque').value);
-    formData.append('modele', this.form.get('modele').value);
-    formData.append('couleur', this.form.get('couleur').value);
-    formData.append('proprietaire', this.form.get('proprietaire').value);
-    formData.append('num_proprietaire', this.form.get('telephone').value);
-    formData.append('categories', this.categorie);
-    formData.append('charge_utile', this.form.get('chargeUtile').value);
-    formData.append('longueur', this.form.get('longueur').value);
-    formData.append('largeur', this.form.get('largeur').value);
-    formData.append('hauteur', this.form.get('hauteur').value);
-    formData.append('etat_vehicule', 'Disponible');
-    formData.append('position_vehicule', 'Sfax');
-    formData.append(
-      'date_debut_location',
-      new Date(this.form.get('dateDebut').value)
+    let matriculesTrouvees = this.matricules.filter(
+      (matricule) => matricule == this.matricule
     );
-    formData.append(
-      'date_fin_location',
-      new Date(this.form.get('dateFin').value)
-    );
-    Swal.fire({
-      title: 'Voulez vous enregistrer?',
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'Enregistrer',
-      denyButtonText: `Ne pas enregistrer`,
-      cancelButtonText: 'Annuler',
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await this.service.modifierVehiculeLoue(formData).toPromise();
-        this.router.navigateByUrl(
-          '/Menu/TMS/Parc/Vehicules/Vehicules-Loues/lister-vehicules'
-        );
-        Swal.fire('Vehicul enregistré!', '', 'success');
-      } else if (result.isDenied) {
-        this.router.navigateByUrl(
-          '/Menu/TMS/Parc/Vehicules/Vehicules-Loues/lister-vehicules'
-        );
-      }
-    });
+    if (
+      matriculesTrouvees.length > 0 &&
+      this.vehicule.matricule != this.matricule
+    ) {
+      this.matriculeExiste = true;
+    } else {
+      this.matriculeExiste = false;
+    }
   }
 }

@@ -36,6 +36,8 @@ export class AjouterVehiculeLoueComponent implements OnInit {
   typeMatriculeSelectionne = 'TUN'; //pour enregistrer le type de matricule choisi
   categorie: String; //pour enregistrer la categorie de permis qui peuvent conduire le vehicule
   minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
+  matriculeExiste = false;
+  matricules: string[];
 
   // variables de droits d'accés
   nom: any;
@@ -77,6 +79,7 @@ export class AjouterVehiculeLoueComponent implements OnInit {
       dateFin: [''],
     });
     this.testTypeMatricule();
+    this.getListeMatricules();
   }
 
   //tester le type de matricule si elle est TUN ou RS
@@ -198,5 +201,44 @@ export class AjouterVehiculeLoueComponent implements OnInit {
         );
       }
     });
+  }
+
+  getListeMatricules() {
+    this.service
+      .getMatriculesVehiculesPrives()
+      .subscribe((matriculesPrives: any) => {
+        this.service
+          .getMatriculesVehiculesLoues()
+          .subscribe((matriculesLoues: any) => {
+            this.matricules = matriculesPrives.concat(matriculesLoues);
+          });
+      });
+  }
+
+  verifierMatricule() {
+    let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
+    let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
+    if (typeMatriculeEstTUN) {
+      //tester le type de matricule selectionné pour l'enregistrer
+      this.matricule = '';
+      this.matricule = (this.form.get('matriculetun1').value + '').concat(
+        'TUN'
+      );
+      this.matricule = this.matricule.concat(
+        this.form.get('matriculetun2').value
+      );
+    } else if (typeMatriculeEstRS) {
+      this.matricule = '';
+      var rsstr = 'RS';
+      this.matricule = rsstr.concat(this.form.get('matriculers').value);
+    }
+    let matriculesTrouvees = this.matricules.filter(
+      (matricule) => matricule == this.matricule
+    );
+    if (matriculesTrouvees.length > 0) {
+      this.matriculeExiste = true;
+    } else {
+      this.matriculeExiste = false;
+    }
   }
 }

@@ -41,6 +41,8 @@ export class AjouterVehiculeComponent implements OnInit {
   prixCarburant: any;
   minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
   carburants: any;
+  matriculeExiste = false;
+  matricules: string[];
 
   // variables de droits d'accés
   nom: any;
@@ -125,6 +127,7 @@ export class AjouterVehiculeComponent implements OnInit {
     });
     this.chargerCarburants();
     this.testTypeMatricule();
+    this.getListeMatricules();
   }
 
   // get liste carburants
@@ -356,6 +359,46 @@ export class AjouterVehiculeComponent implements OnInit {
         numeroVoiture: '',
         matriculeRS: '',
       });
+    }
+  }
+
+  getListeMatricules() {
+    this.service
+      .getMatriculesVehiculesPrives()
+      .subscribe((matriculesPrives: any) => {
+        this.service
+          .getMatriculesVehiculesLoues()
+          .subscribe((matriculesLoues: any) => {
+            this.matricules = matriculesPrives.concat(matriculesLoues);
+          });
+      });
+  }
+
+  verifierMatricule() {
+    let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
+    let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';
+    if (typeMatriculeEstTUN) {
+      //tester le type de matricule selectionné pour l'enregistrer
+      this.matricule = '';
+      this.matricule = (
+        this.caracteristiquesFormGroup.get('serieVoiture').value + ''
+      ).concat('TUN');
+      this.matricule = this.matricule.concat(
+        this.caracteristiquesFormGroup.get('numeroVoiture').value + ''
+      );
+    } else if (typeMatriculeEstRS) {
+      this.matricule = '';
+      this.matricule = 'RS'.concat(
+        this.caracteristiquesFormGroup.get('matriculeRS').value
+      );
+    }
+    let matriculesTrouvees = this.matricules.filter(
+      (matricule) => matricule == this.matricule
+    );
+    if (matriculesTrouvees.length > 0) {
+      this.matriculeExiste = true;
+    } else {
+      this.matriculeExiste = false;
     }
   }
 }

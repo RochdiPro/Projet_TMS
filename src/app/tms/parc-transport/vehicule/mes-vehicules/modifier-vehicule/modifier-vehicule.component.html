@@ -33,10 +33,21 @@
                                     <div class="row matriculetun">
                                         <input placeholder="* * *" class="form-control no-spin" id="numSerie"
                                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            type="number" maxlength="3" formControlName="serieVoiture">
+                                            type="number" maxlength="3" formControlName="serieVoiture"
+                                            (keyup)="verifierMatricule()">
                                         <input placeholder="* * * *" class="form-control no-spin" id="numCar"
                                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            type="number" maxlength="4" formControlName="numeroVoiture">
+                                            type="number" maxlength="4" formControlName="numeroVoiture"
+                                            (keyup)="verifierMatricule()">
+                                    </div>
+                                    <div
+                                        [ngClass]="{'cacher-erreur': !matriculeExiste, 'afficher-erreur': matriculeExiste}">
+                                        Matricule deja existe
+                                    </div>
+                                    <div
+                                        [ngClass]="{'cacher-erreur': (!caracteristiquesFormGroup.controls['serieVoiture'].hasError('required') && !caracteristiquesFormGroup.controls['numeroVoiture'].hasError('required')) || matriculeExiste, 
+                            'afficher-erreur': (caracteristiquesFormGroup.controls['serieVoiture'].hasError('required') || caracteristiquesFormGroup.controls['numeroVoiture'].hasError('required')) && !matriculeExiste}">
+                                        Champ obligatoire!
                                     </div>
                                 </div>
                                 <!-- Affichage input RS si type matricule est rs -->
@@ -44,7 +55,17 @@
                                     <div class="row matriculers">
                                         <input maxlength="6" placeholder="* * * * * *" class="form-control" id="numRS"
                                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            type="number" maxlength="6" formControlName="matriculeRS">
+                                            type="number" maxlength="6" formControlName="matriculeRS"
+                                            (keyup)="verifierMatricule()">
+                                    </div>
+                                    <div
+                                        [ngClass]="{'cacher-erreur': !matriculeExiste, 'afficher-erreur': matriculeExiste}">
+                                        Matricule deja existe
+                                    </div>
+                                    <div
+                                        [ngClass]="{'cacher-erreur': !caracteristiquesFormGroup.controls['matriculeRS'].hasError('required') || matriculeExiste, 
+                            'afficher-erreur': caracteristiquesFormGroup.controls['matriculeRS'].hasError('required') && !matriculeExiste}">
+                                        Champ obligatoire!
                                     </div>
                                 </div>
                             </div>
@@ -422,7 +443,7 @@
                     <button mat-button matStepperPrevious>Back</button>
                     <!-- Bouton Enregistrer -->
                     <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerVehicule()"
-                        [disabled]="caracteristiquesFormGroup.invalid || entretienEtPapierFormGroup.invalid">Enregistrer</button>
+                        [disabled]="caracteristiquesFormGroup.invalid || entretienEtPapierFormGroup.invalid || matriculeExiste">Enregistrer</button>
                 </div>
             </mat-step>
         </mat-vertical-stepper>

@@ -273,4 +273,14 @@ export class VehiculeService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  //get vehicule par matricule
+  public getMatriculesVehiculesPrives() {
+    return this.httpClient.get(erp + "matricules-vehicules-prives")
+  }
+
+  //get vehicule Loue par matricule
+  public getMatriculesVehiculesLoues() {
+    return this.httpClient.get(erp + "matricules-vehicules-loues")
+  }
 }
