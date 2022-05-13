@@ -38,6 +38,8 @@ export class ModifierVehiculeLoueComponent implements OnInit {
   vehicule: any;
   matriculeExiste = false;
   matricules: string[];
+  carburants: any;
+  carburant: any;
 
   // variables de droits d'accés
   nom: any;
@@ -89,6 +91,19 @@ export class ModifierVehiculeLoueComponent implements OnInit {
         ],
         dateDebut: [new Date(this.vehicule.date_debut_location)],
         dateFin: [new Date(this.vehicule.date_fin_location)],
+        kmactuel: [
+          this.vehicule.kmactuel,
+          [Validators.required, Validators.pattern('^[0-9]*$')],
+        ],
+        carburant: ['', [Validators.required]],
+        consommationnormale: [
+          this.vehicule.consommationNormale,
+          [Validators.required, Validators.pattern('[+]?([0-9]*[.])?[0-9]+')],
+        ],
+        capaciteReservoir: [
+          this.vehicule.capaciteReservoir,
+          [Validators.required, Validators.pattern('^[0-9]*$')],
+        ],
       });
       let matricule = [];
       if (this.vehicule.matricule[0] === 'R') {
@@ -109,7 +124,17 @@ export class ModifierVehiculeLoueComponent implements OnInit {
       this.categorie = this.vehicule.categories;
       this.testTypeMatricule();
       this.getListeMatricules();
+      this.chargerCarburants();
     }
+  }
+  // get liste carburants
+  async chargerCarburants() {
+    this.carburants = await this.service.carburants().toPromise();
+    let carburant = this.carburants.filter(
+      (carb: any) => carb.nom === this.vehicule.carburant
+    );
+    this.form.get('carburant').setValue(carburant[0]);
+    this.carburant = carburant[0];
   }
 
   //tester le type de matricule si elle est TUN ou RS
@@ -222,6 +247,16 @@ export class ModifierVehiculeLoueComponent implements OnInit {
         formData.append(
           'date_fin_location',
           new Date(this.form.get('dateFin').value)
+        );
+        formData.append('kmactuel', this.form.get('kmactuel').value);
+        formData.append('carburant', this.carburant.nom);
+        formData.append(
+          'consommationNormale',
+          this.form.get('consommationnormale').value
+        );
+        formData.append(
+          'capaciteReservoir',
+          this.form.get('capaciteReservoir').value
         );
         Swal.fire({
           title: 'Voulez vous enregistrer?',

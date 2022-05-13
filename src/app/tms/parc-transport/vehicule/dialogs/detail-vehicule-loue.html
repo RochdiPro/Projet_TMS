@@ -1,29 +1,29 @@
 <!-- Afficher matricule TUN -->
 <div *ngIf="tun" class="position-relative form-group container matricule">
-    <div class="row matriculetun">
-        <ul class="list-group" *ngIf="vehicule">
-            <div class="form-group">
-                <li class="list-group-item" id="numSerie">{{serie}}</li>
-            </div>
-            <div class="form-group">
-                <li class="list-group-item" id="numCar">{{numCar}}</li>
-            </div>
-        </ul>
-    </div>
+  <div class="row matriculetun">
+    <ul class="list-group" *ngIf="vehicule">
+      <div class="form-group">
+        <li class="list-group-item" id="numSerie">{{serie}}</li>
+      </div>
+      <div class="form-group">
+        <li class="list-group-item" id="numCar">{{numCar}}</li>
+      </div>
+    </ul>
+  </div>
 </div>
 <!-- Afficher matricule rs -->
 <div *ngIf="rs" class="position-relative form-group container matricule">
-    <div class="row matriculers">
-        <ul class="list-group" *ngIf="vehicule">
-            <div class="form-group">
-                <li class="list-group-item" id="numRS">{{matRS}}</li>
-            </div>
-        </ul>
-    </div>
+  <div class="row matriculers">
+    <ul class="list-group" *ngIf="vehicule">
+      <div class="form-group">
+        <li class="list-group-item" id="numRS">{{matRS}}</li>
+      </div>
+    </ul>
+  </div>
 </div>
 <div mat-dialog-content>
   <ul class="list-group" *ngIf="vehicule">
-      <!-- Afficher marque -->
+    <!-- Afficher marque -->
     <div class="position-relative form-group"><label for="marque" class="">Marque</label>
       <li class="list-group-item">{{vehicule.marque}}</li>
     </div>
@@ -38,6 +38,31 @@
     <!-- Afficher categorie -->
     <div class="position-relative form-group"><label for="categories" class="">Categories Permis Accordées</label>
       <li class="list-group-item">{{vehicule.categories}}</li>
+    </div>
+    <!-- afficher kilometrage actuel -->
+    <div class="position-relative form-group"><label for="kmactuel" class="">Kilométrage Actuel</label>
+      <li class="list-group-item">{{vehicule.kmactuel}}</li>
+    </div>
+    <!-- afficher type carburant -->
+    <div class="position-relative form-group"><label for="carburant" class="">Carburant</label>
+      <li class="list-group-item">{{vehicule.carburant}}</li>
+    </div>
+    <!-- afficher capacité du reservoir -->
+    <div class="position-relative form-group"><label for="carburant" class="">Capacité du réservoir en littre</label>
+      <li class="list-group-item">{{vehicule.capaciteReservoir}}</li>
+    </div>
+    <!-- afficher consomation normale -->
+    <div class="position-relative form-group"><label for="consommationnormale" class="">Consommation Normale
+        L/100km</label>
+      <li class="list-group-item">{{vehicule.consommationNormale}}</li>
+    </div>
+    <!-- afficher consomation actuelle -->
+    <div class="position-relative form-group"><label for="consommationactuelle" class="">Consommation Actulle L/100km
+        <button mat-icon-button color="primary" (click)="ouvrirHistoriqueConsommation()">
+          <mat-icon>info</mat-icon>
+        </button></label>
+      <li class="list-group-item">
+        {{(vehicule.consommation).toFixed(2)}}</li>
     </div>
     <!-- Afficher proprietaire -->
     <div class="position-relative form-group"><label for="proprietaire" class="">Proprietaire</label>

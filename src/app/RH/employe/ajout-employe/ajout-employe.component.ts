@@ -126,7 +126,7 @@ export class AjoutEmployeComponent implements OnInit {
         ],
       ],
       Adresse: ['', [Validators.required]],
-      Pays: ['' , Validators.required],
+      Pays: ['', Validators.required],
       Ville: [''],
       Tel1: [
         '',
@@ -179,20 +179,20 @@ export class AjoutEmployeComponent implements OnInit {
   }
 
   // fonction activée lors de choix du pays pour récupérer la liste des villes dans ce dernier
-ChoixPays(event: MatSelectChange) {
-  this.pays = event.value;
-  this.service.ListerVille(this.pays).subscribe((reponse: Response) => {
-    this.categorie_ville = reponse;
-  });
-}
+  ChoixPays(event: MatSelectChange) {
+    this.pays = event.value;
+    this.service.ListerVille(this.pays).subscribe((reponse: Response) => {
+      this.categorie_ville = reponse;
+    });
+  }
 
-// fonction activée lors de choix de la ville pour récupérer la liste des régions dans cette dernière
-ChoixVille(event: MatSelectChange) {
-  this.ville = event.value;
-  this.service.ListerRegion(this.ville).subscribe((reponse: Response) => {
-    this.categorie_region = reponse;
-  });
-}
+  // fonction activée lors de choix de la ville pour récupérer la liste des régions dans cette dernière
+  ChoixVille(event: MatSelectChange) {
+    this.ville = event.value;
+    this.service.ListerRegion(this.ville).subscribe((reponse: Response) => {
+      this.categorie_region = reponse;
+    });
+  }
 
   //  création d' Employé
   creeremploye() {

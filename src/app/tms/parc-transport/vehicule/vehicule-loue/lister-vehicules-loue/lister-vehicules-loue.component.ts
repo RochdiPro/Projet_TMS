@@ -18,7 +18,7 @@ import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { VehiculeService } from '../../services/vehicule.service';
-import { DetailVehiculeLoueComponent } from '../../dialogs/dialogs.component';
+import { DetailVehiculeLoueComponent, MiseAJourConsommationComponent } from '../../dialogs/dialogs.component';
 
 @Component({
   selector: 'app-lister-vehicules',
@@ -190,19 +190,40 @@ export class ListerVehiculesLoueComponent implements OnInit {
     });
   }
 
-    //filtrer vehicule par matricule, proprietaire et disponibilité
-    filtrerVehicule(){
-      this.filtreMatricule == undefined ? this.filtreMatricule = "": "";
-      this.filtreProprietaire == undefined ? this.filtreProprietaire = "": "";
-      this.filtreDisponibilte == undefined ? this.filtreDisponibilte = "": "";
-      this.service.filtrerVehiculeLoues(this.filtreMatricule,this.filtreProprietaire,this.filtreDisponibilte).subscribe((result) => {
+  //filtrer vehicule par matricule, proprietaire et disponibilité
+  filtrerVehicule() {
+    this.filtreMatricule == undefined ? (this.filtreMatricule = '') : '';
+    this.filtreProprietaire == undefined ? (this.filtreProprietaire = '') : '';
+    this.filtreDisponibilte == undefined ? (this.filtreDisponibilte = '') : '';
+    this.service
+      .filtrerVehiculeLoues(
+        this.filtreMatricule,
+        this.filtreProprietaire,
+        this.filtreDisponibilte
+      )
+      .subscribe((result) => {
         this.vehiculesLoues = result;
-      })
-    }
+      });
+  }
 
-    //ouvrire component modifier vehicule loue
-    ouvrirModifier(vehicule: any) {
-      this.service.vehiculeLoueAModifier = vehicule;
-      this._router.navigateByUrl('/Menu/TMS/Parc/Vehicules/Vehicules-Loues/modifier-vehicule')
-    }
+  //ouvrire component modifier vehicule loue
+  ouvrirModifier(vehicule: any) {
+    this.service.vehiculeLoueAModifier = vehicule;
+    this._router.navigateByUrl(
+      '/Menu/TMS/Parc/Vehicules/Vehicules-Loues/modifier-vehicule'
+    );
+  }
+
+  //ouvrir boite dialog de mise a jour du consommation du vehicule
+  ouvrirMiseAJourConsommation(vehicule: any): void {
+    //ouvrir la boite de dialogue de mise a jour de kilometrage et prix carburant
+    const dialogRef = this.dialog.open(MiseAJourConsommationComponent, {
+      width: '1000px',
+      autoFocus: false,
+      data: { vehicule: vehicule },
+    });
+    dialogRef.afterClosed().subscribe((res) => {
+      this.chargerVehicules();
+    });
+  }
 }

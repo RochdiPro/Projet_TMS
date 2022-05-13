@@ -29,7 +29,8 @@ h1 {
     "marque modele couleur"
     "categorie proprietaire tel"
     "longueur largeur hauteur"
-    "charge periode .";
+    "charge kmActuel carburant"
+    "capaciteReservoir consommationNormale periode";
   grid-column-gap: 1rem;
   grid-template-columns: 1fr 1fr 1fr;
 }
@@ -65,6 +66,18 @@ h1 {
 }
 .periode {
   grid-area: periode;
+}
+.kmActuel {
+  grid-area: kmActuel;
+}
+.capacite-reservoir{
+  grid-area: capaciteReservoir;
+}
+.consommationNormale {
+  grid-area: consommationNormale;
+}
+.carburant {
+  grid-area: carburant;
 }
 .mat-dialog-content,
 .mat-dialog-title {

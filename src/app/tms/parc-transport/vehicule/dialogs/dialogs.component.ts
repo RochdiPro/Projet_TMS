@@ -51,6 +51,7 @@ export class DetailVehiculeComponent implements OnInit {
   numCar: String;
   matRS: String;
   matricule: String;
+  infosGenerals: any;
 
   //types de carosserie des véhicules et leur catégories de permis accordées
   carosserie = [
@@ -76,6 +77,7 @@ export class DetailVehiculeComponent implements OnInit {
     this.testerTypeMatricule();
     this.chargerCarburant();
     this.chargerEntretiensDuVehicule();
+    this.getInfosGenerals();
   }
 
   // get vehicule par id
@@ -134,6 +136,12 @@ export class DetailVehiculeComponent implements OnInit {
     });
   }
 
+  getInfosGenerals() {
+    this.service.getInfoGeneralesDeLaSociete().subscribe((res) => {
+      this.infosGenerals = res;
+    })
+  }
+
   // tester les type de matricule
   testerTypeMatricule() {
     this.matricule = this.vehicule.matricule;
@@ -184,6 +192,46 @@ export class DetailVehiculeComponent implements OnInit {
           layout: 'noBorders',
         };
       },
+      header: [
+        {
+          columns: [
+          // matricule fiscale
+          {
+            text: this.infosGenerals.matriculeFiscale,
+            bold: true,
+            fontSize: 10,
+            margin: [183, 9, 0, 0],
+            width: 'auto',
+          },
+          // adresse
+          {
+            text: this.infosGenerals.adresse + "," + this.infosGenerals.ville,
+            bold: true,
+            fontSize: 10,
+            margin: [88.5, 9, 0, 0],
+          },
+        ]
+      },
+        {
+          columns: [
+          //telephone
+          {
+            text: this.infosGenerals.telephone,
+            bold: true,
+            fontSize: 10,
+            margin: [175, 7.5, 0, 0],
+            width: 'auto',
+          },
+          // fax
+          {
+            text: this.infosGenerals.fax,
+            bold: true,
+            fontSize: 10,
+            margin: [108, 7.5, 0, 0],
+          },
+        ]
+      },
+      ],
       background: {
         //definition du fond arriére
         image:
@@ -881,6 +929,7 @@ export class MiseAJourConsommationComponent implements OnInit {
   idInvalide = false;
   reservoirEstPlein = false;
   modeManuel = false;
+  typeVehicule: string;
 
   checkBoxRemplirreservoir = false;
   sliderReservoirEstActive = true;
@@ -929,6 +978,7 @@ export class MiseAJourConsommationComponent implements OnInit {
       this.getCarburant();
       this.getChauffeurs();
       this.reservoirEstPlein = this.testerReservoirPlein();
+      this.getTypeVehicule();
     });
   }
 
@@ -1099,7 +1149,8 @@ export class MiseAJourConsommationComponent implements OnInit {
       cancelButtonText: 'Non',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await this.service
+        if (this.typeVehicule === "privé") {
+          await this.service
           .modifierConsommation(
             this.vehicule.id,
             this.kmActuel.value,
@@ -1111,6 +1162,26 @@ export class MiseAJourConsommationComponent implements OnInit {
             this.reservoir
           )
           .toPromise();
+        } else if (this.typeVehicule === "loué") {
+          await this.service
+          .modifierConsommationVehiculeLoue(
+            this.vehicule.id,
+            this.kmActuel.value,
+            consommation,
+            historique,
+            historiqueA,
+            historiqueB,
+            historiqueC,
+            this.reservoir
+          )
+          .toPromise();
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Type vehicule invalide! Verifier les données de votre vehicule.',
+          })
+        }
         this.fermerMiseAJourConsommation();
         Swal.fire('Consommation enregistrée!', '', 'success');
       }
@@ -1120,6 +1191,31 @@ export class MiseAJourConsommationComponent implements OnInit {
   // fermer la boite de dialogue
   fermerMiseAJourConsommation(): void {
     this.dialogRef.close();
+  }
+
+  // get type vehicule
+  getTypeVehicule() {
+    this.service
+      .getMatriculesVehiculesPrives()
+      .subscribe((matriculesPrivesData: any) => {
+        this.service
+          .getMatriculesVehiculesLoues()
+          .subscribe((matriculesLouesData: any) => {
+            let matriculesPrives = matriculesPrivesData;
+            let matriculesLoues = matriculesLouesData;
+            let matriculeEstPrive = matriculesPrives.filter(
+              (matricule: any) => matricule == this.vehicule.matricule
+            ).length > 0;
+            let matriculeEstLoue = matriculesLoues.filter(
+              (matricule: any) => matricule == this.vehicule.matricule
+            ).length > 0;
+            if (matriculeEstPrive) {
+              this.typeVehicule = "privé"
+            } else if (matriculeEstLoue) {
+              this.typeVehicule = "loué"
+            }
+          });
+      });
   }
 
   // get formControl montantConsomme
@@ -1724,7 +1820,8 @@ export class DetailVehiculeLoueComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<DetailVehiculeLoueComponent>,
     public service: VehiculeService,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private dialog: MatDialog
   ) {}
 
   async ngOnInit() {
@@ -1759,6 +1856,15 @@ export class DetailVehiculeLoueComponent implements OnInit {
   //fermer la boite de dialogue
   fermerDetailVehiculeLoue(): void {
     this.dialogRef.close();
+  }
+
+  // ouvrir boite de dialogue historique consommation
+  ouvrirHistoriqueConsommation() {
+    const dialogRef = this.dialog.open(HistoriqueConsommation, {
+      width: '800px',
+      maxHeight: '80vh',
+      data: { vehicule: this.vehicule },
+    });
   }
 }
 

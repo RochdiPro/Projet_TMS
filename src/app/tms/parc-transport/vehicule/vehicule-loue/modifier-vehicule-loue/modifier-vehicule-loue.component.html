@@ -189,6 +189,63 @@
                         </mat-error>
                     </mat-form-field>
                 </div>
+                <!-- input Kilometrage actuel -->
+                <div class="kmActuel">
+                    <mat-form-field class="full-width">
+                        <mat-label>Kilométrage Actuel</mat-label> <input matInput placeholder="Ex. 100000"
+                            formControlName="kmactuel" name="km-actuel" id="km-actuel" type="text" required>
+                        <mat-error *ngIf="form.controls['kmactuel'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['kmactuel'].hasError('pattern')">
+                            Seuls les <strong>chiffres</strong> sont autorisés
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- Select type carburant -->
+                <div class="carburant">
+                    <mat-form-field class="full-width">
+                        <mat-label>Carburant</mat-label>
+                        <mat-select formControlName="carburant" name="carburant" id="carburant" [(value)]="carburant"
+                            required>
+                            <mat-option *ngFor="let carb of carburants" [value]="carb">
+                                {{carb.nom}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="form.controls['carburant'].hasError('required')">
+                            Veuillez choisir le
+                            carburant
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- input Capacité reservoir -->
+                <div class="capacite-reservoir">
+                    <mat-form-field class="full-width">
+                        <mat-label>Capacité du reservoir de carburant en L</mat-label>
+                        <input matInput placeholder="40" formControlName="capaciteReservoir" name="capaciteReservoir"
+                            id="capaciteReservoir" type="number" required>
+                        <mat-error *ngIf="form.controls['capaciteReservoir'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['capaciteReservoir'].hasError('pattern')">
+                            Seuls les <strong>chiffres</strong> sont autorisés
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+                <!-- input Consommation normale -->
+                <div class="consommationNormale">
+                    <mat-form-field class="full-width">
+                        <mat-label>Consommation Normale En L/100Km</mat-label>
+                        <input matInput placeholder="Ex. 6" formControlName="consommationnormale"
+                            name="consommationnormale" id="consommationnormale" type="text" required>
+                        <mat-error *ngIf="form.controls['consommationnormale'].hasError('required')">
+                            Champ <strong>Obligatoire</strong>
+                        </mat-error>
+                        <mat-error *ngIf="form.controls['consommationnormale'].hasError('pattern')">
+                            Seuls les <strong>chiffres</strong> sont autorisés
+                        </mat-error>
+                    </mat-form-field>
+                </div>
                 <!-- periode de Location -->
                 <div class="periode">
                     <mat-form-field class="full-width">

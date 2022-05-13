@@ -38,6 +38,8 @@ export class AjouterVehiculeLoueComponent implements OnInit {
   minDate = new Date(); //utilisé pour la desactivation des dates passées dans le datePicker
   matriculeExiste = false;
   matricules: string[];
+  carburants: any;
+  carburant: any;
 
   // variables de droits d'accés
   nom: any;
@@ -77,9 +79,24 @@ export class AjouterVehiculeLoueComponent implements OnInit {
       hauteur: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       dateDebut: [''],
       dateFin: [''],
+      kmactuel: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      carburant: ['', [Validators.required]],
+      consommationnormale: [
+        '',
+        [Validators.required, Validators.pattern('[+]?([0-9]*[.])?[0-9]+')],
+      ],
+      capaciteReservoir: [
+        '',
+        [Validators.required, Validators.pattern('^[0-9]*$')],
+      ],
     });
     this.testTypeMatricule();
     this.getListeMatricules();
+    this.chargerCarburants();
+  }
+  // get liste carburants
+  async chargerCarburants() {
+    this.carburants = await this.service.carburants().toPromise();
   }
 
   //tester le type de matricule si elle est TUN ou RS
@@ -180,6 +197,19 @@ export class AjouterVehiculeLoueComponent implements OnInit {
     formData.append(
       'date_fin_location',
       new Date(this.form.get('dateFin').value)
+    );
+    formData.append(
+      'kmactuel',
+      this.form.get('kmactuel').value
+    );
+    formData.append('carburant', this.carburant.nom);
+    formData.append(
+      'consommationNormale',
+      this.form.get('consommationnormale').value
+    );
+    formData.append(
+      'capaciteReservoir',
+      this.form.get('capaciteReservoir').value
     );
     Swal.fire({
       title: 'Voulez vous enregistrer?',

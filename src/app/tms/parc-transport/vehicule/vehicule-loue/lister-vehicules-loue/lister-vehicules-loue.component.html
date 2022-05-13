@@ -68,12 +68,17 @@
                 <td style="text-align:center;">
 
                     <!-- bouton de detail vehicule -->
-                    <button class="mb-2  btn icon" (click)="ouvrirDetailVehiculeLoue(vehicule.id_Vehicule_Loue)"
+                    <button class="mb-2  btn icon" (click)="ouvrirDetailVehiculeLoue(vehicule.id)"
                         matTooltip="Détail" matTooltipPosition="after">
                         <i class="fas fa-eye"></i>
                     </button>
                     <!-- fin bouton de detail vehicule -->
-
+                    <!-- bouton de mise a jour du consommation du vehicule -->
+                    <button class="mb-2  btn " (click)="ouvrirMiseAJourConsommation(vehicule)" *ngIf="tms >= 3"
+                        matTooltip="Consommation" matTooltipPosition="after">
+                        <i class="fas fa-gas-pump"></i>
+                    </button>
+                    <!-- fin bouton de mise a jour du consommation du vehicule -->
                     <!-- bouton modifier vehicule -->
                     <button class="mb-2  btn icon" (click)="ouvrirModifier(vehicule)" matTooltip="Modifier"
                         matTooltipPosition="after">
