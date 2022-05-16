@@ -165,4 +165,66 @@ export class ConfigurationTmsService {
       .put(erp + 'modifier-configuration-excel-produit', config)
       .pipe(catchError(this.handleError));
   }
+
+  // api exporter liste produit
+  public exporterListeProduit() {
+    return this.httpClient.get(erp + 'exporter-produits', {
+      responseType: 'blob',
+    });
+  }
+
+  //exporter liste des emballages
+  public exporterEmballages() {
+    return this.httpClient.get(erp + 'exporter-emballages', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des supports
+  public exporterSupports() {
+    return this.httpClient.get(erp + 'exporter-supports', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des supports
+  public exporterCommandes() {
+    return this.httpClient.get(erp + 'exporter-commandes', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des vehicules
+  public exporterVehicules() {
+    return this.httpClient.get(erp + 'exporter-vehicules', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des vehicules loués
+  public exporterVehiculesLoues() {
+    return this.httpClient.get(erp + 'exporter-vehicules-loues', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des carburants
+  public exporterCarburants() {
+    return this.httpClient.get(erp + 'exporter-carburants', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des missions
+  public exporterMissions() {
+    return this.httpClient.get(erp + 'exporter-missions', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des employés
+  public exporterEmployes() {
+    return this.httpClient.get(erp + 'exporter-tous-employes', {
+      responseType: 'blob',
+    });
+  }
+  //exporter liste des clients
+  public exporterClients() {
+    return this.httpClient.get(erp + 'exporter-tous-clients', {
+      responseType: 'blob',
+    });
+  }
 }

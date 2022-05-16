@@ -110,6 +110,7 @@ export class ListerEmballageComponent implements OnInit {
     let nomProduit = produits.nomProduit.split('/');
     return nomProduit;
   }
+
 }
 
 //interface table Emballage

@@ -1,0 +1,146 @@
+<div class="app-page-title">
+   <div class="page-title-wrapper">
+      <div class="page-title-heading">
+         <div class="page-title-icon">
+            <i class="pe-7s-graph text-success">
+            </i>
+         </div>
+         Données
+      </div>
+   </div>
+</div>
+<div class="tab-content">
+   <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
+      <div class="main-card mb-3 card">
+         <div class="card-body">
+            <button mat-raised-button color="warn" style="float: right;" (click)="reinitialiser()">Reinitialiser <i class="fas fa-redo"></i></button>
+            <!--   debut de code  -->
+            <div>
+               <b>Lister :</b><br><br>
+               <select id="lister" class="form-control" #SelectCategorie
+                  (change)='CategorieSelectionnee(SelectCategorie.value)'>
+                  <option value=""></option>
+                  <option *ngFor="let categorie of liste_categorie; let i=index;" [value]="categorie">
+                     <span *ngIf="categorie  == 'Categorie_Fournisseur'">Catégorie Fournisseur</span>
+                     <span *ngIf="categorie  == 'Categorie_Client'">Catégorie Client</span>
+                     <span *ngIf="categorie  == 'Categorie_Tva'">Catégorie TVA</span>
+                     <span *ngIf="categorie  == 'Categorie_Local'">Catégorie Local</span>
+                     <span *ngIf="categorie  == 'Categorie_Piece'">Catégorie Piéce</span>
+                     <span *ngIf="categorie  == 'Categorie_Banque'">Catégorie Banque</span>
+                     <span *ngIf="categorie  == 'Categorie_Fiscale'">Catégorie Fiscale</span>
+                     <span *ngIf="categorie  == 'Categorie_Type_Paiement'">Catégorie Type Paiement</span>
+                     <span *ngIf="categorie  == 'Categorie_Unite'">Catégorie Unité</span>
+                     <span *ngIf="categorie  == 'Categorie_Fodec'">Catégorie Fodec</span>
+                     <span *ngIf="categorie  == 'Categorie_Type1'">Catégorie Type1</span>
+                     <span *ngIf="categorie  == 'Categorie_Type2'">Catégorie Type2</span>
+                     <span *ngIf="categorie  == 'Categorie_Famille'">Catégorie Famille</span>
+                     <span *ngIf="categorie  == 'Categorie_Sous_Famille'">Catégorie Sous Famille</span>
+                     <span *ngIf="categorie  == 'Categorie_Region'">Catégorie Région</span>
+                     <span *ngIf="categorie  == 'Categorie_Ville'">Catégorie Ville</span>
+                     <span *ngIf="categorie  == 'Categorie_Pays'">Catégorie Pays</span>
+                     <span *ngIf="categorie  == 'Categorie_Employe'">Catégorie Employé</span>
+                     <span *ngIf="categorie  == 'Categorie_Congé'"> Categorie_Congé</span>
+                     <span *ngIf="categorie  == 'Categorie_Taxe'">Catégorie Taxe</span>
+                     <span *ngIf="categorie  == 'Categorie_Agence_Transitaire'">Catégorie Agence Transitaire</span>
+                     <span *ngIf="categorie  == 'Categorie_Agence_Transport'">Catégorie Agence Transport</span>
+                     <span *ngIf="categorie  == 'Categorie_Famille_Logistique'">Catégorie Famille Logistique</span>
+                  </option>
+               </select>
+               <select id="lister2" class="form-control" #SelectCategorie2 style="visibility: hidden;"
+                  (change)='Categorie2Selectionnee(SelectCategorie2.value)'>
+                  <option value=""></option>
+                  <option *ngFor="let choix of catDonnees2; let i=index;" [value]="choix.nom">{{choix.nom}}</option>
+               </select>
+               <select id="lister3" class="form-control" #SelectCategorie3 style="visibility: hidden;"
+                  (change)='Categorie3Selectionnee(SelectCategorie3.value)'>
+                  <option value=""></option>
+                  <option *ngFor="let choix of catDonnees3; let i=index;" [value]="choix.nom">{{choix.nom}}</option>
+               </select>
+               <select id="lister4" class="form-control" #SelectCategorie4 style="visibility: hidden;"
+                  (change)='Categorie4Selectionnee(SelectCategorie4.value)'>
+                  <option value=""></option>
+                  <option *ngFor="let choix of catDonnees4; let i=index;" [value]="choix.nom">{{choix.nom}}</option>
+               </select>
+               &nbsp;
+            </div>
+            <h3>Les données :
+               <span *ngIf="categorie  == 'Categorie_Fournisseur'">Catégorie Fournisseur</span>
+               <span *ngIf="categorie  == 'Categorie_Client'">Catégorie Client</span>
+               <span *ngIf="categorie  == 'Categorie_Tva'">Catégorie TVA</span>
+               <span *ngIf="categorie  == 'Categorie_Local'">Catégorie Local</span>
+               <span *ngIf="categorie  == 'Categorie_Piece'">Catégorie Piéce</span>
+               <span *ngIf="categorie  == 'Categorie_Banque'">Catégorie Banque</span>
+               <span *ngIf="categorie  == 'Categorie_Fiscale'">Catégorie Fiscale</span>
+               <span *ngIf="categorie  == 'Categorie_Type_Paiement'">Catégorie Type Paiement</span>
+               <span *ngIf="categorie  == 'Categorie_Unite'">Catégorie Unité</span>
+               <span *ngIf="categorie  == 'Categorie_Fodec'">Catégorie Fodec</span>
+               <span *ngIf="categorie  == 'Categorie_Type1'">Catégorie Type1</span>
+               <span *ngIf="categorie  == 'Categorie_Type2'">Catégorie Type2</span>
+               <span *ngIf="categorie  == 'Categorie_Famille'">Catégorie Famille</span>
+               <span *ngIf="categorie  == 'Categorie_Sous_Famille'">Catégorie Sous Famille</span>
+               <span *ngIf="categorie  == 'Categorie_Region'">Catégorie Région</span>
+               <span *ngIf="categorie  == 'Categorie_Ville'">Catégorie Ville</span>
+               <span *ngIf="categorie  == 'Categorie_Pays'">Catégorie Pays</span>
+               <span *ngIf="categorie  == 'Categorie_Employe'">Catégorie Employé</span>
+            </h3>
+            <div class=pull-right *ngIf="!ajoutAction && !modificationAction"><button type="button" class="btn btn-primary"
+                  style="margin-top: 20px;" (click)="activerAjout()" [disabled]="click">Ajouter Données</button></div>
+            <div class="text-center" *ngIf="ajoutAction===true">
+               <form [formGroup]="Nom_donnees">
+                  <input type="text" placeholder="Nom" name="Nom" id="Nom" [formControl]="Nom_donnees.get('Nom')"
+                     class="form-control">
+               </form>
+               <form [formGroup]="Valeur_donnees">
+                  <input type="text" placeholder="Valeur" name="Valeur" id="Valeur"
+                     [formControl]="Valeur_donnees.get('Valeur')" class="form-control">
+               </form>
+            </div>
+            <div class="border border-light p-3 mb-4" *ngIf="ajoutAction===true">
+               <div class="text-center">
+                  <button type="button" class="btn btn-primary" (click)="ajouterDonneesCategorie() ">Valider</button>
+               </div>
+            </div>
+            <div class="text-center" *ngIf="modificationAction">
+               <form [formGroup]="Nom_donnees">
+                  <input type="text" placeholder="Nom" name="Nom" id="Nom" [formControl]="Nom_donnees.get('Nom')"
+                     class="form-control">
+               </form>
+               <form [formGroup]="Valeur_donnees">
+                  <input type="text" placeholder="Valeur" name="Valeur" id="Valeur"
+                     [formControl]="Valeur_donnees.get('Valeur')" class="form-control">
+               </form>
+            </div>
+            <div class="border border-light p-3 mb-4" *ngIf="modificationAction">
+               <div class="text-center">
+                  <button type="button" class="btn btn-primary" (click)="modifierDonneesCategorie() ">Valider</button>
+               </div>
+            </div>
+            <br>
+            <table class="mb-0 table">
+               <thead>
+                  <tr>
+
+                     <th>Nom</th>
+                     <th>Valeur</th>
+                     <th></th>
+                  </tr>
+               </thead>
+               <tbody>
+                  <tr *ngFor="let categorie of nom_categorie">
+
+                     <td>{{categorie.nom}}</td>
+                     <td>{{categorie.valeur}}</td>
+                     <td>
+                        <i class="pe-7s-trash" style="color: red;" title="Supprimer donnée"
+                           (click)="SupprimerDonneesCategorie(categorie.tag)"></i>
+                        <i class="pe-7s-note" style="color: black;" title="Modifier donnée"
+                           (click)="activerModifier(categorie)"></i>
+                        </td>
+                  </tr>
+               </tbody>
+            </table>
+            <!--   fin code  -->
+         </div>
+      </div>
+   </div>
+</div>

@@ -2,6 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { ConfigurationApplication } from 'src/app/configuration-tms/classes/configuration-application';
 
 const erp = '/ERP/';
 const infonet = '/INFONET/';
@@ -10,9 +11,6 @@ const infonet = '/INFONET/';
 })
 export class CommandeService {
   handleError: any;
-
-  // changer cette valeur pour spécifier s'il s'agit d'un mode manuel ou pas
-  public modeManuel = true;
 
   constructor(private httpClient: HttpClient) {}
 
@@ -83,6 +81,24 @@ export class CommandeService {
   public client(idClt: any) {
     return this.httpClient
       .get(infonet + 'Client', {
+        params: {
+          Id_Clt: idClt,
+        },
+        observe: 'body',
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  //charger liste Clients mode deconnecté
+  public clientsManuel() {
+    return this.httpClient
+      .get(erp + 'Clients')
+      .pipe(catchError(this.handleError));
+  }
+  //charger Client mode deconnecté
+  public clientManuel(idClt: any) {
+    return this.httpClient
+      .get(erp + 'Client', {
         params: {
           Id_Clt: idClt,
         },
@@ -322,5 +338,32 @@ export class CommandeService {
     return this.httpClient
       .get(erp + 'frais-livraison')
       .pipe(catchError(this.handleError));
+  }
+
+  //get configuration application
+  public configurationApplication() {
+    return this.httpClient
+      .get<ConfigurationApplication>(erp + 'configuration-application')
+      .pipe(catchError(this.handleError));
+  }
+
+  public filtrerCommandes(
+    reference: string,
+    client: string,
+    ville: string,
+    adresse: string,
+    trackingNumber: string,
+    etat: string
+  ) {
+    return this.httpClient.get(erp + 'filtrer-commandes', {
+      params: {
+        reference: reference,
+        client: client,
+        ville: ville,
+        adresse: adresse,
+        trackingNumber: trackingNumber,
+        etat: etat
+      }
+    }).pipe(catchError(this.handleError));
   }
 }

@@ -221,6 +221,12 @@
                            </a>
                            <ul>
                               <li>
+                                 <a routerLink="/Menu/TMS/Parc/Carburants/lister-carburants">
+                                    <i class="metismenu-icon"></i>
+                                    Carburants
+                                 </a>
+                              </li>
+                              <li>
                                  <a routerLink="/Menu/TMS/Parc/Vehicules">
                                     <i class="metismenu-icon"></i>
                                     Vehicules
@@ -261,16 +267,55 @@
 
                      </ul>
                   </li>
+                  <!-- Fin partie menu TMS -->
                   <li *ngIf="tms >= 4">
-                     <a href="/Menu/Configuration">
+                     <a routerLink="/Menu/Configuration">
                         <i class="metismenu-icon pe-7s-diamond"></i>
                         Configuration
                      </a>
                   </li>
+                  <!-- Partie menu RH -->
+                  <li>
+                     <a routerLink="/Menu/Menu-RH">
+                        <i class="metismenu-icon pe-7s-diamond"></i>
+                        RH
+                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                     </a>
+                     <ul>
+                        <li>
+                           <a routerLink="/Menu/Menu-RH/Menu-employee">
+                              <i class="metismenu-icon"></i>
+                              Employees
+                           </a>
+                        </li>
+                     </ul>
+                  </li>
+                  <!-- Fin partie menu RH -->
+                  <!-- Partie client -->
+                  <li>
+                     <a href="#">
+                        <i class="metismenu-icon pe-7s-diamond"></i>
+                        Données
+                        <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
+                     </a>
+                     <ul>
+                        <li>
+                           <a routerLink="/Menu/Menu-init/Menu-donnees">
+                              <i class="metismenu-icon"></i>
+                              Données
+                           </a>
+                        </li>
+                        <li>
+                           <a routerLink="/Menu/Menu-init/Menu-client">
+                              <i class="metismenu-icon"></i>
+                              Client
+                           </a>
+                        </li>
+                     </ul>
+                  </li>
+                  <!-- Fin partie menu RH -->
 
                </ul>
-
-               <!-- Fin partie menu TMS -->
 
             </div>
          </div>

@@ -214,6 +214,17 @@ export class MissionsService {
       })
       .pipe(catchError(this.handleError));
   }
+  //get liste des chauffeurs du mode non connecté
+  public getChauffeursManuel() {
+    return this.httpClient
+      .get(erp + 'Filtre_Employee', {
+        params: {
+          Champ: 'role',
+          Valeur: 'chauffeur',
+        },
+      })
+      .pipe(catchError(this.handleError));
+  }
 
   //get position by id
   public getPositionById(id: any) {
@@ -271,12 +282,15 @@ export class MissionsService {
     });
   }
 
-  //modifier consommation
+  // modifier consommation
   public modifierConsommation(
     id: any,
     kmActuel: any,
     consommation: any,
     historiqueConsommation: any,
+    historiqueA: any,
+    historiqueB: any,
+    historiqueC: any,
     reservoir: any
   ) {
     let formData: any = new FormData();
@@ -284,6 +298,9 @@ export class MissionsService {
     formData.append('kmactuel', Number(kmActuel));
     formData.append('consommation', consommation);
     formData.append('historiqueConsommation', historiqueConsommation);
+    formData.append('historiqueA', historiqueA);
+    formData.append('historiqueB', historiqueB);
+    formData.append('historiqueC', historiqueC);
     formData.append('reservoir', reservoir);
     return this.httpClient.put(erp + 'modifier-consommation', formData);
   }
@@ -304,4 +321,11 @@ export class MissionsService {
       .get(erp + 'info-general')
       .pipe(catchError(this.handleError));
   }
+
+    //get configuration application
+    public configurationApplication() {
+      return this.httpClient
+        .get(erp + 'configuration-application')
+        .pipe(catchError(this.handleError));
+    }
 }

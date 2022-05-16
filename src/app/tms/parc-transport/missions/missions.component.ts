@@ -91,8 +91,8 @@ export class MissionsComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.router.url === '/Menu/TMS/Missions/Liste_Missions') this.activerListerMissions();
-    if (this.router.url === '/Menu/TMS/Missions/Ajouter_Missions') this.activerAjouterMissions();
+    if (this.router.url === '/Menu/TMS/Parc/Missions/liste-missions') this.activerListerMissions();
+    if (this.router.url === '/Menu/TMS/Parc/Missions/ajouter-missions') this.activerAjouterMissions();
   }
 
   activerListerMissions() {

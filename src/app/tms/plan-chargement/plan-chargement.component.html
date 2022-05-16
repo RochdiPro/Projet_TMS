@@ -164,10 +164,10 @@
             <div *ngIf="commandeModeManuelSelectionne" id="liste-objets" class="scrollbar">
                <div *ngFor="let obj of commandeModeManuelSelectionne.articles"
                   style="display: flex; align-items: center;">
-                  {{obj.nombrePack}} x
+                  {{obj.emballage}}: {{obj.nombrePack}} x 
                   <div [style.width.px]="obj.largeur" [style.height.px]="obj.hauteur"
                      [style.background]="commandeModeManuelSelectionne.couleur" class="objet"
-                     (click)="ajouterColisManuellement(obj)">{{obj.emballage}}</div>
+                     (click)="ajouterColisManuellement(obj)">{{obj.num}}</div>
                </div>
             </div>
             <button mat-raised-button color="primary" style="margin-top: auto;"

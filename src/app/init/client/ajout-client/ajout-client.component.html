@@ -1,0 +1,688 @@
+<h5 class="card-title">Les étapes de création d'un Client</h5>
+
+<mat-vertical-stepper [linear]="passage_etape" #stepperClient>
+    <mat-step [stepControl]="Informations_Generales_Form">
+        <form [formGroup]="Informations_Generales_Form">
+
+            <ng-template matStepLabel>Informations Générales</ng-template>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Nom_Client"> Nom du Client </mat-label>
+                        <input type="text" matInput formControlName="Nom_Client" id="Nom_Client" name="Nom_Client"
+                            required>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Nom_Client').invalid">
+                            {{MessageErreurNom()}}</mat-error>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Categorie_Client">Categorie Client </mat-label>
+                        <mat-select formControlName="Categorie_Client" id="Categorie_Client" name="Categorie_Client"
+                            placeholder="Categorie Client" required>
+                            <mat-option value=" "></mat-option>
+                            <mat-option *ngFor="let categorie of categorie_Client" [value]="categorie.nom">
+                                {{categorie.nom}}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Categorie_Client').invalid">
+                            {{MessageErreurCategorieClient()}}</mat-error>
+                    </mat-form-field>
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Representant"> Représentant </mat-label>
+                        <input type="text" matInput formControlName="Representant" id="Representant"
+                            name="Representant">
+
+                    </mat-form-field>
+
+                </div>
+
+            </div>
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Categorie_Fiscale">Categorie Fiscale </mat-label>
+                        <mat-select formControlName="Categorie_Fiscale" id="Categorie_Fiscale" name="Categorie_Fiscale"
+                            placeholder="Categorie Fiscale" (selectionChange)="CategorieFiscaleSelectionner($event)"
+                            required>
+                            <mat-option *ngFor="let fiscale of categorie_fiscale" [value]="fiscale.nom">
+                                {{fiscale.nom}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Categorie_Fiscale').invalid">
+                            {{MessageErreurCategorieFiscale()}}</mat-error>
+                    </mat-form-field>
+
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Identification_Fiscale">Identification Fiscale </mat-label>
+                        <input type="text" matInput formControlName="Identification_Fiscale" id="Identification_Fiscale"
+                            name="Identification_Fiscale" required>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Identification_Fiscale').invalid">
+                            {{MessageErreurIdentificationFiscale()}}</mat-error>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Type_Piece_Identite">Type de la pièce d'identité </mat-label>
+                        <mat-select formControlName="Type_Piece_Identite" id="Type_Piece_Identite"
+                            name="Type_Piece_Identite" placeholder="Type de la pièce d'identité" required>
+                            <mat-option value=" "></mat-option>
+                            <mat-option *ngFor="let piece of categorie_piece" [value]="piece.nom">{{piece.nom}}
+                            </mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Type_Piece_Identite').invalid">
+                            {{MessageErreurCategoriePiece()}}</mat-error>
+                    </mat-form-field>
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="N_Piece_Identite"> Numéro de la pièce d'identité </mat-label>
+                        <input type="text" matInput formControlName="N_Piece_Identite" id="N_Piece_Identite"
+                            name="N_Piece_Identite" required>
+                        <mat-error *ngIf="Informations_Generales_Form.get('N_Piece_Identite').invalid">
+                            {{MessageErreurNPieceIdentite()}}</mat-error>
+
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label>
+                            Délivrée le
+                        </mat-label>
+                        <input matInput formControlName="Date_Livraison_Identite" [matDatepicker]="picker"
+                            placeholder="DD/MM/YYYY">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                </div>
+
+            </div>
+            <div class="row" *ngIf="choix_Categorie_Fiscale==='Exonéré_tva'">
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="N_Attestation_Exoneration">N° d'Attestation d'Exonération</mat-label>
+                        <input type="text" matInput formControlName="N_Attestation_Exoneration"
+                            id="N_Attestation_Exoneration" name="N_Attestation_Exoneration" required>
+                        <mat-error *ngIf="Informations_Generales_Form.get('N_Attestation_Exoneration').invalid">
+                            {{MessageErreurNAttestationExoneration()}}</mat-error>
+
+
+                    </mat-form-field>
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Etablie_Le">Durée d'Exonération Au TVA </mat-label>
+
+
+                        <mat-date-range-input [rangePicker]="picker2">
+                            <input matStartDate formControlName="Etablie_Le" placeholder="Etablie Le">
+                            <input matEndDate formControlName="Valable_Au" placeholder="Valable Au">
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker2></mat-date-range-picker>
+                    </mat-form-field>
+
+
+                </div>
+            </div>
+            <div class="row" *ngIf="choix_Categorie_Fiscale==='Exonéré_tva_et_Fodec'">
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="N_Attestation_Exoneration">N° d'Attestation d'Exonération</mat-label>
+                        <input type="text" matInput formControlName="N_Attestation_Exoneration"
+                            id="N_Attestation_Exoneration" name="N_Attestation_Exoneration" required>
+                        <mat-error *ngIf="Informations_Generales_Form.get('N_Attestation_Exoneration').invalid">
+                            {{MessageErreurNAttestationExoneration()}}</mat-error>
+
+
+                    </mat-form-field>
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Etablie_Le">Durée d'Exonération Au TVA </mat-label>
+
+
+                        <mat-date-range-input [rangePicker]="picker2">
+                            <input matStartDate formControlName="Etablie_Le" placeholder="Etablie Le" required>
+                            <input matEndDate formControlName="Valable_Au" placeholder="Valable Au" required>
+
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker2></mat-date-range-picker>
+
+                    </mat-form-field>
+
+
+                </div>
+            </div>
+            <div class="row" *ngIf="choix_Categorie_Fiscale==='Suspension_tva'">
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="N_Attestation_Exoneration">N° d'Attestation de suspension </mat-label>
+                        <input type="text" matInput formControlName="N_Attestation_Exoneration"
+                            id="N_Attestation_Exoneration" name="N_Attestation_Exoneration" required>
+                        <mat-error *ngIf="Informations_Generales_Form.get('N_Attestation_Exoneration').invalid">
+                            {{MessageErreurNAttestationExoneration()}}</mat-error>
+
+
+                    </mat-form-field>
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Etablie_Le">Durée de suspension TVA </mat-label>
+
+
+                        <mat-date-range-input [rangePicker]="picker2">
+                            <input matStartDate formControlName="Etablie_Le" placeholder="Etablie Le" required>
+                            <input matEndDate formControlName="Valable_Au" placeholder="Valable Au" required>
+
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker2></mat-date-range-picker>
+
+                    </mat-form-field>
+
+
+                </div>
+            </div>
+            <div class="row" *ngIf="choix_Categorie_Fiscale==='Cession_a_quai'">
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="N_Attestation_Exoneration">N° d'Attestation de Cession à quai </mat-label>
+                        <input type="text" matInput formControlName="N_Attestation_Exoneration"
+                            id="N_Attestation_Exoneration" name="N_Attestation_Exoneration" required>
+                        <mat-error *ngIf="Informations_Generales_Form.get('N_Attestation_Exoneration').invalid">
+                            {{MessageErreurNAttestationExoneration()}}</mat-error>
+
+
+                    </mat-form-field>
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Etablie_Le">Durée de suspension TVA </mat-label>
+
+
+                        <mat-date-range-input [rangePicker]="picker2">
+                            <input matStartDate formControlName="Etablie_Le" placeholder="Etablie Le" required>
+                            <input matEndDate formControlName="Valable_Au" placeholder="Valable Au" required>
+
+                        </mat-date-range-input>
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-date-range-picker #picker2></mat-date-range-picker>
+
+                    </mat-form-field>
+
+
+                </div>
+            </div>
+
+            <div class="row" *ngIf="choix_Categorie_Fiscale==='Reduction_tva'">
+
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Taux_Reduction_Tva">Taux de réduction de la TVA</mat-label>
+                        <input type="number" matInput formControlName="Taux_Reduction_Tva" id="Taux_Reduction_Tva"
+                            name="Taux_Reduction_Tva" required>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Taux_Reduction_Tva').invalid">
+                            {{MessageErreurTauxReductionTva()}}</mat-error>
+                    </mat-form-field>
+                </div>
+
+
+            </div>
+            <div class="row">
+
+                <mat-form-field class="full-width">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="Description" id="Description" name="Description"
+                        placeholder="Description"></textarea>
+                </mat-form-field>
+
+
+            </div>
+            <div>
+                <button mat-button matStepperNext class="btn-primary" style="margin-top: 20px;">Suivant</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="Informations_Banques_Form">
+        <form [formGroup]="Informations_Banques_Form">
+
+            <ng-template matStepLabel>Informations Banques</ng-template>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="banque1"> Banque </mat-label>
+                        <mat-select (selectionChange)="ChoixBanque1($event)" formControlName="Banque1" id="Banque1"
+                            name="Banque1" placeholder="Banque" required>
+                            <mat-option></mat-option>
+                            <mat-option *ngFor="let banque of  categorie_banque" [value]="banque.nom">
+                                {{banque.nom}}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="Informations_Banques_Form.get('Banque1').invalid">
+                            {{MessageErreurBanque()}}</mat-error>
+
+
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="rib1"> RIB </mat-label>
+                        <input type="text" matInput formControlName="Rib1" id="Rib1" name="Rib1" style='-webkit-appearance: none; 
+                        margin: 0; ' required>
+                        <mat-error *ngIf="Informations_Banques_Form.get('Rib1').invalid">
+                            {{MessageErreurRib()}}</mat-error>
+
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="banque2"> Banque 2</mat-label>
+                        <mat-select (selectionChange)="ChoixBanque2($event)" formControlName="Banque2" id="Banque2"
+                            name="Banque2" placeholder="Banque 2">
+
+                            <mat-option *ngFor="let banque of categorie_banque" [value]="banque.nom">
+                                {{banque.nom}}</mat-option>
+                        </mat-select>
+
+
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Rib2"> RIB 2 </mat-label>
+                        <input type="number" matInput formControlName="Rib2" id="Rib2" name="Rib2" style='-webkit-appearance: none; 
+                            margin: 0; '>
+
+
+                    </mat-form-field>
+
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Plafond"> Plafond </mat-label>
+                        <input type="number" matInput formControlName="Plafond" id="Plafond" name="Plafond" style='-webkit-appearance: none; 
+                        margin: 0; '>
+
+
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+
+                    <mat-checkbox matInput id="Timbre_Fiscal" color="primary" formControlName="Timbre_Fiscal"
+                        style="margin-top:10px"></mat-checkbox>
+                    <mat-label for="Timbre_Fiscal"> Timbre Fiscal</mat-label>
+                </div>
+
+            </div>
+            <div>
+                <button mat-button matStepperPrevious class="btn-primary"
+                    style="margin-top: 20px; margin-right: 20px;">Retour</button>
+                <button mat-button matStepperNext class="btn-primary">Suivant</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="ContactForm">
+        <form [formGroup]="ContactForm">
+
+            <ng-template matStepLabel>Contact</ng-template>
+            <div class="row">
+
+
+
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Adresse"> Adresse </mat-label>
+                        <input type="text" matInput formControlName="Adresse" id="Adresse" name="Adresse" required>
+                        <mat-error *ngIf="ContactForm.get('Adresse').invalid">
+                            {{MessageErreurAdresse()}}</mat-error>
+
+                    </mat-form-field>
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Pays"> Pays </mat-label>
+                        <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays"
+                            (selectionChange)="ChoixPays($event)" required>
+                            <mat-option></mat-option>
+                            <mat-option *ngFor="let pays of  categorie_pays" [value]="pays.nom">
+                                {{pays.nom}}</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="ContactForm.get('Pays').invalid">
+                            {{MessageErreurPays()}}</mat-error>
+
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Ville"> Ville </mat-label>
+                        <mat-select formControlName="Ville" id="Ville" name="Ville" placeholder="Ville"
+                            (selectionChange)="ChoixVille($event)">
+                            <mat-option></mat-option>
+                            <mat-option *ngFor="let ville of  categorie_ville" [value]="ville.nom">
+                                {{ville.nom}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Region">Region </mat-label>
+                        <mat-select formControlName="Region" id="Region" name="Region" placeholder="Region">
+                            <mat-option></mat-option>
+                            <mat-option *ngFor="let region of  categorie_region" [value]="region.nom">
+                                {{region.nom}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+
+                        <mat-label for="Contact"> Contact </mat-label>
+                        <input type="text" matInput formControlName="Contact" id="Contact" name="Contact" required>
+
+                        <mat-error *ngIf="ContactForm.get('Contact').invalid">
+                            {{MessageErreurContact()}}</mat-error>
+
+                    </mat-form-field>
+
+
+                </div>
+
+                <div class="col-md-3 mb-3">
+
+                    <mat-form-field>
+                        <mat-label>Email</mat-label>
+                        <input type="email" matInput formControlName="Email" placeholder="Ex. pat@example.com"
+                            pattern=".+@.+." required>
+                        <mat-error *ngIf="ContactForm.get('Email').invalid">
+                            {{MessageErreurEmail()}}</mat-error>
+                    </mat-form-field>
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label>Téléphone</mat-label>
+
+                        <input type="number" matInput formControlName="Tel1" id="Tel1" name="Tel1"
+                            placeholder="(+216)99-999-999" required>
+                        <mat-error *ngIf="ContactForm.get('Tel1').invalid">
+                            {{MessageErreurTel()}}</mat-error>
+
+                    </mat-form-field>
+
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label>Téléphone 2</mat-label>
+
+                        <input type="number" matInput formControlName="Tel2" id="Tel2" name="Tel2"
+                            placeholder="(+216)99-999-999">
+
+                    </mat-form-field>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label>Fax</mat-label>
+
+                        <input type="number" matInput formControlName="Fax" id="Fax" name="Fax"
+                            placeholder="(+216)99-999-999">
+
+                    </mat-form-field>
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label>Site Web</mat-label>
+
+                        <input type="text" matInput formControlName="Site_Web" id="Site_Web" name="Site_Web"
+                            placeholder="Site Web">
+
+                    </mat-form-field>
+
+                </div>
+                <div class="col-md-3 mb-3">
+
+                    <mat-form-field>
+                        <mat-label> Image du Client </mat-label>
+
+                        <ngx-mat-file-input matInput id="Image" name="Image" formControlName="Image"
+                            (change)="choixImageClient()" placeholder="Sélectionner image"
+                            accept="image/png, image/jpeg">
+
+
+                        </ngx-mat-file-input>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div>
+                <button mat-button matStepperPrevious class="btn-primary"
+                    style="margin-top: 20px; margin-right: 20px;">Retour</button>
+                <button mat-button matStepperNext class="btn-primary">Récapitulation</button>
+            </div>
+        </form>
+    </mat-step>
+    <mat-step [stepControl]="Recapitulation_Form">
+        <form [formGroup]="Recapitulation_Form">
+
+            <ng-template matStepLabel>Récapitulation</ng-template>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="Nom_Client"> Nom de Client :
+                    </label> {{Informations_Generales_Form.get('Nom_Client').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="categorie_Client">Categorie Client :
+                    </label> {{Informations_Generales_Form.get('Categorie_Client').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="Categorie_Fiscale">Categorie Fiscale : </label>
+                    {{Informations_Generales_Form.get('Categorie_Fiscale').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="Representant">Represéntant : </label>
+                    {{Informations_Generales_Form.get('Representant').value}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="Type_Piece_Identite">Type de la pièce d'identité : </label>
+                    {{Informations_Generales_Form.get('Type_Piece_Identite').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="N_Piece_Identite">Numéro de la pièce d'identité : </label>
+                    {{Informations_Generales_Form.get('N_Piece_Identite').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="Date_Livraison_Identite">Date de livraison de la pièce d'identité :
+                    </label>{{Informations_Generales_Form.get('Date_Livraison_Identite').value | date:'dd-MM-yyyy'}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="Email">Email : </label> {{ContactForm.get('Email').value}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="banque1">Banque : </label> {{Informations_Banques_Form.get('Banque1').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="rib1">RIB :</label> {{Informations_Banques_Form.get('Rib1').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="banque2">Banque 2 : </label> {{Informations_Banques_Form.get('Banque2').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="rib2">RIB 2 :</label> {{Informations_Banques_Form.get('Rib2').value}}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+                    <label for="Plafond">Plafond : </label> {{Informations_Banques_Form.get('Plafond').value}}
+                </div>
+                <div *ngIf="Informations_Banques_Form.get('Timbre_Fiscal').value" class="col-md-3 mb-3">
+                    <label for="Timbre_Fiscal"> Droit de timbre : Oui </label>
+                </div>
+                <div *ngIf="!Informations_Banques_Form.get('Timbre_Fiscal').value" class="col-md-3 mb-3">
+                    <label for="Timbre_Fiscal"> Droit de timbre : Non </label>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="contact"> Contact : </label> {{ContactForm.get('Contact').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="adresse">Adresse : </label> {{ContactForm.get('Adresse').value}}
+                </div>
+            </div>
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+                    <label for="pays"> Pays : </label> {{ContactForm.get('Pays').value}}
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label for="ville">Ville : </label> {{ContactForm.get('Ville').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="Region">Region : </label> {{ContactForm.get('Region').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="site_web">Site Web : </label> {{ContactForm.get('Site_Web').value}}
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label for="tel1">Téléphone : </label> {{ContactForm.get('Tel1').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="tel2">Téléphone 2 : </label> {{ContactForm.get('Tel2').value}}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="fax">Fax : </label> {{ContactForm.get('Fax').value}}
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-3 mb-3"
+                    *ngIf="choix_Categorie_Fiscale==='Exonéré_tva'|| choix_Categorie_Fiscale==='Exonéré_tva_et_Fodec'">
+                    <label>N° d'Attestation d'Exonération : </label>
+                    {{Informations_Generales_Form.get('N_Attestation_Exoneration').value}}
+
+                </div>
+                <div class="col-md-3 mb-3"
+                    *ngIf="choix_Categorie_Fiscale==='Exonéré_tva'|| choix_Categorie_Fiscale==='Exonéré_tva_et_Fodec'">
+                    <label>Debut d'Exonération Au TVA :</label>
+                    {{Informations_Generales_Form.get('Etablie_Le').value | date:'dd-MM-yyyy'}}
+
+
+                </div>
+                <div class="col-md-3 mb-3"
+                    *ngIf="choix_Categorie_Fiscale==='Exonéré_tva'|| choix_Categorie_Fiscale==='Exonéré_tva_et_Fodec'">
+                    <label>Fin d'Exonération Au TVA :
+                    </label>{{Informations_Generales_Form.get('Valable_Au').value | date:'dd-MM-yyyy'}}
+
+
+                </div>
+
+                <div class="col-md-3 mb-3" *ngIf="choix_Categorie_Fiscale==='Suspension_tva'">
+                    <label> N° d'Attestation de suspension :</label>
+                    {{Informations_Generales_Form.get('N_Attestation_Exoneration').value}}
+
+                </div>
+                <div class="col-md-3 mb-3" *ngIf="choix_Categorie_Fiscale==='Suspension_tva'">
+                    <label>Date début de suspension au TVA : </label>
+                    {{Informations_Generales_Form.get('Etablie_Le').value | date:'dd-MM-yyyy'}}
+                </div>
+                <div class="col-md-3 mb-3" *ngIf="choix_Categorie_Fiscale==='Suspension_tva' ">
+                    <label>Date fin de suspension au TVA :</label>
+                    {{Informations_Generales_Form.get('Valable_Au').value | date:'dd-MM-yyyy'}}
+                </div>
+
+
+
+            </div>
+            <div class="row">
+                <div *ngIf="choix_Categorie_Fiscale==='Reduction_tva'" class="col-md-3 mb-3">
+                    <label> Taux de réduction de la TVA : </label>
+                    {{Informations_Generales_Form.get('Taux_Reduction_Tva').value}}
+
+                </div>
+                <div *ngIf="choix_Categorie_Fiscale==='Cession_a_quai'" class="col-md-3 mb-3">
+                    <label> N° d'Attestation de Cession à quai : </label>
+                    {{Informations_Generales_Form.get('N_Attestation_Exoneration').value}}
+
+                </div>
+                <div *ngIf="choix_Categorie_Fiscale==='Cession_a_quai'" class="col-md-3 mb-3">
+                    <label> Date debut de suspension TVA :
+                    </label>{{Informations_Generales_Form.get('Etablie_Le').value | date:'dd-MM-yyyy'}}
+
+                </div>
+                <div *ngIf="choix_Categorie_Fiscale==='Cession_a_quai'" class="col-md-3 mb-3">
+                    <label> Date fin de suspension TVA :
+                    </label>{{Informations_Generales_Form.get('Valable_Au').value | date:'dd-MM-yyyy'}}
+                </div>
+            </div>
+            <div class="row">
+
+                <label for="Description"> Description : </label>
+                {{Informations_Generales_Form.get('Description').value}}
+            </div>
+            <div>
+                <button mat-button matStepperPrevious class="btn-primary"
+                    style="margin-top: 20px; margin-right: 20px;">Retour</button>
+                <button mat-button matStepperNext class="btn-primary" (click)="creerClient()">Enregistrer</button>
+            </div>
+        </form>
+    </mat-step>
+
+</mat-vertical-stepper>

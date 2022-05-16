@@ -36,6 +36,12 @@ export class ConfigurationGeneraleComponent implements OnInit {
         this.nomSociete.setValue(this.infos.nomSociete);
         this.numeroTelephone.setValue(this.infos.telephone);
         this.email.setValue(this.infos.email);
+        this.matriculeFiscale.setValue(this.infos.matriculeFiscale);
+        this.registreCommerce.setValue(this.infos.registreCommerce);
+        this.numeroFax.setValue(this.infos.fax);
+        this.siteWeb.setValue(this.infos.siteWeb);
+        this.banque.setValue(this.infos.banque);
+        this.rib.setValue(this.infos.rib);
       }
     });
   }
@@ -71,7 +77,13 @@ export class ConfigurationGeneraleComponent implements OnInit {
     let nouveauInfos: InfoGeneral = new InfoGeneral(
       this.nomSociete.value,
       this.numeroTelephone.value,
-      this.email.value
+      this.email.value,
+      this.matriculeFiscale.value,
+      this.registreCommerce.value,
+      this.numeroFax.value,
+      this.siteWeb.value,
+      this.banque.value,
+      this.rib.value
     );
     // si il'y a deja des information enregistrée on les modifient si non on crée des nouvelles informations
     if (this.infos) {

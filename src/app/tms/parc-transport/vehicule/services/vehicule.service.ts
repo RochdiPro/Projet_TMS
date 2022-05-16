@@ -7,6 +7,8 @@ const infonet = '/INFONET/';
   providedIn: 'root',
 })
 export class VehiculeService {
+  vehiculeAModifier: any;
+  vehiculeLoueAModifier: any;
   handleError: any;
   constructor(private httpClient: HttpClient) {}
 
@@ -40,17 +42,22 @@ export class VehiculeService {
       .pipe(catchError(this.handleError));
   }
 
+  //modifier les informations d'un vehicule
+  public modifierVehicule(formData: any) {
+    return this.httpClient
+      .put(erp + 'modifier-infos-vehicule', formData)
+      .pipe(catchError(this.handleError));
+  }
+
   //filtrer vehicule
   public filtrerVehicule(
     matricule: string,
-    categories: string,
     etatVehicule: string
   ) {
     return this.httpClient
       .get(erp + 'filtre-vehicule', {
         params: {
           matricule: matricule,
-          categories: categories,
           etatVehicule: etatVehicule,
         },
         observe: 'body',
@@ -159,6 +166,11 @@ export class VehiculeService {
     return this.httpClient.get(erp + 'vehicules-loues');
   }
 
+  // modifier vehicule loue
+  public modifierVehiculeLoue(formData: any) {
+    return this.httpClient.put(erp + 'modifier-vehicule-loue', formData);
+  }
+
   //importer les données d'un vehicule loué par ID
   public vehiculeLoue(id: any) {
     return this.httpClient
@@ -230,6 +242,28 @@ export class VehiculeService {
     formData.append('reservoir', reservoir);
     return this.httpClient.put(erp + 'modifier-consommation', formData);
   }
+  // modifier consommation vehicule loué
+  public modifierConsommationVehiculeLoue(
+    id: any,
+    kmActuel: any,
+    consommation: any,
+    historiqueConsommation: any,
+    historiqueA: any,
+    historiqueB: any,
+    historiqueC: any,
+    reservoir: any
+  ) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    formData.append('kmactuel', Number(kmActuel));
+    formData.append('consommation', consommation);
+    formData.append('historiqueConsommation', historiqueConsommation);
+    formData.append('historiqueA', historiqueA);
+    formData.append('historiqueB', historiqueB);
+    formData.append('historiqueC', historiqueC);
+    formData.append('reservoir', reservoir);
+    return this.httpClient.put(erp + 'modifier-consommation-vehicule-loue', formData);
+  }
 
   //get liste des chauffeurs
   public getChauffeurs() {
@@ -241,5 +275,41 @@ export class VehiculeService {
         },
       })
       .pipe(catchError(this.handleError));
+  }
+
+  //get configuration de l'application
+  public getConfigurationApplication() {
+    return this.httpClient
+      .get(erp + 'configuration-application')
+      .pipe(catchError(this.handleError));
+  }
+
+  //get infos generales
+  public getInfoGeneralesDeLaSociete() {
+    return this.httpClient
+      .get(erp + 'info-general')
+      .pipe(catchError(this.handleError));
+  }
+
+  //get liste des chauffeurs
+  public getChauffeursManuel() {
+    return this.httpClient
+      .get(erp + 'Filtre_Employee', {
+        params: {
+          Champ: 'role',
+          Valeur: 'chauffeur',
+        },
+      })
+      .pipe(catchError(this.handleError));
+  }
+
+  //get vehicule par matricule
+  public getMatriculesVehiculesPrives() {
+    return this.httpClient.get(erp + "matricules-vehicules-prives")
+  }
+
+  //get vehicule Loue par matricule
+  public getMatriculesVehiculesLoues() {
+    return this.httpClient.get(erp + "matricules-vehicules-loues")
   }
 }

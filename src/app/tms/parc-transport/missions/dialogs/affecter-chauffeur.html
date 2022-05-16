@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>{{vehicule.matricule}}</h1>
+<h1 mat-dialog-title *ngIf="vehicule">{{vehicule.matricule}}</h1>
 <div style="padding-left: 20px;">
     <!-- bloc de selection du chauffeur -->
     <div class="chauffeur">

@@ -36,6 +36,7 @@ export class ConfigurationServeurComponent implements OnInit {
         if (this.configuration) {
           this.adresseIP.setValue(this.configuration.adresseIp);
           this.apiGoogle.setValue(this.configuration.apiKeyGoogle);
+          this.modeManuel.setValue(this.configuration.modeManuel);
         }
       });
     this.serviceConfiguration
@@ -57,13 +58,15 @@ export class ConfigurationServeurComponent implements OnInit {
         ],
       ],
       apiGoogle: ['', Validators.required],
+      modeManuel: false
     });
   }
 
   enregistrer() {
     let nouvelConfig: ConfigurationApplication = new ConfigurationApplication(
       this.adresseIP.value,
-      this.apiGoogle.value
+      this.apiGoogle.value,
+      this.modeManuel.value
     );
     if (this.configuration) {
       this.serviceConfiguration
@@ -112,5 +115,8 @@ export class ConfigurationServeurComponent implements OnInit {
   }
   get apiGoogle() {
     return this.formConfigurationServeur.get('apiGoogle');
+  }
+  get modeManuel() {
+    return this.formConfigurationServeur.get('modeManuel');
   }
 }

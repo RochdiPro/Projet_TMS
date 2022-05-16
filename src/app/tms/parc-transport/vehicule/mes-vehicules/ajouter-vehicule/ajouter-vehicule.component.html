@@ -33,10 +33,21 @@
                                     <div class="row matriculetun">
                                         <input placeholder="* * *" class="form-control no-spin" id="numSerie"
                                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            type="number" maxlength="3" formControlName="serieVoiture">
+                                            type="number" maxlength="3" formControlName="serieVoiture"
+                                            (keyup)="verifierMatricule()">
                                         <input placeholder="* * * *" class="form-control no-spin" id="numCar"
                                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            type="number" maxlength="4" formControlName="numeroVoiture">
+                                            type="number" maxlength="4" formControlName="numeroVoiture"
+                                            (keyup)="verifierMatricule()">
+                                    </div>
+                                    <div
+                                        [ngClass]="{'cacher-erreur': !matriculeExiste, 'afficher-erreur': matriculeExiste}">
+                                        Matricule deja existe
+                                    </div>
+                                    <div
+                                        [ngClass]="{'cacher-erreur': (!caracteristiquesFormGroup.controls['serieVoiture'].hasError('required') && !caracteristiquesFormGroup.controls['numeroVoiture'].hasError('required')) || matriculeExiste, 
+                                        'afficher-erreur': (caracteristiquesFormGroup.controls['serieVoiture'].hasError('required') || caracteristiquesFormGroup.controls['numeroVoiture'].hasError('required')) && !matriculeExiste}">
+                                        Champ obligatoire!
                                     </div>
                                 </div>
                                 <!-- Affichage input RS si type matricule est rs -->
@@ -44,7 +55,17 @@
                                     <div class="row matriculers">
                                         <input maxlength="6" placeholder="* * * * * *" class="form-control" id="numRS"
                                             oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                            type="number" maxlength="6" formControlName="matriculeRS">
+                                            type="number" maxlength="6" formControlName="matriculeRS"
+                                            (keyup)="verifierMatricule()">
+                                    </div>
+                                    <div
+                                        [ngClass]="{'cacher-erreur': !matriculeExiste, 'afficher-erreur': matriculeExiste}">
+                                        Matricule deja existe
+                                    </div>
+                                    <div
+                                        [ngClass]="{'cacher-erreur': !caracteristiquesFormGroup.controls['matriculeRS'].hasError('required') || matriculeExiste, 
+                                        'afficher-erreur': caracteristiquesFormGroup.controls['matriculeRS'].hasError('required') && !matriculeExiste}">
+                                        Champ obligatoire!
                                     </div>
                                 </div>
                             </div>
@@ -120,22 +141,6 @@
                                     </mat-error>
                                 </mat-form-field>
                             </div>
-                            <!-- input Consommation normale -->
-                            <div class="consommationNormale">
-                                <mat-form-field class="full-width">
-                                    <mat-label>Consommation Normale En L/100Km</mat-label>
-                                    <input matInput placeholder="Ex. 6" formControlName="consommationnormale"
-                                        name="consommationnormale" id="consommationnormale" type="text" required>
-                                    <mat-error
-                                        *ngIf="caracteristiquesFormGroup.controls['consommationnormale'].hasError('required')">
-                                        Champ <strong>Obligatoire</strong>
-                                    </mat-error>
-                                    <mat-error
-                                        *ngIf="caracteristiquesFormGroup.controls['consommationnormale'].hasError('pattern')">
-                                        Seuls les <strong>chiffres</strong> sont autorisés
-                                    </mat-error>
-                                </mat-form-field>
-                            </div>
                             <!-- input Capacité reservoir -->
                             <div class="capacite-reservoir">
                                 <mat-form-field class="full-width">
@@ -152,18 +157,18 @@
                                     </mat-error>
                                 </mat-form-field>
                             </div>
-                            <!-- input charge utile maximale -->
-                            <div class="charge">
+                            <!-- input Consommation normale -->
+                            <div class="consommationNormale">
                                 <mat-form-field class="full-width">
-                                    <mat-label>Charge Utile Maximale En Kg</mat-label>
-                                    <input matInput placeholder="Ex. 600" formControlName="chargeUtile"
-                                        name="chargeUtile" id="chargeUtile" type="text" required>
+                                    <mat-label>Consommation Normale En L/100Km</mat-label>
+                                    <input matInput placeholder="Ex. 6" formControlName="consommationnormale"
+                                        name="consommationnormale" id="consommationnormale" type="text" required>
                                     <mat-error
-                                        *ngIf="caracteristiquesFormGroup.controls['chargeUtile'].hasError('required')">
+                                        *ngIf="caracteristiquesFormGroup.controls['consommationnormale'].hasError('required')">
                                         Champ <strong>Obligatoire</strong>
                                     </mat-error>
                                     <mat-error
-                                        *ngIf="caracteristiquesFormGroup.controls['chargeUtile'].hasError('pattern')">
+                                        *ngIf="caracteristiquesFormGroup.controls['consommationnormale'].hasError('pattern')">
                                         Seuls les <strong>chiffres</strong> sont autorisés
                                     </mat-error>
                                 </mat-form-field>
@@ -216,14 +221,30 @@
                                     </mat-error>
                                 </mat-form-field>
                             </div>
+                            <!-- input charge utile maximale -->
+                            <div class="charge">
+                                <mat-form-field class="full-width">
+                                    <mat-label>Charge Utile Maximale En Kg</mat-label>
+                                    <input matInput placeholder="Ex. 600" formControlName="chargeUtile"
+                                        name="chargeUtile" id="chargeUtile" type="text" required>
+                                    <mat-error
+                                        *ngIf="caracteristiquesFormGroup.controls['chargeUtile'].hasError('required')">
+                                        Champ <strong>Obligatoire</strong>
+                                    </mat-error>
+                                    <mat-error
+                                        *ngIf="caracteristiquesFormGroup.controls['chargeUtile'].hasError('pattern')">
+                                        Seuls les <strong>chiffres</strong> sont autorisés
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
                         </div>
                     </div>
-                    <div class="float-right">
-                        <!-- bouton Annuler -->
-                        <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
-                        <button mat-button matStepperNext>Suivant</button>
-                    </div>
                 </form>
+                <div class="float-right">
+                    <!-- bouton Annuler -->
+                    <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
+                    <button mat-button matStepperNext>Suivant</button>
+                </div>
             </mat-step>
             <mat-step [stepControl]="entretienEtPapierFormGroup">
                 <form [formGroup]="entretienEtPapierFormGroup">
@@ -417,15 +438,15 @@
                             </mat-form-field>
                         </div>
                     </div>
-                    <div class="float-right">
-                        <!-- bouton Annuler -->
-                        <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
-                        <button mat-button matStepperPrevious>Back</button>
-                        <!-- Bouton Enregistrer -->
-                        <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerVehicule()"
-                            [disabled]="caracteristiquesFormGroup.invalid || entretienEtPapierFormGroup.invalid">Enregistrer</button>
-                    </div>
                 </form>
+                <div class="float-right">
+                    <!-- bouton Annuler -->
+                    <button mat-button color="warn" class="mb-2 mr-2" (click)="annuler()">Annuler</button>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <!-- Bouton Enregistrer -->
+                    <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrerVehicule()"
+                        [disabled]="caracteristiquesFormGroup.invalid || entretienEtPapierFormGroup.invalid || matriculeExiste">Enregistrer</button>
+                </div>
             </mat-step>
         </mat-vertical-stepper>
     </div>

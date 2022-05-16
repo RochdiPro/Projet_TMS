@@ -29,9 +29,9 @@ export class CommandeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.router.url === '/Menu/Menu_Colisage/Supports/Liste_Support')
+    if (this.router.url === '/Menu/Menu_Colisage/commandes/liste-commande')
       this.activerLister();
-    if (this.router.url === '/Menu/Menu_Colisage/commandes/ajouter-commande')
+    if (this.router.url === '/Menu/Menu_Colisage/commandes/ajout-commande')
       this.activerAjouter();
   }
 

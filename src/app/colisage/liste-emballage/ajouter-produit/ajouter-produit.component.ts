@@ -78,12 +78,13 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
 
     this.wms = Number(arrayOfDigits[4]);
 
-    this.modeManuel = service.modeManuel;
   }
 
-  ngOnInit() {
-    this.chargerFicheProduit();
+  async ngOnInit() {
     this.creerFormGroups();
+    let configurationApplication = await this.service.configurationApplication().toPromise()
+    this.modeManuel = configurationApplication.modeManuel;
+    this.chargerFicheProduit();
     this.dataSourceProduits.filterPredicate = (data, filter: string) => {
       //forcer le filtre a chercher que dans la colonne nom_produit
       return data.nom_Produit.toLowerCase().includes(filter);
@@ -320,23 +321,23 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     }
     formData.append(
       'hauteur',
-      Number(this.premierFormGroup.get('hauteur').value)
+      Number(this.premierFormGroup.get('hauteur').value).toFixed(3)
     );
     formData.append(
       'longueur',
-      Number(this.premierFormGroup.get('longueur').value)
+      Number(this.premierFormGroup.get('longueur').value).toFixed(3)
     );
     formData.append(
       'largeur',
-      Number(this.premierFormGroup.get('largeur').value)
+      Number(this.premierFormGroup.get('largeur').value).toFixed(3)
     );
     formData.append(
       'volume',
-      Number(this.premierFormGroup.get('volume').value)
+      Number(this.premierFormGroup.get('volume').value).toFixed(3)
     );
-    formData.append('poids_unitaire', this.poidsTotUnProduit);
-    formData.append('poids_total_net', this.poidsTotUnProduit);
-    formData.append('poids_emballage_total', this.poidsToltal);
+    formData.append('poids_unitaire', Number(this.poidsTotUnProduit).toFixed(3));
+    formData.append('poids_total_net', Number(this.poidsTotUnProduit).toFixed(3));
+    formData.append('poids_emballage_total', Number(this.poidsToltal).toFixed(3));
     formData.append('code_barre', this.premierFormGroup.get('codeBarre').value);
     await this.service.creerProduitEmballe(formData).toPromise();
     await this._router.navigate(['/Menu/Menu_Colisage/Packaging/Liste_Pack']);
@@ -360,7 +361,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
         Number(this.premierFormGroup.get('longueur').value) *
         Number(this.premierFormGroup.get('largeur').value) *
         0.000001;
-      this.premierFormGroup.get('volume').setValue(volume);
+      this.premierFormGroup.get('volume').setValue(Number(volume).toFixed(3));
     }
   }
 
@@ -368,7 +369,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     //calculer poids produits total net
     this.poidsTotUnProduit = Number(poids) * Number(qte);
     this.calculerPoidsTotal(this.poidsTotUnProduit);
-    return this.poidsTotUnProduit;
+    return Number(this.poidsTotUnProduit).toFixed(3);
   }
 
   calculerPoidsTotal(poidsNet: any) {

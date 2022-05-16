@@ -10,30 +10,32 @@
     <!-- fin Bouton pour ajouter nouvelle vehicule -->
     <div>
         <section>
-           <mat-form-field class="filtres">
-              <mat-label>Matricule</mat-label>
-              <input matInput placeholder="Matricule" (keyup)="filtrerVehicule()" id="nom" [(ngModel)]="filtreMatricule">
-              <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="filtreMatricule = ''">
-                 <i class="fa fa-filter" aria-hidden="true"></i>
-              </button>
-           </mat-form-field>
-           <mat-form-field class="filtres">
-              <mat-label>Propriétaire</mat-label>
-              <input matInput placeholder="Propriétaire" (keyup)="filtrerVehicule()" id="nom" [(ngModel)]="filtreProprietaire">
-              <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="filtreProprietaire = ''">
-                 <i class="fa fa-filter" aria-hidden="true"></i>
-              </button>
-           </mat-form-field>
-           <mat-form-field class="filtres">
-              <mat-label>Disponibilité</mat-label>
-              <mat-select [(value)]="filtreDisponibilte" (selectionChange)="filtrerVehicule()">
-                 <mat-option></mat-option>
-                 <mat-option value="Disponible">Disponible</mat-option>
-                 <mat-option value="En mission">En mission</mat-option>
-              </mat-select>
-           </mat-form-field>
+            <mat-form-field class="filtres">
+                <mat-label>Matricule</mat-label>
+                <input matInput placeholder="Matricule" (keyup)="filtrerVehicule()" id="nom"
+                    [(ngModel)]="filtreMatricule">
+                <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="filtreMatricule = ''">
+                    <i class="fa fa-filter" aria-hidden="true"></i>
+                </button>
+            </mat-form-field>
+            <mat-form-field class="filtres">
+                <mat-label>Propriétaire</mat-label>
+                <input matInput placeholder="Propriétaire" (keyup)="filtrerVehicule()" id="nom"
+                    [(ngModel)]="filtreProprietaire">
+                <button mat-button matSuffix mat-icon-button aria-label="Filtre" (click)="filtreProprietaire = ''">
+                    <i class="fa fa-filter" aria-hidden="true"></i>
+                </button>
+            </mat-form-field>
+            <mat-form-field class="filtres">
+                <mat-label>Disponibilité</mat-label>
+                <mat-select [(value)]="filtreDisponibilte" (selectionChange)="filtrerVehicule()">
+                    <mat-option></mat-option>
+                    <mat-option value="Disponible">Disponible</mat-option>
+                    <mat-option value="En mission">En mission</mat-option>
+                </mat-select>
+            </mat-form-field>
         </section>
-     </div>
+    </div>
     <table class="mb-0 table" [formGroup]="form">
         <thead>
             <tr>
@@ -66,13 +68,26 @@
                 <td style="text-align:center;">
 
                     <!-- bouton de detail vehicule -->
-                    <button class="mb-2  btn icon" (click)="ouvrirDetailVehiculeLoue(vehicule.id_Vehicule_Loue)">
+                    <button class="mb-2  btn icon" (click)="ouvrirDetailVehiculeLoue(vehicule.id)"
+                        matTooltip="Détail" matTooltipPosition="after">
                         <i class="fas fa-eye"></i>
+                    </button>
+                    <!-- fin bouton de detail vehicule -->
+                    <!-- bouton de mise a jour du consommation du vehicule -->
+                    <button class="mb-2  btn " (click)="ouvrirMiseAJourConsommation(vehicule)" *ngIf="tms >= 3"
+                        matTooltip="Consommation" matTooltipPosition="after">
+                        <i class="fas fa-gas-pump"></i>
+                    </button>
+                    <!-- fin bouton de mise a jour du consommation du vehicule -->
+                    <!-- bouton modifier vehicule -->
+                    <button class="mb-2  btn icon" (click)="ouvrirModifier(vehicule)" matTooltip="Modifier"
+                        matTooltipPosition="after">
+                        <i class="fas fa-pen"></i>
                     </button>
                     <!-- fin bouton de detail vehicule -->
 
                     <!-- Bouton supprimer vehicule -->
-                    <button class="mb-2  btn icon" *ngIf="tms >= 4">
+                    <button class="mb-2  btn icon" *ngIf="tms >= 4" matTooltip="Supprimer" matTooltipPosition="after">
                         <i class="fas fa-trash-alt" style="color: #ff0000;"
                             (click)="supprimerVehiculeLoue(vehicule.id_Vehicule_Loue)"></i>
                     </button>
@@ -92,7 +107,8 @@
                             </mat-date-range-picker-actions>
                         </mat-date-range-picker>
                     </mat-form-field>
-                    <button class="mb-2  btn icon" *ngIf="tms >= 3"><i class="far fa-calendar-alt" (click)="picker.open()"></i></button>
+                    <button class="mb-2  btn icon" *ngIf="tms >= 3" matTooltip="Modifier date location"
+                        matTooltipPosition="after"><i class="far fa-calendar-alt" (click)="picker.open()"></i></button>
                     <!-- fin Range de modification date disponibilité -->
 
                 </td>

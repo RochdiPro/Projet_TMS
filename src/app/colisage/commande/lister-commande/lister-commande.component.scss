@@ -1,17 +1,48 @@
-// on fixe un height max pour eviter le scroll bar au niveau du page 
+// on fixe un height max pour eviter le scroll bar au niveau du page
 // le scroll bar va apparaitre au niveau du tablea
 .mat-table {
   max-height: 45vh;
   overflow-y: auto;
 }
+
+// style des filtres
+.filtres {
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+}
+
+// width des inputs du filtre
+.custom-width {
+  width: 100%;
+  padding-right: 10px;
+}
+
+#reference{
+  grid-column-start: 2;
+}
+
+#trackingNumber{
+  grid-column-start: 7;
+}
+i:hover{
+  cursor: pointer;
+}
 // media query pour l'affichage mobile
 @media only screen and (max-width: 760px),
   (min-device-width: 768px) and (max-device-width: 1024px) {
+  .filtres {
+    left: 0;
+    padding: 15px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
   // style des boutons
   button {
     width: 50px;
   }
-  // dans l'affichage mobile on elimine le height max 
+  // dans l'affichage mobile on elimine le height max
   .mat-table {
     max-height: none;
     overflow-y: auto;

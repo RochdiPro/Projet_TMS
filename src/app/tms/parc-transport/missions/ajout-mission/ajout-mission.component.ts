@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
+import { ConfigurationTmsService } from 'src/app/configuration-tms/services/configuration-tms.service';
 import Swal from 'sweetalert2';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
 import { VehiculeService } from '../../vehicule/services/vehicule.service';
@@ -63,6 +64,7 @@ export class AjoutMissionComponent implements OnInit {
   aujoudhui: Date = new Date(); //date d'aujourd'hui
   listeFilesAttentes: any = []; //contient la liste des files d'attente crée
   boutonEnregistrerEstActive = true;
+  modeNonConnecte = true;
 
   // coordonnées de la position actuelle
   currentLat: any;
@@ -78,7 +80,8 @@ export class AjoutMissionComponent implements OnInit {
     private serviceVehicule: VehiculeService,
     private dialog: MatDialog,
     private serviceChauffeur: ChauffeurService,
-    private serviceCommande: CommandeService
+    private serviceCommande: CommandeService,
+    private serviceConfiguration: ConfigurationTmsService
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -92,6 +95,7 @@ export class AjoutMissionComponent implements OnInit {
   async ngOnInit() {
     this.chercherMoi();
     this.creerForm();
+    await this.getModeApplication();
     await this.getListeCommande();
     this.affecterCommandeAuRegion(); //specifier a quelle region appartienne une commande
     // creation des listes des commandes divisées par region
@@ -105,6 +109,12 @@ export class AjoutMissionComponent implements OnInit {
     await this.getVehiculeLoueDisponibles();
     this.creerCheckBoxsVehicules();
     this.creerCheckBoxsVehiculesLoues();
+  }
+
+  // get mode de l'application
+  async getModeApplication() {
+    let configuration = await this.serviceConfiguration.getConfigurationApplication().toPromise();
+    this.modeNonConnecte = configuration.modeManuel;
   }
 
   // creation des formControls
@@ -441,7 +451,7 @@ export class AjoutMissionComponent implements OnInit {
   // get tous les vehicules avec l'état disponible
   async getVehiculeDisponibles() {
     let listeVehiculesPrives = await this.serviceVehicule
-      .filtrerVehicule('', '', 'Disponible')
+      .filtrerVehicule('', 'Disponible')
       .toPromise();
     return listeVehiculesPrives;
   }
@@ -462,11 +472,24 @@ export class AjoutMissionComponent implements OnInit {
     return listeChauffeurs;
   }
 
+  // get liste chauffeurs mode manuel
+  async getChauffeursModeNonConnecte() {
+    let listeChauffeurs = await this.serviceChauffeur
+      .filtrerChauffeurManuel('role', 'Chauffeur')
+      .toPromise();
+    return listeChauffeurs;
+  }
+
   // get les vehicules qui ont au moins un chauffeur qui peut la conduire
   async getVehiculesChauffeurs() {
     let listeVehiculesPrives = await this.getVehiculeDisponibles();
     let listeVehiculesLoues = await this.getVehiculeLoueDisponibles();
-    let listeChauffeurs = await this.getChauffeurs();
+    let listeChauffeurs: any;
+    if (this.modeNonConnecte) {
+      listeChauffeurs = await this.getChauffeursModeNonConnecte();
+    } else {
+      listeChauffeurs = await this.getChauffeurs();
+    }
     listeVehiculesPrives.forEach((vehicule: any) => {
       var chauffeurs: any = [];
       var categories = vehicule.categories.split('/');

@@ -54,4 +54,15 @@ export class SupportService {
     }).pipe(catchError(this.handleError));
   }
 
+    //filtrer par champ
+    public filtrerSupportsTroisChamps(id: string, nom: string, type: string){
+      return this.httpClient.get(erp + 'filtres-support', {
+        params:{
+          id: id,
+          nom: nom,
+          type: type
+        }, observe: 'body'
+      }).pipe(catchError(this.handleError));
+    }
+
 }

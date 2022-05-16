@@ -1,0 +1,57 @@
+::ng-deep.mat-tab-label.mat-tab-label-active:not(.mat-tab-disabled),
+::ng-deep.mat-tab-label.mat-tab-label-active.cdk-keyboard-focused:not(.mat-tab-disabled) {
+  
+  color:#0275d8 !important;
+  opacity: 1;
+}
+.grid-container {
+  display: grid;
+  grid-column-gap: 20px;
+  grid-row-gap: 10px;
+  padding: 10px;
+  grid-template-columns: auto 1fr;
+
+}
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  
+  font-size: 15px;
+}
+.item2 { 
+  grid-column: 2 / span 2 ;
+  grid-row: 1;
+  margin-bottom:-30px;
+  margin-top: 1px;
+  padding-bottom:1px;
+  margin-right: -15px;
+	margin-left: -15px
+}
+.row {
+  margin-top: 5px;
+  margin-right: 0px;
+	margin-left: 0px
+}
+.item3 {
+  
+  margin-right: -15px;
+	margin-left: -15px
+}
+.item1 {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.item5 {
+  grid-column: 1 / span 3;
+  grid-row: 3;
+}
+.zoom {
+  padding: 50px;
+  transition: transform .2s; 
+  width: 300px;
+  height: 300px;
+  margin: 0 auto;
+}
+.zoom:hover {
+  transform: scale(1.3); 
+}

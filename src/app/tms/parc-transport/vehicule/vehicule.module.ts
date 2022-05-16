@@ -26,7 +26,6 @@ import { MatStepperModule } from '@angular/material/stepper';
 
 import { VehiculeComponent } from './vehicule.component';
 import {
-  AjouterCarburantComponent,
   DetailVehiculeComponent,
   MajVehiculeComponent,
   MiseAJourConsommationComponent,
@@ -47,13 +46,14 @@ import { MatSliderModule } from '@angular/material/slider';
 import localeFr from '@angular/common/locales/fr';
 
 import { VehiculeRoutingModule } from './vehicule-routing.module';
+import { ModifierVehiculeComponent } from './mes-vehicules/modifier-vehicule/modifier-vehicule.component';
+import { ModifierVehiculeLoueComponent } from './vehicule-loue/modifier-vehicule-loue/modifier-vehicule-loue.component';
 registerLocaleData(localeFr, 'fr');
 
 @NgModule({
   declarations: [
     VehiculeComponent,
     MesVehiculesComponent,
-    AjouterCarburantComponent,
     DetailVehiculeComponent,
     MajVehiculeComponent,
     BoiteDialogueEntretien,
@@ -67,7 +67,9 @@ registerLocaleData(localeFr, 'fr');
     AjouterVehiculeComponent,
     ListerVehiculesComponent,
     ListerVehiculesLoueComponent,
-    HistoriqueConsommation
+    HistoriqueConsommation,
+    ModifierVehiculeComponent,
+    ModifierVehiculeLoueComponent
   ],
   imports: [
     CommonModule,

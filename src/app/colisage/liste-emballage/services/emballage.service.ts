@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError } from 'rxjs/operators';
+import { ConfigurationApplication } from 'src/app/configuration-tms/classes/configuration-application';
 
 const erp = '/ERP/';
 const infonet = '/INFONET/';
@@ -10,8 +11,6 @@ const infonet = '/INFONET/';
 })
 export class EmballageService {
   handleError: any;
-
-  public modeManuel = true;
 
   constructor(private httpClient: HttpClient) {}
 
@@ -95,4 +94,12 @@ export class EmballageService {
   public produitsManuel() {
     return this.httpClient.get(erp + 'produits');
   }
+
+  //get configuration application
+  public configurationApplication() {
+    return this.httpClient
+      .get<ConfigurationApplication>(erp + 'configuration-application')
+      .pipe(catchError(this.handleError));
+  }
+
 }

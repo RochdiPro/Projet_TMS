@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { ConfigurationApplication } from 'src/app/configuration-tms/classes/configuration-application';
 import {
   BoiteDialogueCreerCommande,
   BoiteDialogueInfo,
@@ -96,15 +97,15 @@ export class AjouterCommandeComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.estManuel = this.serviceCommande.modeManuel;
-    // ajout des formControls dans le formGroup des filtres
     this.filtreFormGroup = this.fb.group({
       type: 'Facture',
       id: '',
       ville: '',
       date: this.date,
     });
-    // await this.getListeClients();
+    let config: ConfigurationApplication = await this.serviceCommande.configurationApplication().toPromise();
+    this.estManuel = config.modeManuel;
+    // ajout des formControls dans le formGroup des filtres
 
     if (this.estManuel) {
       // si le mode est manuel:
@@ -117,9 +118,11 @@ export class AjouterCommandeComponent implements OnInit {
       this.datesDispo = await this.serviceCommande
         .datesDisponibles()
         .toPromise();
-      let dateDivise = this.datesDispo[this.datesDispo.length - 1].split('-');
-      let date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
-      this.filtreFormGroup.get('date').setValue(new Date(date));
+      if (this.datesDispo.length != 0) {
+        let dateDivise = this.datesDispo[this.datesDispo.length - 1].split('-');
+        let date = dateDivise[2] + '-' + dateDivise[1] + '-' + dateDivise[0];
+        this.filtreFormGroup.get('date').setValue(new Date(date));
+      }
       this.getCommandesModeManuel();
     } else {
       // pour le mode non manuel on recupére la liste des factures et des bls depuis la base des données
@@ -221,7 +224,11 @@ export class AjouterCommandeComponent implements OnInit {
 
   // recupérer la liste des clients
   async getListeClients() {
-    this.listeClients = await this.serviceCommande.clients().toPromise();
+    if (this.estManuel) {
+      this.listeClients = await this.serviceCommande.clientsManuel().toPromise();
+    } else {
+      this.listeClients = await this.serviceCommande.clients().toPromise();
+    }
   }
 
   // charger la liste des commandes en mode manuel pour la date dans le datePicker

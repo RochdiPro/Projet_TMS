@@ -1,39 +1,86 @@
-<table class="mb-0 table" *ngIf="wms >= 1">
-   <thead>
-      <tr>
-         <th style="text-align:center">ID</th>
-         <th style="text-align:center">Nom</th>
-         <th style="text-align:center">Type</th>
-         <th style="text-align:center">Poids</th>
-         <th style="text-align:center">Dimensions</th>
-         <th style="text-align:center">Volume</th>
-         <th style="text-align:center"></th>
+<!-- des champs de filtrage du tableau liste supports -->
+<div class="filtres" *ngIf="wms >= 1">
+  <!-- filtrage par id -->
+  <mat-form-field class="custom-width" [formGroup]="filtres" id="id">
+      <mat-label>Id</mat-label>
+      <input matInput placeholder="id" formControlName="id" (keyup)="filtrerCommandes()">
+      <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('id')"></i>
+  </mat-form-field>
+  <!-- filtrage selon nom support -->
+  <mat-form-field class="custom-width" [formGroup]="filtres">
+      <mat-label>Nom</mat-label>
+      <input matInput placeholder="Nom" formControlName="nom" (keyup)="filtrerCommandes()">
+      <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('nom')"></i>
+  </mat-form-field>
+  <!-- filtrage selon type -->
+  <mat-form-field class="custom-width" [formGroup]="filtres">
+      <mat-label>Type</mat-label>
+      <input matInput placeholder="type" formControlName="type" (keyup)="filtrerCommandes()">
+      <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('type')"></i>
+  </mat-form-field>
 
-      </tr>
-   </thead>
-   <tbody>
-      <tr *ngFor="let support of listeSupports">
-         <th scope="row" style="text-align:center">{{support.id}}</th>
-         <td style="text-align:center">{{support.nomSupport}}</td>
-         <td style="text-align:center">{{support.typeSupport}}</td>
-         <td style="text-align:center">{{support.poidsEmballage}}</td>
-         <td style="text-align:center">{{support.longueur + "x" + support.largeur + "x" + support.hauteur}}</td>
-         <td style="text-align:center">{{support.volume}}</td>
-         <td style="text-align:center; width: 120px;" *ngIf="wms >= 3">
-            <!-- Bouton modifier vehicule -->
-            <button class="mb-2  btn " (click)="modifierSupport(support)" *ngIf="wms >= 3">
-               <mat-icon aria-hidden="false" aria-label="modifier">edit</mat-icon>
-            </button>
-            <!-- fin Bouton modifier vehicule -->
-            <!-- Bouton supprimer vehicule -->
-            <button class="mb-2  btn " (click)="supprimerSupport(support)" *ngIf="wms >= 4">
-               <mat-icon aria-hidden="false" aria-label="Supprimer" style="color: #ff0000;">delete_outline</mat-icon>
-            </button>
-            <!-- fin Bouton supprimer vehicule -->
-         </td>
+</div>
+<div class="mat-elevation-z8" *ngIf="wms>=1">
+  <mat-table [dataSource]="dataSource" matSort>
 
+    <!-- id Column -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef matSort> Id </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Id"> {{element.id}} </mat-cell>
+    </ng-container>
 
-      </tr>
+    <!-- nomSupport Column -->
+    <ng-container matColumnDef="nomSupport">
+      <mat-header-cell *matHeaderCellDef matSort> Nom </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Nom"> {{element.nomSupport}} </mat-cell>
+    </ng-container>
 
-   </tbody>
-</table>
+    <!-- typeSupport Column -->
+    <ng-container matColumnDef="typeSupport">
+      <mat-header-cell *matHeaderCellDef matSort> Type </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Type"> {{element.typeSupport}} </mat-cell>
+    </ng-container>
+
+    <!-- poidsEmballage Column -->
+    <ng-container matColumnDef="poidsEmballage">
+      <mat-header-cell *matHeaderCellDef matSort> Poids </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Poids"> {{element.poidsEmballage}} </mat-cell>
+    </ng-container>
+
+    <!-- dimensions Column -->
+    <ng-container matColumnDef="dimensions">
+      <mat-header-cell *matHeaderCellDef matSort> Dimensions </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Dimensions"> {{element.longueur + "x" + element.largeur + "x" +
+        element.hauteur}} </mat-cell>
+    </ng-container>
+
+    <!-- volume Column -->
+    <ng-container matColumnDef="volume">
+      <mat-header-cell *matHeaderCellDef matSort> Volume </mat-header-cell>
+      <mat-cell *matCellDef="let element" data-label="Volume"> {{element.volume}} </mat-cell>
+    </ng-container>
+
+    <!-- actions Column -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef matSort> </mat-header-cell>
+      <mat-cell *matCellDef="let element">
+        <!-- Bouton modifier vehicule -->
+        <button class="mb-2  btn " (click)="modifierSupport(element)" *ngIf="wms >= 3">
+          <mat-icon aria-hidden="false" aria-label="modifier">edit</mat-icon>
+        </button>
+        <!-- fin Bouton modifier vehicule -->
+        <!-- Bouton supprimer vehicule -->
+        <button class="mb-2  btn " (click)="supprimerSupport(element)" *ngIf="wms >= 4">
+          <mat-icon aria-hidden="false" aria-label="Supprimer" style="color: #ff0000;">delete_outline</mat-icon>
+        </button>
+        <!-- fin Bouton supprimer vehicule -->
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+  </mat-paginator>
+</div>

@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -29,6 +30,8 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   ];
   dataSource = new MatTableDataSource();
 
+  filtres: FormGroup;
+
   // variables de droits d'accés
   nom: any;
   acces: any;
@@ -36,10 +39,11 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   estManuel = false;
   constructor(
     public serviceCommande: CommandeService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private fb: FormBuilder
   ) {
-    sessionStorage.setItem('Utilisateur', '' + "tms2");
-    sessionStorage.setItem('Acces', "1004400");
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1004400');
 
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -55,7 +59,11 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
   async ngOnInit() {
-    this.estManuel = this.serviceCommande.modeManuel;
+    this.createFiltresFormGroup();
+    let configurationApplication = await this.serviceCommande
+      .configurationApplication()
+      .toPromise();
+    this.estManuel = configurationApplication.modeManuel;
     await this.getListeCommandes();
   }
 
@@ -148,5 +156,60 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
         this.getListeCommandes();
       }
     });
+  }
+
+  //créer le formGroup des filtres
+  createFiltresFormGroup() {
+    this.filtres = this.fb.group({
+      reference: '',
+      client: '',
+      ville: '',
+      adresse: '',
+      trackingNumber: '',
+      etat: '',
+    });
+  }
+
+  // filtrer la liste des commandes
+  filtrerCommandes() {
+    let etat;
+    this.filtres.get('etat').value ? etat = this.filtres.get('etat').value : etat ="";
+    this.serviceCommande.filtrerCommandes(
+      this.filtres.get('reference').value,
+      this.filtres.get('client').value,
+      this.filtres.get('ville').value,
+      this.filtres.get('adresse').value,
+      this.filtres.get('trackingNumber').value,
+      etat
+    ).subscribe((data) => {
+      this.dataSource.data = data;
+    });
+  }
+
+  viderChamp(champ: string) {
+    switch (champ) {
+      case "reference":
+        this.filtres.get('reference').setValue('');
+        break;
+      case "client":
+        this.filtres.get('client').setValue('');
+        break;
+      case "ville":
+        this.filtres.get('ville').setValue('');
+        break;
+      case "adresse":
+        this.filtres.get('adresse').setValue('');
+        break;
+      case "trackingNumber":
+        this.filtres.get('trackingNumber').setValue('');
+        break;
+      case "etat":
+        this.filtres.get('etat').setValue('');
+        break;
+    
+      default:
+        break;
+    }
+    this.filtrerCommandes();
   }
 }

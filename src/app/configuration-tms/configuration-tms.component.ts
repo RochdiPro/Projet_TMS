@@ -24,6 +24,7 @@ export class ConfigurationTmsComponent implements OnInit {
   positionEstActive = false;
   commandeEstActive = false;
   produitEstActive = false;
+  importerExporterEstActive = false;
 
   chargementTermine = true;
 
@@ -57,6 +58,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.commandeEstActive = false;
         this.serveurEstActive = false;
         this.produitEstActive = false;
+        this.importerExporterEstActive = false;
         setTimeout(() => {
           this.generalEstActive = true;
           this.chargementTermine = true;
@@ -68,6 +70,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.commandeEstActive = false;
         this.serveurEstActive = false;
         this.produitEstActive = false;
+        this.importerExporterEstActive = false;
         setTimeout(() => {
           this.positionEstActive = true;
           this.chargementTermine = true;
@@ -79,6 +82,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.positionEstActive = false;
         this.serveurEstActive = false;
         this.produitEstActive = false;
+        this.importerExporterEstActive = false;
         setTimeout(() => {
           this.commandeEstActive = true;
           this.chargementTermine = true;
@@ -90,6 +94,7 @@ export class ConfigurationTmsComponent implements OnInit {
         this.positionEstActive = false;
         this.commandeEstActive = false;
         this.produitEstActive = false;
+        this.importerExporterEstActive = false;
         setTimeout(() => {
           this.serveurEstActive = true;
           this.chargementTermine = true;
@@ -101,8 +106,21 @@ export class ConfigurationTmsComponent implements OnInit {
         this.positionEstActive = false;
         this.commandeEstActive = false;
         this.serveurEstActive = false;
+        this.importerExporterEstActive = false;
         setTimeout(() => {
           this.produitEstActive = true;
+          this.chargementTermine = true;
+        }, 550);
+        break;
+
+      case 'importer/exporter':
+        this.generalEstActive = false;
+        this.positionEstActive = false;
+        this.commandeEstActive = false;
+        this.serveurEstActive = false;
+        this.produitEstActive = false;
+        setTimeout(() => {
+          this.importerExporterEstActive = true;
           this.chargementTermine = true;
         }, 550);
         break;

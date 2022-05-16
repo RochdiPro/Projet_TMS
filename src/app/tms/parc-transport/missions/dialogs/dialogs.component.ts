@@ -74,6 +74,7 @@ export class AffecterMultiChauffeur implements OnInit {
   commandeDansVehiculeSelectionne: any;
   couplesVehiculeChauffeur: any = [];
   indexVehiculeSelectionne = 0;
+  modeDeconnecte: boolean;
 
   constructor(
     private dialogRef: MatDialogRef<AffecterMultiChauffeur>,
@@ -84,6 +85,10 @@ export class AffecterMultiChauffeur implements OnInit {
   ) {}
 
   async ngOnInit() {
+    let configurationApplication = await this.serviceMission
+      .configurationApplication()
+      .toPromise();
+    this.modeDeconnecte = configurationApplication.modeManuel;
     await this.getListeChauffeurs();
     this.verifierCompatibiliteChauffeur();
     for (let i = 0; i < this.data.nombreVoyages; i++) {
@@ -154,7 +159,13 @@ export class AffecterMultiChauffeur implements OnInit {
   }
 
   async getListeChauffeurs() {
-    this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+    if (this.modeDeconnecte) {
+      this.chauffeurs = await this.serviceChauffeur
+        .getChauffeursManuel()
+        .toPromise();
+    } else {
+      this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+    }
   }
 
   changerCommandeActive(i: number) {
@@ -759,6 +770,7 @@ export class AffecterChauffeur implements OnInit {
   commandeActive: Array<boolean> = []; //liste des valeurs boolean pour avoir quel commande est active
   listeColis: any;
   vehicule: any;
+  modeDeconnecte: boolean;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private serviceChauffeur: ChauffeurService,
@@ -767,6 +779,10 @@ export class AffecterChauffeur implements OnInit {
   ) {}
 
   async ngOnInit() {
+    let configurationApplication = await this.serviceMission
+      .configurationApplication()
+      .toPromise();
+    this.modeDeconnecte = configurationApplication.modeManuel;
     //tester si le vehicule s'agit d'un vehicule prive ou vehicule loue
     if (
       this.data.vehiculesPrives.length === 1 &&
@@ -789,7 +805,13 @@ export class AffecterChauffeur implements OnInit {
   }
 
   async getListeChauffeurs() {
-    this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+    if (this.modeDeconnecte) {
+      this.chauffeurs = await this.serviceChauffeur
+        .getChauffeursManuel()
+        .toPromise();
+    } else {
+      this.chauffeurs = await this.serviceChauffeur.getChauffeurs().toPromise();
+    }
   }
 
   // permet d'avoir les chauffeurs compatibles ave le vehicule
@@ -1142,16 +1164,16 @@ export class ConfirmerLivraison implements OnInit {
   ngOnInit() {}
 
   // fonction pour scanner le Qr code de confirmation de livraison avec le scanner
-  @HostListener('window:keyup', ['$event'])
+  @HostListener('window:keydown', ['$event'])
   async keyEvent(event: KeyboardEvent) {
-    this.chargementActive = true;
-    setTimeout(() => {
-      this.chargementLong = true;
-    }, 2000);
     let reponse: any;
     if (this.interval) clearInterval(this.interval);
     if (event.code == 'Enter') {
-      if (this.qrCode)
+      if (this.qrCode) {
+        this.chargementActive = true;
+        setTimeout(() => {
+          this.chargementLong = true;
+        }, 2000);
         reponse = await this.serviceMission
           .livrerCommande(
             this.qrCode,
@@ -1159,6 +1181,7 @@ export class ConfirmerLivraison implements OnInit {
             this.data.mission.idCommandes
           )
           .toPromise();
+      }
       this.qrCode = '';
       if (reponse[0]) {
         Swal.fire({
@@ -1179,7 +1202,7 @@ export class ConfirmerLivraison implements OnInit {
       return;
     }
     if (event.key != 'Shift') this.qrCode += event.key;
-    this.interval = setInterval(() => (this.qrCode = ''), 20);
+    this.interval = setInterval(() => (this.qrCode = ''), 40);
   }
 }
 
@@ -1195,6 +1218,7 @@ export class ModifierMission implements OnInit {
   listeChauffeursCompatibles: any;
   vehiculeSelectionne: any;
   chauffeurSelectionne: any = { nom: '', tel: '' };
+  modeDeconnecte: boolean;
   constructor(
     private dialogRef: MatDialogRef<ModifierMission>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -1202,6 +1226,10 @@ export class ModifierMission implements OnInit {
   ) {}
 
   async ngOnInit() {
+    let configurationApplication = await this.serviceMission
+      .configurationApplication()
+      .toPromise();
+    this.modeDeconnecte = configurationApplication.modeManuel;
     this.getTypeVehicule();
     await this.getListeVehicule();
     this.getVehiculeInitiale();
@@ -1222,9 +1250,15 @@ export class ModifierMission implements OnInit {
     this.chauffeurSelectionne = { nom: '', tel: '' };
     if (this.typeEstPrive) {
       let vehicules: any = await this.serviceMission.vehicules().toPromise();
-      this.listeChauffeurs = await this.serviceMission
-        .getChauffeurs()
-        .toPromise();
+      if (this.modeDeconnecte) {
+        this.listeChauffeurs = await this.serviceMission
+          .getChauffeursManuel()
+          .toPromise();
+      } else {
+        this.listeChauffeurs = await this.serviceMission
+          .getChauffeurs()
+          .toPromise();
+      }
       vehicules.forEach((vehicule: any) => {
         let volumeUtile =
           vehicule.longueur * vehicule.largeur * vehicule.hauteur;
@@ -1429,7 +1463,7 @@ export class Trajet implements OnInit {
 
   // avoir la position de début depuis le navigateur
   async getPositionDepart() {
-    let infoGenerals = await this.serviceMission.infosGenerals().toPromise()
+    let infoGenerals = await this.serviceMission.infosGenerals().toPromise();
     this.latDepart = infoGenerals.latitude;
     this.longDepart = infoGenerals.longitude;
   }
@@ -1793,7 +1827,7 @@ export class CloturerMission implements OnInit {
           Validators.pattern('^[0-9]*$'),
           kmactuelValidator,
         ],
-      ]
+      ],
     });
     this.mission = this.data.mission;
     this.serviceMission
@@ -1801,55 +1835,68 @@ export class CloturerMission implements OnInit {
       .subscribe((vehicule) => {
         this.vehicule = vehicule;
         this.reservoir = this.vehicule.reservoir;
-        this.kmActuel.setValue(this.vehicule.kmactuel)
-        localStorage.setItem('kmactuelV', this.vehicule.kmactuel)
+        this.kmActuel.setValue(this.vehicule.kmactuel);
+        localStorage.setItem('kmactuelV', this.vehicule.kmactuel);
       });
   }
-  get kmActuel(){
-    return this.form.get('kmActuel')
+  get kmActuel() {
+    return this.form.get('kmActuel');
   }
 
   formatLabel(value: number) {
     return value + '%';
   }
 
-  changerHistorique(){
+  changerHistorique() {
     let historique = this.vehicule.historiqueConsommation;
     this.calculerDitanceParcourue();
-    historique += "#idChauffeur:" + this.mission.idChauffeur + "/distance:" + this.distanceParcourue + "/consommation:" + this.consommationActuelle;
+    historique +=
+      '#idChauffeur:' +
+      this.mission.idChauffeur +
+      '/distance:' +
+      this.distanceParcourue +
+      '/consommation:' +
+      this.consommationActuelle;
     return historique;
   }
 
-  calculerConsommationActuelle(){
+  calculerConsommationActuelle() {
     this.calculerDitanceParcourue();
-    let carburantConsomme = ((this.vehicule.reservoir - this.reservoir)*this.vehicule.capaciteReservoir)/100;
-    let consommation = (carburantConsomme*100)/this.distanceParcourue;
-    this.consommationActuelle = Math.round((consommation + Number.EPSILON) * 100) / 100
+    let carburantConsomme =
+      ((this.vehicule.reservoir - this.reservoir) *
+        this.vehicule.capaciteReservoir) /
+      100;
+    let consommation = (carburantConsomme * 100) / this.distanceParcourue;
+    this.consommationActuelle =
+      Math.round((consommation + Number.EPSILON) * 100) / 100;
   }
 
-  calculerConsommation(){
+  calculerConsommation() {
     let sommeConsommations = 0;
     let consommation = 0;
     let historiques = this.vehicule.historiqueConsommation.split('#');
     if (historiques.length > 1) {
       for (let i = 1; i < historiques.length; i++) {
         const historique = historiques[i];
-        sommeConsommations += Number(historique.split('/')[2].split(':')[1])
+        sommeConsommations += Number(historique.split('/')[2].split(':')[1]);
       }
     }
     sommeConsommations += this.consommationActuelle;
-    consommation = sommeConsommations/(historiques.length);
-    return consommation
+    consommation = sommeConsommations / historiques.length;
+    return consommation;
   }
 
-  calculerDitanceParcourue(){
+  calculerDitanceParcourue() {
     let distanceParcourue = this.kmActuel.value - this.vehicule.kmactuel;
     this.distanceParcourue = distanceParcourue;
   }
 
   enregistrer() {
     let consommation = this.calculerConsommation();
-    let historique = this.changerHistorique()
+    let historique = this.changerHistorique();
+    let historiqueA = this.vehicule.historiqueA;
+    let historiqueB = this.vehicule.historiqueB;
+    let historiqueC = this.vehicule.historiqueC;
     this.calculerConsommationActuelle();
     this.changerHistorique();
     this.serviceMission
@@ -1858,6 +1905,9 @@ export class CloturerMission implements OnInit {
         this.kmActuel.value,
         consommation,
         historique,
+        historiqueA,
+        historiqueB,
+        historiqueC,
         this.reservoir
       )
       .subscribe((result) => {

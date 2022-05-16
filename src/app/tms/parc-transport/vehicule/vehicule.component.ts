@@ -16,8 +16,9 @@ export class VehiculeComponent implements OnInit {
 
   constructor(public router: Router) { }
   ngOnInit(): void {
-    if (this.router.url === '/Menu/TMS/Parc/Vehicules/Mes-Vehicules') this.activerMesVehicules();
-    if (this.router.url === '/Menu/TMS/Parc/Vehicules/Vehicules-Loues') this.activerVehiculesLoues();
+    let routerSplit = this.router.url.split('/')
+    if (routerSplit[5] === 'Mes-Vehicules') this.activerMesVehicules();
+    if (routerSplit[5] === 'Vehicules-Loues') this.activerVehiculesLoues();
 
   }
 

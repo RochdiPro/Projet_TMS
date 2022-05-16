@@ -1,3 +1,48 @@
+<!-- des champs de filtrage du tableau liste commandes -->
+<div class="filtres" *ngIf="wms >= 1">
+    <!-- filtrage par reference -->
+    <mat-form-field class="custom-width" [formGroup]="filtres" id="reference">
+        <mat-label>Reference</mat-label>
+        <input matInput placeholder="reference" formControlName="reference" (keyup)="filtrerCommandes()">
+        <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('reference')"></i>
+    </mat-form-field>
+    <!-- filtrage selon nom client -->
+    <mat-form-field class="custom-width" [formGroup]="filtres">
+        <mat-label>Client</mat-label>
+        <input matInput placeholder="Client" formControlName="client" (keyup)="filtrerCommandes()">
+        <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('client')"></i>
+    </mat-form-field>
+    <!-- filtrage selon Ville -->
+    <mat-form-field class="custom-width" [formGroup]="filtres">
+        <mat-label>Ville</mat-label>
+        <input matInput placeholder="ville" formControlName="ville" (keyup)="filtrerCommandes()">
+        <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('ville')"></i>
+    </mat-form-field>
+    <!-- filtrage par adresse -->
+    <mat-form-field class="custom-width" [formGroup]="filtres">
+        <mat-label>Adresse</mat-label>
+        <input matInput placeholder="Adresse" formControlName="adresse" (keyup)="filtrerCommandes()">
+        <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('adresse')"></i>
+    </mat-form-field>
+    <!-- filtrage par trackingNumber -->
+    <mat-form-field class="custom-width" [formGroup]="filtres" id="trackingNumber">
+        <mat-label>Tracking number</mat-label>
+        <input matInput placeholder="tracking number" formControlName="trackingNumber" (keyup)="filtrerCommandes()">
+        <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('trackingNumber')"></i>
+    </mat-form-field>
+    <!-- filtrage selon etat -->
+    <mat-form-field class="custom-width" [formGroup]="filtres">
+        <mat-label>Etat</mat-label>
+        <mat-select formControlName="etat" (selectionChange)="filtrerCommandes()">
+            <mat-option></mat-option>
+            <mat-option value="Affectée">Affectée</mat-option>
+            <mat-option value="En cours de traitement">En cours de traitement</mat-option>
+            <mat-option value="Livrée">Livrée</mat-option>
+        </mat-select>
+        <i matSuffix class="fa fa-filter" aria-hidden="true" (click)="viderChamp('etat')"></i>
+    </mat-form-field>
+
+</div>
 <div class="mat-elevation-z8" *ngIf="wms >= 1">
     <!-- par defaut on fait le trie du tableau par date ascendant -->
     <mat-table #table [dataSource]="dataSource" matSort matSortActive="dateCreation" matSortDirection="asc">
@@ -29,12 +74,14 @@
         <!-- colonne date -->
         <ng-container matColumnDef="dateCreation">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Date </mat-header-cell>
-            <mat-cell *matCellDef="let element" data-label="Date"> {{element.dateCreation | date: "dd/MM/yyyy"}} </mat-cell>
+            <mat-cell *matCellDef="let element" data-label="Date"> {{element.dateCreation | date: "dd/MM/yyyy"}}
+            </mat-cell>
         </ng-container>
         <!-- colonne tracking number -->
         <ng-container matColumnDef="tracking">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Tracking Number </mat-header-cell>
-            <mat-cell *matCellDef="let element" data-label="Tracking Number"> {{formatTrackingNumber(element.trackingNumber)}} </mat-cell>
+            <mat-cell *matCellDef="let element" data-label="Tracking Number">
+                {{formatTrackingNumber(element.trackingNumber)}} </mat-cell>
         </ng-container>
         <!-- colonne etat -->
         <ng-container matColumnDef="etat">
@@ -45,10 +92,12 @@
         <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Actions </mat-header-cell>
             <mat-cell *matCellDef="let element">
-                <button mat-icon-button disableRipple style="color: #24a0ed;" (click)="ouvrirBoiteDialogueInformationCommande(element)">
+                <button mat-icon-button disableRipple style="color: #24a0ed;"
+                    (click)="ouvrirBoiteDialogueInformationCommande(element)">
                     <mat-icon>info</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" disableRipple (click)="annulerCommande(element)" *ngIf="wms >= 4" [disabled]="element.etat != 'En cours de traitement'">
+                <button mat-icon-button color="warn" disableRipple (click)="annulerCommande(element)" *ngIf="wms >= 4"
+                    [disabled]="element.etat != 'En cours de traitement'">
                     <mat-icon>cancel</mat-icon>
                 </button>
             </mat-cell>

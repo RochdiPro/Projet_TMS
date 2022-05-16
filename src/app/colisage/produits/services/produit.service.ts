@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { Backup } from '../classes/backup';
 import { Produit } from '../classes/produit';
 const erp = '/ERP/';
 @Injectable({
@@ -63,4 +65,29 @@ export class ProduitService {
       })
       .pipe(catchError(this.handleError));
   }
+
+  // get les backups
+  public getBackup(): Observable<Backup> {
+    return this.httpClient
+      .get<Backup>(erp + 'get-backups-produits');
+  }
+
+  // restaurer la liste des produits depuis un fichier backup
+  public restaurerListeProduit(numBackup: string) {
+    let formData = new FormData()
+    formData.append("numBackup", numBackup)
+    return this.httpClient
+      .put(erp + 'restaurer-liste-produits', formData)
+      .pipe(catchError(this.handleError));
+  }
+
+  //ajouter un nouveau backup
+  public ajouterBackup(file: File) {
+    let formData = new FormData();
+    formData.append('file', file);
+    return this.httpClient
+      .post(erp + 'creer-backup-produits', formData)
+      .pipe(catchError(this.handleError));
+  }
+
 }

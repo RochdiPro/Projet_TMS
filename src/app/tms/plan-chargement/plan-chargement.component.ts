@@ -303,8 +303,17 @@ export class PlanChargementComponent implements OnInit {
           this.listeCommandes.push(this.commande);
           this.listeCommandesModeManuel.push(commandeManuel);
         }
+        let j =0;
+        this.listeCommandes.forEach((cmd: any) => {
+          cmd.articles.forEach((article: any) => {
+            j++
+            article.num = j +"";
+          });
+        });
+        let i =0;
         this.listeCommandesModeManuel.forEach((cmd: any) => {
           cmd.articles.forEach((article: any) => {
+            i++
             //pour chaque article on identifie ses dimensions
             let dimensions = article.dimensions.split('x');
             let longueur = Number(dimensions[0]) * 2.7;
@@ -314,6 +323,7 @@ export class PlanChargementComponent implements OnInit {
             article.longueur = longueur;
             article.largeur = largeur;
             article.hauteur = hauteur;
+            article.num = i+ "";
           });
         });
 
@@ -1240,7 +1250,7 @@ export class PlanChargementComponent implements OnInit {
           lockUniScaling: true,
         });
         // nom de l'article
-        var text = new fabric.Text(article.emballage, {
+        var text = new fabric.Text(article.num, {
           fontSize: 10,
           originX: 'center',
           originY: 'center',
@@ -1307,7 +1317,7 @@ export class PlanChargementComponent implements OnInit {
           stroke: 'black',
           strokeWidth: 1,
         });
-        var text = new fabric.Text(article.emballage, {
+        var text = new fabric.Text(article.num, {
           fontSize: 10,
           originX: 'center',
           originY: 'center',
@@ -1438,6 +1448,11 @@ export class PlanChargementComponent implements OnInit {
       event.previousIndex,
       event.currentIndex
     );
+    moveItemInArray(
+      this.listeCommandesModeManuel,
+      event.previousIndex,
+      event.currentIndex
+    );
     let idCommandes = '';
     for (let i = 0; i < this.listeCommandes.length; i++) {
       const commande = this.listeCommandes[i];
@@ -1445,10 +1460,11 @@ export class PlanChargementComponent implements OnInit {
     }
     idCommandes = idCommandes.slice(0, -1);
     this.mission.idCommandes = idCommandes;
-    await this.servicePlanChargement
+    this.servicePlanChargement
       .modifierIdCommandesDansMission(this.mission.id, idCommandes)
-      .toPromise();
-    this.createPlanChargementAuto();
+      .subscribe(()=> {
+        this.createPlanChargementAuto();
+      })
   }
 
   // initialiser les racines de l'algorithme qui va placer les articles automatiquement
@@ -1904,7 +1920,7 @@ export class PlanChargementComponent implements OnInit {
       strokeWidth: 1,
       lockUniScaling: true,
     });
-    var text = new fabric.Text(colis.emballage, {
+    var text = new fabric.Text(colis.num, {
       fontSize: 10,
       originX: 'center',
       originY: 'center',
@@ -1941,7 +1957,7 @@ export class PlanChargementComponent implements OnInit {
       stroke: 'black',
       strokeWidth: 1,
     });
-    var text = new fabric.Text(colis.emballage, {
+    var text = new fabric.Text(colis.num, {
       fontSize: 10,
       originX: 'center',
       originY: 'center',

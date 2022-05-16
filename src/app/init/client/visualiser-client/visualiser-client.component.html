@@ -1,0 +1,235 @@
+<h5 class="card-title">Visualiser le client</h5>
+<div *ngIf="client" class="grid-container">
+    <div class="grid-item item1">
+        <div class="zoom">
+            <img id="myimage" src="data:image/png;base64,{{client.image}}" width="200" height="200"
+                style="margin-left: 10px;" (click)="afficherImage(client.id_Clt)" />
+        </div>
+    </div>
+
+    <div class="grid-item item2">
+        <mat-label style="border-bottom: 1px solid #DEDEDE;font-weight: bold;font-size: 20px;"> {{client.nom_Client}}
+        </mat-label>
+    </div>
+    <div class="grid-item item3" style="margin-top: -40px;">
+        <mat-label style="font-weight: bold;border-bottom: 1px solid #DEDEDE;"> Informations Générales </mat-label>
+
+
+        <div class="row">
+
+            <mat-label><strong> Categorie Client : </strong></mat-label>
+            <mat-label>{{client.categorie_Client}}</mat-label>
+        </div>
+        <div class="row">
+            <mat-label><strong> Email : </strong></mat-label>
+            <mat-label>{{client.email}}</mat-label>
+        </div>
+        <div class="row">
+            <mat-label><strong> Contact: </strong></mat-label>
+            <mat-label>{{client.contact}}</mat-label>
+        </div>
+    </div>
+    <div class="grid-item item4" style="margin-top: -40px;">
+        <br>
+        <div class="row">
+
+            <mat-label><strong> Representant : </strong></mat-label>
+            <mat-label>{{client.representant}}</mat-label>
+
+        </div>
+        <div class="row">
+            <mat-label><strong>Téléphone : </strong></mat-label>
+            <mat-label>{{client.tel1}}</mat-label>
+        </div>
+
+    </div>
+
+    <div class="grid-item item5">
+        <mat-tab-group headerPosition="above">
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <!-- fa-address-book -->
+                    <mat-icon class="example-tab-icon">contact_page</mat-icon>
+                    Coordonnées
+                </ng-template>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Adresse : </strong></mat-label>
+                        <mat-label>{{client.adresse}}</mat-label>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Pays : </strong></mat-label>
+                        <mat-label>{{client.pays}}</mat-label>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Ville : </strong></mat-label>
+                        <mat-label>{{client.ville}}</mat-label>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Region : </strong></mat-label>
+                        <mat-label>{{client.region}}</mat-label>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Téléphone : </strong></mat-label>
+                        <mat-label>{{client.tel1}}</mat-label>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Fax : </strong></mat-label>
+                        <mat-label>{{client.fax}}</mat-label>
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Site Web : </strong></mat-label>
+                        <mat-label>{{client.site_Web}}</mat-label>
+                    </div>
+
+                </div>
+                <div class="row">
+
+                    <mat-label><strong> Contact : </strong></mat-label>
+                    <mat-label>{{client.contact}}</mat-label>
+                </div>
+            </mat-tab>
+
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <!-- pe-7s-hammer -->
+                    <mat-icon class="example-tab-icon">gavel</mat-icon>
+                    Identité Fiscale
+                </ng-template>
+                <form [formGroup]="Identification_Fiscale">
+                    <div class="row">
+
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong> Categorie Fiscale : </strong></mat-label>
+                            <mat-label>{{client.categorie_Fiscale}}</mat-label>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong> Identité Fiscale : </strong></mat-label>
+                            <mat-label>{{client.code_Tva}}</mat-label>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong> Type de pièce d'identité : </strong></mat-label>
+                            <mat-label>{{client.type_Piece_Identite}}</mat-label>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong> Numéro de pièce d'identité : </strong></mat-label>
+                            <mat-label>{{client.n_Piece_Identite}}</mat-label>
+                        </div>
+                    </div>
+                    <div class="row"
+                        *ngIf="client.categorie_Fiscale==='Exonéré_tva'|| client.categorie_Fiscale==='Exonéré_tva_et_Fodec'">
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong> Numéro d'Attestation d'Exoneration : </strong></mat-label>
+                            <mat-label>{{client.n_Attestation_Exoneration}}</mat-label>
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong>Début d'Exoneration Au TVA : </strong></mat-label>
+                            <mat-label>{{debut_exoneration_tva}}</mat-label>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong>Fin d'Exoneration Au TVA : </strong></mat-label>
+                            <mat-label>{{fin_exoneration_tva}}</mat-label>
+                        </div>
+
+                    </div>
+
+                    <div class="row" *ngIf="client.categorie_Fiscale==='Suspension_tva'">
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong> Numéro d'Attestation de suspension : </strong></mat-label>
+                            <mat-label>{{client.n_Attestation_Exoneration}}</mat-label>
+
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong>Début de suspension au TVA : </strong></mat-label>
+                            <mat-label>{{debut_exoneration_tva}}</mat-label>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong>Fin de suspension au TVA : </strong></mat-label>
+                            <mat-label>{{fin_exoneration_tva}}</mat-label>
+                        </div>
+
+                    </div>
+                    <div class="row" *ngIf="client.categorie_Fiscale==='Cession_a_quai'">
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong> Numéro d'Attestation de Cession à quai : </strong></mat-label>
+                            <mat-label>{{client.n_Attestation_Exoneration}}</mat-label>
+
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong>Début de suspension au TVA : </strong></mat-label>
+                            <mat-label>{{debut_exoneration_tva}}</mat-label>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong>Fin de suspension au TVA : </strong></mat-label>
+                            <mat-label>{{fin_exoneration_tva}}</mat-label>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row" *ngIf="client.categorie_Fiscale==='Reduction_tva'">
+
+                        <div class="col-md-3 mb-3">
+                            <mat-label><strong>Taux de réduction au TVA : </strong></mat-label>
+                            <mat-label>{{client.taux_Reduction_Tva}}</mat-label>
+
+                        </div>
+
+
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong>Timbre fiscal : </strong></mat-label>
+                        <mat-checkbox matInput formControlName="Timbre_Fiscal" color="primary" id="Timbre_Fiscal"
+                            name="Timbre_Fiscal" [(ngModel)]="client.timbre_Fiscal" [disabled]=true
+                            style="margin-top:10px">
+                        </mat-checkbox>
+                    </div>
+                </form>
+            </mat-tab>
+
+            <mat-tab>
+                <!-- fa-money-->
+                <ng-template mat-tab-label>
+                    <mat-icon class="example-tab-icon">attach_money</mat-icon>
+                    Identité bancaire
+                </ng-template>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Banque : </strong></mat-label>
+                        <mat-label>{{client.banque1}}</mat-label>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Rib : </strong></mat-label>
+                        <mat-label>{{client.rib1}}</mat-label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Banque 2 : </strong></mat-label>
+                        <mat-label>{{client.banque2}}</mat-label>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <mat-label><strong> Rib 2 : </strong></mat-label>
+                        <mat-label>{{client.rib2}}</mat-label>
+                    </div>
+                </div>
+            </mat-tab>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <mat-icon class="example-tab-icon">attach_file</mat-icon>
+                    Description
+                </ng-template>
+                <div class="row">
+
+                    <mat-label>{{client.description}} </mat-label>
+                </div>
+
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+</div>

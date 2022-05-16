@@ -1,0 +1,336 @@
+h1 {
+  text-align: center;
+  font-size: 40px;
+  padding: 55px 0;
+}
+//grid matricule
+.grid-matricule {
+  display: grid;
+  grid-template-areas: "typeMatricule matricule";
+  grid-template-columns: 1fr 1fr;
+}
+.type-matricule {
+  display: flex;
+  justify-content: center;
+  grid-area: typeMatricule;
+}
+#type-matricule {
+  width: 272px;
+}
+//grid caracteristiques
+.grid-caracteristiques {
+  display: grid;
+  grid-template-areas:
+    "marque modele couleur"
+    "categorie carburant capaciteReservoir"
+    "consommationNormale longueur largeur"
+    "hauteur charge .";
+  grid-column-gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.marque {
+  grid-area: marque;
+}
+.modele {
+  grid-area: modele;
+}
+.couleur {
+  grid-area: couleur;
+}
+.categorie {
+  grid-area: categorie;
+}
+.carburant {
+  grid-area: carburant;
+}
+.consommationNormale {
+  grid-area: consommationNormale;
+}
+.longueuer {
+  grid-area: longueur;
+}
+.largeur {
+  grid-area: largeur;
+}
+.hauteur {
+  grid-area: hauteur;
+}
+.charge {
+  grid-area: charge;
+}
+.capacite-reservoir {
+  grid-area: capaciteReservoir;
+}
+//grid entretien et expiration papiers
+.entretienEtPapier {
+  display: grid;
+  grid-template-areas:
+    "kmActuel kmHuileMoteur kmLiquideRefroidissement"
+    "kmHuileBoiteVitesse kmFiltreClimatiseur kmFiltreCarburant"
+    "kmBougies kmCourroies kmPneus"
+    "dateVisite dateAssurance dateTaxe";
+  grid-gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.kmActuel {
+  grid-area: kmActuel;
+}
+.kmHuileMoteur {
+  grid-area: kmHuileMoteur;
+}
+.kmLiquideRefroidissement {
+  grid-area: kmLiquideRefroidissement;
+}
+.kmHuileBoiteVitesse {
+  grid-area: kmHuileBoiteVitesse;
+}
+.kmFiltreClimatiseur {
+  grid-area: kmFiltreClimatiseur;
+}
+.kmFiltreCarburant {
+  grid-area: kmFiltreCarburant;
+}
+.kmBougies {
+  grid-area: kmBougies;
+}
+.kmCourroies {
+  grid-area: kmCourroies;
+}
+.kmPneus {
+  grid-area: kmPneus;
+}
+.dateVisite {
+  grid-area: dateVisite;
+}
+.dateAssurance {
+  grid-area: dateAssurance;
+}
+.dateTaxe {
+  grid-area: dateTaxe;
+}
+.full-width {
+  //pour que les inputs prennent le width total du container
+  width: 100%;
+}
+.mat-dialog-content,
+.mat-dialog-title {
+  //pour enlever le margin des cotés du boite de dialogue
+  margin: 0 !important;
+  padding: 12px 24px !important;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.matriculetun {
+  //pour le background du matricule type tun
+  background-image: url(../../../../../../assets/images/TMS/vehicule/matricule.png);
+  height: 57px;
+  width: 272px;
+  position: relative;
+  background-repeat: no-repeat;
+}
+.matriculers {
+  //pour le background du matricule type rs
+  height: 57px;
+  width: 272px;
+  background-image: url(../../../../../../assets/images/TMS/vehicule/rs-mat.png);
+  position: relative;
+  background-repeat: no-repeat;
+}
+#numSerie {
+  //pour le input du serie
+  display: inline;
+  width: 80px;
+  top: 10px;
+  position: absolute;
+  left: 13px;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  font-size: 24px;
+}
+#numCar {
+  //pour le input du numero voiture
+  display: inline;
+  width: 100px;
+  top: 10px;
+  position: absolute;
+  right: 13px;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  font-size: 24px;
+}
+.form-control {
+  //pour les inputs du matricule
+  background: #ebebeb;
+  color: #666;
+  border: none;
+  padding: 0.5rem 1rem;
+}
+
+.matricule {
+  //pour le div qui contient les matricules
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-area: matricule;
+  flex-direction: column;
+  position: relative;
+  margin-bottom: 25px;
+}
+#numRS {
+  //pour le input du matricule rs
+  display: inline;
+  width: 130px;
+  top: 10px;
+  position: absolute;
+  left: 13px;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  font-size: 24px;
+}
+
+.afficher-erreur{
+  position: absolute;
+  top: 100%;
+  display: block;
+  color: tomato;
+  animation-name: afficher;
+  animation-duration: 250ms;
+}
+
+@keyframes afficher {
+  from {color: transparent;}
+  to {color: tomato;}
+}
+
+.cacher-erreur{
+  position: absolute;
+  top: 100%;
+  display: none;
+  color: transparent;
+}
+
+//pour l'affichage mobile
+@media only screen and (max-width: 790px),
+  (min-device-width: 768px) and (max-device-width: 1024px) {
+  h1 {
+    text-align: center;
+    font-size: 20px;
+    padding: 25px 0;
+  }
+  .grid-matricule {
+    display: grid;
+    grid-template-areas:
+      "typeMatricule"
+      "matricule";
+    grid-template-columns: 1fr;
+  }
+  #type-matricule {
+    width: 100%;
+  }
+  .grid-caracteristiques {
+    display: grid;
+    grid-template-areas:
+      "marque"
+      "modele"
+      "couleur"
+      "categorie"
+      "carburant"
+      "consommationNormale"
+      "longueur"
+      "largeur"
+      "hauteur"
+      "charge";
+    grid-column-gap: 0;
+    grid-template-columns: 1fr;
+  }
+  //grid entretien et expiration papiers
+  .entretienEtPapier {
+    display: grid;
+    grid-template-areas:
+      "kmActuel"
+      "kmHuileMoteur"
+      "kmLiquideRefroidissement"
+      "kmHuileBoiteVitesse"
+      "kmFiltreClimatiseur"
+      "kmFiltreCarburant"
+      "kmBougies"
+      "kmCourroies"
+      "kmPneus"
+      "dateVisite"
+      "dateAssurance"
+      "dateTaxe";
+    grid-gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  .matriculetun {
+    background-image: url(../../../../../../assets/images/TMS/vehicule/matricule.png);
+    height: 57px;
+    width: 240px;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+  }
+  .matriculers {
+    height: 57px;
+    width: 240px;
+    background-image: url(../../../../../../assets/images/TMS/vehicule/rs-mat.png);
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+  }
+  #numSerie {
+    display: inline;
+    width: 25%;
+    top: 15%;
+    position: absolute;
+    left: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 110%;
+    text-align: center;
+  }
+  #numCar {
+    display: inline;
+    width: 35%;
+    top: 15%;
+    position: absolute;
+    right: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 110%;
+    text-align: center;
+  }
+  #numRS {
+    display: inline;
+    width: 60%;
+    top: 12%;
+    position: absolute;
+    left: 13px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    font-size: 140%;
+    text-align: center;
+  }
+}
