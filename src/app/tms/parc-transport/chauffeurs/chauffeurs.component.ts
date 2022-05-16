@@ -56,7 +56,7 @@ export class ChauffeursComponent implements OnInit {
       if (this.modeDeconnecte) {
         this.service.employesManuel().subscribe((data) => {
           this.employes = data;
-          this.chauffeurs = this.employes.filter((x: any) => x.role == 'chauffeur');
+          this.chauffeurs = this.employes.filter((x: any) => x.role == 'Chauffeur');
           this.dataSource.data = this.chauffeurs as tableChauffeur[];
         });
       } else {
