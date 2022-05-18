@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { CommandeService } from 'src/app/colisage/commande/services/commande.service';
 import { ConfigurationTmsService } from 'src/app/configuration-tms/services/configuration-tms.service';
+import { StompService } from 'src/app/services/stomp.service';
 import Swal from 'sweetalert2';
 import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
 import { VehiculeService } from '../../vehicule/services/vehicule.service';
@@ -81,7 +82,8 @@ export class AjoutMissionComponent implements OnInit {
     private dialog: MatDialog,
     private serviceChauffeur: ChauffeurService,
     private serviceCommande: CommandeService,
-    private serviceConfiguration: ConfigurationTmsService
+    private serviceConfiguration: ConfigurationTmsService,
+    private stompService: StompService,
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -93,7 +95,46 @@ export class AjoutMissionComponent implements OnInit {
   }
 
   async ngOnInit() {
-    this.chercherMoi();
+    this.stompService.subscribe('/topic/mission', async () => {
+      // reinitialiser toute les variables
+      this.commandes = [];
+      this.commandesNordEst = [];
+      this.commandesNordOuest = [];
+      this.commandesCentreEst = [];
+      this.commandesCentreOuest = [];
+      this.commandesSudEst = [];
+      this.commandesSudOuest = [];
+      this.listeVehiculesAffiches = []; //liste des vehicules prive a afficher (etat dispo)
+      this.listeVehiculesLoues = [];
+      this.mission = [];
+      this.checkBoxVehicules = []; //liste valeur des chackBoxes vehicules prives
+      this.checkBoxVehiculesLoues = []; //liste valeur des chackBoxes vehicules loues
+      this.vehiculesSelectionnes = []; //liste des vehicules Selectionnés
+      this.vehiculeEstSelectionne = false;
+      this.vehiculesPriveSelectionnes = []; //liste vehicules prives selectionnés avec la liste des chauffeurs compatibles pour chage vehicule
+      this.vehiculesLoueSelectionnes = [];
+      this.copieVehiculesPrive = [];
+      this.copieVehiculesLoue = [];
+      this.fileAttente = []; //liste des mission affectées dans la file d'attente
+      this.vehiculesMemeChauffeursSelectionne = []; //liste des vehicules selectionnées qui on le meme chauffeur
+      this.listeFilesAttentes = []; //contient la liste des files d'attente crée
+
+      await this.getListeCommande();
+      this.affecterCommandeAuRegion(); //specifier a quelle region appartienne une commande
+      // creation des listes des commandes divisées par region
+      this.setCommandesNordEst();
+      this.setCommandesNordOuest();
+      this.setCommandesCentreEst();
+      this.setCommandesCentreOuest();
+      this.setCommandesSudEst();
+      this.setCommandesSudOuest();
+      await this.getVehiculesChauffeurs(); // recuperation de la liste des vehicules et leurs chauffeurs
+      await this.getVehiculeLoueDisponibles();
+      this.creerCheckBoxsVehicules();
+      this.creerCheckBoxsVehiculesLoues();
+      this.getFileAttente();
+    });
+    this.getPositionOrigin();
     this.creerForm();
     await this.getModeApplication();
     await this.getListeCommande();
@@ -109,11 +150,21 @@ export class AjoutMissionComponent implements OnInit {
     await this.getVehiculeLoueDisponibles();
     this.creerCheckBoxsVehicules();
     this.creerCheckBoxsVehiculesLoues();
+    this.getFileAttente();
   }
+
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.stompService.unsubscribe();
+  }
+
 
   // get mode de l'application
   async getModeApplication() {
-    let configuration = await this.serviceConfiguration.getConfigurationApplication().toPromise();
+    let configuration = await this.serviceConfiguration
+      .getConfigurationApplication()
+      .toPromise();
     this.modeNonConnecte = configuration.modeManuel;
   }
 
@@ -133,8 +184,10 @@ export class AjoutMissionComponent implements OnInit {
     let dateChoisi = this.formDate.get('date').value;
     dateChoisi.setDate(dateChoisi.getDate() - 1);
     this.formDate.get('date').setValue(dateChoisi);
+    let d = this.formDate.get('date').value;
+    d.setHours(1, 0, 0, 0);
     let fileAttente = this.listeFilesAttentes.filter(
-      (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
+      (f: any) => new Date(f.date).getTime() === d.getTime()
     )[0];
     if (fileAttente === undefined) {
       this.fileAttente = [];
@@ -148,8 +201,10 @@ export class AjoutMissionComponent implements OnInit {
     let dateChoisi = this.formDate.get('date').value;
     dateChoisi.setDate(dateChoisi.getDate() + 1);
     this.formDate.get('date').setValue(dateChoisi);
+    let d = this.formDate.get('date').value;
+    d.setHours(1, 0, 0, 0);
     let fileAttente = this.listeFilesAttentes.filter(
-      (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
+      (f: any) => new Date(f.date).getTime() === d.getTime()
     )[0];
     if (fileAttente === undefined) {
       this.fileAttente = [];
@@ -911,6 +966,29 @@ export class AjoutMissionComponent implements OnInit {
     });
   }
 
+  // get file d'attente
+  getFileAttente() {
+    this.serviceMission.getFilesAttente().subscribe((result: any) => {
+      result.forEach((file: any) => {
+        this.listeFilesAttentes.push({
+          id: file.id,
+          date: file.date,
+          fileAttente: JSON.parse(file.missions),
+        });
+        let d = this.formDate.get('date').value;
+        d.setHours(1, 0, 0, 0);
+        let fileAttente = this.listeFilesAttentes.filter(
+          (f: any) => new Date(f.date).getTime() === d.getTime()
+        )[0];
+        if (fileAttente === undefined) {
+          this.fileAttente = [];
+        } else {
+          this.fileAttente = fileAttente.fileAttente;
+        }
+      });
+    });
+  }
+
   // si on clique sur le bouton ajouter-mission on ajoute cette mission a la liste de la file d'attente
   async ajouterMissionFileAttente() {
     let vehicules: any = [];
@@ -980,6 +1058,7 @@ export class AjoutMissionComponent implements OnInit {
           volumeMission.push(Number(volumeTotal.toFixed(4)));
           poidsMission.push(Number(poidsTotal.toFixed(4)));
         });
+        let commandes = this.mission;
         this.fileAttente.push({
           commandes: this.mission,
           commandesAffectees: commandesAffectees,
@@ -1006,8 +1085,9 @@ export class AjoutMissionComponent implements OnInit {
         let dateFileAttente = new Date(
           this.formDate.get('date').value.getTime()
         );
+        dateFileAttente.setHours(1, 0, 0, 0);
         let fileAttente = this.listeFilesAttentes.filter(
-          (f: any) => f.date.getTime() === dateFileAttente.getTime()
+          (f: any) => new Date(f.date).getTime() === dateFileAttente.getTime()
         );
         let copieFileAttente: any = [];
         this.fileAttente.forEach((mission: any) => {
@@ -1022,15 +1102,44 @@ export class AjoutMissionComponent implements OnInit {
           });
         });
         if (fileAttente.length === 0) {
-          this.listeFilesAttentes.push({
+          let file = {
             date: dateFileAttente,
-            fileAttente: copieFileAttente,
+            missions: JSON.stringify(copieFileAttente),
+          };
+          commandes.forEach((commande: any) => {
+            let formDataCommande = new FormData();
+            formDataCommande.append('id', commande.id);
+            formDataCommande.append('etat', "File d'attente");
+            formDataCommande.append('idMission', '0');
+            this.serviceCommande
+              .affecterCommande(formDataCommande)
+              .subscribe();
           });
+          this.serviceMission.ajouterFileAttente(file).subscribe();
+          // this.listeFilesAttentes.push({
+          //   date: dateFileAttente,
+          //   fileAttente: copieFileAttente,
+          // });
         } else {
-          let index = this.listeFilesAttentes.findIndex(
-            (f: any) => f.date.getTime() === dateFileAttente.getTime()
-          );
-          this.listeFilesAttentes[index].fileAttente = copieFileAttente;
+          let file = {
+            id: fileAttente[0].id,
+            date: dateFileAttente,
+            missions: JSON.stringify(copieFileAttente),
+          };
+          commandes.forEach((commande: any) => {
+            let formDataCommande = new FormData();
+            formDataCommande.append('id', commande.id);
+            formDataCommande.append('etat', "File d'attente");
+            formDataCommande.append('idMission', '0');
+            this.serviceCommande
+              .affecterCommande(formDataCommande)
+              .subscribe();
+          });
+          this.serviceMission.updateFileAttente(file).subscribe();
+          // let index = this.listeFilesAttentes.findIndex(
+          //   (f: any) => f.date.getTime() === dateFileAttente.getTime()
+          // );
+          // this.listeFilesAttentes[index].fileAttente = copieFileAttente;
         }
       }
     });
@@ -1045,6 +1154,22 @@ export class AjoutMissionComponent implements OnInit {
   //si on clique sur le bouton enlever-mission en supprime la mission qu'on désire l'enlever de la file d'attente
   //et on rajoute ses commandes dans la liste des commandes dans la region compatible
   annulerAjoutMissionDansFileAttente(i: number) {
+    let dateFileAttente = this.formDate.get('date').value;
+    dateFileAttente.setHours(1, 0, 0, 0);
+    let fileAttente = JSON.parse(
+      JSON.stringify(
+        this.listeFilesAttentes.filter(
+          (f: any) => new Date(f.date).getTime() === dateFileAttente.getTime()
+        )[0]
+      )
+    );
+    fileAttente.fileAttente.splice(i, 1);
+
+    let file = {
+      id: fileAttente.id,
+      date: dateFileAttente,
+      missions: JSON.stringify(fileAttente.fileAttente),
+    };
     this.fileAttente[i].commandes.forEach((commande: any) => {
       switch (commande.region) {
         case 'Nord-Est':
@@ -1087,18 +1212,39 @@ export class AjoutMissionComponent implements OnInit {
         default:
           break;
       }
+      let formDataCommande = new FormData();
+      formDataCommande.append('id', commande.id);
+      formDataCommande.append('etat', 'En cours de traitement');
+      formDataCommande.append('idMission', '0');
+      this.serviceCommande.affecterCommande(formDataCommande).subscribe();
       this.disableCheckBoxsVehiculePoidsVolumeInferieur();
     });
-    this.fileAttente.splice(i, 1);
-    let index = this.listeFilesAttentes.findIndex(
-      (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
-    );
-    this.listeFilesAttentes[index].fileAttente.splice(i, 1);
+    this.serviceMission.updateFileAttente(file).subscribe();
+    // this.fileAttente.splice(i, 1);
+    // let index = this.listeFilesAttentes.findIndex(
+    //   (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
+    // );
+    // this.listeFilesAttentes[index].fileAttente.splice(i, 1);
   }
 
   // si on clique le bouton enlever-tous-missions en supprime toutes les missions de la file d'attente
   //et on rajoute ses commandes dans la liste des commandes dans les regions compatibles
   annulerAjoutTousMissionsDansFileAttente() {
+    let dateFileAttente = this.formDate.get('date').value;
+    dateFileAttente.setHours(1, 0, 0, 0);
+    let fileAttente = JSON.parse(
+      JSON.stringify(
+        this.listeFilesAttentes.filter(
+          (f: any) => new Date(f.date).getTime() === dateFileAttente.getTime()
+        )[0]
+      )
+    );
+
+    let file = {
+      id: fileAttente.id,
+      date: dateFileAttente,
+      missions: '[]',
+    };
     this.fileAttente.forEach((mission: any) => {
       mission.commandes.forEach((commande: any) => {
         switch (commande.region) {
@@ -1142,14 +1288,20 @@ export class AjoutMissionComponent implements OnInit {
           default:
             break;
         }
+        let formDataCommande = new FormData();
+        formDataCommande.append('id', commande.id);
+        formDataCommande.append('etat', 'En cours de traitement');
+        formDataCommande.append('idMission', '0');
+        this.serviceCommande.affecterCommande(formDataCommande).subscribe();
         this.disableCheckBoxsVehiculePoidsVolumeInferieur();
       });
     });
+    this.serviceMission.updateFileAttente(file).subscribe();
     this.fileAttente = [];
-    let index = this.listeFilesAttentes.findIndex(
-      (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
-    );
-    this.listeFilesAttentes.splice(index, 1);
+    // let index = this.listeFilesAttentes.findIndex(
+    //   (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
+    // );
+    // this.listeFilesAttentes.splice(index, 1);
   }
 
   get fileAttenteEstVide() {
@@ -1159,9 +1311,6 @@ export class AjoutMissionComponent implements OnInit {
   // calculer le score des missions dans une file d'attente
   calculerScoreFileAttente() {
     let scoreTotal = 0;
-    let index = this.listeFilesAttentes.findIndex(
-      (f: any) => f.date.getTime() === this.formDate.get('date').value.getTime()
-    );
     this.fileAttente.forEach((mission: any) => {
       scoreTotal += mission.score;
     });
@@ -1204,15 +1353,11 @@ export class AjoutMissionComponent implements OnInit {
   }
 
   // avoir la position de début depuis le navigateur
-  chercherMoi() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        this.currentLat = position.coords.latitude;
-        this.currentLong = position.coords.longitude;
-      });
-    } else {
-      alert('Geolocation is not supported by this browser.');
-    }
+  getPositionOrigin() {
+    this.serviceConfiguration.infosGenerals().subscribe((info)=>{
+      this.currentLat = info.latitude;
+        this.currentLong = info.longitude;
+    })
   }
 
   // enregistrement des missions
@@ -1314,7 +1459,10 @@ export class AjoutMissionComponent implements OnInit {
           formData.append('score', mission.score);
           formData.append('region', '');
           formData.append('etat', 'En attente');
-          formData.append('date', this.listeFilesAttentes[i].date);
+          formData.append(
+            'date',
+            new Date(this.listeFilesAttentes[i].date) + ''
+          );
           formData.append('idMissionsLiees', idMissionLiees);
           formData.append('typeVehicule', typeVehicule);
           let newMission = await this.serviceMission
@@ -1360,6 +1508,7 @@ export class AjoutMissionComponent implements OnInit {
     }
     this.listeFilesAttentes = [];
     this.fileAttente = [];
+    await this.serviceMission.deleteAllFileAttente().toPromise();
     Swal.fire({
       icon: 'success',
       title: 'Missions enregistées avec succés!',

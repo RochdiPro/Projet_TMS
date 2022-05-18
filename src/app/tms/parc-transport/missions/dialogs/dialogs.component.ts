@@ -1269,7 +1269,7 @@ export class ModifierMission implements OnInit {
       });
     } else {
       let vehicules: any = await this.serviceMission
-        .filtrerVehiculeLoues('etat_vehicule', 'Disponible')
+        .filtrerVehiculeLoueParEtat('Disponible')
         .toPromise();
       vehicules.forEach((vehicule: any) => {
         let volumeUtile =

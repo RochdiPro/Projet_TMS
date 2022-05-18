@@ -203,6 +203,16 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
+  // filtrer vehicule loue par etat
+  public filtrerVehiculeLoueParEtat(etat: string) {
+    return this.httpClient.get(erp + 'vehicule-loue-etat', {
+      params: {
+        etat: etat,
+      },
+      observe: 'body',
+    });
+  }
+
   //get liste des chauffeurs
   public getChauffeurs() {
     return this.httpClient
@@ -322,10 +332,38 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
-    //get configuration application
-    public configurationApplication() {
-      return this.httpClient
-        .get(erp + 'configuration-application')
-        .pipe(catchError(this.handleError));
-    }
+  //get configuration application
+  public configurationApplication() {
+    return this.httpClient
+      .get(erp + 'configuration-application')
+      .pipe(catchError(this.handleError));
+  }
+
+  // ajouter fil d'attente
+  public ajouterFileAttente(file: any) {
+    return this.httpClient.post(erp + 'file-attente', file);
+  }
+
+  // get files d'attentes
+  public getFilesAttente() {
+    return this.httpClient.get(erp + 'files-attente');
+  }
+
+  // modifier file attente
+  public updateFileAttente(file: any) {
+    return this.httpClient.put(erp + 'file-attente', file);
+  }
+
+  // delete file d'attente
+  public deleteFileAttente(id: any) {
+    return this.httpClient.delete(erp + 'file-attente', {
+      params: { id: id },
+      observe: 'body',
+    });
+  }
+
+  // delete all file d'attente
+  public deleteAllFileAttente() {
+    return this.httpClient.delete(erp + 'files-attente');
+  }
 }

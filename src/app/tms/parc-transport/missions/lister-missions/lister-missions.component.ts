@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { StompService } from 'src/app/services/stomp.service';
 import {
   CloturerMission,
   ConfirmationAnnulationMission,
@@ -67,7 +68,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   constructor(
     public serviceMission: MissionsService,
     public datepipe: DatePipe,
-    private dialog: MatDialog
+    private dialog: MatDialog, 
+    private stompService: StompService
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -76,6 +78,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     const arrayOfDigits = Array.from(String(numToSeparate), Number);
 
     this.tms = Number(arrayOfDigits[3]);
+
+    this.filtrerMission();
   }
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -86,8 +90,17 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  async ngOnInit() {
-    await this.filtrerMission();
+  ngOnInit() {
+    this.stompService.subscribe('/topic/mission', (): void => {
+      this.filtrerMission();
+
+    });
+  }
+
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.stompService.unsubscribe();
   }
 
   testerEtatCommandes(commandes: any) {
