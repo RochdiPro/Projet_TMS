@@ -312,4 +312,21 @@ export class VehiculeService {
   public getMatriculesVehiculesLoues() {
     return this.httpClient.get(erp + "matricules-vehicules-loues")
   }
+
+  // changer etat vehicule
+  public changerEtatVehicule(matricule: string, etat: string) {
+    let formData = new FormData();
+    formData.append('matricule', matricule);
+    formData.append('etat', etat);
+    return this.httpClient.put(erp + "changer-etat-vehicule",formData);
+  }
+
+  // changer etat vehicule loué
+  public changerEtatVehiculeLoue(matricule: string, etat: string) {
+    let formData = new FormData();
+    formData.append('matricule', matricule);
+    formData.append('etat', etat);
+    return this.httpClient.put(erp + "changer-etat-vehicule-loue",formData);
+  }
+
 }

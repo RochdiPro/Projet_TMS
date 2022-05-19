@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Informations du mission</h1>
 <!-- Info Chauffeur -->
 <h2>Informations du chauffeur</h2>
-<div class="container-info-chauffeur">
+<div class="container-info-chauffeur" *ngIf="chauffeur">
     <div class="card info-chauffeur" style="height: 100%;">
         <div class="row">
             <div class="col-4 image" style="padding: 0" *ngIf="!chauffeur.image">

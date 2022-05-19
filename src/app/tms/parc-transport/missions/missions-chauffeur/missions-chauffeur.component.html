@@ -103,7 +103,8 @@
                 <a role="button" (click)=" toggleAfficherCommandes()">Détails</a>
                 <ng-container *ngIf="missionSelectionnee.etat === 'En cours'; else elseTemplate">
                     <!-- si l'etat du mission est 'en cours' on affiche le bouton 'Livrer' -->
-                    <a role="button" (click)="ouvrirConfirmationLivraison(missionSelectionnee)">Livrer</a>
+                    <a role="button" (click)="ouvrirConfirmationLivraison(missionSelectionnee)"
+                    [ngClass]="{'disable': tousCommandesLivrees}">Livrer</a>
                 </ng-container>
                 <ng-template #elseTemplate>
                     <ng-container *ngIf="missionSelectionnee.etat === 'En attente'; else elseTemplate2">

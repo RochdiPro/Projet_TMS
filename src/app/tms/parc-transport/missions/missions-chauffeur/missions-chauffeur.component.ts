@@ -14,6 +14,7 @@ import {
   PlanChargement,
 } from '../dialogs/dialogs.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { VehiculeService } from '../../vehicule/services/vehicule.service';
 
 @Component({
   selector: 'app-missions-chauffeur',
@@ -80,7 +81,7 @@ export class MissionsChauffeurComponent implements OnInit {
   commandesAffiche = false;
 
   // cette valeur va se changer statiquement selon le profile connéctée
-  idChauffeur = 20;
+  idChauffeur = 1;
   missions: any;
   missionsFiltreeParEtat: any;
   missionsAffiche: any;
@@ -126,7 +127,8 @@ export class MissionsChauffeurComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private serviceMission: MissionsService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private serviceVehicule: VehiculeService
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -176,7 +178,9 @@ export class MissionsChauffeurComponent implements OnInit {
     this.missions = await this.serviceMission
       .getMissionsChauffeur(this.idChauffeur)
       .toPromise();
-    this.missions = this.missions.filter((mission: any) => mission.canvasTop !== "")
+    this.missions = this.missions.filter(
+      (mission: any) => mission.canvasTop !== ''
+    );
   }
 
   // filtrer la liste des missions par leurs Etat
@@ -227,6 +231,14 @@ export class MissionsChauffeurComponent implements OnInit {
       ? (existe = true)
       : (existe = false);
     return existe;
+  }
+
+  get tousCommandesLivrees() {
+    let tousLivrees;
+    this.commandesNonLivrees.length == 0 
+    ? (tousLivrees = true)
+    : (tousLivrees = false);
+    return tousLivrees;
   }
 
   //si on clique sur le bouton de filtrage par etat En cours on active se bouton et on affiche la liste des missions En cours
@@ -323,13 +335,26 @@ export class MissionsChauffeurComponent implements OnInit {
 
   // fonction qui permet de commancer une mission
   async lancerMission(mission: any) {
-    await this.serviceMission.modifierEtatMission(mission.id, 'En cours').toPromise();
+    await this.serviceMission
+      .modifierEtatMission(mission.id, 'En cours')
+      .toPromise();
     await this.getMissionsParIdChauffeur();
     // pour refraichir la mission selectionnée aprés qu'on a modifié l'etat du mission
     this.missionSelectionnee = this.filtrerMissionsParEtat('En cours')[0];
     // on change la tab active vers celle en cours
     this.cliquerEnCours();
-    this.serviceMission.envoyerNotificationProchaineLivraison(mission.idCommandes).subscribe();
+    this.serviceMission
+      .envoyerNotificationProchaineLivraison(mission.idCommandes)
+      .subscribe();
+    if (mission.typeVehicule === 'prive') {
+      this.serviceVehicule
+        .changerEtatVehicule(mission.matricule, 'En mission')
+        .subscribe();
+    } else {
+      this.serviceVehicule
+        .changerEtatVehiculeLoue(mission.matricule, 'En mission')
+        .subscribe();
+    }
   }
 
   // le status et le toggle sont utilisée pour les animation lors de ouverture et la fermeture du volet details mission et details commande
@@ -392,7 +417,7 @@ export class MissionsChauffeurComponent implements OnInit {
 
   // avoir la position de début depuis le navigateur
   async getPositionDepart() {
-    let infoGenerals = await this.serviceMission.infosGenerals().toPromise()
+    let infoGenerals = await this.serviceMission.infosGenerals().toPromise();
     this.latDepart = infoGenerals.latitude;
     this.longDepart = infoGenerals.longitude;
   }
@@ -440,6 +465,9 @@ export class MissionsChauffeurComponent implements OnInit {
     let trajet = await this.createTrajet();
     this.origine =
       trajet.debutChemin.latitude + '/' + trajet.debutChemin.longitude;
+    if (!this.finChemin) {
+      return;
+    }
     this.finChemin =
       trajet.finChemin.latitude + '/' + trajet.finChemin.longitude;
     this.pointStop = '';
@@ -489,7 +517,7 @@ export class MissionsChauffeurComponent implements OnInit {
       maxHeight: '95vh',
       panelClass: 'custom-dialog-plan-chargement',
       data: {
-        mission: this.missionSelectionnee
+        mission: this.missionSelectionnee,
       },
     });
   }

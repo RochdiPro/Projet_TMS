@@ -506,7 +506,7 @@ export class AjoutMissionComponent implements OnInit {
   // get tous les vehicules avec l'état disponible
   async getVehiculeDisponibles() {
     let listeVehiculesPrives = await this.serviceVehicule
-      .filtrerVehicule('', 'Disponible')
+      .vehicules()
       .toPromise();
     return listeVehiculesPrives;
   }
@@ -514,7 +514,7 @@ export class AjoutMissionComponent implements OnInit {
   // get la liste des vehicules loués
   async getVehiculeLoueDisponibles() {
     let listeVehiculesLoues = await this.serviceVehicule
-      .filtrerVehiculeLoues('', '', 'Disponible')
+      .vehiculesLoues()
       .toPromise();
     return listeVehiculesLoues;
   }
@@ -537,8 +537,8 @@ export class AjoutMissionComponent implements OnInit {
 
   // get les vehicules qui ont au moins un chauffeur qui peut la conduire
   async getVehiculesChauffeurs() {
-    let listeVehiculesPrives = await this.getVehiculeDisponibles();
-    let listeVehiculesLoues = await this.getVehiculeLoueDisponibles();
+    let listeVehiculesPrives: any = await this.getVehiculeDisponibles();
+    let listeVehiculesLoues: any = await this.getVehiculeLoueDisponibles();
     let listeChauffeurs: any;
     if (this.modeNonConnecte) {
       listeChauffeurs = await this.getChauffeursModeNonConnecte();

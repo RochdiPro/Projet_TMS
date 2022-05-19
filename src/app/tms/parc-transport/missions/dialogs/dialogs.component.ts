@@ -943,6 +943,7 @@ export class DetailComponent implements OnInit {
   ];
   dataSource = new MatTableDataSource();
   date_creation: any;
+  modeNonConnecte = true;
   constructor(
     public serviceMission: MissionsService,
     private serviceChauffeur: ChauffeurService,
@@ -960,18 +961,25 @@ export class DetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.refresh();
+    // get modeApplication
+    this.serviceChauffeur
+      .configurationApplication()
+      .subscribe((configuration) => {
+        this.modeNonConnecte = configuration.modeManuel;
+        this.refresh();
+      });
   }
 
   // get chauffeur et matricule vehicule
   async refresh() {
     let idChauffeur = this.data.mission.idChauffeur;
     this.matricule = this.data.mission.matricule;
-    if (idChauffeur === 'null') {
-      this.chauffeur = {
-        nom: this.data.mission.nomChauffeur,
-        tel: this.data.mission.telephoneChauffeur,
-      };
+    if (this.modeNonConnecte) {
+      this.serviceChauffeur
+        .employeManuel(Number(idChauffeur))
+        .subscribe((chauffeur) => {
+          this.chauffeur = chauffeur;
+        });
     } else {
       this.serviceChauffeur
         .employe(Number(idChauffeur))
@@ -1222,7 +1230,8 @@ export class ModifierMission implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<ModifierMission>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private serviceMission: MissionsService
+    private serviceMission: MissionsService,
+    private serviceVehicule: VehiculeService
   ) {}
 
   async ngOnInit() {
@@ -1244,12 +1253,13 @@ export class ModifierMission implements OnInit {
   }
 
   // permet de charger la liste des vehicules
+  // si on veut afficher que les vehicules disponible on change la methode de recuperation des vehicules
   async getListeVehicule() {
     this.listeVehicules = [];
     this.listeChauffeursCompatibles = [];
     this.chauffeurSelectionne = { nom: '', tel: '' };
     if (this.typeEstPrive) {
-      let vehicules: any = await this.serviceMission.vehicules().toPromise();
+      let vehicules: any = await this.serviceVehicule.vehicules().toPromise();
       if (this.modeDeconnecte) {
         this.listeChauffeurs = await this.serviceMission
           .getChauffeursManuel()
@@ -1268,8 +1278,8 @@ export class ModifierMission implements OnInit {
           : '';
       });
     } else {
-      let vehicules: any = await this.serviceMission
-        .filtrerVehiculeLoueParEtat('Disponible')
+      let vehicules: any = await this.serviceVehicule
+        .vehiculesLoues()
         .toPromise();
       vehicules.forEach((vehicule: any) => {
         let volumeUtile =
@@ -1490,6 +1500,15 @@ export class Trajet implements OnInit {
         ? positions.push(await this.getPosition(commande.idPosition))
         : '';
     }
+    if (positions.length == 0) {
+      for (let i = 0; i < idCommandes.length; i++) {
+        const idCommande = Number(idCommandes[i]);
+        const commande = await this.serviceMission
+          .commande(idCommande)
+          .toPromise();
+          positions.push(await this.getPosition(commande.idPosition))
+      }
+    }
     var debutChemin = {
       latitude: this.latDepart,
       longitude: this.longDepart,
@@ -1573,6 +1592,8 @@ export class Trajet implements OnInit {
 // ------------------------------ boite dialog plan chargement -------------------------------------------
 import { fabric } from 'fabric';
 import { kmactuelValidator } from '../../vehicule/kmactuel.validator';
+import { VehiculeService } from '../../vehicule/services/vehicule.service';
+import { ConfigurationTmsService } from 'src/app/configuration-tms/services/configuration-tms.service';
 
 @Component({
   templateUrl: 'plan-chargement.html',
@@ -1815,6 +1836,7 @@ export class CloturerMission implements OnInit {
     private dialogRef: MatDialogRef<CloturerMission>,
     @Inject(MAT_DIALOG_DATA) private data: any,
     private serviceMission: MissionsService,
+    private serviceVehicule: VehiculeService,
     private fb: FormBuilder
   ) {}
 
@@ -1915,6 +1937,11 @@ export class CloturerMission implements OnInit {
           .modifierEtatMission(this.mission.id, 'Terminée')
           .subscribe((result) => {
             if (result) {
+              if (result.typeVehicule === "prive") {
+                this.serviceVehicule.changerEtatVehicule(result.matricule,"Disponible").subscribe();
+              } else {
+                this.serviceVehicule.changerEtatVehiculeLoue(result.matricule,"Disponible").subscribe();
+              }
               Swal.fire({
                 icon: 'success',
                 title: 'Commande bien reçue',
