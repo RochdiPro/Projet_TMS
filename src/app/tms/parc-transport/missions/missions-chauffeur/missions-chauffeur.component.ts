@@ -417,9 +417,14 @@ export class MissionsChauffeurComponent implements OnInit {
 
   // avoir la position de début depuis le navigateur
   async getPositionDepart() {
-    let infoGenerals = await this.serviceMission.infosGenerals().toPromise();
-    this.latDepart = infoGenerals.latitude;
-    this.longDepart = infoGenerals.longitude;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.latDepart = position.coords.latitude;
+        this.longDepart = position.coords.longitude;
+      });
+    } else {
+      alert('Geolocation is not supported by this browser.');
+    }
   }
 
   // retourne la position de destination d'une commande
@@ -465,7 +470,16 @@ export class MissionsChauffeurComponent implements OnInit {
     let trajet = await this.createTrajet();
     this.origine =
       trajet.debutChemin.latitude + '/' + trajet.debutChemin.longitude;
-    if (!this.finChemin) {
+    if (!trajet.finChemin) {
+      this.lien =
+      'https://www.google.com/maps/embed/v1/directions?key=AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8&origin=' +
+      this.latDepart +
+      '/' +
+      this.longDepart +
+      '&destination=' +
+      this.latDepart +
+      '/' +
+      this.longDepart;
       return;
     }
     this.finChemin =

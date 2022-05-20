@@ -2139,6 +2139,14 @@ export class PlanChargementComponent implements OnInit {
       event.stopPropagation();
     this.status = status;
   }
+
+  get dragDropeActive() {
+    let estActive = false;
+    this.missionEstEnAttente
+      ? (estActive = true)
+      : (estActive = false);
+    return estActive;
+  }
 }
 
 export interface tableMissions {

@@ -17,7 +17,7 @@
          </div>
          <div class="example-list" *ngIf="!dragDropeActive">
             <div class="example-box" *ngFor="let commande of commandes; let last = last">
-               <div class="example-handle">
+               <div class="example-handle-desactive">
                   <i [ngClass]="{'fa fa-ellipsis-v pos': !last , 'fas fa-map-marker-alt': last}"></i>
                   <div class="position">
                      {{commande.nomClient}}: {{commande.adresse}}, {{commande.ville}}.

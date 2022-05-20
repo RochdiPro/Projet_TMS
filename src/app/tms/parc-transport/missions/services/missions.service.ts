@@ -178,6 +178,13 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
+  // annuler l'expedition du commande
+  public annulerExpedition(formData: any) {
+    return this.httpClient
+      .put(erp + 'annuler-expidition', formData)
+      .pipe(catchError(this.handleError));
+  }
+
   //creer liste colisage par mission
   public creerListeColisMission(colis: any) {
     return this.httpClient

@@ -7,6 +7,7 @@ import {
 } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { SuivieCommandeService } from './services/suivie-commande.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-suivie-commande',
@@ -80,17 +81,32 @@ export class SuivieCommandeComponent implements OnInit {
   pasCommandeEstActive = false;
   historique: any = [];
   adresseLivreur: string;
-  constructor(public service: SuivieCommandeService) {}
+  constructor(
+    public service: SuivieCommandeService,
+    private activatedroute: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     // get adresse de la societé
     this.service.infosGenerals().subscribe((result) => {
       this.adresseLivreur = result.ville;
     });
+    this.activatedroute.paramMap.subscribe(params => { 
+      this.trackingNumber = params.get('tn');
+      if (this.trackingNumber) {
+        this.rechercheCommande();
+      } 
+  });
+  }
+
+  clickerChercher() {
+    this.router.navigateByUrl("/Menu/TMS/suivie-commande/"+this.trackingNumber)
   }
 
   //rechercher une commande pour consulter son etat
   rechercheCommande() {
+    if (!this.trackingNumber) return;
     this.dispo = false;
     this.nouveauRecherche = false;
     this.historique = [];
@@ -183,13 +199,7 @@ export class SuivieCommandeComponent implements OnInit {
   }
 
   refaireRecherche() {
-    this.pasCommandeEstAffiche = false;
-    this.infoCommandeEstAffiche = false;
-    setTimeout(() => {
-      this.pasCommandeEstActive = false;
-      this.infoCommandeEstActive = false;
-      this.afficherRecherche();
-    }, 500);
+    this.router.navigateByUrl("/Menu/TMS/suivie-commande")
   }
 
   // etat du section qui contient l'input de recherche "show" pour afficher, "hide" pour cacher

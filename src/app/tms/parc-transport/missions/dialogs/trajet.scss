@@ -87,6 +87,17 @@
   align-items: center;
   gap: 20px;
 }
+.example-handle-desactive {
+  position: relative;
+  color: white;
+  cursor:default;
+  margin-left: 10px;
+  font-size: 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 .pos {
   margin-left: 2px;
 }

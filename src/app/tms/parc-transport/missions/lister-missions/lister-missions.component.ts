@@ -61,6 +61,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
 
   // variable utiliser pour activer et desactiver le bouton stop
   boutonStopEstActive: boolean;
+  chargementEnCours = true;
 
   nom: any;
   acces: any;
@@ -126,6 +127,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   async filtrerMission() {
     //pour faire le filtrage des missions
     if (this.filtreEtatMission === undefined) this.filtreEtatMission = '';
+    this.chargementEnCours = true;
     this.dataSource.data = await this.serviceMission
       .filtrerMissions(
         this.form.get('nom').value,
@@ -151,6 +153,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
           mission.boutonStop = this.testerEtatCommandes(commandes);
         });
     });
+    this.chargementEnCours = false;
   }
   disableEnableDate() {
     //pour activer et desactiver le filtrage par date

@@ -167,6 +167,17 @@ p {
   align-items: center;
   gap: 20px;
 }
+.drag-drop-handle-desactive {
+  position: relative;
+  color: black;
+  cursor: default;
+  margin-left: 10px;
+  font-size: 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
 
 //canvas top
 #canva {

@@ -1401,10 +1401,8 @@ export class ConfirmationAnnulationMission implements OnInit {
       for (let j = 0; j < idCommandes.length; j++) {
         let formDataCommande: any = new FormData();
         formDataCommande.append('id', Number(idCommandes[j]));
-        formDataCommande.append('etat', 'En cours de traitement');
-        formDataCommande.append('idMission', 0);
         await this.serviceMission
-          .affecterCommande(formDataCommande)
+          .annulerExpedition(formDataCommande)
           .toPromise();
       }
       await this.serviceMission.deleteMission(mission.id).toPromise();
@@ -1453,7 +1451,6 @@ export class Trajet implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.afficherTrajet();
     let idCommandes = this.data.mission.idCommandes.split('/');
     for (let i = 0; i < idCommandes.length; i++) {
       const idCommande = Number(idCommandes[i]);
@@ -1461,6 +1458,7 @@ export class Trajet implements OnInit {
         await this.serviceMission.commande(idCommande).toPromise()
       );
     }
+    this.afficherTrajet();
   }
 
   get dragDropeActive() {
@@ -1471,7 +1469,7 @@ export class Trajet implements OnInit {
     return estActive;
   }
 
-  // avoir la position de début depuis le navigateur
+  // avoir la position d'origine
   async getPositionDepart() {
     let infoGenerals = await this.serviceMission.infosGenerals().toPromise();
     this.latDepart = infoGenerals.latitude;
@@ -1486,9 +1484,29 @@ export class Trajet implements OnInit {
     return position;
   }
 
+  // definir position de depart depuis une commande livrée
+  async getPositionDepartDepuisCommandeLivree(id : any) {
+    let position = await this.getPosition(id)
+    this.latDepart = position.latitude;
+    this.longDepart = position.longitude;
+  }
+
+  // definir la position de depart du trajet a afficher
+  async definirPositionOrigine() {
+    let derniereCommandeLivree: any;
+    this.commandes.forEach((commande: any) => {
+      console.log(commande.etat);
+      commande.etat == 'Livrée' ? (derniereCommandeLivree = commande) : '';
+    });
+    console.log(derniereCommandeLivree);
+    (derniereCommandeLivree && this.data.mission.etat == "En cours")
+      ? await this.getPositionDepartDepuisCommandeLivree(derniereCommandeLivree.idPosition)
+      : await this.getPositionDepart();
+  }
+
   // créer le meilleur trajet possible
   async createTrajet() {
-    await this.getPositionDepart();
+    await this.definirPositionOrigine();
     let positions: any = [];
     let idCommandes = this.data.mission.idCommandes.split('/');
     for (let i = 0; i < idCommandes.length; i++) {
@@ -1506,7 +1524,7 @@ export class Trajet implements OnInit {
         const commande = await this.serviceMission
           .commande(idCommande)
           .toPromise();
-          positions.push(await this.getPosition(commande.idPosition))
+        positions.push(await this.getPosition(commande.idPosition));
       }
     }
     var debutChemin = {
@@ -1937,10 +1955,14 @@ export class CloturerMission implements OnInit {
           .modifierEtatMission(this.mission.id, 'Terminée')
           .subscribe((result) => {
             if (result) {
-              if (result.typeVehicule === "prive") {
-                this.serviceVehicule.changerEtatVehicule(result.matricule,"Disponible").subscribe();
+              if (result.typeVehicule === 'prive') {
+                this.serviceVehicule
+                  .changerEtatVehicule(result.matricule, 'Disponible')
+                  .subscribe();
               } else {
-                this.serviceVehicule.changerEtatVehiculeLoue(result.matricule,"Disponible").subscribe();
+                this.serviceVehicule
+                  .changerEtatVehiculeLoue(result.matricule, 'Disponible')
+                  .subscribe();
               }
               Swal.fire({
                 icon: 'success',

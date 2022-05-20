@@ -241,6 +241,18 @@ export class CommandeService {
       .put(erp + 'affecter-commande', formData)
       .pipe(catchError(this.handleError));
   }
+  // annuler l'expedition du commande
+  public annulerExpedition(formData: any) {
+    return this.httpClient
+      .put(erp + 'annuler-expidition', formData)
+      .pipe(catchError(this.handleError));
+  }
+  //changer etat commande si on l'ajoute au file attente
+  public ajouterFileAttente(formData: any) {
+    return this.httpClient
+      .put(erp + 'ajouter-a-file-attente', formData)
+      .pipe(catchError(this.handleError));
+  }
 
   //supprimer commande
   public supprimerCommande(id: any) {

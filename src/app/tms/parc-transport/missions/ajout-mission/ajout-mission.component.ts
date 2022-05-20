@@ -1109,10 +1109,8 @@ export class AjoutMissionComponent implements OnInit {
           commandes.forEach((commande: any) => {
             let formDataCommande = new FormData();
             formDataCommande.append('id', commande.id);
-            formDataCommande.append('etat', "File d'attente");
-            formDataCommande.append('idMission', '0');
             this.serviceCommande
-              .affecterCommande(formDataCommande)
+              .ajouterFileAttente(formDataCommande)
               .subscribe();
           });
           this.serviceMission.ajouterFileAttente(file).subscribe();
@@ -1129,10 +1127,8 @@ export class AjoutMissionComponent implements OnInit {
           commandes.forEach((commande: any) => {
             let formDataCommande = new FormData();
             formDataCommande.append('id', commande.id);
-            formDataCommande.append('etat', "File d'attente");
-            formDataCommande.append('idMission', '0');
             this.serviceCommande
-              .affecterCommande(formDataCommande)
+              .ajouterFileAttente(formDataCommande)
               .subscribe();
           });
           this.serviceMission.updateFileAttente(file).subscribe();
@@ -1214,9 +1210,7 @@ export class AjoutMissionComponent implements OnInit {
       }
       let formDataCommande = new FormData();
       formDataCommande.append('id', commande.id);
-      formDataCommande.append('etat', 'En cours de traitement');
-      formDataCommande.append('idMission', '0');
-      this.serviceCommande.affecterCommande(formDataCommande).subscribe();
+      this.serviceCommande.annulerExpedition(formDataCommande).subscribe();
       this.disableCheckBoxsVehiculePoidsVolumeInferieur();
     });
     this.serviceMission.updateFileAttente(file).subscribe();
@@ -1290,9 +1284,7 @@ export class AjoutMissionComponent implements OnInit {
         }
         let formDataCommande = new FormData();
         formDataCommande.append('id', commande.id);
-        formDataCommande.append('etat', 'En cours de traitement');
-        formDataCommande.append('idMission', '0');
-        this.serviceCommande.affecterCommande(formDataCommande).subscribe();
+        this.serviceCommande.annulerExpedition(formDataCommande).subscribe();
         this.disableCheckBoxsVehiculePoidsVolumeInferieur();
       });
     });

@@ -7,7 +7,8 @@ const routes: Routes = [
   { path: 'home', component: MenuTmsComponent },
   { path: 'Parc', component: ParcTransportComponent, loadChildren: () => import('./parc-transport/parc-transport.module').then(m => m.ParcTransportModule) },
   { path: 'plan-chargement', loadChildren: () => import('./plan-chargement/plan-chargement.module').then(m => m.PlanChargementModule) },
-  { path: 'suivie-commande', loadChildren: () => import('./suivie-commande/suivie-commande.module').then(m => m.SuivieCommandeModule) }
+  { path: 'suivie-commande', loadChildren: () => import('./suivie-commande/suivie-commande.module').then(m => m.SuivieCommandeModule) },
+  { path: 'suivie-commande/:tn', loadChildren: () => import('./suivie-commande/suivie-commande.module').then(m => m.SuivieCommandeModule) }
 ];
 
 @NgModule({
