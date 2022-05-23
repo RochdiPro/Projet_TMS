@@ -1,3 +1,68 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage
+ Liste des méthodes:
+ * getModeApplication: get mode de l'application.
+ * creerForm: creation des formControls.
+ * datePrecedente: diminuer la date dans le date picker par un jour.
+ * dateSuivante: augmenter le date dans le date picker par un jour.
+ * creerCheckBoxsVehicules: creation de la liste qui contient les valeur des ngModels du checkBoxs vehicules.
+ * creerCheckBoxsVehiculesLoues: creation de la liste qui contient les valeur des ngModels du checkBoxs vehiculesLoues.
+ * selectionnerDeselectionnerVehicule: fonction qui s'appelle quand on change l'etat du checkbox des vehicules.
+ * selectionnerVehiculePrive: ajouter vehicule privé a la liste vehiculeSelectionne
+ * deselectionnerVehiculePrive: supprimer vehicule privé de la liste vehiculesSelectionne.
+ * selectionnerVehiculeLoue: ajouter vehicule loué a la liste vehiculeSelectionne.
+ * deselectionnerVehiculeloue: supprimer vehicule loué de la liste vehiculesSelectionne.
+ * getReference: retourne type de la commande.
+ * clickerMultiVehiculesCheckBox: fonction qui s'execute on changeant l'etat du checkbox multiVehicules.
+ * getListeCommande: charger la liste des commandes.
+ * getVehiculeDisponibles: get tous les vehicules avec l'état disponible.
+ * getVehiculeLoueDisponibles: get la liste des vehicules loués.
+ * getChauffeurs: get liste des chauffeurs.
+ * getChauffeursModeNonConnecte: get liste chauffeurs mode manuel.
+ * getVehiculesChauffeurs: get les vehicules qui ont au moins un chauffeur qui peut la conduire.
+ * disableVehiculePrive: disable le checkBpx des vehicules privés qu'on ne peut pas affecter leurs chauffeurs qui peuvent la conduire.
+ * disableVehiculeLoue: disable le checkBpx des vehicules loues qu'on ne peut pas affecter leurs chauffeurs qui peuvent la conduire.
+ * rajouterChauffeurAuVehicule: rajouter le chauffeur du vehicule deselectionné dans las vehicules convenables.
+ * disableCheckBoxsVehiculePoidsVolumeInferieur: disable checkbox vehicule si le poids ou le volume est inverieur au poids ou volume de la liste des commandes selectionnées.
+ * affecterCommandeAuRegion: affecter chaque commande a une region selon sa ville.
+ * setCommandesNordEst: on affecte les commandes qui on la region Nord-Est dans la liste commandesNordEst.
+ * setCommandesNordOuest: on affecte les commandes qui on la region Nord-Ouest dans la liste commandesNordOuest.
+ * setCommandesCentreEst: on affecte les commandes qui on la region Centre-Est dans la liste commandesCentreEst.
+ * setCommandesCentreOuest: on affecte les commandes qui on la region centre-Ouest dans la liste commandesCentreOuest.
+ * setCommandesSudEst: on affecte les commandes qui on la region sud-Est dans la liste commandesSudEst.
+ * setCommandesSudOuest: on affecte les commandes qui on la region Sud-Ouest dans la liste commandesSudOuest.
+ * calculerPoidsCommandesParRegion: calculer le poids des commandes dans une region.
+ * calculerVolumeCommandeParRegion: calculer le volume des commandes dans uneregion.
+ * calculerScoreCommandeParRegion: calculer le score des commandes dans une region.
+ * calculerScoreTotal: calculer le score des commandes total.
+ * convertirScoreEnPourcentageParRapportScoreTotal: permet de calculer le pourcentage score d'une commande par rapport au score total de la region.
+ * calculerPoidsMission: calculer le poids des commandes selectionnées et affectées dans un mission.
+ * calculerVolumeMission: calculer le volume des commandes selectionnées et affectées dans un mission.
+ * calculerScoreMission: calculer le score des commandes selectionnées et affectées dans un mission.
+ * convertirScoreEnPourcentageParRapportMission: calculer pourcentage d'une commande par rapport au score total du mission.
+ * ajouterCommandeDansMission: si on selectionne une commande on l'ajoute a la lite des commandes dans une mission et on la supprime de la lise des commande par region.
+ * ajouterToutesCommandesParRegionDansMission: si on clique sur les boutons selectionner-tous on ajoute toutes les commandes dans la region qui contient se bouton dans
+   la liste des commandes dans mission et on vide la liste des commandes par cette region.
+ * annulerAjoutCommandeDansMission: si on clique sur le bouton enlever-commande en supprime la commande qu'on désire l'enlever de la liste des commandes par mission "mission"
+   et on la rajoute dans la liste des commandes dans la region compatible.
+ * annulerAjoutTousCommandeDansMission: si on clique le bouton enlever-tous-commandes en supprime toutes les commandes de la liste des commandes par mission "mission"
+   et on les rajoutes dans la liste des commandes dans les regions compatibles.
+ * disableChaeckBoxTouteVehicules: disable toute les checkBoxs des vehicules.
+ * getFileAttente: get file d'attente.
+ * ajouterMissionFileAttente: si on clique sur le bouton ajouter-mission on ajoute cette mission a la liste de la file d'attente.
+ * calculerVolumeVehicule: calculer le volume de chaque vehicul dans une misssion.
+ * annulerAjoutMissionDansFileAttente: si on clique sur le bouton enlever-mission en supprime la mission qu'on désire l'enlever de la file d'attente
+   et on rajoute ses commandes dans la liste des commandes dans la region compatible.
+ * annulerAjoutTousMissionsDansFileAttente: si on clique le bouton enlever-tous-missions en supprime toutes les missions de la file d'attente
+   et on rajoute ses commandes dans la liste des commandes dans les regions compatibles.
+ * calculerScoreFileAttente: calculer le score des missions dans une file d'attente.
+ * convertirScoreEnPourcentageParRapportFileAttente: calculer pourcentage d'une commande par rapport au score total du mission.
+ * getPosition: retourne la position de destination d'une commande.
+ * getDistanceFromLatLonInKm: calculer la distance entre deux points.
+ * deg2rad: changement du deg vers rad.
+ * getPositionOrigin: avoir la position de début depuis le navigateur.
+ * enregistrer: enregistrement des missions.
+ */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -1339,8 +1404,8 @@ export class AjoutMissionComponent implements OnInit {
     return d;
   }
 
+  //changement du deg vers rad
   deg2rad(deg: any) {
-    //changement du deg vers rad
     return deg * (Math.PI / 180);
   }
 

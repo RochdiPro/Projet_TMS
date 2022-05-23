@@ -336,7 +336,7 @@ export class MissionsChauffeurComponent implements OnInit {
   // fonction qui permet de commancer une mission
   async lancerMission(mission: any) {
     await this.serviceMission
-      .modifierEtatMission(mission.id, 'En cours')
+      .lancerMission(mission.id)
       .toPromise();
     await this.getMissionsParIdChauffeur();
     // pour refraichir la mission selectionnée aprés qu'on a modifié l'etat du mission

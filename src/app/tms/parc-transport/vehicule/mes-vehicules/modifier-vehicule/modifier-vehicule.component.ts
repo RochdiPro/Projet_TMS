@@ -4,6 +4,8 @@ Liste Méthodes:
 * enregistrerVehicule: créer nouveau vehicule.
 * annuler: retour a la liste de vehicules sans enregistrer.
 * testTypeMatricule: tester le type de matricule si elle est TUN ou RS.
+* getListeMatricules: get liste des matricules deja enregistrés.
+* verifierMatricule: verifier l'existance du matricule saisie.
 */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -436,6 +438,7 @@ export class ModifierVehiculeComponent implements OnInit {
     }
   }
 
+  // get liste des matricules deja enregistrés
   getListeMatricules() {
     this.service
       .getMatriculesVehiculesPrives()
@@ -448,6 +451,7 @@ export class ModifierVehiculeComponent implements OnInit {
       });
   }
 
+  // verifier l'existance du matricule saisie
   verifierMatricule() {
     let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
     let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';

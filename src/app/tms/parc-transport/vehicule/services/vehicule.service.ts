@@ -98,14 +98,6 @@ export class VehiculeService {
       .pipe(catchError(this.handleError));
   }
 
-  //mettre à jour l'etat de vehicule
-  public majEtatVehicule(formData: any) {
-    this.httpClient.put(erp + 'mise-a-jour-etat-vehicule', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    );
-  }
-
   //creer nouveau entretien
   public creerEntretien(formData: any) {
     return this.httpClient

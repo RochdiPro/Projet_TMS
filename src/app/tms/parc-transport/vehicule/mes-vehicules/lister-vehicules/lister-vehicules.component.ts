@@ -14,9 +14,7 @@ Liste des methodes:
 * supprimerVehicule: supprimer vehicule.
 * afficherBadgeDeNotification: afficher le Badge rouge de notification.
 * filtrerVehicule: filtrer vehicule par matricule et disponibilité.
-* selectionnerCarburant: aprés selection du carburant activer l'input prix et afficher le prix du carburant.
-* miseAJourCarburant: modifier prix carburant.
-* miseAJourCarburant: modifier prix carburant.
+* ouvrirModificationVehicule: ouvrir page de modification du vehicule.
 */
 
 import { Component, OnInit } from '@angular/core';
@@ -25,6 +23,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
+import { StompService } from 'src/app/services/stomp.service';
 import Swal from 'sweetalert2';
 import {
   BoiteDialogueEntretien,
@@ -72,11 +71,15 @@ export class ListerVehiculesComponent implements OnInit {
 
   timeInterval: Subscription;
 
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
   //constructeur
   constructor(
     private dialog: MatDialog,
     public service: VehiculeService,
-    public _router: Router
+    public _router: Router,
+    private stompService: StompService
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -98,6 +101,15 @@ export class ListerVehiculesComponent implements OnInit {
     this.form.controls.prix.disable();
     this.filtrerVehicule();
     this.chargerCarburants();
+    this.stompService.subscribe('/topic/vehicule-prive', (): void => {
+      this.filtrerVehicule();
+      this.chargerCarburants();
+    });
+  }
+
+  ngOnDestroy(): void {
+    //unsubscribe from the websocket service
+    this.stompService.unsubscribe();
   }
 
   //get la liste des vehicules
@@ -314,11 +326,15 @@ export class ListerVehiculesComponent implements OnInit {
 
   // filtrer vehicule par matricule et disponibilité
   filtrerVehicule() {
+    this.chargementEnCours = true;
     this.filtreMatricule == undefined ? (this.filtreMatricule = '') : '';
     this.filtreDisponibilte == undefined ? (this.filtreDisponibilte = '') : '';
-    this.service.filtrerVehicule(this.filtreMatricule, this.filtreDisponibilte).subscribe((result) => {
-      this.vehicules = result;
-    })
+    this.service
+      .filtrerVehicule(this.filtreMatricule, this.filtreDisponibilte)
+      .subscribe((result) => {
+        this.vehicules = result;
+        this.chargementEnCours = false;
+      });
   }
 
   //ouvrir page de modification du vehicule

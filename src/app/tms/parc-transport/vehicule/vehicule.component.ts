@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 
-// ***************************************Page vehicule********************************************
 @Component({
   selector: 'app-vehicule',
   templateUrl: './vehicule.component.html',

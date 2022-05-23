@@ -10,6 +10,9 @@ Liste des méthodes:
 * supprimerVehiculeLoue: supprimer vehicule Loue.
 * changerDate: changengemetn date debut et fin de location.
 * filtrerVehicule: filtrer vehicule par matricule, proprietaire et disponibilité.
+* chargerVehicule: charger vehicule par ID.
+* ouvrirModifier: ouvrire component modifier vehicule loue.
+* ouvrirMiseAJourConsommation: ouvrir boite dialog de mise a jour du consommation du vehicule.
 */
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -18,7 +21,11 @@ import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { VehiculeService } from '../../services/vehicule.service';
-import { DetailVehiculeLoueComponent, MiseAJourConsommationComponent } from '../../dialogs/dialogs.component';
+import {
+  DetailVehiculeLoueComponent,
+  MiseAJourConsommationComponent,
+} from '../../dialogs/dialogs.component';
+import { StompService } from 'src/app/services/stomp.service';
 
 @Component({
   selector: 'app-lister-vehicules',
@@ -41,12 +48,16 @@ export class ListerVehiculesLoueComponent implements OnInit {
   filtreProprietaire: string = '';
   filtreDisponibilte: string = '';
 
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
   constructor(
     public service: VehiculeService,
     private dialog: MatDialog,
     public _router: Router,
     public _location: Location,
-    public fb: FormBuilder
+    public fb: FormBuilder,
+    private stompService: StompService
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -62,6 +73,13 @@ export class ListerVehiculesLoueComponent implements OnInit {
       date: this.fb.array([]),
     });
     this.chargerVehicules();
+    this.stompService.subscribe('/topic/vehicule-loue', (): void => {
+      this.chargerVehicules();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.stompService.unsubscribe();
   }
 
   //creation du formControl date d'une facon dynamique selon le longueur du liste de vehicule
@@ -102,8 +120,10 @@ export class ListerVehiculesLoueComponent implements OnInit {
 
   //get liste vehicules
   async chargerVehicules() {
+    this.chargementEnCours = true;
     this.vehiculesLoues = await this.service.vehiculesLoues().toPromise();
     this.majControlleur();
+    this.chargementEnCours = false;
   }
 
   //charger vehicule par ID
@@ -192,6 +212,7 @@ export class ListerVehiculesLoueComponent implements OnInit {
 
   //filtrer vehicule par matricule, proprietaire et disponibilité
   filtrerVehicule() {
+    this.chargementEnCours = true;
     this.filtreMatricule == undefined ? (this.filtreMatricule = '') : '';
     this.filtreProprietaire == undefined ? (this.filtreProprietaire = '') : '';
     this.filtreDisponibilte == undefined ? (this.filtreDisponibilte = '') : '';
@@ -203,6 +224,7 @@ export class ListerVehiculesLoueComponent implements OnInit {
       )
       .subscribe((result) => {
         this.vehiculesLoues = result;
+        this.chargementEnCours = false;
       });
   }
 

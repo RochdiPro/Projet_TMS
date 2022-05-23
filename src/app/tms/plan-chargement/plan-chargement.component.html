@@ -60,6 +60,7 @@
          </section>
       </div>
       <div>
+         <mat-progress-bar mode="indeterminate" *ngIf="chargementEnCours"></mat-progress-bar>
          <mat-table [dataSource]="dataSource" matSort>
 
             <!-- Position Column -->

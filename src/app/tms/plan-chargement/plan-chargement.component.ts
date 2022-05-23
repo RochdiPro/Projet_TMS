@@ -152,6 +152,10 @@ export class PlanChargementComponent implements OnInit {
   nom: string;
   acces: string;
   tms: Number;
+
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
   // listener sur la position du souris
   @HostListener('window:mousemove', ['$event'])
   onMouseMove(event: MouseEvent) {
@@ -173,14 +177,13 @@ export class PlanChargementComponent implements OnInit {
     private servicePlanChargement: PlanChargementService,
     public datepipe: DatePipe
   ) {
-    this.nom = sessionStorage.getItem('Utilisateur'); 
-    this.acces = sessionStorage.getItem('Acces'); 
-
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
     const numToSeparate = this.acces;
-    const arrayOfDigits = Array.from(String(numToSeparate), Number);              
-  
-    this.tms = Number( arrayOfDigits[3])
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
   }
 
   async ngOnInit() {
@@ -200,6 +203,7 @@ export class PlanChargementComponent implements OnInit {
     this.filtrerMission();
   }
   async filtrerMission() {
+    this.chargementEnCours = true;
     //pour faire le filtrage des missions
     if (this.filtreEtatMission === undefined) this.filtreEtatMission = '';
     this.dataSource.data = await this.servicePlanChargement
@@ -220,6 +224,7 @@ export class PlanChargementComponent implements OnInit {
     // trie et mise a jour du paginator
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+    this.chargementEnCours = false;
   }
   disableEnableDate() {
     //pour activer et desactiver le filtrage par date
@@ -248,7 +253,7 @@ export class PlanChargementComponent implements OnInit {
 
   // fonction qui permet de selectionner une mission qh'on va afficher son plan de chargement
   selectionnerMission(mission: any) {
-    this.planChargementChange = false
+    this.planChargementChange = false;
     this.mission = mission;
     this.mission.etat === 'En attente'
       ? (this.missionEstEnAttente = true)
@@ -303,17 +308,17 @@ export class PlanChargementComponent implements OnInit {
           this.listeCommandes.push(this.commande);
           this.listeCommandesModeManuel.push(commandeManuel);
         }
-        let j =0;
+        let j = 0;
         this.listeCommandes.forEach((cmd: any) => {
           cmd.articles.forEach((article: any) => {
-            j++
-            article.num = j +"";
+            j++;
+            article.num = j + '';
           });
         });
-        let i =0;
+        let i = 0;
         this.listeCommandesModeManuel.forEach((cmd: any) => {
           cmd.articles.forEach((article: any) => {
-            i++
+            i++;
             //pour chaque article on identifie ses dimensions
             let dimensions = article.dimensions.split('x');
             let longueur = Number(dimensions[0]) * 2.7;
@@ -323,7 +328,7 @@ export class PlanChargementComponent implements OnInit {
             article.longueur = longueur;
             article.largeur = largeur;
             article.hauteur = hauteur;
-            article.num = i+ "";
+            article.num = i + '';
           });
         });
 
@@ -1141,7 +1146,7 @@ export class PlanChargementComponent implements OnInit {
     this.lignes = [];
     this.indexLigne = 0;
     this.indexLignePrecedent = 0;
-    this.note = "";
+    this.note = '';
     // liste des ligne qui contient chaque ligne comme objet
     // la liste est initialisé avec une seule ligne qui a longueur de 0 et comme largeur le largeur du vehicule converti en pixels et comme longueur la longuer du vehicule en pixels
     let lignes: any = [
@@ -1207,12 +1212,16 @@ export class PlanChargementComponent implements OnInit {
       let longueurLigne = 0;
       // pour chaque colis affectée dans une ligne en supprime se colis de la liste des colis non affectées
       lignes[i].objects.forEach((article: any) => {
-        let commandeManuel = this.listeCommandesModeManuel.filter((cmd: any) => cmd.id == article.idCommande)[0]
-        let articleManuel = commandeManuel.articles.filter((art: any) => art.id === article.id)[0];
-        articleManuel.nombrePack -=1;
+        let commandeManuel = this.listeCommandesModeManuel.filter(
+          (cmd: any) => cmd.id == article.idCommande
+        )[0];
+        let articleManuel = commandeManuel.articles.filter(
+          (art: any) => art.id === article.id
+        )[0];
+        articleManuel.nombrePack -= 1;
         let index = colis.findIndex((coli: any) => coli.id === article.id);
         colis.splice(index, 1);
-        if (article.longueur > longueurLigne ) {
+        if (article.longueur > longueurLigne) {
           longueurLigne = article.longueur;
         }
       });
@@ -1462,9 +1471,9 @@ export class PlanChargementComponent implements OnInit {
     this.mission.idCommandes = idCommandes;
     this.servicePlanChargement
       .modifierIdCommandesDansMission(this.mission.id, idCommandes)
-      .subscribe(()=> {
+      .subscribe(() => {
         this.createPlanChargementAuto();
-      })
+      });
   }
 
   // initialiser les racines de l'algorithme qui va placer les articles automatiquement
@@ -1478,14 +1487,13 @@ export class PlanChargementComponent implements OnInit {
     for (n = 0; n < blocks.length; n++) {
       block = blocks[n];
       let nouveauLongueurCharge = block.longueur + longueurCharge;
-      if (nouveauLongueurCharge < (this.vehicule.longueur * 2.7)) {
+      if (nouveauLongueurCharge < this.vehicule.longueur * 2.7) {
         if (
-          ((node = this.chercherNoeud(this.root, block.largeur, block.hauteur)))
+          (node = this.chercherNoeud(this.root, block.largeur, block.hauteur))
         ) {
           block.fit = this.diviserNoeud(node, block.largeur, block.hauteur);
           ligne.objects.push(block);
         }
-        
       }
     }
   }
@@ -1748,7 +1756,7 @@ export class PlanChargementComponent implements OnInit {
                   (ob: any) => ob.id === obj.id
                 )[0];
                 if (objet.height > this.lignes[i].longueur) {
-                  this.lignes[i].longueur = objet.height-1;
+                  this.lignes[i].longueur = objet.height - 1;
                 }
                 if (i > 0) {
                   this.lignes[i].top =
@@ -1869,7 +1877,7 @@ export class PlanChargementComponent implements OnInit {
     this.indexLigne = 0;
     this.indexLignePrecedent = 0;
     this.lignes = [];
-    this.note = ""
+    this.note = '';
     this.lignes.push({
       objects: [],
       longueur: 0,
@@ -1899,7 +1907,10 @@ export class PlanChargementComponent implements OnInit {
         j++
       ) {
         this.listeCommandesModeManuel[i].articles[j].nombrePack =
-          this.listeCommandes[i].articles.filter((art: any) => art.id === this.listeCommandesModeManuel[i].articles[j].id)[0].nombrePack;
+          this.listeCommandes[i].articles.filter(
+            (art: any) =>
+              art.id === this.listeCommandesModeManuel[i].articles[j].id
+          )[0].nombrePack;
       }
     }
   }
@@ -2142,9 +2153,7 @@ export class PlanChargementComponent implements OnInit {
 
   get dragDropeActive() {
     let estActive = false;
-    this.missionEstEnAttente
-      ? (estActive = true)
-      : (estActive = false);
+    this.missionEstEnAttente ? (estActive = true) : (estActive = false);
     return estActive;
   }
 }

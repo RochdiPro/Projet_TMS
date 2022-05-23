@@ -48,6 +48,7 @@ import localeFr from '@angular/common/locales/fr';
 import { VehiculeRoutingModule } from './vehicule-routing.module';
 import { ModifierVehiculeComponent } from './mes-vehicules/modifier-vehicule/modifier-vehicule.component';
 import { ModifierVehiculeLoueComponent } from './vehicule-loue/modifier-vehicule-loue/modifier-vehicule-loue.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 registerLocaleData(localeFr, 'fr');
 
 @NgModule({
@@ -96,6 +97,7 @@ registerLocaleData(localeFr, 'fr');
     MatDatepickerModule,
     MatStepperModule,
     MatSliderModule,
+    MatProgressBarModule
   ],
   providers: [
     MatDatepickerModule,

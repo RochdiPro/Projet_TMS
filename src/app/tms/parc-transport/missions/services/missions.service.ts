@@ -160,6 +160,24 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
+  // lancer mission
+  public lancerMission(id: number) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    return this.httpClient
+      .put(erp + 'lancer-mission', formData)
+      .pipe(catchError(this.handleError));
+  }
+
+  // cloturer mission
+  public cloturerMission(id: number) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    return this.httpClient
+      .put(erp + 'cloturer-mission', formData)
+      .pipe(catchError(this.handleError));
+  }
+
   // livrer commande
   public livrerCommande(qrCode: string, idMaission: any, idCommandes: any) {
     let formData = new FormData();

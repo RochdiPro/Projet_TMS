@@ -28,6 +28,7 @@ import { VehiculeService } from '../services/vehicule.service';
     - buildTableBody: création du tableau historique des entretiens du vehicule.
     - table: insérer le tableau  historique des entretiens dans le fichier pdf.
     - ouvrirHistoriqueConsommation: ouvrir boite de dialogue historique consommation.
+    - getInfosGenerals: get les informations generals de la societé.
  */
 var pdfMake = require('pdfmake/build/pdfmake.js');
 var pdfFonts = require('pdfmake/build/vfs_fonts.js');
@@ -136,6 +137,7 @@ export class DetailVehiculeComponent implements OnInit {
     });
   }
 
+  // get les informations generals de la societé
   getInfosGenerals() {
     this.service.getInfoGeneralesDeLaSociete().subscribe((res) => {
       this.infosGenerals = res;
@@ -662,6 +664,8 @@ export class DetailVehiculeComponent implements OnInit {
     - getCarburant: get liste des carburants.
     - fermerMiseAJourVehicule: fermer boite de dialogue mise a jour vehicule.
     - miseAJourVehicule: Enregistrer les modifications.
+    - activerModificationKmActuel: activer l'input de modification kilométrage actuel.
+    - desactiverModificationKmActuel: desactiver input modification kilométrage actuel.
  */
 
 @Component({
@@ -781,6 +785,7 @@ export class MajVehiculeComponent implements OnInit {
     this.carburants = await this.service.carburants().toPromise();
   }
 
+  // activer l'input de modification kilométrage actuel
   activerModificationKmActuel() {
     Swal.fire({
       title: 'Êtes-vous sûr?',
@@ -825,6 +830,7 @@ export class MajVehiculeComponent implements OnInit {
     });
   }
 
+  // desactiver input modification kilométrage actuel
   desactiverModificationKmActuel() {
     this.kmActuelDesactive = true;
     this.form.get('kmactuel').setValidators([]);
@@ -931,6 +937,8 @@ export class MajVehiculeComponent implements OnInit {
    - get montantConsomme: get formControl montantConsomme.
    - get idChauffeur: get formControl idChauffeur.
    - get kmActuel: get formControl kmActuel.
+   - testerReservoirPlein: tester si le reservoir est initialement plein.
+   - getTypeVehicule: get type vehicule.
  */
 @Component({
   selector: 'app-maj-consommation',
@@ -1824,6 +1832,7 @@ export class BoiteDialogueEntretien implements OnInit {
   - fermerDetailVehiculeLoue: fermer la boite de dialogue.
   - testerTypeMatricule: teste le type de matricule.
   - chargerVehiculeLoue: get vehicule loué par identifiant.
+  - ouvrirHistoriqueConsommation: ouvrir boite de dialogue historique consommation.
  */
 @Component({
   selector: 'app-detail-vehicule-loue',

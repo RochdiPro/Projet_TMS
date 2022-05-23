@@ -25,6 +25,7 @@
          </mat-form-field>
       </section>
    </div>
+   <mat-progress-bar mode="indeterminate" *ngIf="chargementEnCours"></mat-progress-bar>
    <table class="mb-0 table" *ngIf="carburants">
       <thead>
          <tr>

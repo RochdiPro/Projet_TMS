@@ -44,6 +44,7 @@
 
 </div>
 <div class="mat-elevation-z8" *ngIf="wms >= 1">
+    <mat-progress-bar mode="indeterminate" *ngIf="chargementEnCours"></mat-progress-bar>
     <!-- par defaut on fait le trie du tableau par date ascendant -->
     <mat-table #table [dataSource]="dataSource" matSort matSortActive="dateCreation" matSortDirection="asc">
         <!-- colonne id -->

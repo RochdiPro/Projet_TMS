@@ -24,19 +24,24 @@ export class ListerProduitComponent implements OnInit {
     'valeurUnite',
     'codeBarre',
     'type1',
-    'type2'
+    'type2',
   ];
   dataSource = new MatTableDataSource<Produit>();
 
   // variable des filtres
-  filtreId: string ="";
-  filtreMarque: string="";
-  filtreNom: string="";
+  filtreId: string = '';
+  filtreMarque: string = '';
+  filtreNom: string = '';
 
   // variables de droits d'accés
   nom: any;
   acces: any;
   wms: any;
+
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -57,14 +62,17 @@ export class ListerProduitComponent implements OnInit {
   ngOnInit(): void {
     this.service.produits().subscribe((produits: any) => {
       this.dataSource.data = produits;
+      this.chargementEnCours = false;
     });
   }
 
   filtrerProduits() {
+    this.chargementEnCours = true;
     this.service
       .filtrerProduits(this.filtreId, this.filtreMarque, this.filtreNom)
       .subscribe((result) => {
         this.dataSource.data = result;
+        this.chargementEnCours = false;
       });
   }
 

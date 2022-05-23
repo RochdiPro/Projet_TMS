@@ -37,6 +37,10 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
   acces: any;
   wms: any;
   estManuel = false;
+
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
   constructor(
     public serviceCommande: CommandeService,
     public dialog: MatDialog,
@@ -69,9 +73,11 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
 
   //recuperer la liste des commandes
   async getListeCommandes() {
+    this.chargementEnCours = true;
     this.dataSource.data = await this.serviceCommande
       .getListeCommandes()
       .toPromise();
+      this.chargementEnCours = false;
   }
 
   // on met le tracking number au format suivante ("xxxxx xxxxx xxxxx") pour faciliter son affichage
@@ -172,41 +178,47 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
 
   // filtrer la liste des commandes
   filtrerCommandes() {
+    this.chargementEnCours = true;
     let etat;
-    this.filtres.get('etat').value ? etat = this.filtres.get('etat').value : etat ="";
-    this.serviceCommande.filtrerCommandes(
-      this.filtres.get('reference').value,
-      this.filtres.get('client').value,
-      this.filtres.get('ville').value,
-      this.filtres.get('adresse').value,
-      this.filtres.get('trackingNumber').value,
-      etat
-    ).subscribe((data) => {
-      this.dataSource.data = data;
-    });
+    this.filtres.get('etat').value
+      ? (etat = this.filtres.get('etat').value)
+      : (etat = '');
+    this.serviceCommande
+      .filtrerCommandes(
+        this.filtres.get('reference').value,
+        this.filtres.get('client').value,
+        this.filtres.get('ville').value,
+        this.filtres.get('adresse').value,
+        this.filtres.get('trackingNumber').value,
+        etat
+      )
+      .subscribe((data) => {
+        this.dataSource.data = data;
+        this.chargementEnCours = false;
+      });
   }
 
   viderChamp(champ: string) {
     switch (champ) {
-      case "reference":
+      case 'reference':
         this.filtres.get('reference').setValue('');
         break;
-      case "client":
+      case 'client':
         this.filtres.get('client').setValue('');
         break;
-      case "ville":
+      case 'ville':
         this.filtres.get('ville').setValue('');
         break;
-      case "adresse":
+      case 'adresse':
         this.filtres.get('adresse').setValue('');
         break;
-      case "trackingNumber":
+      case 'trackingNumber':
         this.filtres.get('trackingNumber').setValue('');
         break;
-      case "etat":
+      case 'etat':
         this.filtres.get('etat').setValue('');
         break;
-    
+
       default:
         break;
     }
