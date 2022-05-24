@@ -11,6 +11,14 @@ import { EmballageService } from '../../liste-emballage/services/emballage.servi
 import { CommandeService } from '../services/commande.service';
 
 // *********************************** Boite de dialogue info *********************************************************
+/**
+ * Boite dialogue permet d'afficher les informations d'une commande à ajouter (dans interface ajouter commande)
+ * Liste des fonctions:
+  - getTypeCommande: get le type du document source de la commande (BL ou Facture).
+  - getDetail: recupérer les details d'une commande depuis le fichier XML convenable.
+  - fermerBoiteDialogue: fermer la boite de dialogue info.
+  - ouvrirBoiteDialogueDetailProduit: ouvrir la boite de dialogue detail qui contient les numero de serie et les numeros imeis pour chaque produit.
+ */
 @Component({
   selector: 'boite-dialogue-info',
   templateUrl: './boite-dialogue-info.html',
@@ -33,7 +41,7 @@ export class BoiteDialogueInfo implements OnInit {
     this.getDetail();
   }
 
-  // get le type du document source de la commande
+  // get le type du document source de la commande (BL ou Facture)
   getTypeCommande() {
     if (this.data.commande.type === 'Facture') {
       this.typeDocument = 'Facture';
@@ -96,6 +104,7 @@ export class BoiteDialogueInfo implements OnInit {
     }
   }
 
+  // fermer la boite de dialogue info
   fermerBoiteDialogue() {
     this.dialogRef.close();
   }
@@ -112,6 +121,36 @@ export class BoiteDialogueInfo implements OnInit {
 }
 
 // *********************************** Boite de dialogue créer commande ***********************************************
+/**
+ * Boite dialogue permet de créer une nouvelle commande
+ * Liste des fonctions:
+  - getTypeDocument: indiquer le type du coommande (facture ou bl).
+  - setPositionClient: on change les variable lat, lng, latMap, lngMap, on zoom et on change positionExiste vers 'true' pour afficher la position du client proprement.
+  - getPositionsEnregistrees: on recupére les positions enregistrées pour un client a l'aide de son id.
+  - ajouterAdresse: fonction utilisée dans le bouton d'ajout position.
+  - selectionnerAdresse: fonction qu s'execute lors du changement du selection d'adresse.
+  - selectionnerVille: fonction qu s'execute lors du changement du selection de la ville.
+  - getListeEmballage: recuperer la liste des emballages.
+  - getDetail: recuperer les fichier des details des commandes et generer un liste embllage suggérée pour chaque produit puis les enregistrer dans listeArticlesDetail.
+  - modifierPositionMarquer: pour modifier la position du marqueur existant.
+  - ouvrirBoiteDialogueEmballer: ouvrir boite de dialogue emballer.
+  - ouvrirBoiteDialogueDetailProduit: ouvrir boite de dialogue detail produit.
+  - creerListeEmballageChoisi: creation de la liste qui contient les emballages choisit de toute les articles.
+  - setValiditeListeProduits: verifier si tou les articles on était emballé avec succés, si oui on valide et autorisee le passage au step suivant.
+  - verifierValiditeDeuxiemeStep: si on essaie de clicker suivant mais il'y a des produit qui ne sont pas totalement emballés on affiche un alerte pour informer l'utilisateur.
+  - getNombreArticles: retourne le nombre d'article on calculant le nombre d'emballage * qte articles dans l'emballage.
+  - getDimensionsPack: retourne les dimensions de l'emballage sous la forme suivante (LxlxH).
+  - getVolumePack: retourne le volume total de l'emballage.
+  - getPoidsPackNet: retourne le poids total net de l'emballage.
+  - getPoidsPackBrut: retourne le poids total brut de l'emballage.
+  - calculerScoreCommande: calculer le score de la commande.
+  - trackingNumber: generer le tracking number.
+  - enregistrer: enregistrer la commande crée.
+  - get nombrePackTotal: retourne le nombre total des emballages.
+  - get volumeTotal: retourne le volume total des emballages.
+  - get poidsTotalNet: retourne le poids total net des emballages.
+  - get poidsTotalBrut: retourne le poids total brut des emballages.
+ */
 @Component({
   selector: 'boite-dialogue-creer-commande',
   templateUrl: 'boite-dialogue-creer-commande.html',
@@ -482,8 +521,6 @@ export class BoiteDialogueCreerCommande implements OnInit {
   infoMarqueur: string;
   boutonValiderEstActive = true;
 
-  // @ViewChild('search')
-  // public searchElementRef: ElementRef;
 
   constructor(
     private fb: FormBuilder,
@@ -513,60 +550,14 @@ export class BoiteDialogueCreerCommande implements OnInit {
     await this.getListeEmballage();
     await this.getPositionsEnregistrees();
     this.getDetail();
-    // this.initialiserMap()
   }
 
-  // indiquer le type du coommande
+  // indiquer le type du coommande (facture ou bl)
   getTypeDocument() {
     this.data.commande.type === 'Facture'
       ? (this.typeDocument = 'Facture')
       : (this.typeDocument = 'Bon Livraison');
   }
-
-  // initialiserMap() {
-  //   //load Places Autocomplete
-  //   this.mapsAPILoader.load().then(() => {
-  //     this.geoCoder = new google.maps.Geocoder();
-  //     let autocomplete = new google.maps.places.Autocomplete(
-  //       this.searchElementRef.nativeElement
-  //     );
-  //     autocomplete.addListener('place_changed', () => {
-  //       this.ngZone.run(() => {
-  //         //get the place result
-  //         let place: google.maps.places.PlaceResult = autocomplete.getPlace();
-
-  //         //verify result
-  //         if (place.geometry === undefined || place.geometry === null) {
-  //           return;
-  //         }
-
-  //         //set latitude, longitude and zoom
-  //         this.latMap = place.geometry.location.lat();
-  //         this.lngMap = place.geometry.location.lng();
-  //         this.zoom = 12;
-  //       });
-  //     });
-  //   });
-  // }
-  // getAddress(latitude: any, longitude: any) {
-  //   this.geoCoder.geocode(
-  //     { location: { lat: latitude, lng: longitude } },
-  //     (results: any, status: any) => {
-  //       console.log(results);
-  //       console.log(status);
-  //       if (status === 'OK') {
-  //         if (results[0]) {
-  //           this.zoom = 12;
-  //           this.address = results[0].formatted_address;
-  //         } else {
-  //           window.alert('No results found');
-  //         }
-  //       } else {
-  //         window.alert('Geocoder failed due to: ' + status);
-  //       }
-  //     }
-  //   );
-  // }
 
   // on change les variable lat, lng, latMap, lngMap, on zoom et on change positionExiste vers 'true' pour afficher la position du client proprement
   setPositionClient() {
@@ -776,14 +767,15 @@ export class BoiteDialogueCreerCommande implements OnInit {
     }
   }
 
+  //pour modifier la position du marqueur existant
   modifierPositionMarquer(event: any) {
-    //pour modifier la position du marqueur existant
     this.lat = event.coords.lat;
     this.lng = event.coords.lng;
     this.positionEstModifie = true;
     // this.getAddress(this.lat, this.lat);
   }
 
+  // ouvrir boite de dialogue emballer
   ouvrirBoiteDialogueEmballer(produit: any) {
     const dialogRef = this.dialog.open(BoiteDialogueEmballer, {
       width: '600px',
@@ -801,6 +793,8 @@ export class BoiteDialogueCreerCommande implements OnInit {
       this.setValiditeListeProduits();
     });
   }
+
+  // ouvrir boite de dialogue detail produit
   ouvrirBoiteDialogueDetailProduit(article: any) {
     const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
       width: '600px',
@@ -965,6 +959,7 @@ export class BoiteDialogueCreerCommande implements OnInit {
     return Number(trackingNumber);
   };
 
+  // enregistrer la commande crée
   async enregistrer() {
     // on desactive le bouton valider pour eviter que l'utilisateur le clique une autre fois lors de l'execution des services du back
     // car l'envoie d'email prend un peut de temp selon la qualité de l'internet de l'utilisateur
@@ -1132,6 +1127,16 @@ export class BoiteDialogueCreerCommande implements OnInit {
 }
 
 // ***********************************Boite de dialogue Emballer ******************************************************
+/**
+ * Boite dialogue permet de préciser le nombre et le type d'emballage a affecter dans une commande
+ * Liste des fonctions:
+ - get qteForm(): retourne le FormArray qte sous forme d'un array.
+ - ajouterChampQte: fonction qui permet d'ajouter les formControl 'qte' dans le FormArray 'qte.
+ - getListeEmballages: recupérer la liste des emballages.
+ - updateMax: mise a jour du limite max de l'input qte pour eviter les fautes.
+ - ajouterQuantiteEmballage: fonction qui permet l'emballage du produit a chaque fois q'on change la valeur de l'input de qte.
+ - donnerSuggestion: pour afficher la qte suggérée pour chaque emballage.
+ */
 @Component({
   selector: 'boite-dialogue-emballer',
   templateUrl: 'boite-dialogue-emballer.html',
@@ -1349,6 +1354,20 @@ export class BoiteDialogueDetailProduit implements OnInit {
 // -------------------------------------------------------------------------------------------------------------
 // *************************************** Boite Dialogue modifier position ************************************
 // -------------------------------------------------------------------------------------------------------------
+/**
+ * Boite dialogue permet de modifier la position de destination du commande
+ * Liste des fonctions:
+ - getPositionsEnregistrees: recuperer les positions enregistrées pour un client specifique.
+ - getPositionCommande: recuperer la position du commande a modifier.
+ - setPositionClient: changer les variables du map pour afficher l'adresse selectionnée.
+ - ajouterAdresse: ajouter une nouvelle adresse.
+ - selectionnerAdresse: affecter l'adresse selectionné au variable positionClient puis on affiche la ville et la position du client.
+ - selectionnerVille: on selectionnant une ville lors de l'ajout d'une nouvelle adresse on change la restrection pour afficher cette ville
+   et on affiche le pin de localisation au centre de cette ville
+ - positionerMarquer: pour positionner un marqueur sur le map.
+ - modifierPositionMarquer: pour modifier la position du marqueur existant.
+ - enregistrerModificationPositionClient: enregistrer les modifications
+*/
 
 @Component({
   selector: 'boite-dialogue-modifier-position',
@@ -1848,16 +1867,16 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
     this.lng = this.form.get('nouvelleVille').value.centre.lng;
   }
 
+  //pour positionner un marqueur sur le map
   positionerMarquer(event: any) {
-    //pour positionner un marqueur sur le map
     if (!this.positionExiste) {
       this.lat = event.coords.lat;
       this.lng = event.coords.lng;
       this.positionExiste = true;
     }
   }
+  //pour modifier la position du marqueur existant
   modifierPositionMarquer(event: any) {
-    //pour modifier la position du marqueur existant
     this.lat = event.coords.lat;
     this.lng = event.coords.lng;
     this.positionEstModifie = true;
@@ -1926,6 +1945,27 @@ export class BoiteDialogueModifierPositionComponent implements OnInit {
 // -------------------------------------------------------------------------------------------------------------
 // ***************************************** Boite de dialogue modifier liste colisage *************************
 // -------------------------------------------------------------------------------------------------------------
+/**
+ * Boite dialogue permet de modifier la liste de colisage
+ * Liste des fonctions:
+ - getListeColis: recuperer la liste des colis.
+ - getListeEmballage: recuperer liste emballages.
+ - getDetail: recuperer les details des commandes depuis le fichier xml
+ - ouvrirBoiteDialogueEmballer: ouvrir boite de dialogue emballer.
+ - ouvrirBoiteDialogueDetailProduit: ouvrir boite de dialogue detail produit.
+ - creerListeEmballageChoisi: permet la creation de la liste des emballage que l'utilisateur a choisi.
+ - getNombreArticles: retourne le nombre d'articles.
+ - getDimensionsPack: retourne les dimensions d'un emballage.
+ - getVolumePack: retourne le volume d'un emballage.
+ - getPoidsPackNet: retourne le poids total net d'emballage.
+ - getPoidsPackBrut: retourne le poids total brut d'un emballage.
+ - nombrePackTotal: retourne le nombre d'emballages total.
+ - volumeTotal: retourne le volume total d'une commande.
+ - poidsTotalNet: retourne le poids total net d'une commande.
+ - poidsTotalBrut: retourne le poids total brut d'une commande.
+ - verifierValiditeListeProduits: ne permet pas la validation si la quantité non emballée diffirente de 0.
+ - validerModification: valider la modification.
+ */
 @Component({
   selector: 'boite-dialogue-modifier-colisage',
   templateUrl: 'boite-dialogue-modifier-colisage.html',
@@ -2110,6 +2150,8 @@ export class BoiteDialogueModifierColisage implements OnInit {
       }
     }
   }
+
+  // ouvrir boite de dialogue emballer
   ouvrirBoiteDialogueEmballer(produit: any) {
     const dialogRef = this.dialog.open(BoiteDialogueEmballer, {
       width: '600px',
@@ -2124,6 +2166,8 @@ export class BoiteDialogueModifierColisage implements OnInit {
       this.verifierValiditeListeProduits();
     });
   }
+
+  // ouvrir boite de dialogue detail produit
   ouvrirBoiteDialogueDetailProduit(article: any) {
     const dialogRef = this.dialog.open(BoiteDialogueDetailProduit, {
       width: '600px',
@@ -2218,7 +2262,7 @@ export class BoiteDialogueModifierColisage implements OnInit {
     });
   }
 
-  //bouton valider
+  //valider la modification
   async validerModification() {
     await this.serviceCommande
       .deleteColisParIdCommande(this.data.commande.id)
@@ -2262,6 +2306,18 @@ export class BoiteDialogueModifierColisage implements OnInit {
 // -------------------------------------------------------------------------------------------------------------
 //********************************************** boite-dialogue-info-commande **********************************
 // -------------------------------------------------------------------------------------------------------------
+/**
+ * Boite dialogue permet d'afficher les détails d'une commande
+ * Liste des fonctions:
+ - getLocalisationClient: recuperer la position du client pour la commande selectionnée.
+ - getListeColisage: recuperer la liste de colisage du commande selectionnée.
+ - get nombrePackTotal: retourne le nombre d'emballages total.
+ - get volumeTotal: retourne le volume total d'une commande.
+ - get poidsTotalNet: retourne le poids total net d'une commande.
+ - get poidsTotalBrut: retourne le poids total brut d'une commande.
+ - ouvrirBoiteDialogueModifierPosition: ouvrir la boite de dialogue de modification de position.
+ - ouvrirBoiteDialogueModifierColisage: ouvrir boite de dialogue modifier colisage.
+ */
 @Component({
   selector: 'boite-dialogue-info-commande',
   templateUrl: 'boite-dialogue-info-commande.html',
@@ -2353,6 +2409,7 @@ export class InformationCommandeComponent implements OnInit {
     return poidsTotalBrut.toFixed(3);
   }
 
+  // ouvrir la boite de dialogue de modification de position
   ouvrirBoiteDialogueModifierPosition(commande: any) {
     const dialogRef = this.dialog.open(BoiteDialogueModifierPositionComponent, {
       width: '1000px',
@@ -2365,6 +2422,7 @@ export class InformationCommandeComponent implements OnInit {
     });
   }
 
+  // ouvrir boite de dialogue modifier colisage
   ouvrirBoiteDialogueModifierColisage(commande: any) {
     const dialogRef = this.dialog.open(BoiteDialogueModifierColisage, {
       width: '1000px',
@@ -2381,8 +2439,8 @@ export class InformationCommandeComponent implements OnInit {
 // -------------------------------------------------------------------------------------------------------------
 //**************************************************** fonctions reutilisable **********************************
 // -------------------------------------------------------------------------------------------------------------
+//pour avoir les ids et les qtes des produits dans une facture
 async function getDetail(detail: any, typeCommande: string) {
-  //pour avoir les ids et les qtes des produits dans une facture
   var fichier: any;
   var xmldata: any;
   var new_obj: any;

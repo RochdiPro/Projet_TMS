@@ -1,3 +1,8 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * changerCategorieConfig: fonction qui permet de changer la catégorie de configuration en cliquant sur la catégorie désirée .
+ */
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 
@@ -48,6 +53,7 @@ export class ConfigurationTmsComponent implements OnInit {
 
   ngOnInit(): void {}
 
+  // fonction qui permet de changer la catégorie de configuration en cliquant sur la catégorie désirée 
   changerCategorieConfig(categorie: string) {
     if (!this.chargementTermine) return;
     this.chargementTermine = false

@@ -1,3 +1,8 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * filtrerProduits: filtrer la liste des produits.
+ */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -66,6 +71,7 @@ export class ListerProduitComponent implements OnInit {
     });
   }
 
+  // filtrer la liste des produits
   filtrerProduits() {
     this.chargementEnCours = true;
     this.service
@@ -76,8 +82,4 @@ export class ListerProduitComponent implements OnInit {
       });
   }
 
-  modifierProduit(produit: Produit) {
-    this.service.prod = produit; //on enregistre le produit dans une variable dans le ProduitService pour le passer a l'interface de modification
-    this.router.navigate(['/Menu/Menu_Colisage/Produits/modifier-produit']); //navigation vers l'interface modifier produit
-  }
 }

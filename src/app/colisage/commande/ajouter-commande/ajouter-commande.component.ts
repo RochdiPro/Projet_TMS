@@ -1,3 +1,21 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * afficherListeCommandes: on injecte la liste des commandes triée par date ascendant dans le dataSource pour l'afficher dans le tableau.
+ * get referenceCherche: recuperer la reference a rechrcher depuis le input du filtre reference.
+ * get ville: recuperer la ville a avec elle qu'on va filtrer depuis le select du filtre ville.
+ * getListeFactures: recuperer la liste des factures qui ont l'etat validée.
+ * getListeBLs: recuperer la liste des BLs qui ont l'etat validée.
+ * getListeClients: recupérer la liste des clients.
+ * getCommandesModeManuel: charger la liste des commandes en mode manuel pour la date dans le datePicker.
+ * datePrecedente: diminuer la date dans le date picker par un jour.
+ * dateSuivante: augmenter la date dans le date picker par un jour.
+ * disableDateNonExistante: disable les dates qui ne sont pas dans la liste datesDispo.
+ * ouvrirBoiteDialogueInfo: ouvrir la boite de dialogue information.
+ * ouvrirBoiteDialogueCreerCommande: ouvrir la boite de dialogue créer commande.
+ * filtrerParReference: filtrerage par reference.
+ * filtrerParVille: filtrage par ville.
+ */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -280,8 +298,8 @@ export class AjouterCommandeComponent implements OnInit {
     this.getCommandesModeManuel();
   }
 
+  // disable les dates qui ne sont pas dans la liste datesDispo
   disableDateNonExistante = (d: Date | null): boolean => {
-    // disable les dates qui ne sont pas dans la liste datesDispo
     let dateEstDisponible = false;
     if (this.datesDispo) {
       this.datesDispo.forEach((dateStr) => {

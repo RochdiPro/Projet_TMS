@@ -1,3 +1,34 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage
+ Liste des méthodes:
+ * getMissionsParIdChauffeur: get liste des missions par id du chauffeur.
+ * filtrerMissionsParEtat: filtrer la liste des missions par leurs Etat.
+ * filtrerMissionsParDate: filtrer la liste des missions par date.
+ * datePrecedente: diminuer la date dans le date picker par un jour.
+ * dateSuivante: augmenter le date dans le date picker par un jour.
+ * cliquerEnCours: si on clique sur le bouton de filtrage par etat En cours on active se bouton et on affiche la liste des missions En cours.
+ * cliquerEnAttente: si on clique sur le bouton de filtrage par etat En attente on active se bouton et on affiche la liste des missions En cours.
+ * cliquerTerminee: si on clique sur le bouton de filtrage par etat Terminées on active se bouton et on affiche la liste des missions En cours.
+ * nbrCommandes: retourne le nombre de commandes dans une mission.
+ * poidsMission: retourne le poids d'une mission.
+ * volumeMission: retourne le volume d'une mission.
+ * getCommandesMission: get liste des commande dans une mission puis on les divises par commandes livrées et commandes non livrées.
+ * lancerMission: fonction qui permet de commancer une mission.
+ * get statusTableMissions: etat du table missions "show" pour afficher, "hide" pour cacher.
+ * toggleTableMissions: la fonction qui permet de lancer le changement d'etat d'affichage table missions.
+ * get statusDetailMission: etat du volet detail "show" pour afficher, "hide" pour cacher.
+ * toggleDetailMission: la fonction qui permet de lancer le changement d'etat d'affichage detail mission.
+ * get statusAfficherCommandes: etat du volet detail commande "showCommandes" pour afficher, "hideCommandes" pour cacher.
+ * toggleAfficherCommandes: la fonction qui permet de lancer le changement d'etat d'affichage detail commande.
+ * ouvrirDetailCommande: ouvrir la boite dialogue details commande.
+ * ouvrirConfirmationLivraison: ouvrir boite dialogue confirmation livraison.
+ * getPositionDepart: avoir la position de début depuis le navigateur.
+ * getPosition: retourne la position de destination d'une commande.
+ * createTrajet: créer le meilleur trajet possible.
+ * afficherTrajet: afficher le trajet.
+ * ouvrirMap: ouvrir le trajet dans google maps.
+ * ouvrirPlanChargement: ouvrir la boite dialogue plan chargement.
+ */
 import { Component, OnInit } from '@angular/core';
 import { MissionsService } from '../services/missions.service';
 import {
@@ -173,7 +204,7 @@ export class MissionsChauffeurComponent implements OnInit {
       this.longDepart;
   }
 
-  // get liste des missions
+  // get liste des missions par id du chauffeur
   async getMissionsParIdChauffeur() {
     this.missions = await this.serviceMission
       .getMissionsChauffeur(this.idChauffeur)
@@ -363,7 +394,7 @@ export class MissionsChauffeurComponent implements OnInit {
     return this.tableMissionsEstAffiche ? 'showTable' : 'hideTable';
   }
 
-  // la fonction qui permet de lancer le changement d'etat
+  // la fonction qui permet de lancer le changement d'etat d'affichage table missions
   toggleTableMissions() {
     this.tableMissionsEstAffiche = !this.tableMissionsEstAffiche;
   }
@@ -373,7 +404,7 @@ export class MissionsChauffeurComponent implements OnInit {
     return this.detailMissionEstAffiche ? 'show' : 'hide';
   }
 
-  // la fonction qui permet de lancer le changement d'etat
+  // la fonction qui permet de lancer le changement d'etat d'affichage detail mission
   toggleDetailMission() {
     this.commandesAffiche = false;
     this.detailMissionEstAffiche = !this.detailMissionEstAffiche;
@@ -384,7 +415,7 @@ export class MissionsChauffeurComponent implements OnInit {
     return this.commandesAffiche ? 'showCommandes' : 'hideCommandes';
   }
 
-  // la fonction qui permet de lancer le changement d'etat
+  // la fonction qui permet de lancer le changement d'etat d'affichage detail commande
   toggleAfficherCommandes() {
     this.commandesAffiche = !this.commandesAffiche;
   }

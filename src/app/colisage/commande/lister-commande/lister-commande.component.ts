@@ -1,3 +1,14 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * getListeCommandes: recuperer la liste des commandes.
+ * formatTrackingNumber: on met le tracking number au format suivante ("xxxxx xxxxx xxxxx") pour faciliter son affichage.
+ * ouvrirBoiteDialogueInformationCommande: ouvrir la boite de dialogue information du commande.
+ * annulerCommande: supprime commande et sa liste colisage quand on appuie sur bouton 'annuler'.
+ * createFiltresFormGroup: créer le formGroup des filtres.
+ * filtrerCommandes: filtrer la liste des commandes.
+ * viderChamp: vider les champs de filtrage.
+ */
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -198,6 +209,7 @@ export class ListerCommandeComponent implements OnInit, AfterViewInit {
       });
   }
 
+  // vider les champs de filtrage
   viderChamp(champ: string) {
     switch (champ) {
       case 'reference':

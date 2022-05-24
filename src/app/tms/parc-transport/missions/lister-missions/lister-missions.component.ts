@@ -1,3 +1,19 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage
+ Liste des méthodes:
+ * testerEtatCommandes: tester si toute les commandes sont livrées.
+ * viderNom: pour vider le champs de filtrage par chauffeur.
+ * viderMatricule: pour vider le champs de filtrage par matricule.
+ * filtrerMission: pour faire le filtrage des missions.
+ * disableEnableDate: pour activer et desactiver le filtrage par date.
+ * datePrecedente: diminuer la date dans le date picker par un jour.
+ * dateSuivante: augmenter le date dans le date picker par un jour.
+ * detailDialog: ouvrir la boite de dialogue de détail d'une mission.
+ * ouvrirDialogModifierMission: ouvrir la boite de dialogue modifier mission.
+ * annulerMission: ouvrir boite dialogue de confirmation annulation mission.
+ * ouvrirBoiteDialogTrajet: ouvrir boite dialogue qui permet d'afficher le trajet.
+ * ouvrirBoiteDialogCloturerMission: ouvrir boite de dialogue cloturer mission.
+ */
 import { DatePipe } from '@angular/common';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -99,11 +115,11 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    //Called once, before the instance is destroyed.
-    //Add 'implements OnDestroy' to the class.
+    // unsubscribe du service stomp
     this.stompService.unsubscribe();
   }
 
+  // tester si toute les commandes sont livrées
   testerEtatCommandes(commandes: any) {
     let toutesCommandesLivrees = true;
     commandes.forEach((commande: any) => {
@@ -112,20 +128,20 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     return toutesCommandesLivrees;
   }
 
+  //pour vider le champs de filtrage par chauffeur
   viderNom() {
-    //pour vider le champs de filtrage par chauffeur
     this.nomFiltre = false;
     this.form.controls['nom'].setValue('');
     this.filtrerMission();
   }
+  //pour vider le champs de filtrage par matricule
   viderMatricule() {
-    //pour vider le champs de filtrage par matricule
     this.matriculeFiltre = false;
     this.form.controls['matricule'].setValue('');
     this.filtrerMission();
   }
+  //pour faire le filtrage des missions
   async filtrerMission() {
-    //pour faire le filtrage des missions
     if (this.filtreEtatMission === undefined) this.filtreEtatMission = '';
     this.chargementEnCours = true;
     this.dataSource.data = await this.serviceMission
@@ -155,8 +171,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
     this.chargementEnCours = false;
   }
+  //pour activer et desactiver le filtrage par date
   disableEnableDate() {
-    //pour activer et desactiver le filtrage par date
     if (this.check) {
       this.form.controls['dateL'].enable();
     } else {
@@ -180,8 +196,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     this.filtrerMission();
   }
 
+  // ouvrir la boite de dialogue de détail d'une mission
   detailDialog(mission: any): void {
-    // ouvrir la boite de dialogue de détail d'une mission
     const dialogRef = this.dialog.open(DetailComponent, {
       width: '1200px',
       maxWidth: '95vw',
@@ -192,8 +208,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ouvrir la boite de dialogue modifier mission
   ouvrirDialogModifierMission(mission: any) {
-    // ouvrir la boite de dialogue modifier mission
     const dialogRef = this.dialog.open(ModifierMission, {
       width: '500px',
       maxWidth: '95vw',
@@ -204,6 +220,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ouvrir boite dialogue de confirmation annulation mission
   annulerMission(mission: any) {
     let missionsPasAnnule: any = [];
     let missions = this.dataSource.data.filter(
@@ -227,6 +244,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ouvrir boite dialogue qui permet d'afficher le trajet
   ouvrirBoiteDialogTrajet(mission: any) {
     const dialogRef = this.dialog.open(Trajet, {
       width: '1000px',
@@ -238,6 +256,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ouvrir boite de dialogue cloturer mission
   ouvrirBoiteDialogCloturerMission(mission: any) {
     const dialogRef = this.dialog.open(CloturerMission, {
       width: '1000px',

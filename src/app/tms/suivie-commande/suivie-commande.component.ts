@@ -1,3 +1,17 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * clickerChercher: ajouter le tracking number au router pour faire un recherche.
+ * rechercheCommande: rechercher une commande pour consulter son etat.
+ * afficherRecherche: afficher input recherche.
+ * afficherInfoCommande: afficher la section d'info commande.
+ * afficherPasCommande: afficher la section du pas de commande.
+ * refaireRecherche: enlever le tracking number pour refaire un recherche.
+ * get statusRecherche: etat du section qui contient l'input de recherche "show" pour afficher, "hide" pour cacher.
+ * get statusInfoCommande: etat du section qui contient l'info du commande' "show" pour afficher, "hide" pour cacher.
+ * get statusPasCommande: etat du section du non disponibilité de commande "show" pour afficher, "hide" pour cacher.
+ * afficherEtat: afficher l'etat convenable a dessus des icons des etats.
+ */
 import {
   animate,
   state,
@@ -100,6 +114,7 @@ export class SuivieCommandeComponent implements OnInit {
   });
   }
 
+  // ajouter le tracking number au router pour faire un recherche
   clickerChercher() {
     this.router.navigateByUrl("/Menu/TMS/suivie-commande/"+this.trackingNumber)
   }
@@ -198,6 +213,7 @@ export class SuivieCommandeComponent implements OnInit {
     }, 500);
   }
 
+  // enlever le tracking number pour refaire un recherche
   refaireRecherche() {
     this.router.navigateByUrl("/Menu/TMS/suivie-commande")
   }

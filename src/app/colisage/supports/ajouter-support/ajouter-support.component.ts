@@ -1,3 +1,11 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * calculVolume: calculer le volume de l'emballage.
+ * creerSupport: ajout du support dans le tableau.
+ * testType: teste du type de support pour savaoir activer les champs de dimensions ou le champ du volume.
+ * focusNextElement: aprés saisie du code a barre on passe au input suivant.
+ */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -100,6 +108,7 @@ export class AjouterSupportComponent implements OnInit {
     }
   }
 
+  // aprés saisie du code a barre on passe au input suivant
   focusNextElement(event: any){
     let element = document.getElementById('long');
     if (event.code === 'Enter') {

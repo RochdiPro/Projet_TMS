@@ -1,3 +1,8 @@
+/**
+ Liste des méthodes:
+ * creerFormGroup: créer le formGroup formConfigurationServeur.
+ * enregistrer: enregistrer les données saisies.
+ */
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -46,6 +51,7 @@ export class ConfigurationServeurComponent implements OnInit {
       });
   }
 
+  // créer le formGroup formConfigurationServeur
   creerFormGroup() {
     this.formConfigurationServeur = this.fb.group({
       adresseIP: [
@@ -62,6 +68,7 @@ export class ConfigurationServeurComponent implements OnInit {
     });
   }
 
+  // enregistrer les données saisies
   enregistrer() {
     let nouvelConfig: ConfigurationApplication = new ConfigurationApplication(
       this.adresseIP.value,

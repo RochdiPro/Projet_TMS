@@ -1,3 +1,12 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * getBackup: get les backups enregistrés.
+ * onFileSelected: on selectionnant un fichier on l'envoie vers le backend.
+ * cancelUpload: annuler l'envoie du fichier.
+ * reset: réinitialiser le progressBar d'envoie du fichier.
+ * restaurerListeProduit: restaurer la liste des produits depuis le backup selectionné.
+ */
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
@@ -44,6 +53,7 @@ export class ImporterExporterProduitsComponent implements OnInit {
     });
   }
 
+  // on selectionnant un fichier on l'envoie vers le backend
   onFileSelected(event: any) {
     const file: File = event.target.files[0];
 
@@ -80,16 +90,19 @@ export class ImporterExporterProduitsComponent implements OnInit {
     }
   }
 
+  // annuler l'envoie du fichier
   cancelUpload() {
     this.uploadSub.unsubscribe();
     this.reset();
   }
 
+  // réinitialiser le progressBar d'envoie du fichier
   reset() {
     this.uploadProgress = null;
     this.uploadSub = null;
   }
 
+  // restaurer la liste des produits depuis le backup selectionné
   restaurerListeProduit(numBackup: string) {
     Swal.fire({
       title: 'Êtes-vous sûr?',

@@ -1,3 +1,39 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * onMouseMove: listener sur la position du souris.
+ * viderNom: pour vider le champs de filtrage par chauffeur.
+ * viderMatricule: pour vider le champs de filtrage par matricule.
+ * filtrerMission: pour faire le filtrage des missions.
+ * disableEnableDate: pour activer et desactiver le filtrage par date.
+ * datePrecedente: diminuer la date dans le date picker par un jour
+ * dateSuivante: augmenter le date dans le date picker par un jour.
+ * selectionnerMission: fonction qui permet de selectionner une mission qh'on va afficher son plan de chargement.
+ * getRandomColor: pour les couleurs des articles de chaque client.
+ * initialiserCanva: créer canva vide si il n'ya aucun plan chargement enregistrée sinon on charge le plan enregistrée.
+ * createPlanChargementAuto: créer plan chargement mode automatique
+ * afficherPlanChargement: afficher le plan de chargement specifique a une mission.
+ * changerLigne: fonction pour afficher la ligne selectionnée.
+ * scroll: fonction pour faire le scroll vers le bas.
+ * get statusVehicule: etat du div qui contient liste des colis dans voiture "show" pour afficher, "hide" pour cacher.
+ * get statusNote: etat du div qui la note sur le colis "show" pour afficher, "hide" pour cacher.
+ * drop: changer ordre liste commande lors du drag and drop du legend.
+ * initialiserRoot: initialiser les racines de l'algorithme qui va placer les articles automatiquement.
+ * fit: fonction qui met les articles dans leurs positions.
+ * chercherNoeud: chercher les noeuds vides.
+ * diviserNoeud: diviser le noeuds aprés le placement de l'article.
+ * rotation: rotation selon l'angle donnée.
+ * enregistrer: enregistrer les canvas dans la base des données.
+ * charger: récupérer les canvas depuis la base des données et les afficher.
+ * viderCanvas: supprimer les canvas et reinitialiser les des listes necessaires et reinitialiser le nombre des pack dans la liste des commandes manuel.
+ * ajouterColisManuellement: ajouter un colis d'une maniére manuelle.
+ * ajouterNouvelleLigne: ajout d'une nouvelle ligne.
+ * supprimerObjet: supprimer l'objet selectionné.
+ * supprimerLigne: supprimer le dernier ligne.
+ * resizePanneauAjoutManuel: permet la modification du taille du panneau ajout manuel.
+ * setStatus: set le type de modification taille panneau ajout manuel.
+ * dragDropeActive: activer ou desactiver le drag and drop.
+ */
 import {
   animate,
   state,
@@ -190,8 +226,8 @@ export class PlanChargementComponent implements OnInit {
     await this.filtrerMission();
   }
 
+  //pour vider le champs de filtrage par chauffeur
   viderNom() {
-    //pour vider le champs de filtrage par chauffeur
     this.nomFiltre = false;
     this.form.controls['nom'].setValue('');
     this.filtrerMission();
@@ -202,9 +238,10 @@ export class PlanChargementComponent implements OnInit {
     this.form.controls['matricule'].setValue('');
     this.filtrerMission();
   }
+
+  //pour faire le filtrage des missions
   async filtrerMission() {
     this.chargementEnCours = true;
-    //pour faire le filtrage des missions
     if (this.filtreEtatMission === undefined) this.filtreEtatMission = '';
     this.dataSource.data = await this.servicePlanChargement
       .filtrerMissions(
@@ -226,6 +263,7 @@ export class PlanChargementComponent implements OnInit {
     this.dataSource.paginator = this.paginator;
     this.chargementEnCours = false;
   }
+
   disableEnableDate() {
     //pour activer et desactiver le filtrage par date
     if (this.check) {
@@ -1445,7 +1483,7 @@ export class PlanChargementComponent implements OnInit {
   get statusVehicule() {
     return this.vehiculeEstAffiche ? 'show' : 'hide';
   }
-  // etat du div qui contient liste des colis dans voiture "show" pour afficher, "hide" pour cacher
+  // etat du div qui la note sur le colis "show" pour afficher, "hide" pour cacher
   get statusNote() {
     return this.noteEstAffiche ? 'show' : 'hide';
   }
@@ -2151,6 +2189,7 @@ export class PlanChargementComponent implements OnInit {
     this.status = status;
   }
 
+  // activer ou desactiver le drag and drop
   get dragDropeActive() {
     let estActive = false;
     this.missionEstEnAttente ? (estActive = true) : (estActive = false);

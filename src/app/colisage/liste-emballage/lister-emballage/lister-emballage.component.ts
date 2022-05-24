@@ -1,3 +1,11 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * filtrerListeColisage: pour filtrer la liste colisage selon nom du produit, nom d'emballage et type D'emballage.
+ * getListeColisage: lister les emballages.
+ * getQuantiteProduit: recuperer la quantité de chaque produit.
+ * getNomProduit: get le nom de chaque produit.
+ */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -95,6 +103,7 @@ export class ListerEmballageComponent implements OnInit {
       });
   }
 
+  // lister les emballages
   async getListeColisage() {
     this.chargementEnCours = true;
     //get la liste de colisage

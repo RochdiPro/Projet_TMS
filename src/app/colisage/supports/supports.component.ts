@@ -17,6 +17,9 @@ export class SupportsComponent implements OnInit {
   listerEstActive = false;
   ajouterEstActive = false;
   constructor(public router: Router) {
+    sessionStorage.setItem('Utilisateur', '' + 'tms2');
+    sessionStorage.setItem('Acces', '1000400');
+
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

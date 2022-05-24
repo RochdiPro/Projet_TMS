@@ -1,3 +1,9 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * filtrer: filtrer les chauffeur par nom ou catégorie.
+ * getUrl: pour avoir la photo du chauffeur.
+ */
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -221,8 +227,8 @@ export class ChauffeursComponent implements OnInit {
       }
     }
   }
+  // pour avoir la photo du chauffeur
   getUrl(url: any) {
-    // pour avoir la photo du chauffeur
     this.url = this.sanitizer.bypassSecurityTrustUrl(
       'data:image/png;base64,' + url
     ); //pour pouvoir afficher la photo sans des problémes de sécurité

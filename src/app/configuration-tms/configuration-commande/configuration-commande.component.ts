@@ -1,3 +1,12 @@
+/**
+ Liste des méthodes:
+ * creerForms: créer les formsGroups.
+ * enregistrerCoefficientFraisTransport: enregistrer coefficientsFraisTransport.
+ * enregistrerCoefficientsFormuleScore: enregistrer coefficients Formule score.
+ * enregistrerParametreExcel: enregistrer les paramétres des fichiers excel.
+ * hoverCoefficientScore: fonction pour avoir quel icon d'info le curseur est placée sur elle.
+ * ovrirEtapesCreationData: ouvrir boite dialogue qui contienne les etappes necessaires pour créer le dossier data.
+ */
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';

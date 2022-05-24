@@ -1,3 +1,27 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * chargerFicheProduit: get liste des produits qui ne sont pas encore ajouté dans liste d'emballage.
+ * getListeEmballage: get liste des emballages.
+ * creerFormGroups: creation des formsGroups necessaires.
+ * appliquerFiltre: faire le filtrage selon nom produit.
+ * scannerCodeBarre: lire le code a barre.
+ * gestionCodeBarre: filtrer liste de produit avec code a barre.
+ * choisirProduitScanne: selectionner le produit qu'on a scanné son code a barre.
+ * choisirProduit: selectionner le produit selectionné avec souris.
+ * premierSuivant: verifier si il y'a un produit séléctionné ou non avant de passer au step suivant.
+ * testType: teste du type de support pour savaoir activer les champs de dimensions ou le champ du volume.
+ * premierPrecedent: reinitialiser la liste des produit si on clique sur le premier bouton précedent .
+ * deuxiemeSuivant: le clique sur le deuxieme bouton suivant on affecte l'unité et la valeur unité dans leurs champs .
+ * troisiemeSuivant: verifier validité du troisieme step.
+ * quatriemePrecedent: réinitialiser la validation du troisiéme step.
+ * reinitialiserStepper: reinitialisation du stepper.
+ * valider: valider l'ajout du produit.
+ * calculVolume: calculer le volume de l'emballage.
+ * calculerPoidsProduitNet: calculer poids produits total net.
+ * calculerPoidsTotal: calculer le poids total.
+ * onResize: verifier si on est dans l'affichage mobile ou pc.
+ */
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import {
   FormBuilder,
@@ -92,6 +116,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.breakpoint = window.innerWidth <= 760 ? 2 : 6;
   }
 
+  // get liste des produits qui ne sont pas encore ajouté dans liste d'emballage
   async chargerFicheProduit() {
     if (this.modeManuel) {
       this.listeProduits = await this.service.produitsManuel().toPromise();
@@ -130,12 +155,13 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     );
   }
 
+  // get liste des emballages
   getListeEmballage(): any {
     return this.service.listeEmballage().toPromise();
   }
 
+  //creation des formsGroups necessaires
   creerFormGroups() {
-    //creation des formsGroups necessaires
     this.premierFormGroup = this.formBuilder.group({
       nom: ['', Validators.required],
       poidsEmballage: ['', Validators.required],
@@ -157,14 +183,15 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     });
   }
 
+  //faire le filtrage selon nom produit
   appliquerFiltre(valeurFiltre: any) {
-    //faire le filtrage selon nom produit
     valeurFiltre = (valeurFiltre.target as HTMLTextAreaElement).value;
     valeurFiltre = valeurFiltre.trim(); // Remove whitespace
     valeurFiltre = valeurFiltre.toLowerCase(); // MatTableDataSource defaults to lowercase matches
     this.dataSourceProduits.filter = valeurFiltre;
   }
 
+  // lire le code a barre
   scannerCodeBarre(codeBarreScanne: any) {
     if (this.interval) clearInterval(this.interval);
     if (codeBarreScanne.code == 'Enter') {
@@ -178,6 +205,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.interval = setInterval(() => (this.barcode = ''), 20);
   }
 
+  // filtrer liste de produit avec code a barre
   gestionCodeBarre(codeBarre: any) {
     var prodSelect: any;
     prodSelect = this.dataSourceProduits.data.filter(
@@ -185,6 +213,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     );
     this.choisirProduitScanne(prodSelect[0]);
   }
+
+  // selectionner le produit qu'on a scanné son code a barre
   choisirProduitScanne(prod: any) {
     if (this.produitClique.has(prod)) {
       //si On clique sur un produit deja selectionnée on supprime le contenu de input pour le remplir ensuit
@@ -203,6 +233,7 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.deuxiemeFormGroup.get('validateur').setValue('validé');
   }
 
+  // selectionner le produit selectionné avec souris
   choisirProduit(prod: any) {
     if (this.produitClique.has(prod)) {
       //si On clique sur un produit deja selectionnée on le deselectionne
@@ -229,6 +260,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       this.deuxiemeFormGroup.get('validateur').setValue('');
     }
   }
+
+  // verifier si il y'a un produit séléctionné ou non avant de passer au step suivant
   premierSuivant() {
     this.dataSourceProduit.data = this.produitSelectionne as tableProduits[];
     let produitEstSelectionne = this.produitSelectionne.length > 0;
@@ -263,6 +296,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       this.premierFormGroup.get('hauteur').disable();
     }
   }
+
+  // reinitialiser la liste des produit si on clique sur le premier bouton précedent 
   premierPrecedent() {
     this.dataSourceProduits.data = this.produitsAffiche as tableProduits[];
     this.dataSourceProduits.data = this.dataSourceProduits.data.sort((a, b) =>
@@ -270,8 +305,9 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     );
   }
 
+
+  // le clique sur le deuxieme bouton suivant on affecte l'unité et la valeur unité dans leurs champs 
   deuxiemeSuivant() {
-    //pour le deuxieme bouton suivant
     this.troisiemeFormGroup
       .get('unite')
       .setValue(this.produitSelectionne[0].unite);
@@ -279,6 +315,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       .get('qte')
       .setValue(this.produitSelectionne[0].valeur_Unite);
   }
+
+  // verifier validité du troisieme step 
   troisiemeSuivant() {
     //pour le troisieme bouton suivant
     if (this.troisiemeFormGroup.status === 'VALID') {
@@ -287,11 +325,13 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
       this.troisiemeStepEstRemplit = false;
     }
   }
+
+  // réinitialiser la validation du troisiéme step
   quatriemePrecedent() {
     this.troisiemeStepEstRemplit = false;
   }
+  //reinitialisation du stepper
   reinitialiserStepper() {
-    //reinitialisation du stepper
     this.produitClique.clear();
     this.troisiemeStepEstRemplit = false;
     this.formCodeBarre.get('code_Barre').setValue('');
@@ -299,8 +339,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     this.dataSourceProduits.filter = '';
   }
 
+  //valider l'ajout du produit
   async valider() {
-    //bouton valider
     var formData: any = new FormData();
     formData.append('idProduit', this.produitSelectionne[0].id_Produit);
     formData.append(
@@ -349,8 +389,8 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     });
   }
 
+  //calculer le volume de l'emballage
   calculVolume() {
-    //calculer le volume de l'emballage
     if (
       this.premierFormGroup.get('hauteur').value !== '' &&
       this.premierFormGroup.get('longueur').value !== '' &&
@@ -365,18 +405,20 @@ export class AjouterProduitComponent implements OnInit, AfterViewInit {
     }
   }
 
+  //calculer poids produits total net
   calculerPoidsProduitNet(poids: any, qte: any) {
-    //calculer poids produits total net
     this.poidsTotUnProduit = Number(poids) * Number(qte);
     this.calculerPoidsTotal(this.poidsTotUnProduit);
     return Number(this.poidsTotUnProduit).toFixed(3);
   }
 
+  //calculer le poids total
   calculerPoidsTotal(poidsNet: any) {
-    //calculer le poids total
     this.poidsToltal =
       poidsNet + Number(this.premierFormGroup.get('poidsEmballage').value);
   }
+
+  // verifier si on est dans l'affichage mobile ou pc
   onResize(event: any) {
     this.breakpoint = event.target.innerWidth <= 400 ? 2 : 6;
   }
