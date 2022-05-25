@@ -15,7 +15,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 })
 export class AjoutEmployeComponent implements OnInit {
   //passage d'une étape à une autre uniquement si l'étape est validée
-  passage_etape = false;
+  passage_etape = true;
   pays: string;
   ville: string;
   region: string;
@@ -102,8 +102,8 @@ export class AjoutEmployeComponent implements OnInit {
     });
     this.Acces = this.fb.group({
       Acces: ['1000000'],
-      login: [''],
-      pwd: [''],
+      login: ['', Validators.required],
+      pwd: ['', Validators.required],
       vente: ['0'],
       achat: ['0'],
       config: ['0'],
@@ -116,7 +116,7 @@ export class AjoutEmployeComponent implements OnInit {
     this.Informations_Banques_Form = this.fb.group({
       Image: [''],
       Email: ['', [Validators.required, Validators.email]],
-      Banque1: [''],
+      Banque1: ['', [Validators.required]],
       Rib1: [
         '',
         [
@@ -127,7 +127,7 @@ export class AjoutEmployeComponent implements OnInit {
       ],
       Adresse: ['', [Validators.required]],
       Pays: ['', Validators.required],
-      Ville: [''],
+      Ville: ['', Validators.required],
       Tel1: [
         '',
         [
@@ -136,7 +136,7 @@ export class AjoutEmployeComponent implements OnInit {
           Validators.maxLength(12),
         ],
       ],
-      Cnss: [''],
+      Cnss: ['', Validators.required],
       St_familliale: [''],
       Enfant_a_charge: [''],
       N_permis: [''],
@@ -280,7 +280,6 @@ export class AjoutEmployeComponent implements OnInit {
       'Permis',
       this.Informations_Banques_Form.get('N_permis').value
     );
-    console.log(this.Informations_Banques_Form.get('Date_permis').value + '00');
     if (this.Informations_Banques_Form.get('Date_permis').value === '') {
       formData.append('Date_de_Permis', '01/01/1900');
     } else
@@ -592,7 +591,7 @@ export class AjoutEmployeComponent implements OnInit {
   // message d'erreur lorsque Categorie Client saisi ne respecte pas les conditions prédifinis
   MessageErreurrole() {
     if (this.Informations_Generales_Form.get('Role').hasError('required')) {
-      return 'Vous devez entrer choisir le role !';
+      return 'Vous devez choisir le role !';
     } else {
       return '';
     }

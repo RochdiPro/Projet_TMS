@@ -36,17 +36,10 @@
                             <mat-select formControlName="Categorie_Fiscale" id="Categorie_Fiscale"
                                 name="Categorie_Fiscale" placeholder="Categorie Fiscale"
                                 [(ngModel)]=ClientData.categorie_Fiscale
-                                (selectionChange)="CategorieFiscaleSelectionner($event)">
+                                (selectionChange)="CategorieFiscaleSelectionner($event)" required>
 
                                 <mat-option *ngFor="let fiscale of categorie_fiscale" [value]="fiscale.nom">
-                                    <span *ngIf="fiscale.nom=='Assujetti_tva'">Assujetti à la Tva</span>
-                                    <span *ngIf="fiscale.nom=='Non_Assujetti_tva'">Non Assujetti à la Tva</span>
-                                    <span *ngIf="fiscale.nom=='Exonéré_tva'">Exonéré de tva</span>
-                                    <span *ngIf="fiscale.nom=='Exonéré_tva_et_Fodec'">Exonéré de Tva et
-                                        Fodec</span>
-                                    <span *ngIf="fiscale.nom=='Suspension_tva'">Suspension de Tva</span>
-                                    <span *ngIf="fiscale.nom=='Cession_a_quai'">Cession à Quai</span>
-                                    <span *ngIf="fiscale.nom=='Reduction_tva'">Reduction de Tva</span>
+                                    {{fiscale.nom}}
                                 </mat-option>
                             </mat-select>
 
@@ -61,7 +54,8 @@
                             <input type="text" matInput formControlName="Identification_Fiscale"
                                 id="Identification_Fiscale" name="Identification_Fiscale"
                                 [(ngModel)]=ClientData.code_Tva>
-
+                            <mat-error *ngIf="Informations_Generales_Form.get('Identification_Fiscale').invalid">
+                                {{MessageErreurIdentificationFiscale()}}</mat-error>
                         </mat-form-field>
                     </div>
                 </div>
@@ -315,7 +309,6 @@
                             <mat-label for="Pays"> Pays </mat-label>
                             <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays"
                                 (selectionChange)="ChoixPays($event)" [(ngModel)]=ClientData.pays>
-                                <mat-option value=" "></mat-option>
                                 <mat-option *ngFor="let pays of  categorie_pays" [value]="pays.nom">
                                     {{pays.nom}}</mat-option>
                             </mat-select>
@@ -326,10 +319,12 @@
                             <mat-label for="Ville"> Ville </mat-label>
                             <mat-select formControlName="Ville" id="Ville" name="Ville" placeholder="Ville"
                                 (selectionChange)="ChoixVille($event)" [(ngModel)]=ClientData.ville>
-                                <mat-option value=" "></mat-option>
                                 <mat-option *ngFor="let ville of  categorie_ville" [value]="ville.nom">
                                     {{ville.nom}}</mat-option>
                             </mat-select>
+                            <mat-error *ngIf="ContactForm.get('Ville').invalid">
+                                Vous devez séléctionner une ville!
+                            </mat-error>
                         </mat-form-field>
                     </div>
                 </div>
@@ -343,6 +338,9 @@
                                 <mat-option *ngFor="let region of  categorie_region" [value]="region.nom">
                                     {{region.nom}}</mat-option>
                             </mat-select>
+                            <mat-error *ngIf="ContactForm.get('Region').invalid">
+                                Vous devez séléctionner une région!
+                            </mat-error>
                         </mat-form-field>
                     </div>
                     <div class="col-md-3 mb-3">
@@ -359,6 +357,8 @@
                             <mat-label>Téléphone</mat-label>
                             <input type="number" matInput formControlName="Tel1" id="Tel1" name="Tel1"
                                 placeholder="(+216)99-999-999" [(ngModel)]=ClientData.tel1>
+                            <mat-error *ngIf="ContactForm.get('Tel1').invalid">
+                                {{MessageErreurTel()}}</mat-error>
                         </mat-form-field>
 
 

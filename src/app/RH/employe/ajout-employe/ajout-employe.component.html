@@ -42,6 +42,9 @@
                             placeholder="DD/MM/YYYY" name="Date_embauche" required>
                         <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
                         <mat-datepicker #picker3></mat-datepicker>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Date_embauche').invalid">
+                            Vous devez entrer la date d'embauche!   
+                        </mat-error>
 
                     </mat-form-field>
                 </div>
@@ -78,6 +81,9 @@
                             [matDatepicker]="picker2" placeholder="DD/MM/YYYY" name="Date_Livraison_Identite" required>
                         <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
                         <mat-datepicker #picker2></mat-datepicker>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Date_Livraison_Identite').invalid">
+                            Vous devez entrer la date de livraison!   
+                        </mat-error>
                     </mat-form-field>
 
                 </div>
@@ -88,6 +94,9 @@
                             placeholder="DD/MM/YYYY" name="Date_naissance" required>
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Date_naissance').invalid">
+                            Vous devez entrer la date de naissance!   
+                        </mat-error>
 
                     </mat-form-field>
                 </div>
@@ -135,12 +144,13 @@
 
                         <mat-label for="banque1"> Banque </mat-label>
                         <mat-select (selectionChange)="ChoixBanque1($event)" formControlName="Banque1" id="Banque1"
-                            name="Banque1" placeholder="Banque">
+                            name="Banque1" placeholder="Banque" required>
                             <mat-option></mat-option>
                             <mat-option *ngFor="let banque of  categorie_banque" [value]="banque.nom">
                                 {{banque.nom}}</mat-option>
                         </mat-select>
                         <mat-error *ngIf="Informations_Banques_Form.get('Banque1').invalid">
+                            Vous devez séléctionner une banque!
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -190,11 +200,14 @@
 
                         <mat-label for="Ville"> Ville </mat-label>
                         <mat-select formControlName="Ville" id="Ville" name="Ville" placeholder="Ville"
-                            (selectionChange)="ChoixVille($event)">
+                            (selectionChange)="ChoixVille($event)" required>
                             <mat-option></mat-option>
                             <mat-option *ngFor="let ville of  categorie_ville" [value]="ville.nom">
                                 {{ville.nom}}</mat-option>
                         </mat-select>
+                        <mat-error *ngIf="Informations_Banques_Form.get('Ville').invalid">
+                            Vous devez séléctionner une ville!
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-md-3 mb-3">
@@ -211,8 +224,9 @@
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Cnss">Code Cnss </mat-label>
-                        <input type="text" matInput formControlName="Cnss" id="Cnss" name="Cnss">
+                        <input type="text" matInput formControlName="Cnss" id="Cnss" name="Cnss" required>
                         <mat-error *ngIf="Informations_Banques_Form.get('Cnss').invalid">
+                            Vous devez entrer le code cnss!
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -226,6 +240,7 @@
                             <mat-option value="Divorce"> Divorce </mat-option>
                         </mat-select>
                         <mat-error *ngIf="Informations_Banques_Form.get('St_familliale').invalid">
+                            Vous devez séléctionner une situation familliale!
                         </mat-error>
 
                     </mat-form-field>
@@ -248,8 +263,9 @@
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="N_permis"> N_permis </mat-label>
-                        <input type="text" matInput formControlName="N_permis" id="N_permis" name="N_permis">
+                        <input type="text" matInput formControlName="N_permis" id="N_permis" name="N_permis" required>
                         <mat-error *ngIf="Informations_Banques_Form.get('N_permis').invalid">
+                            Vous devez saisir un  numéro de permis!
                         </mat-error>
                     </mat-form-field>
                 </div>
@@ -259,10 +275,10 @@
                         <mat-label for="Pays"> Catégorie Permis </mat-label>
 
                         <mat-select formControlName="Categorie_permis" id="Categorie_permis" name="Categorie_permis"
-                            placeholder="Categorie_permis">
+                            placeholder="Categorie_permis" required>
                             <mat-option value="A1">A1</mat-option>
                             <mat-option value="A2">A2</mat-option>
-                            <mat-option value="B1">B1</mat-option>
+                            <mat-option value="B">B</mat-option>
                             <mat-option value="B+E">B+E</mat-option>
                             <mat-option value="C">C</mat-option>
                             <mat-option value="C+E">C+E</mat-option>
@@ -272,6 +288,7 @@
                             <mat-option value="H">H</mat-option>
                         </mat-select>
                         <mat-error *ngIf="Informations_Banques_Form.get('Categorie_permis').invalid">
+                            Séléctionner catégorie de permis
                         </mat-error>
 
                     </mat-form-field>
@@ -282,9 +299,12 @@
                     <mat-form-field>
                         <mat-label for="Date_permis"> Date Permis</mat-label>
                         <input matInput formControlName="Date_permis" id="Date_permis" [matDatepicker]="picker5"
-                            placeholder="DD/MM/YYYY" name="Date_permis">
+                            placeholder="DD/MM/YYYY" name="Date_permis" required>
                         <mat-datepicker-toggle matSuffix [for]="picker5"></mat-datepicker-toggle>
                         <mat-datepicker #picker5></mat-datepicker>
+                        <mat-error *ngIf="Informations_Banques_Form.get('Date_permis').invalid">
+                            Vous devez séléctionner une date de permis!
+                        </mat-error>
                     </mat-form-field>
                 </div>
 
@@ -303,15 +323,19 @@
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Enfant_a_charge"> identifiant </mat-label>
-                        <input value="0" type="text" matInput formControlName="login">
-
+                        <input value="0" type="text" matInput formControlName="login" required>
+                        <mat-error *ngIf="Acces.get('login').invalid">
+                            Vous devez entrer un login!
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Enfant_a_charge"> mote de passe </mat-label>
-                        <input value="0" type="text" matInput formControlName="pwd">
-
+                        <input value="0" type="text" matInput formControlName="pwd" required>
+                        <mat-error *ngIf="Acces.get('pwd').invalid">
+                            Vous devez entrer un mot de passe!
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <h4>code Accés :

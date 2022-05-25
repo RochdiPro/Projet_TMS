@@ -853,13 +853,18 @@ export class AjoutMissionComponent implements OnInit {
   // calculer le score des commandes dans une region
   calculerScoreCommandeParRegion(commandesParRegion: any) {
     let scoreRegionsTotal = this.calculerScoreTotal();
-    let scoreRegion = 0;
-    if (commandesParRegion) {
-      commandesParRegion.forEach((commande: any) => {
-        scoreRegion += commande.score;
-      });
+    let pourcentageScoreRegion;
+    if (scoreRegionsTotal == 0) {
+      pourcentageScoreRegion = 0;
+    } else {
+      let scoreRegion = 0;
+      if (commandesParRegion) {
+        commandesParRegion.forEach((commande: any) => {
+          scoreRegion += commande.score;
+        });
+      }
+      pourcentageScoreRegion = (100 / scoreRegionsTotal) * scoreRegion;
     }
-    let pourcentageScoreRegion = (100 / scoreRegionsTotal) * scoreRegion;
     return Number(pourcentageScoreRegion.toFixed(2));
   }
   // calculer le score des commandes total
@@ -1172,11 +1177,14 @@ export class AjoutMissionComponent implements OnInit {
             missions: JSON.stringify(copieFileAttente),
           };
           commandes.forEach((commande: any) => {
-            let formDataCommande = new FormData();
-            formDataCommande.append('id', commande.id);
-            this.serviceCommande
-              .ajouterFileAttente(formDataCommande)
-              .subscribe();
+            let ids = commande.id.split("/");
+            ids.forEach((id: any) => {
+              let formDataCommande = new FormData();
+              formDataCommande.append('id', id);
+              this.serviceCommande
+                .ajouterFileAttente(formDataCommande)
+                .subscribe();
+            });
           });
           this.serviceMission.ajouterFileAttente(file).subscribe();
           // this.listeFilesAttentes.push({
@@ -1190,11 +1198,14 @@ export class AjoutMissionComponent implements OnInit {
             missions: JSON.stringify(copieFileAttente),
           };
           commandes.forEach((commande: any) => {
-            let formDataCommande = new FormData();
-            formDataCommande.append('id', commande.id);
-            this.serviceCommande
-              .ajouterFileAttente(formDataCommande)
-              .subscribe();
+            let ids = commande.id.split("/");
+            ids.forEach((id: string) => {
+              let formDataCommande = new FormData();
+              formDataCommande.append('id', id);
+              this.serviceCommande
+                .ajouterFileAttente(formDataCommande)
+                .subscribe();
+            });
           });
           this.serviceMission.updateFileAttente(file).subscribe();
           // let index = this.listeFilesAttentes.findIndex(
@@ -1273,9 +1284,12 @@ export class AjoutMissionComponent implements OnInit {
         default:
           break;
       }
-      let formDataCommande = new FormData();
-      formDataCommande.append('id', commande.id);
-      this.serviceCommande.annulerExpedition(formDataCommande).subscribe();
+      let ids = commande.id.split("/");
+      ids.forEach((id: any) => {
+        let formDataCommande = new FormData();
+        formDataCommande.append('id', id);
+        this.serviceCommande.annulerExpedition(formDataCommande).subscribe();
+      });
       this.disableCheckBoxsVehiculePoidsVolumeInferieur();
     });
     this.serviceMission.updateFileAttente(file).subscribe();
@@ -1347,9 +1361,12 @@ export class AjoutMissionComponent implements OnInit {
           default:
             break;
         }
+        let ids = commande.id.split("/");
+      ids.forEach((id: any) => {
         let formDataCommande = new FormData();
-        formDataCommande.append('id', commande.id);
+        formDataCommande.append('id', id);
         this.serviceCommande.annulerExpedition(formDataCommande).subscribe();
+      });
         this.disableCheckBoxsVehiculePoidsVolumeInferieur();
       });
     });
@@ -1573,5 +1590,17 @@ export class AjoutMissionComponent implements OnInit {
       timer: 1500,
     });
     this.boutonEnregistrerEstActive = true;
+  }
+
+  get boutonEnregistrerDesactive() {
+    let desactive = true;
+    if (this.listeFilesAttentes.length === 0) {
+      desactive = true
+    } else {
+      this.listeFilesAttentes.forEach((file: any) => {
+        file.fileAttente.length !== 0 ? desactive = false : "";
+      });
+    }
+    return desactive
   }
 }
