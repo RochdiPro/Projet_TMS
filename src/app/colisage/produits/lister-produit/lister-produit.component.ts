@@ -52,9 +52,6 @@ export class ListerProduitComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
   constructor(private service: ProduitService, private router: Router) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1004400');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

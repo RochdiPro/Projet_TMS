@@ -31,9 +31,6 @@ export class ImporterExporterProduitsComponent implements OnInit {
   acces: any;
   wms: any;
   constructor(private http: HttpClient, private service: ProduitService) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1004400');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

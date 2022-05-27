@@ -1,0 +1,61 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+<div class="container">
+<div class="card">
+   <article class="card-body">
+      <h4 class="card-title text-center mb-4 mt-1"> Infonet Services  Des professionnels à votre service <a href="https://www.infonet.tn/"> Infonet.tn</a> </h4>
+   </article>
+</div>
+<video autoplay play loop id="myVideo">
+   <source src="../../../assets/1.mp4" type="video/mp4">
+</video>
+<div class="card">
+   <article class="card-body">
+      <h4 class="card-title text-center mb-4 mt-1">Se Connecter
+      </h4>
+      <hr>
+      <img src="../../../assets/images/logo.png" width="150 px" height="150 px" style="  display: block; margin-left: auto; margin-right: auto;">
+      <div class="form-group">
+         <div class="input-group">
+            <div class="input-group-prepend">
+               <span class="input-group-text"> <i class="fa fa-check"></i> </span>
+            </div>
+            <select name="selectedQuantity"   class="form-control"  #socite >			 
+            <option *ngFor="let s of liste" [value]="s.socite">
+            {{s.socite}}</option>
+            </select>
+         </div>
+         <!-- input-group.// -->
+      </div>
+      <!-- form-group// -->
+      <div class="form-group">
+         <div class="input-group">
+            <div class="input-group-prepend">
+               <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+            </div>
+            <input name="" class="form-control" placeholder="Identifiant" type="text" #id>
+         </div>
+         <!-- input-group.// -->
+      </div>
+      <!-- form-group// -->
+      <div class="form-group">
+         <div class="input-group">
+            <div class="input-group-prepend">
+               <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+            </div>
+            <input class="form-control" placeholder="******" type="password" #pwd>
+         </div>
+         <!-- input-group.// -->
+      </div>
+      <!-- form-group// -->
+      <div class="form-group">
+         <button   class="btn btn-primary btn-block" (click)="connecter(id.value , pwd.value);"> Connecter  </button> 
+      </div>
+      <!-- form-group// -->
+      <p class="text-center"><a href="/cnx" class="btn">Mot de passe oublié  </a></p>
+   </article>
+</div>
+<!--container end.//-->

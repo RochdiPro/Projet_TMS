@@ -15,7 +15,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 })
 export class AjoutEmployeComponent implements OnInit {
   //passage d'une étape à une autre uniquement si l'étape est validée
-  passage_etape = true;
+  passage_etape = false;
   pays: string;
   ville: string;
   region: string;
@@ -291,8 +291,8 @@ export class AjoutEmployeComponent implements OnInit {
       'Categorie_Permis',
       this.Informations_Banques_Form.get('Categorie_permis').value
     );
-    formData.append('Login', this.Acces.get('login').value);
-    formData.append('Pwd', this.Acces.get('pwd').value);
+    formData.append('login', this.Acces.get('login').value);
+    formData.append('password', this.Acces.get('pwd').value);
     this.service.ajouterEmployes(formData).subscribe(
       (reponse) => {
         Swal.fire({

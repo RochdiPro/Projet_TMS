@@ -1,13 +1,20 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { ConnexionComponent } from './authentication/connexion/connexion.component';
+import { AuthGaurdService } from './authentication/services/auth-gaurd.service';
 import { MenuComponent } from './menu/menu.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'Menu', pathMatch: 'full' },
-
+  { path: '', redirectTo: 'Login', pathMatch: 'full' },
+  {
+    path: 'Login',
+    loadChildren: () =>
+      import('./authentication/connexion/connexion.module').then((m) => m.ConnexionModule),
+  },
   {
     path: 'Menu',
     component: MenuComponent,
+    canActivate:[AuthGaurdService],
     children: [
       {
         path: 'Menu_Colisage',
@@ -27,24 +34,17 @@ const routes: Routes = [
       },
       {
         path: 'Menu-RH',
-        loadChildren: () =>
-          import('./RH/rh.module').then(
-            (m) => m.RhModule
-          ),
+        loadChildren: () => import('./RH/rh.module').then((m) => m.RhModule),
       },
       {
         path: 'Menu-init/Menu-client',
         loadChildren: () =>
-          import('./init/client/client.module').then(
-            (m) => m.ClientModule
-          ),
+          import('./init/client/client.module').then((m) => m.ClientModule),
       },
       {
         path: 'Menu-init/Menu-donnees',
         loadChildren: () =>
-          import('./init/donnees/donnees.module').then(
-            (m) => m.DonneesModule
-          ),
+          import('./init/donnees/donnees.module').then((m) => m.DonneesModule),
       },
     ],
   },
