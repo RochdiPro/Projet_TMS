@@ -1,34 +1,36 @@
-<div class="app-page-title">
-    <div class="page-title-wrapper">
-       <div class="page-title-heading">
-          <div class="page-title-icon">
-             <i class="pe-7s-box2 text-success">
-             </i>
+<div *ngIf="wms >= 1">
+   <div class="app-page-title">
+       <div class="page-title-wrapper">
+          <div class="page-title-heading">
+             <div class="page-title-icon">
+                <i class="pe-7s-box2 text-success">
+                </i>
+             </div>
+             Produits
           </div>
-          Produits
+       </div>
+   </div>
+   <div class="tab-content">
+       <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
+          <div class="main-card mb-3 card">
+             <div class="card-body">
+                <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav" id="tab">
+                   <!-- bouton lister -->
+                   <li class="nav-item">
+                      <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Produits/liste-produits" (click)="activerLister()" [ngClass]="{'active': listerEstActive}">
+                         <span>Lister</span>
+                      </a>
+                   </li>
+                   <!-- bouton ajouter -->
+                   <li class="nav-item" *ngIf="wms >= 4">
+                      <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Produits/ajout-produit" (click)="activerAjouter()" [ngClass]="{'active': ajouterEstActive}">
+                         <span>Importer/Restaurer</span>
+                      </a>
+                   </li>
+                </ul>
+                <router-outlet></router-outlet>
+             </div>
+          </div>
        </div>
     </div>
 </div>
-<div class="tab-content">
-    <div class="tab-pane tabs-animation fade show active" id="tab-content-0" role="tabpanel">
-       <div class="main-card mb-3 card">
-          <div class="card-body">
-             <ul class="body-tabs body-tabs-layout tabs-animated body-tabs-animated nav" id="tab">
-                <!-- bouton lister -->
-                <li class="nav-item">
-                   <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Produits/liste-produits" (click)="activerLister()" [ngClass]="{'active': listerEstActive}">
-                      <span>Lister</span>
-                   </a>
-                </li>
-                <!-- bouton ajouter -->
-                <li class="nav-item" *ngIf="wms >= 2">
-                   <a role="tab" class="nav-link show" routerLink="/Menu/Menu_Colisage/Produits/ajout-produit" (click)="activerAjouter()" [ngClass]="{'active': ajouterEstActive}">
-                      <span>Importer/Restaurer</span>
-                   </a>
-                </li>
-             </ul>
-             <router-outlet></router-outlet>
-          </div>
-       </div>
-    </div>
- </div>

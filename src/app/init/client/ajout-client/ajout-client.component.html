@@ -21,7 +21,6 @@
                         <mat-label for="Categorie_Client">Categorie Client </mat-label>
                         <mat-select formControlName="Categorie_Client" id="Categorie_Client" name="Categorie_Client"
                             placeholder="Categorie Client" required>
-                            <mat-option value=" "></mat-option>
                             <mat-option *ngFor="let categorie of categorie_Client" [value]="categorie.nom">
                                 {{categorie.nom}}</mat-option>
                         </mat-select>
@@ -287,7 +286,6 @@
                         <mat-label for="banque1"> Banque </mat-label>
                         <mat-select (selectionChange)="ChoixBanque1($event)" formControlName="Banque1" id="Banque1"
                             name="Banque1" placeholder="Banque" required>
-                            <mat-option></mat-option>
                             <mat-option *ngFor="let banque of  categorie_banque" [value]="banque.nom">
                                 {{banque.nom}}</mat-option>
                         </mat-select>
@@ -402,10 +400,12 @@
                         <mat-label for="Ville"> Ville </mat-label>
                         <mat-select formControlName="Ville" id="Ville" name="Ville" placeholder="Ville"
                             (selectionChange)="ChoixVille($event)">
-                            <mat-option></mat-option>
                             <mat-option *ngFor="let ville of  categorie_ville" [value]="ville.nom">
                                 {{ville.nom}}</mat-option>
                         </mat-select>
+                        <mat-error *ngIf="ContactForm.get('Ville').invalid">
+                            Vous devez séléctionner une ville!
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-md-3 mb-3">
@@ -416,6 +416,9 @@
                             <mat-option *ngFor="let region of  categorie_region" [value]="region.nom">
                                 {{region.nom}}</mat-option>
                         </mat-select>
+                        <mat-error *ngIf="ContactForm.get('Region').invalid">
+                            Vous devez séléctionner une région!
+                        </mat-error>
                     </mat-form-field>
 
 

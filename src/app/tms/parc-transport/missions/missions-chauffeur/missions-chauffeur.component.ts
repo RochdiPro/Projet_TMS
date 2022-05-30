@@ -1,3 +1,34 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage
+ Liste des méthodes:
+ * getMissionsParIdChauffeur: get liste des missions par id du chauffeur.
+ * filtrerMissionsParEtat: filtrer la liste des missions par leurs Etat.
+ * filtrerMissionsParDate: filtrer la liste des missions par date.
+ * datePrecedente: diminuer la date dans le date picker par un jour.
+ * dateSuivante: augmenter le date dans le date picker par un jour.
+ * cliquerEnCours: si on clique sur le bouton de filtrage par etat En cours on active se bouton et on affiche la liste des missions En cours.
+ * cliquerEnAttente: si on clique sur le bouton de filtrage par etat En attente on active se bouton et on affiche la liste des missions En cours.
+ * cliquerTerminee: si on clique sur le bouton de filtrage par etat Terminées on active se bouton et on affiche la liste des missions En cours.
+ * nbrCommandes: retourne le nombre de commandes dans une mission.
+ * poidsMission: retourne le poids d'une mission.
+ * volumeMission: retourne le volume d'une mission.
+ * getCommandesMission: get liste des commande dans une mission puis on les divises par commandes livrées et commandes non livrées.
+ * lancerMission: fonction qui permet de commancer une mission.
+ * get statusTableMissions: etat du table missions "show" pour afficher, "hide" pour cacher.
+ * toggleTableMissions: la fonction qui permet de lancer le changement d'etat d'affichage table missions.
+ * get statusDetailMission: etat du volet detail "show" pour afficher, "hide" pour cacher.
+ * toggleDetailMission: la fonction qui permet de lancer le changement d'etat d'affichage detail mission.
+ * get statusAfficherCommandes: etat du volet detail commande "showCommandes" pour afficher, "hideCommandes" pour cacher.
+ * toggleAfficherCommandes: la fonction qui permet de lancer le changement d'etat d'affichage detail commande.
+ * ouvrirDetailCommande: ouvrir la boite dialogue details commande.
+ * ouvrirConfirmationLivraison: ouvrir boite dialogue confirmation livraison.
+ * getPositionDepart: avoir la position de début depuis le navigateur.
+ * getPosition: retourne la position de destination d'une commande.
+ * createTrajet: créer le meilleur trajet possible.
+ * afficherTrajet: afficher le trajet.
+ * ouvrirMap: ouvrir le trajet dans google maps.
+ * ouvrirPlanChargement: ouvrir la boite dialogue plan chargement.
+ */
 import { Component, OnInit } from '@angular/core';
 import { MissionsService } from '../services/missions.service';
 import {
@@ -14,6 +45,7 @@ import {
   PlanChargement,
 } from '../dialogs/dialogs.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { VehiculeService } from '../../vehicule/services/vehicule.service';
 
 @Component({
   selector: 'app-missions-chauffeur',
@@ -80,7 +112,7 @@ export class MissionsChauffeurComponent implements OnInit {
   commandesAffiche = false;
 
   // cette valeur va se changer statiquement selon le profile connéctée
-  idChauffeur = 20;
+  idChauffeur = 1;
   missions: any;
   missionsFiltreeParEtat: any;
   missionsAffiche: any;
@@ -126,7 +158,8 @@ export class MissionsChauffeurComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private serviceMission: MissionsService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private serviceVehicule: VehiculeService
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -171,12 +204,14 @@ export class MissionsChauffeurComponent implements OnInit {
       this.longDepart;
   }
 
-  // get liste des missions
+  // get liste des missions par id du chauffeur
   async getMissionsParIdChauffeur() {
     this.missions = await this.serviceMission
       .getMissionsChauffeur(this.idChauffeur)
       .toPromise();
-    this.missions = this.missions.filter((mission: any) => mission.canvasTop !== "")
+    this.missions = this.missions.filter(
+      (mission: any) => mission.canvasTop !== ''
+    );
   }
 
   // filtrer la liste des missions par leurs Etat
@@ -227,6 +262,14 @@ export class MissionsChauffeurComponent implements OnInit {
       ? (existe = true)
       : (existe = false);
     return existe;
+  }
+
+  get tousCommandesLivrees() {
+    let tousLivrees;
+    this.commandesNonLivrees.length == 0 
+    ? (tousLivrees = true)
+    : (tousLivrees = false);
+    return tousLivrees;
   }
 
   //si on clique sur le bouton de filtrage par etat En cours on active se bouton et on affiche la liste des missions En cours
@@ -323,13 +366,26 @@ export class MissionsChauffeurComponent implements OnInit {
 
   // fonction qui permet de commancer une mission
   async lancerMission(mission: any) {
-    await this.serviceMission.modifierEtatMission(mission.id, 'En cours').toPromise();
+    await this.serviceMission
+      .lancerMission(mission.id)
+      .toPromise();
     await this.getMissionsParIdChauffeur();
     // pour refraichir la mission selectionnée aprés qu'on a modifié l'etat du mission
     this.missionSelectionnee = this.filtrerMissionsParEtat('En cours')[0];
     // on change la tab active vers celle en cours
     this.cliquerEnCours();
-    this.serviceMission.envoyerNotificationProchaineLivraison(mission.idCommandes).subscribe();
+    this.serviceMission
+      .envoyerNotificationProchaineLivraison(mission.idCommandes)
+      .subscribe();
+    if (mission.typeVehicule === 'prive') {
+      this.serviceVehicule
+        .changerEtatVehicule(mission.matricule, 'En mission')
+        .subscribe();
+    } else {
+      this.serviceVehicule
+        .changerEtatVehiculeLoue(mission.matricule, 'En mission')
+        .subscribe();
+    }
   }
 
   // le status et le toggle sont utilisée pour les animation lors de ouverture et la fermeture du volet details mission et details commande
@@ -338,7 +394,7 @@ export class MissionsChauffeurComponent implements OnInit {
     return this.tableMissionsEstAffiche ? 'showTable' : 'hideTable';
   }
 
-  // la fonction qui permet de lancer le changement d'etat
+  // la fonction qui permet de lancer le changement d'etat d'affichage table missions
   toggleTableMissions() {
     this.tableMissionsEstAffiche = !this.tableMissionsEstAffiche;
   }
@@ -348,7 +404,7 @@ export class MissionsChauffeurComponent implements OnInit {
     return this.detailMissionEstAffiche ? 'show' : 'hide';
   }
 
-  // la fonction qui permet de lancer le changement d'etat
+  // la fonction qui permet de lancer le changement d'etat d'affichage detail mission
   toggleDetailMission() {
     this.commandesAffiche = false;
     this.detailMissionEstAffiche = !this.detailMissionEstAffiche;
@@ -359,7 +415,7 @@ export class MissionsChauffeurComponent implements OnInit {
     return this.commandesAffiche ? 'showCommandes' : 'hideCommandes';
   }
 
-  // la fonction qui permet de lancer le changement d'etat
+  // la fonction qui permet de lancer le changement d'etat d'affichage detail commande
   toggleAfficherCommandes() {
     this.commandesAffiche = !this.commandesAffiche;
   }
@@ -392,9 +448,14 @@ export class MissionsChauffeurComponent implements OnInit {
 
   // avoir la position de début depuis le navigateur
   async getPositionDepart() {
-    let infoGenerals = await this.serviceMission.infosGenerals().toPromise()
-    this.latDepart = infoGenerals.latitude;
-    this.longDepart = infoGenerals.longitude;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        this.latDepart = position.coords.latitude;
+        this.longDepart = position.coords.longitude;
+      });
+    } else {
+      alert('Geolocation is not supported by this browser.');
+    }
   }
 
   // retourne la position de destination d'une commande
@@ -440,6 +501,18 @@ export class MissionsChauffeurComponent implements OnInit {
     let trajet = await this.createTrajet();
     this.origine =
       trajet.debutChemin.latitude + '/' + trajet.debutChemin.longitude;
+    if (!trajet.finChemin) {
+      this.lien =
+      'https://www.google.com/maps/embed/v1/directions?key=AIzaSyCwmKoPqb0RLbWgBxRRu20Uz9HVPZF-PJ8&origin=' +
+      this.latDepart +
+      '/' +
+      this.longDepart +
+      '&destination=' +
+      this.latDepart +
+      '/' +
+      this.longDepart;
+      return;
+    }
     this.finChemin =
       trajet.finChemin.latitude + '/' + trajet.finChemin.longitude;
     this.pointStop = '';
@@ -489,7 +562,7 @@ export class MissionsChauffeurComponent implements OnInit {
       maxHeight: '95vh',
       panelClass: 'custom-dialog-plan-chargement',
       data: {
-        mission: this.missionSelectionnee
+        mission: this.missionSelectionnee,
       },
     });
   }

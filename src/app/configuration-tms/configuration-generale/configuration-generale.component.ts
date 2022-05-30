@@ -1,3 +1,8 @@
+/**
+ Liste des méthodes:
+ * creerFormGroup: creation du formGroup info general.
+ * enregistrer: enregistrer les données.
+ */
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -73,6 +78,7 @@ export class ConfigurationGeneraleComponent implements OnInit {
     });
   }
 
+  // enregistrer les données
   enregistrer() {
     let nouveauInfos: InfoGeneral = new InfoGeneral(
       this.nomSociete.value,

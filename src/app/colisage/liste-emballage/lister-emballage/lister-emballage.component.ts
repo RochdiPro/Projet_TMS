@@ -1,3 +1,11 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * filtrerListeColisage: pour filtrer la liste colisage selon nom du produit, nom d'emballage et type D'emballage.
+ * getListeColisage: lister les emballages.
+ * getQuantiteProduit: recuperer la quantité de chaque produit.
+ * getNomProduit: get le nom de chaque produit.
+ */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
@@ -47,6 +55,9 @@ export class ListerEmballageComponent implements OnInit {
   acces: any;
   wms: any;
 
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -67,6 +78,7 @@ export class ListerEmballageComponent implements OnInit {
 
   //pour filtrer la liste colisage selon nom du produit, nom d'emballage et type D'emballage
   filtrerListeColisage() {
+    this.chargementEnCours = true;
     // si on selectionne l'option vide dans le select type emballage en filtre par une chaine vide pour annuler l'effet de filtrage
     if (this.form.get('typeEmballage').value === undefined)
       this.form.get('type_Emballage').setValue('');
@@ -87,16 +99,20 @@ export class ListerEmballageComponent implements OnInit {
         this.dataSource.data = this.dataSource.data.sort((a, b) =>
           a.id > b.id ? -1 : 1
         );
+        this.chargementEnCours = false;
       });
   }
 
+  // lister les emballages
   async getListeColisage() {
+    this.chargementEnCours = true;
     //get la liste de colisage
     this.dataSource.data = await this.service.listeEmballage().toPromise();
     // tri par ordre id descendant
     this.dataSource.data = this.dataSource.data.sort((a, b) =>
       a.id > b.id ? -1 : 1
     );
+    this.chargementEnCours = false;
   }
 
   //recuperer la quantité de chaque produit
@@ -110,7 +126,6 @@ export class ListerEmballageComponent implements OnInit {
     let nomProduit = produits.nomProduit.split('/');
     return nomProduit;
   }
-
 }
 
 //interface table Emballage

@@ -21,6 +21,7 @@
 
 </div>
 <div class="mat-elevation-z8" *ngIf="wms>=1">
+  <mat-progress-bar mode="indeterminate" *ngIf="chargementEnCours"></mat-progress-bar>
   <mat-table [dataSource]="dataSource" matSort>
 
     <!-- id Column -->

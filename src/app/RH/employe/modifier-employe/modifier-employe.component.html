@@ -1,5 +1,4 @@
-
-<mat-vertical-stepper [linear]="passage_etape" #stepperClient>
+<mat-vertical-stepper [linear]="passage_etape" #stepperClient *ngIf="Data">
     <mat-step [stepControl]="Informations_Generales_Form">
         <form [formGroup]="Informations_Generales_Form">
             <ng-template matStepLabel>Informations Générales</ng-template>
@@ -8,49 +7,51 @@
 
                     <mat-form-field>
                         <mat-label for="Nom_Client"> Nom du Employé </mat-label>
-                        <input [(ngModel)]=Data.nom type="text" matInput formControlName="Nom_Employe" id="Nom_Employe" name="Nom_Employe"
+                        <input type="text" matInput formControlName="Nom_Employe" id="Nom_Employe" name="Nom_Employe"
                             required>
                         <mat-error *ngIf="Informations_Generales_Form.get('Nom_Employe').invalid">
-                           {{MessageErreurNom()}}</mat-error>    
+                            {{MessageErreurNom()}}</mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Role"> Rôle </mat-label>
-                        <mat-select formControlName="Role" id="Role" name="Role"   placeholder="Role" [(ngModel)]=Data.role>           
+                        <mat-select formControlName="Role" id="Role" name="Role" placeholder="Role">
                             <mat-option *ngFor="let role of roles" [value]="role.nom">
-                                {{role.nom}}</mat-option>                               
+                                {{role.nom}}</mat-option>
                         </mat-select>
                         <mat-error *ngIf="Informations_Generales_Form.get('Role').invalid">
-                            {{MessageErreurrole()}}</mat-error> 
+                            {{MessageErreurrole()}}</mat-error>
                     </mat-form-field>
 
                 </div>
                 <mat-form-field class="col-md-3 mb-3">
                     <mat-label>Local</mat-label>
-                    <mat-select formControlName="local" id="vente" name="local"  placeholder="local"    >
-                        <mat-option *ngFor="let l of locals" value="{{l.nom_Local}}">{{l.nom_Local}}</mat-option>                       
-                </mat-select>
+                    <mat-select formControlName="local" id="vente" name="local" placeholder="local">
+                        <mat-option *ngFor="let l of locals" value="{{l.nom_Local}}">{{l.nom_Local}}</mat-option>
+                    </mat-select>
                 </mat-form-field>
-                
+
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Date_naissance">Date de naissance</mat-label>
-                        <input  matInput formControlName="Date_naissance" id="Date_naissance"  [matDatepicker]="picker"
-                        placeholder="DD/MM/YYYY" name="Date_naissance"  [ngModel]="Date_naissance"   >
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
-                                             
+                        <input matInput formControlName="Date_naissance" id="Date_naissance" [matDatepicker]="picker"
+                            placeholder="DD/MM/YYYY" name="Date_naissance">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Date_naissance').invalid">
+                            Vous devez entrer la date de naissance!   
+                        </mat-error>
                     </mat-form-field>
                 </div>
             </div>
-           <div class="row">
+            <div class="row">
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Type_Piece_Identite">Type de la pièce d'identité </mat-label>
                         <mat-select formControlName="Type_Piece_Identite" id="Type_Piece_Identite"
-                            name="Type_Piece_Identite" placeholder="Type de la pièce d'identité"  [ngModel]="Data.type_Piece_Identite" >
-                             
+                            name="Type_Piece_Identite" placeholder="Type de la pièce d'identité">
+
                             <mat-option *ngFor="let piece of categorie_piece" [value]="piece.nom">{{piece.nom}}
                             </mat-option>
                         </mat-select>
@@ -64,7 +65,7 @@
                     <mat-form-field>
 
                         <mat-label for="N_Piece_Identite"> Numéro de la pièce d'identité </mat-label>
-                        <input [(ngModel)]=Data.n_Piece_Identite type="text" matInput formControlName="N_Piece_Identite" id="N_Piece_Identite"
+                        <input type="text" matInput formControlName="N_Piece_Identite" id="N_Piece_Identite"
                             name="N_Piece_Identite" required>
                         <mat-error *ngIf="Informations_Generales_Form.get('N_Piece_Identite').invalid">
                             {{MessageErreurNPieceIdentite()}}</mat-error>
@@ -74,40 +75,46 @@
                 <div class="col-md-3 mb-3">
 
                     <mat-form-field>
-                         
-                    <mat-label for="Date_Lembauche"> Délivrée le</mat-label>
-                    <input   matInput formControlName="Date_Livraison_Identite" id="Date_Livraison_Identite"[matDatepicker]="picker2"
-                    placeholder="DD/MM/YYYY" name="Date_Livraison_Identite" [ngModel]="Date_Livraison_Identite" >
-                     <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
-                    <mat-datepicker #picker2></mat-datepicker>   
+
+                        <mat-label for="Date_Lembauche"> Délivrée le</mat-label>
+                        <input matInput formControlName="Date_Livraison_Identite" id="Date_Livraison_Identite"
+                            [matDatepicker]="picker2" placeholder="DD/MM/YYYY" name="Date_Livraison_Identite">
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Date_Livraison_Identite').invalid">
+                            Vous devez entrer la date de livraison!   
+                        </mat-error>
                     </mat-form-field>
 
-                </div>                      
-                
+                </div>
+
                 <div class="col-md-3 mb-3">
-                    <mat-form-field>                      
-                    <mat-label for="Date_embauche"> Date d'embauche</mat-label>
-                    <input   matInput formControlName="Date_embauche" id="Date_embauche"[matDatepicker]="picker3"
-                    placeholder="DD/MM/YYYY"  name="Date_embauche" [ngModel]="Date_embauche"> 
-                     <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
-                    <mat-datepicker #picker3></mat-datepicker>   
-                       
+                    <mat-form-field>
+                        <mat-label for="Date_embauche"> Date d'embauche</mat-label>
+                        <input matInput formControlName="Date_embauche" id="Date_embauche" [matDatepicker]="picker3"
+                            placeholder="DD/MM/YYYY" name="Date_embauche">
+                        <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+                        <mat-datepicker #picker3></mat-datepicker>
+                        <mat-error *ngIf="Informations_Generales_Form.get('Date_embauche').invalid">
+                            Vous devez entrer la date d'embauche!   
+                        </mat-error>
+
                     </mat-form-field>
                 </div>
             </div>
-          
+
             <div class="row">
 
                 <mat-form-field class="full-width">
                     <mat-label>Description</mat-label>
-                    <textarea [(ngModel)]=Data.description matInput formControlName="Description" id="Description" name="Description"
+                    <textarea matInput formControlName="Description" id="Description" name="Description"
                         placeholder="Description"></textarea>
                 </mat-form-field>
-            </div>        
-            
+            </div>
+
         </form>
     </mat-step>
-  
+
     <mat-step [stepControl]="Informations_Banques_Form">
         <form [formGroup]="Informations_Banques_Form">
 
@@ -117,21 +124,20 @@
                     <mat-form-field>
                         <mat-label> Image du Employé </mat-label>
                         <ngx-mat-file-input matInput id="Image" name="Image" formControlName="Image"
-                        placeholder="Selectionner image" accept="image/png, image/jpeg" (change)="choixImage()"
-                        [(ngModel)]=Data.image>
-                    </ngx-mat-file-input>
+                            placeholder="Selectionner image" accept="image/png, image/jpeg" (change)="choixImage()">
+                        </ngx-mat-file-input>
 
-           
-                <img id="myimage" src={{Fichier_image_Client}} width="50" height="50"
-                    title="Cliquer pour aggrandir l'image " style="margin-left: 10px;"
-                    (click)="afficherImage(Data.id_Employe)" />
+
+                        <img id="myimage" src={{Fichier_image_Client}} width="50" height="50"
+                            title="Cliquer pour aggrandir l'image " style="margin-left: 10px;"
+                            (click)="afficherImage(Data.id_Employe)" />
                     </mat-form-field>
                 </div>
                 <div class="col-md-3 mb-3">
 
                     <mat-form-field>
                         <mat-label>Email</mat-label>
-                        <input [(ngModel)]=Data.email type="email" matInput formControlName="Email" placeholder="Ex. pat@example.com" required>
+                        <input type="email" matInput formControlName="Email" placeholder="Ex. pat@example.com" required>
                         <mat-error *ngIf="Informations_Banques_Form.get('Email').invalid">
                             {{MessageErreurEmail()}}</mat-error>
                     </mat-form-field>
@@ -140,8 +146,9 @@
                     <mat-form-field>
 
                         <mat-label for="banque1"> Banque </mat-label>
-                        <mat-select (selectionChange)="ChoixBanque1($event)"  formControlName="Banque1" id="Banque1" name="Banque1" placeholder="Banque" [(ngModel)]=Data.banque>
-                             
+                        <mat-select (selectionChange)="ChoixBanque1($event)" formControlName="Banque1" id="Banque1"
+                            name="Banque1" placeholder="Banque">
+
                             <mat-option *ngFor="let banque of  categorie_banque" [value]="banque.nom">
                                 {{banque.nom}}</mat-option>
                         </mat-select>
@@ -153,21 +160,21 @@
                     <mat-form-field>
 
                         <mat-label for="rib1"> RIB </mat-label>
-                        <input [(ngModel)]=Data.rib type="text" matInput formControlName="Rib1" id="Rib1" name="Rib1" style='-webkit-appearance: none; 
+                        <input type="text" matInput formControlName="Rib1" id="Rib1" name="Rib1" style='-webkit-appearance: none; 
                         margin: 0; ' required>
                         <mat-error *ngIf="Informations_Banques_Form.get('Rib1').invalid">
                             {{MessageErreurRib()}}</mat-error>
 
                     </mat-form-field>
                 </div>
-                
+
             </div>
             <div class="row">
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
 
                         <mat-label for="Adresse"> Adresse </mat-label>
-                        <input [(ngModel)]=Data.adresse type="text" matInput formControlName="Adresse" id="Adresse" name="Adresse" required>
+                        <input type="text" matInput formControlName="Adresse" id="Adresse" name="Adresse" required>
                         <mat-error *ngIf="Informations_Banques_Form.get('Adresse').invalid">
                             {{MessageErreurAdresse()}}</mat-error>
 
@@ -179,8 +186,8 @@
                     <mat-form-field>
 
                         <mat-label for="Pays"> Pays </mat-label>
-                        <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays" [(ngModel)]=Data.pays >
-                             <mat-option *ngFor="let pays of  categorie_pays" [value]="pays.nom">
+                        <mat-select formControlName="Pays" id="Pays" name="Pays" placeholder="Pays" (selectionChange)="ChoixPays($event)">
+                            <mat-option *ngFor="let pays of  categorie_pays" [value]="pays.nom">
                                 {{pays.nom}}</mat-option>
                         </mat-select>
                         <mat-error *ngIf="Informations_Banques_Form.get('Pays').invalid">
@@ -192,17 +199,19 @@
                     <mat-form-field>
                         <mat-label for="Ville"> Ville </mat-label>
                         <mat-select formControlName="Ville" id="Ville" name="Ville" placeholder="Ville"
-                            [(ngModel)]=Data.ville>
-                            <mat-option value=" "></mat-option>
+                            (selectionChange)="ChoixVille($event)" required>
                             <mat-option *ngFor="let ville of  categorie_ville" [value]="ville.nom">
                                 {{ville.nom}}</mat-option>
                         </mat-select>
+                        <mat-error *ngIf="Informations_Banques_Form.get('Ville').invalid">
+                            Vous devez séléctionner une ville!
+                        </mat-error>
                     </mat-form-field>
                 </div>
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label>Téléphone</mat-label>
-                        <input [(ngModel)]=Data.tel type="number" matInput formControlName="Tel1" id="Tel1" name="Tel1"
+                        <input type="number" matInput formControlName="Tel1" id="Tel1" name="Tel1"
                             placeholder="(+216)99-999-999" required>
                         <mat-error *ngIf="Informations_Banques_Form.get('Tel1').invalid">
                             {{MessageErreurTel()}}</mat-error>
@@ -211,89 +220,97 @@
 
                 </div>
             </div>
-          
+
             <div class="row">
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Cnss"> Cnss </mat-label>
-                        <input [(ngModel)]=Data.cnss type="text" matInput formControlName="Cnss" id="Cnss" name="Cnss" required>
+                        <input type="text" matInput formControlName="Cnss" id="Cnss" name="Cnss" required>
                         <mat-error *ngIf="Informations_Banques_Form.get('Cnss').invalid">
-                             </mat-error>
+                            Vous devez entrer le code cnss!
+                        </mat-error>
                     </mat-form-field>
                 </div>
-              <div class="col-md-3 mb-3">
-                    <mat-form-field>
-                        <mat-label for="Pays"> Situation Familiale </mat-label>
-                        <mat-select [(ngModel)]=Data.situation_Familiale formControlName="St_Familliale" id="St_Familliale" name="St_Familliale" placeholder="St_Familliale" required>
-                            <mat-option value="Célibataire"> Célibataire </mat-option>
-                            <mat-option value="Marié"> Marié  </mat-option> 
-                            <mat-option value="Divorce"> Divorce  </mat-option>                            
-                        </mat-select>
-                        <mat-error *ngIf="Informations_Banques_Form.get('St_familliale').invalid">
-                             </mat-error>
-
-                    </mat-form-field>
-                </div>
-                <div class="col-md-3 mb-3">                     
-                    <mat-form-field>
-                        <mat-label for="Enfant_a_charge"> Enfant_a_charge </mat-label>
-                        <input [(ngModel)]=Data.enfant_A_Charge type="number" matInput formControlName="Enfant_a_charge" id="Enfant_a_charge" name="Enfant_a_charge" required>
-                        <mat-error *ngIf="Informations_Banques_Form.get('Enfant_a_charge').invalid">
-                             </mat-error>
-                    </mat-form-field>
-                </div>
-             
-            </div>
-
-       
-             <div class="row">
-
-                <div class="col-md-3 mb-3">                     
-                    <mat-form-field>
-                        <mat-label for="N_permis"> N_permis </mat-label>
-                        <input [(ngModel)]=Data.permis type="text" matInput formControlName="N_permis" id="N_permis" name="N_permis" required>
-                        <mat-error *ngIf="Informations_Banques_Form.get('N_permis').invalid">
-                             </mat-error>
-                    </mat-form-field>
-                </div>                 
-               
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
-                        <mat-label for="Pays"> Catégorie  Permis </mat-label>        
-                        
-                        <mat-select [(ngModel)]=Data.categorie_Permis formControlName="Categorie_permis" id="Categorie_permis" name="Categorie_permis" placeholder="Categorie_permis" required>
-                            <mat-option value="A1">A1</mat-option>
-                            <mat-option value="A2">A2</mat-option>      
-                            <mat-option value="B1">B1</mat-option>
-                            <mat-option value="B+E">B+E</mat-option>  
-                            <mat-option value="C">C</mat-option>
-                            <mat-option value="C+E">C+E</mat-option>              
-                            <mat-option value="D">D</mat-option>
-                            <mat-option value="D+E">D+E</mat-option>  
-                            <mat-option value="D1">D1</mat-option>
-                            <mat-option value="H">H</mat-option>           
+                        <mat-label for="Pays"> Situation Familiale </mat-label>
+                        <mat-select formControlName="St_familliale" id="St_Familliale" name="St_Familliale"
+                            placeholder="St_Familliale" required>
+                            <mat-option value="Célibataire"> Célibataire </mat-option>
+                            <mat-option value="Marié"> Marié </mat-option>
+                            <mat-option value="Divorce"> Divorce </mat-option>
                         </mat-select>
-                        <mat-error *ngIf="Informations_Banques_Form.get('Categorie_permis').invalid">
-                             </mat-error>
+                        <mat-error *ngIf="Informations_Banques_Form.get('St_familliale').invalid">
+                            Vous devez séléctionner une situation familliale!
+                        </mat-error>
 
                     </mat-form-field>
                 </div>
-               
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Enfant_a_charge"> Enfant_a_charge </mat-label>
+                        <input type="number" matInput formControlName="Enfant_a_charge" id="Enfant_a_charge"
+                            name="Enfant_a_charge" required>
+                        <mat-error *ngIf="Informations_Banques_Form.get('Enfant_a_charge').invalid">
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="N_permis"> N_permis </mat-label>
+                        <input type="text" matInput formControlName="N_permis" id="N_permis" name="N_permis" required>
+                        <mat-error *ngIf="Informations_Banques_Form.get('N_permis').invalid">
+                            Vous devez saisir un  numéro de permis!
+                        </mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <mat-form-field>
+                        <mat-label for="Pays"> Catégorie Permis </mat-label>
+
+                        <mat-select formControlName="Categorie_permis" id="Categorie_permis" name="Categorie_permis"
+                            placeholder="Categorie_permis" required>
+                            <mat-option value="A1">A1</mat-option>
+                            <mat-option value="A2">A2</mat-option>
+                            <mat-option value="B">B</mat-option>
+                            <mat-option value="B+E">B+E</mat-option>
+                            <mat-option value="C">C</mat-option>
+                            <mat-option value="C+E">C+E</mat-option>
+                            <mat-option value="D">D</mat-option>
+                            <mat-option value="D+E">D+E</mat-option>
+                            <mat-option value="D1">D1</mat-option>
+                            <mat-option value="H">H</mat-option>
+                        </mat-select>
+                        <mat-error *ngIf="Informations_Banques_Form.get('Categorie_permis').invalid">
+                        </mat-error>
+
+                    </mat-form-field>
+                </div>
+
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Date_permis">Date Permis</mat-label>
-                        <input  matInput formControlName="Date_permis" id="Date_permis"  [matDatepicker]="picker9"
-                        placeholder="DD/MM/YYYY" name="Date_permis" [ngModel]="Date_permis" required>
-                    <mat-datepicker-toggle matSuffix [for]="picker9"></mat-datepicker-toggle>
-                    <mat-datepicker #picker9></mat-datepicker>
-                                             
+                        <input matInput formControlName="Date_permis" id="Date_permis" [matDatepicker]="picker9"
+                            placeholder="DD/MM/YYYY" name="Date_permis" required>
+                        <mat-datepicker-toggle matSuffix [for]="picker9"></mat-datepicker-toggle>
+                        <mat-datepicker #picker9></mat-datepicker>
+                        <mat-error *ngIf="Informations_Banques_Form.get('Date_permis').invalid">
+                            Vous devez séléctionner une date de permis!
+                        </mat-error>
                     </mat-form-field>
                 </div>
-               
+
             </div>
 
         </form>
-    </mat-step>      
+    </mat-step>
 
     <mat-step [stepControl]="Acces">
         <form [formGroup]="Acces">
@@ -301,111 +318,124 @@
                 <div class="col-md-3 mb-3">
                     <mat-form-field>
                         <mat-label for="Enfant_a_charge"> identifiant </mat-label>
-                        <input value ="0" type="text" matInput formControlName="login"   [(ngModel)]=Data.id >
-                        
+                        <input value="0" type="text" matInput formControlName="login">
+                        <mat-error *ngIf="Acces.get('login').invalid">
+                            Vous devez entrer un login!
+                        </mat-error>
                     </mat-form-field>
                 </div>
-                <div class="col-md-3 mb-3">                     
+                <div class="col-md-3 mb-3">
                     <mat-form-field>
-                        <mat-label for="Enfant_a_charge"> mote de passe  </mat-label>
-                        <input value ="0" type="text" matInput formControlName="pwd"   [(ngModel)]=Data.pwd >
-                        
+                        <mat-label for="Enfant_a_charge"> mote de passe </mat-label>
+                        <input value="0" type="text" matInput formControlName="pwd">
+                        <mat-error *ngIf="Acces.get('pwd').invalid">
+                            Vous devez entrer un mot de passe!
+                        </mat-error>
                     </mat-form-field>
                 </div>
-                <h4>code Accés  :    {{Acces.get('vente').value}}-{{Acces.get('achat').value}}-{{Acces.get('tms').value}}-{{Acces.get('wms').value}}-{{Acces.get('config').value}}-{{Acces.get('rh').value}}   <i class="pe-7s-next"> </i>  {{Acces.get('Acces').value}} </h4>
-             
+                <h4>code Accés :
+                    {{Acces.get('vente').value}}-{{Acces.get('achat').value}}-{{Acces.get('tms').value}}-{{Acces.get('wms').value}}-{{Acces.get('config').value}}-{{Acces.get('rh').value}}
+                    <i class="pe-7s-next"> </i> {{Acces.get('Acces').value}} </h4>
+
             </div>
             <ng-template matStepLabel>Accés</ng-template>
-            <div    >
-                 
-                 <p> 0 : Pas d'accès sur le module spécifique </p> 
-                 <p> 1 : A le droit de lire le contenu de module spécifique </p>
-                 <p> 2 : A le droit de lire et d' ajouter le contenu de module spécifique </p>
-                 <p> 3 : A le droit de lire , ajouter et modifier le contenu de module spécifique </p>
-                 <p> 4 : A le droit de lire , ajouter , modifier et supprimer le contenu de module spécifique </p>
-                 <p> 5 : A le droit de lire , ajouter , modifier , supprimer et Archiver  le contenu de module spécifique </p>
-                      
-       
-                
+            <div>
+
+                <p> 0 : Pas d'accès sur le module spécifique </p>
+                <p> 1 : A le droit de lire le contenu de module spécifique </p>
+                <p> 2 : A le droit de lire et d' ajouter le contenu de module spécifique </p>
+                <p> 3 : A le droit de lire , ajouter et modifier le contenu de module spécifique </p>
+                <p> 4 : A le droit de lire , ajouter , modifier et supprimer le contenu de module spécifique </p>
+                <p> 5 : A le droit de lire , ajouter , modifier , supprimer et Archiver le contenu de module spécifique
+                </p>
+
+
+
             </div>
             <div class="row">
                 <mat-form-field class="col-md-2 mb-2">
                     <mat-label>Vente</mat-label>
-                    <mat-select formControlName="vente" id="vente" name="vente"  placeholder="vente"  (selectionChange)="changeracces()"  >
-                        <mat-option value="0" selected>0</mat-option>                          
-                        <mat-option value="1" selected>1</mat-option>    
-                        <mat-option value="2" selected>2</mat-option>                          
+                    <mat-select formControlName="vente" id="vente" name="vente" placeholder="vente"
+                        (selectionChange)="changeracces()">
+                        <mat-option value="0" selected>0</mat-option>
+                        <mat-option value="1" selected>1</mat-option>
+                        <mat-option value="2" selected>2</mat-option>
                         <mat-option value="3" selected>3</mat-option>
-                        <mat-option value="4" selected>4</mat-option> 
-                        <mat-option value="5" selected>5</mat-option>                       
-                </mat-select>
+                        <mat-option value="4" selected>4</mat-option>
+                        <mat-option value="5" selected>5</mat-option>
+                    </mat-select>
                 </mat-form-field>
                 <mat-form-field class="col-md-2 mb-2">
                     <mat-label>Achat</mat-label>
-                    <mat-select formControlName="achat" id="achat" name="achat" (selectionChange)="changeracces()"     placeholder="achat"  >
-                    <mat-option value="0" selected>0</mat-option>                          
-                    <mat-option value="1" selected>1</mat-option>    
-                    <mat-option value="2" selected>2</mat-option>                          
-                    <mat-option value="3" selected>3</mat-option>
-                    <mat-option value="4" selected>4</mat-option> 
-                    <mat-option value="5" selected>5</mat-option>                        
-                </mat-select>
+                    <mat-select formControlName="achat" id="achat" name="achat" (selectionChange)="changeracces()"
+                        placeholder="achat">
+                        <mat-option value="0" selected>0</mat-option>
+                        <mat-option value="1" selected>1</mat-option>
+                        <mat-option value="2" selected>2</mat-option>
+                        <mat-option value="3" selected>3</mat-option>
+                        <mat-option value="4" selected>4</mat-option>
+                        <mat-option value="5" selected>5</mat-option>
+                    </mat-select>
                 </mat-form-field>
                 <mat-form-field class="col-md-2 mb-2">
                     <mat-label>TMS</mat-label>
-                    <mat-select formControlName="tms" id="tms" name="tms"  (selectionChange)="changeracces()" placeholder="tms"   >
-                    <mat-option value="0" selected>0</mat-option>                          
-                    <mat-option value="1" selected>1</mat-option>    
-                    <mat-option value="2" selected>2</mat-option>                          
-                    <mat-option value="3" selected>3</mat-option>
-                    <mat-option value="4" selected>4</mat-option> 
-                    <mat-option value="5" selected>5</mat-option>              
-                </mat-select>
+                    <mat-select formControlName="tms" id="tms" name="tms" (selectionChange)="changeracces()"
+                        placeholder="tms">
+                        <mat-option value="0" selected>0</mat-option>
+                        <mat-option value="1" selected>1</mat-option>
+                        <mat-option value="2" selected>2</mat-option>
+                        <mat-option value="3" selected>3</mat-option>
+                        <mat-option value="4" selected>4</mat-option>
+                        <mat-option value="5" selected>5</mat-option>
+                    </mat-select>
                 </mat-form-field>
                 <mat-form-field class="col-md-2 mb-2">
                     <mat-label>WMS</mat-label>
-                    <mat-select formControlName="wms" id="wms" name="wms" (selectionChange)="changeracces()"  placeholder="wms"   >
-                    <mat-option value="0" selected>0</mat-option>                          
-                    <mat-option value="1" selected>1</mat-option>    
-                    <mat-option value="2" selected>2</mat-option>                          
-                    <mat-option value="3" selected>3</mat-option>
-                    <mat-option value="4" selected>4</mat-option> 
-                    <mat-option value="5" selected>5</mat-option>                         
-                </mat-select>
+                    <mat-select formControlName="wms" id="wms" name="wms" (selectionChange)="changeracces()"
+                        placeholder="wms">
+                        <mat-option value="0" selected>0</mat-option>
+                        <mat-option value="1" selected>1</mat-option>
+                        <mat-option value="2" selected>2</mat-option>
+                        <mat-option value="3" selected>3</mat-option>
+                        <mat-option value="4" selected>4</mat-option>
+                        <mat-option value="5" selected>5</mat-option>
+                    </mat-select>
                 </mat-form-field>
                 <mat-form-field class="col-md-2 mb-2">
                     <mat-label>Config</mat-label>
-                    <mat-select formControlName="config" id="config" name="config" (selectionChange)="changeracces()"   placeholder="config"   >
-                    <mat-option value="0" selected>0</mat-option>                          
-                    <mat-option value="1" selected>1</mat-option>    
-                    <mat-option value="2" selected>2</mat-option>                          
-                    <mat-option value="3" selected>3</mat-option>
-                    <mat-option value="4" selected>4</mat-option> 
-                    <mat-option value="5" selected>5</mat-option>                           
-                </mat-select>
+                    <mat-select formControlName="config" id="config" name="config" (selectionChange)="changeracces()"
+                        placeholder="config">
+                        <mat-option value="0" selected>0</mat-option>
+                        <mat-option value="1" selected>1</mat-option>
+                        <mat-option value="2" selected>2</mat-option>
+                        <mat-option value="3" selected>3</mat-option>
+                        <mat-option value="4" selected>4</mat-option>
+                        <mat-option value="5" selected>5</mat-option>
+                    </mat-select>
                 </mat-form-field>
                 <mat-form-field class="col-md-2 mb-2">
                     <mat-label>RH</mat-label>
-                    <mat-select formControlName="rh" id="rh" name="rh" (selectionChange)="changeracces()" placeholder="rh"  required>
-                    <mat-option value="0" selected>0</mat-option>                          
-                    <mat-option value="1" selected>1</mat-option>    
-                    <mat-option value="2" selected>2</mat-option>                          
-                    <mat-option value="3" selected>3</mat-option>
-                    <mat-option value="4" selected>4</mat-option> 
-                    <mat-option value="5" selected>5</mat-option>                        
-                </mat-select>
+                    <mat-select formControlName="rh" id="rh" name="rh" (selectionChange)="changeracces()"
+                        placeholder="rh" required>
+                        <mat-option value="0" selected>0</mat-option>
+                        <mat-option value="1" selected>1</mat-option>
+                        <mat-option value="2" selected>2</mat-option>
+                        <mat-option value="3" selected>3</mat-option>
+                        <mat-option value="4" selected>4</mat-option>
+                        <mat-option value="5" selected>5</mat-option>
+                    </mat-select>
                 </mat-form-field>
             </div>
-             
-               
-             
+
+
+
             <div>
                 <button mat-button matStepperPrevious class="btn-primary"
                     style="margin-top: 20px; margin-right: 20px;">Retour</button>
                 <button mat-button matStepperNext class="btn-primary">Suivant</button>
             </div>
         </form>
-    </mat-step> 
+    </mat-step>
 
     <mat-step>
         <ng-template matStepLabel>Validation</ng-template>
@@ -414,7 +444,5 @@
                 style=" margin-left: 150px;">Valider</button>
         </div>
     </mat-step>
-    
-</mat-vertical-stepper>
 
- 
+</mat-vertical-stepper>

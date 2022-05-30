@@ -613,7 +613,7 @@
             <button mat-button color="warn" class="mb-2 mr-2">Annuler</button>
             <!-- Bouton Enregistrer -->
             <button mat-button color="primary" class="mb-2 mr-2" (click)="enregistrer()"
-                [disabled]="listeFilesAttentes.length === 0">
+                [disabled]="boutonEnregistrerDesactive">
                 <span *ngIf="boutonEnregistrerEstActive">Enregistrer</span>
                 <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"
                     *ngIf="!boutonEnregistrerEstActive"></span>

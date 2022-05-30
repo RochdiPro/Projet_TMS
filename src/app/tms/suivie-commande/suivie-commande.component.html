@@ -24,8 +24,8 @@
                   <div class="input-group rounded input-chercher">
                      <input type="search" class="form-control rounded" placeholder="Tracking number" aria-label="Search"
                         aria-describedby="search-addon" [(ngModel)]="trackingNumber"
-                        (keyup.enter)="rechercheCommande()" />
-                     <span class="input-group-text border-0" id="search-addon" (click)="rechercheCommande()"
+                        (keyup.enter)="clickerChercher()" />
+                     <span class="input-group-text border-0" id="search-addon" (click)="clickerChercher()"
                         style="cursor: pointer;">
                         <i class="fas fa-search"></i>
                      </span>

@@ -101,10 +101,14 @@ export class ModifierEmployeComponent implements OnInit {
       this.Date_naissance = new Date(this.Data.date_de_naissance);
       this.Date_Livraison_Identite = new Date(this.Data.date_Piece_Identite);
       this.Date_permis = new Date(this.Data.date_de_Permis);
+      this.serviceClient
+        .ListerVille(this.Data.pays)
+        .subscribe((reponse: Response) => {
+          this.categorie_ville = reponse;
+        });
 
       const numToSeparate = this.Data.acces;
       const arrayOfDigits = Array.from(String(numToSeparate), Number);
-      console.log(arrayOfDigits);
       this.Acces.get('vente').value = arrayOfDigits[1] + '';
       this.Acces.get('achat').value = arrayOfDigits[2] + '';
       this.Acces.get('tms').value = arrayOfDigits[3] + '';
@@ -126,6 +130,35 @@ export class ModifierEmployeComponent implements OnInit {
         this.Acces.get('rh').value +
         '';
       this.Acces.get('Acces').value = codeacces;
+
+      // sel les valeurs initiales
+      this.Informations_Generales_Form.get('Nom_Employe').setValue(this.Data.nom)
+      this.Informations_Generales_Form.get('Role').setValue(this.Data.role)
+      this.Informations_Generales_Form.get('Date_naissance').setValue(this.Date_naissance)
+      this.Informations_Generales_Form.get('Type_Piece_Identite').setValue(this.Data.type_Piece_Identite)
+      this.Informations_Generales_Form.get('N_Piece_Identite').setValue(this.Data.n_Piece_Identite)
+      this.Informations_Generales_Form.get('Date_Livraison_Identite').setValue(this.Date_Livraison_Identite)
+      this.Informations_Generales_Form.get('Description').setValue(this.Data.description)
+      this.Informations_Generales_Form.get('Date_embauche').setValue(this.Date_embauche)
+
+      this.Informations_Banques_Form.get('Image').setValue(this.Data.image)
+      this.Informations_Banques_Form.get('Email').setValue(this.Data.email)
+      this.Informations_Banques_Form.get('Banque1').setValue(this.Data.banque)
+      this.Informations_Banques_Form.get('Rib1').setValue(this.Data.rib)
+      this.Informations_Banques_Form.get('Adresse').setValue(this.Data.adresse)
+      this.Informations_Banques_Form.get('Pays').setValue(this.Data.pays)
+      this.Informations_Banques_Form.get('Ville').setValue(this.Data.ville)
+      this.Informations_Banques_Form.get('Tel1').setValue(this.Data.tel)
+      this.Informations_Banques_Form.get('Cnss').setValue(this.Data.cnss)
+      this.Informations_Banques_Form.get('St_familliale').setValue(this.Data.situation_Familiale)
+      this.Informations_Banques_Form.get('Enfant_a_charge').setValue(this.Data.enfant_A_Charge)
+      this.Informations_Banques_Form.get('N_permis').setValue(this.Data.permis)
+      this.Informations_Banques_Form.get('Date_permis').setValue(this.Date_permis)
+      this.Informations_Banques_Form.get('Categorie_permis').setValue(this.Data.categorie_Permis)
+      
+
+      this.Acces.get('login').setValue(this.Data.id)
+      this.Acces.get('pwd').setValue(this.Data.pwd)
     });
 
     this.Image_Client(this.id_emp);
@@ -140,7 +173,7 @@ export class ModifierEmployeComponent implements OnInit {
         ],
       ],
       Role: ['', Validators.required],
-      local: ['', Validators.required],
+      local: [{ value: 'principal', disabled: true }, Validators.required],
       Date_naissance: ['', [Validators.required]],
       Type_Piece_Identite: ['', Validators.required],
       N_Piece_Identite: [
@@ -151,14 +184,14 @@ export class ModifierEmployeComponent implements OnInit {
           Validators.maxLength(15),
         ],
       ],
-      Date_Livraison_Identite: [],
+      Date_Livraison_Identite: ['', Validators.required],
       Description: [''],
-      Date_embauche: [],
+      Date_embauche: ['', Validators.required],
     });
     this.Acces = this.fb.group({
       Acces: ['1000000'],
-      login: [''],
-      pwd: [''],
+      login: ['', Validators.required],
+      pwd: ['', Validators.required],
       vente: ['0'],
       achat: ['0'],
       config: ['0'],
@@ -180,8 +213,8 @@ export class ModifierEmployeComponent implements OnInit {
         ],
       ],
       Adresse: ['', [Validators.required]],
-      Pays: [{ value: 'Tunisie', disabled: true }, Validators.required],
-      Ville: [''],
+      Pays: ['', Validators.required],
+      Ville: ['', Validators.required],
       Tel1: [
         '',
         [
@@ -198,241 +231,29 @@ export class ModifierEmployeComponent implements OnInit {
       Categorie_permis: [''],
     });
 
-    this.Informations_Banques_Form.controls.Rib1.disable();
 
     // formulaire affichant la récapitulation des tous les champs
     this.Recapitulation_Form = this.fb.group({});
 
     // récupérer la liste des categories employé
-    this.roles = [
-      {
-        nom: 'Simple ouvrier',
-        valeur: '',
-      },
-      {
-        nom: 'Technicien',
-        valeur: '',
-      },
-      {
-        nom: 'Ingénieur',
-        valeur: '',
-      },
-      {
-        nom: 'Chauffeur',
-        valeur: '20.0',
-      },
-    ];
+    this.serviceClient
+      .ListerCategorieEmploye()
+      .subscribe((reponse: Response) => {
+        this.roles = reponse;
+      });
 
     // récupérer la liste des categories pièce d'identité
-    this.categorie_piece = [
-      {
-        nom: 'Cin',
-        valeur: '',
-      },
-      {
-        nom: 'Patente',
-        valeur: '',
-      },
-      {
-        nom: 'Passeport',
-        valeur: '',
-      },
-      {
-        nom: 'Carte séjour',
-        valeur: '',
-      },
-    ];
+    this.serviceClient.ListerCategoriePiece().subscribe((reponse: Response) => {
+      this.categorie_piece = reponse;
+    });
 
-    let banques = [
-      {
-        nom: 'Banque Internationale Arabe de Tunisie «  BIAT »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque de l’Habitat « BH »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Société Tunisienne de Banque « STB »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Nationale Agricole « BNA »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Tunisienne de Solidarité « BTS »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque de Tunisie et des Emirats « BTE »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Tuniso-Libyenne « BTL »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Tunisian Saudi Bank « TSB »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Zitouna',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Al Baraka Bank',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Al Wifak International Bank',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Amen Bank',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Attijari Bank',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Arab Tunisian Bank « ATB »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Arab Banking Corporation « ABC »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque de Tunisie « BT »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Banque Tuniso Koweitienne « BTK »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Qatar National Bank- Tunis « QNB-Tunis »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Union Bancaire de Commerce et d’Industrie «  UBCI »',
-        valeur: 'Tunisie',
-      },
-      {
-        nom: 'Union Internationale de Banque «  UIB »',
-        valeur: 'Tunisie',
-      },
-    ];
-
-    this.categorie_banque = banques.sort(function (a, b) {
-      return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
+    // récupérer la liste des categories banques
+    this.serviceClient.ListerBanques().subscribe((reponse: Response) => {
+      this.categorie_banque = reponse;
     });
     // récupérer la liste des pays
-    this.categorie_pays = [
-      {
-        nom: 'Tunisie',
-        valeur: '',
-      },
-    ];
-
-    let villes = [
-      {
-          nom: "Sfax",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Ariana",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Ben_Arous",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Gabes",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Gafsa",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Jendouba",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Kairouan",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Kasserine",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Kebili",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Manouba",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Kef",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Mahdia",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Mednine",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Monastir",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Nabeul",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Sidi_Bouzid",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Siliana",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Sousse",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Tataouine",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Tozeur",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Tunis",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Zaghouan",
-          valeur: "Tunisie"
-      },
-      {
-          nom: "Beja",
-          valeur: "Tunisie"
-      }
-  ]
-    this.categorie_ville = villes.sort(function(a, b) {
-      return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
+    this.serviceClient.ListerPays().subscribe((reponse: Response) => {
+      this.categorie_pays = reponse;
     });
   }
 
@@ -455,6 +276,23 @@ export class ModifierEmployeComponent implements OnInit {
     this.Informations_Banques_Form.controls.Rib1.enable();
   }
 
+  // fonction activée lors de choix du pays pour récupérer la liste des villes dans ce dernier
+  ChoixPays(event: MatSelectChange) {
+    this.pays = event.value;
+    this.serviceClient.ListerVille(this.pays).subscribe((reponse: Response) => {
+      this.categorie_ville = reponse;
+      this.Informations_Banques_Form.get('Ville').setValue('')
+    });
+  }
+  // fonction activée lors de choix de la ville pour récupérer la liste des régions dans cette dernière
+  ChoixVille(event: MatSelectChange) {
+    this.ville = event.value;
+    this.serviceClient
+      .ListerRegion(this.ville)
+      .subscribe((reponse: Response) => {
+        this.categorie_region = reponse;
+      });
+  }
 
   changeracces() {
     let codeacces =

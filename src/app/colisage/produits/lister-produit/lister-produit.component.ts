@@ -1,3 +1,8 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * filtrerProduits: filtrer la liste des produits.
+ */
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -24,27 +29,29 @@ export class ListerProduitComponent implements OnInit {
     'valeurUnite',
     'codeBarre',
     'type1',
-    'type2'
+    'type2',
   ];
   dataSource = new MatTableDataSource<Produit>();
 
   // variable des filtres
-  filtreId: string ="";
-  filtreMarque: string="";
-  filtreNom: string="";
+  filtreId: string = '';
+  filtreMarque: string = '';
+  filtreNom: string = '';
 
   // variables de droits d'accés
   nom: any;
   acces: any;
   wms: any;
+
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
   constructor(private service: ProduitService, private router: Router) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1004400');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 
@@ -57,19 +64,19 @@ export class ListerProduitComponent implements OnInit {
   ngOnInit(): void {
     this.service.produits().subscribe((produits: any) => {
       this.dataSource.data = produits;
+      this.chargementEnCours = false;
     });
   }
 
+  // filtrer la liste des produits
   filtrerProduits() {
+    this.chargementEnCours = true;
     this.service
       .filtrerProduits(this.filtreId, this.filtreMarque, this.filtreNom)
       .subscribe((result) => {
         this.dataSource.data = result;
+        this.chargementEnCours = false;
       });
   }
 
-  modifierProduit(produit: Produit) {
-    this.service.prod = produit; //on enregistre le produit dans une variable dans le ProduitService pour le passer a l'interface de modification
-    this.router.navigate(['/Menu/Menu_Colisage/Produits/modifier-produit']); //navigation vers l'interface modifier produit
-  }
 }

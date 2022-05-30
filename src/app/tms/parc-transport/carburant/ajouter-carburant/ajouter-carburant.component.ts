@@ -1,3 +1,9 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * enregistrerCarburant: ajouter nouveau carburant.
+ * fermerAjouterCarburant: fermer la boite de dialogue.
+ */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,7 +18,20 @@ import { CarburantService } from '../services/carburant.service';
 export class AjouterCarburantComponent implements OnInit {
   //declaration des variables
   form: FormGroup;
-  constructor(private fb: FormBuilder, private service: CarburantService, public _router: Router) { }
+
+   // variables de droits d'accés
+   nom: any;
+   acces: any;
+   tms: any;
+  constructor(private fb: FormBuilder, private service: CarburantService, public _router: Router) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+   }
 
   ngOnInit(): void {
     this.form = this.fb.group({

@@ -60,6 +60,7 @@
          </section>
       </div>
       <div>
+         <mat-progress-bar mode="indeterminate" *ngIf="chargementEnCours"></mat-progress-bar>
          <mat-table [dataSource]="dataSource" matSort>
 
             <!-- Position Column -->
@@ -120,10 +121,20 @@
 <div class="vehicule" id="vehicule" [@statusVehicule]="statusVehicule">
    <!-- legend -->
    <div class="legend" id="legend">
-      <div cdkDropList class="drag-drop" (cdkDropListDropped)="drop($event)">
+      <div cdkDropList class="drag-drop" (cdkDropListDropped)="drop($event)" *ngIf="dragDropeActive">
          <div class="drag-drop-box" *ngFor="let commande of listeCommandes; let last = last" cdkDrag
             cdkDragLockAxis="y">
             <div class="drag-drop-handle" cdkDragHandle>
+               <div [style.background-color]="commande.couleur" style="height: 14px; width: 14px;"></div>
+               <div class="position">
+                  {{commande.nomClient}}: {{commande.adresse}}, {{commande.ville}}.
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="drag-drop" *ngIf="!dragDropeActive">
+         <div class="drag-drop-box" *ngFor="let commande of listeCommandes; let last = last">
+            <div class="drag-drop-handle-desactive">
                <div [style.background-color]="commande.couleur" style="height: 14px; width: 14px;"></div>
                <div class="position">
                   {{commande.nomClient}}: {{commande.adresse}}, {{commande.ville}}.

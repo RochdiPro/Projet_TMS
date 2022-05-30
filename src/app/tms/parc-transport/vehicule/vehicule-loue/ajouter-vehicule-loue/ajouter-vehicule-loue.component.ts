@@ -3,6 +3,10 @@ Liste Méthodes:
 * enregistrerVehicule: créer nouveau vehicule.
 * annuler: retour a la liste de vehicules sans enregistrer.
 * testTypeMatricule: tester le type de matricule si elle est TUN ou RS.
+* chargerCarburants: get liste carburants.
+* fermerAjouterVehicule: retourner vers fenetre lister.
+* getListeMatricules: get liste des matricules enregistrés
+* verifierMatricule: verifier existance matricule.
 */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -150,7 +154,7 @@ export class AjouterVehiculeLoueComponent implements OnInit {
     }
   }
 
-  //fermer la boite de dialogue
+  //retourner vers fenetre lister
   fermerAjouterVehicule(): void {
     this.router.navigateByUrl(
       '/Menu/TMS/Parc/Vehicules/Vehicules-Loues/lister-vehicules'
@@ -233,6 +237,7 @@ export class AjouterVehiculeLoueComponent implements OnInit {
     });
   }
 
+  // get liste des matricules enregistrés
   getListeMatricules() {
     this.service
       .getMatriculesVehiculesPrives()
@@ -245,6 +250,7 @@ export class AjouterVehiculeLoueComponent implements OnInit {
       });
   }
 
+  // verifier existance matricule
   verifierMatricule() {
     let typeMatriculeEstTUN = this.typeMatriculeSelectionne === 'TUN';
     let typeMatriculeEstRS = this.typeMatriculeSelectionne === 'RS';

@@ -1,3 +1,11 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * calculVolume: calculer le volume de l'emballage.
+ * modifierSupport: faire la modification du support de chargement.
+ * annuler: annuler la modification.
+ * testType: teste du type de support pour savaoir activer les champs de dimensions ou le champ du volume.
+ */
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -64,6 +72,8 @@ export class ModifierSupportComponent implements OnInit {
       this.form.get('volume').setValue(volume);
     }
   }
+
+  // faire la modification du support de chargement
   async modifierSupport() {
     var formData = new FormData();
     formData.append('id', this.support.id);
@@ -85,7 +95,7 @@ export class ModifierSupportComponent implements OnInit {
     });
   }
 
-  //bouton annuler
+  //annuler la modification
   annuler() {
     Swal.fire({
       title: 'Êtes vous sûr?',

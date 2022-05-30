@@ -54,18 +54,33 @@ export class ModifierClientComponent implements OnInit {
 
     // premiere formulaire contenant les informations generales du Client avec les controles sur les champs
     this.Informations_Generales_Form = this.fb.group({
-      Nom_Client: ['', [Validators.minLength(3), Validators.maxLength(30)]],
+      Nom_Client: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(30),
+        ],
+      ],
       Categorie_Client: [''],
       Categorie_Fiscale: [''],
       Identification_Fiscale: [
         '',
-        [Validators.minLength(13), Validators.maxLength(15)],
+        [
+          Validators.required,
+          Validators.minLength(13),
+          Validators.maxLength(15),
+        ],
       ],
       Representant: ['', [Validators.minLength(3), Validators.maxLength(30)]],
       Type_Piece_Identite: [''],
       N_Piece_Identite: [
         '',
-        [Validators.minLength(8), Validators.maxLength(15)],
+        [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(15),
+        ],
       ],
       Date_Livraison_Identite: [''],
       Description: [''],
@@ -78,7 +93,7 @@ export class ModifierClientComponent implements OnInit {
 
     this.Informations_Banques_Form = this.fb.group({
       Banque1: [''],
-      Rib1: ['', [Validators.minLength(20), Validators.maxLength(20)]],
+      Rib1: ['', [Validators.required ,Validators.minLength(20), Validators.maxLength(20)]],
       Banque2: [''],
       Rib2: ['', [Validators.minLength(20), Validators.maxLength(20)]],
       Solde_Facture: [],
@@ -90,16 +105,16 @@ export class ModifierClientComponent implements OnInit {
     // troisieme formulaire contenant les contacts du Client avec les controles sur les champs
 
     this.ContactForm = this.fb.group({
-      Pays: [''],
-      Region: [''],
-      Ville: [''],
-      Email: ['', [Validators.email]],
-      Tel1: [''],
+      Pays: ['', Validators.required],
+      Region: ['', Validators.required],
+      Ville: ['', Validators.required],
+      Email: ['', [Validators.email, Validators.required]],
+      Tel1: ['', Validators.required],
       Tel2: [''],
       Fax: [''],
       Site_Web: [''],
-      Contact: [''],
-      Adresse: [''],
+      Contact: ['', Validators.required],
+      Adresse: ['', Validators.required],
       Image: [''],
     });
     // formulaire affichant la recapitulation des tous les champs saisies et contenant le bouton de sauvegarde
@@ -264,6 +279,7 @@ export class ModifierClientComponent implements OnInit {
       this.categorie_ville = villes.sort(function (a: any, b: any) {
         return a.nom === b.nom ? 0 : a.nom < b.nom ? -1 : 1;
       });
+      this.ContactForm.get("Ville").setValue("")
     });
   }
 
@@ -282,6 +298,12 @@ export class ModifierClientComponent implements OnInit {
   // message d'erreur lorsque le nom saisi ne respecte pas les conditions prédifinis
   MessageErreurNom() {
     if (
+      this.Informations_Generales_Form.get('Nom_Client').hasError('required')
+    ) {
+      return 'Vous devez entrer le nom du Client!';
+    }
+
+    if (
       this.Informations_Generales_Form.get('Nom_Client').hasError('minlength')
     ) {
       return 'Nom du Client non valide! (Min 3 caractères)';
@@ -294,9 +316,14 @@ export class ModifierClientComponent implements OnInit {
       return '';
     }
   }
-
   // message d'erreur lorsque le representant saisi ne respecte pas les conditions prédifinis
   MessageErreurRepresentant() {
+    if (
+      this.Informations_Generales_Form.get('Representant').hasError('required')
+    ) {
+      return 'Vous devez entrer le representant du Client!';
+    }
+
     if (
       this.Informations_Generales_Form.get('Representant').hasError('minlength')
     ) {
@@ -310,9 +337,39 @@ export class ModifierClientComponent implements OnInit {
       return '';
     }
   }
-
+  // message d'erreur lorsque Categorie Client saisi ne respecte pas les conditions prédifinis
+  MessageErreurCategorieClient() {
+    if (
+      this.Informations_Generales_Form.get('Categorie_Client').hasError(
+        'required'
+      )
+    ) {
+      return 'Vous devez entrer la  Categorie du Client!';
+    } else {
+      return '';
+    }
+  }
+  // message d'erreur lorsque Categorie Fiscale saisi ne respecte pas les conditions prédifinis
+  MessageErreurCategorieFiscale() {
+    if (
+      this.Informations_Generales_Form.get('Categorie_Fiscale').hasError(
+        'required'
+      )
+    ) {
+      return 'Vous devez entrer la  Categorie Fiscale!';
+    } else {
+      return '';
+    }
+  }
   // message d'erreur lorsque l'identifiant fiscal saisi ne respecte pas les conditions prédifinis
   MessageErreurIdentificationFiscale() {
+    if (
+      this.Informations_Generales_Form.get('Identification_Fiscale').hasError(
+        'required'
+      )
+    ) {
+      return 'Vous devez entrer Identification Fiscale!';
+    }
     if (
       this.Informations_Generales_Form.get('Identification_Fiscale').hasError(
         'minlength'
@@ -330,9 +387,27 @@ export class ModifierClientComponent implements OnInit {
       return '';
     }
   }
-
+  // message d'erreur lorsque CategorieP iece saisi ne respecte pas les conditions prédifinis
+  MessageErreurCategoriePiece() {
+    if (
+      this.Informations_Generales_Form.get('Type_Piece_Identite').hasError(
+        'required'
+      )
+    ) {
+      return 'Vous devez entrer le type de la piece Identité!';
+    } else {
+      return '';
+    }
+  }
   // message d'erreur lorsque le numero de piece d'identité saisi ne respecte pas les conditions prédifinis
   MessageErreurNPieceIdentite() {
+    if (
+      this.Informations_Generales_Form.get('N_Piece_Identite').hasError(
+        'required'
+      )
+    ) {
+      return 'Vous devez entrer le numéro de pièce identité!';
+    }
     if (
       this.Informations_Generales_Form.get('N_Piece_Identite').hasError(
         'minlength'
@@ -350,9 +425,63 @@ export class ModifierClientComponent implements OnInit {
       return '';
     }
   }
-
+  // message d'erreur de numéro d'exoneration
+  MessageErreurNAttestationExoneration() {
+    if (
+      this.Informations_Generales_Form.get(
+        'N_Attestation_Exoneration'
+      ).hasError('required')
+    ) {
+      return 'Vous devez entrer numero attestaion!';
+    } else {
+      return '';
+    }
+  }
+  // message d'erreur de date debut d'exoneration
+  MessageErreurEtablieLe() {
+    if (
+      this.Informations_Generales_Form.get('Etablie_Le').hasError('required')
+    ) {
+      return 'Vous devez entrer date exoneration tva!';
+    } else {
+      return '';
+    }
+  }
+  // message d'erreur de date fin d'exoneration
+  MessageErreurValableAu() {
+    if (
+      this.Informations_Generales_Form.get('Valable_Au').hasError('required')
+    ) {
+      return 'Vous devez entrer date exoneration tva!';
+    } else {
+      return '';
+    }
+  }
+  // message d'erreur lorsque Taux Reduction Tva saisi ne respecte pas les conditions prédifinis
+  MessageErreurTauxReductionTva() {
+    if (
+      this.Informations_Generales_Form.get('Taux_Reduction_Tva').hasError(
+        'required'
+      )
+    ) {
+      return 'Vous devez entrer Taux du Reduction tva!';
+    } else {
+      return '';
+    }
+  }
+  // message d'erreur lorsque banque saisi ne respecte pas les conditions prédifinis
+  MessageErreurBanque() {
+    if (this.Informations_Banques_Form.get('Banque1').hasError('required')) {
+      return 'Vous devez choisir une Banque!';
+    } else {
+      return '';
+    }
+  }
   // message d'erreur lorsque Rib1 saisi ne respecte pas les conditions prédifinis
   MessageErreurRib() {
+    if (this.Informations_Banques_Form.get('Rib1').hasError('required')) {
+      return 'Vous devez entrer Rib';
+    }
     if (this.Informations_Banques_Form.get('Rib1').hasError('minlength')) {
       return 'Rib non valide! (20 numéro)';
     }
@@ -362,29 +491,45 @@ export class ModifierClientComponent implements OnInit {
       return '';
     }
   }
-
-  // message d'erreur lorsque le contact saisi ne respecte pas les conditions prédifinis
+  // message d'erreur lorsque Contact saisi ne respecte pas les conditions prédifinis
   MessageErreurContact() {
-    if (this.ContactForm.get('Contact').hasError('minlength')) {
-      return 'Contact non valide! (3 caractères)';
+    if (this.ContactForm.get('Contact').hasError('required')) {
+      return 'Vous devez saisir un contact';
     } else {
       return '';
     }
   }
-
   // message d'erreur lorsque l'adresse saisi ne respecte pas les conditions prédifinis
   MessageErreurAdresse() {
-    if (this.ContactForm.get('Adresse').hasError('minlength')) {
-      return 'Adresse non valide! (3 caractères)';
+    if (this.ContactForm.get('Adresse').hasError('required')) {
+      return 'Vous devez entrer Adresse';
     } else {
       return '';
     }
   }
-
+  // message d'erreur lorsque pays saisi ne respecte pas les conditions prédifinis
+  MessageErreurPays() {
+    if (this.ContactForm.get('Pays').hasError('required')) {
+      return 'Vous devez choisir un  Pays!';
+    } else {
+      return '';
+    }
+  }
   // message d'erreur lorsque l'email' saisi ne respecte pas les conditions prédifinis
   MessageErreurEmail() {
+    if (this.ContactForm.get('Email').hasError('required')) {
+      return 'Vous devez saisir un  email!';
+    }
     if (this.ContactForm.get('Email').hasError('email')) {
       return 'saisir un email valide!';
+    } else {
+      return '';
+    }
+  }
+  // message d'erreur lorsque tel saisi ne respecte pas les conditions prédifinis
+  MessageErreurTel() {
+    if (this.ContactForm.get('Tel1').hasError('required')) {
+      return 'Vous devez saisir un  numéro du téléphone!';
     } else {
       return '';
     }

@@ -1,3 +1,10 @@
+/**
+ Liste des méthodes:
+ * creerFormGroup: création du formGroup.
+ * positionerMarquer: pour positionner un marqueur sur le map.
+ * modifierPositionMarquer: pour modifier la position du marqueur existant.
+ * enregistrer: enregistrer les données.
+ */
 import { animate, style, transition, trigger } from '@angular/animations';
 import { Component, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -65,20 +72,21 @@ export class ConfigurationPositionComponent implements OnInit {
     });
   }
 
+  //pour positionner un marqueur sur le map
   positionerMarquer(event: any) {
-    //pour positionner un marqueur sur le map
     if (!this.afficherMarker) {
       this.latitudeMarker = event.coords.lat;
       this.longitudeMarker = event.coords.lng;
       this.afficherMarker = true;
     }
   }
+  //pour modifier la position du marqueur existant
   modifierPositionMarquer(event: any) {
-    //pour modifier la position du marqueur existant
     this.latitudeMarker = event.coords.lat;
     this.longitudeMarker = event.coords.lng;
   }
 
+  // enregistrer les données
   enregistrer() {
     this.infos.adresse = this.adresse.value;
     this.infos.ville = this.ville.value;

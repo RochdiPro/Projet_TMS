@@ -1,3 +1,19 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage
+ Liste des méthodes:
+ * testerEtatCommandes: tester si toute les commandes sont livrées.
+ * viderNom: pour vider le champs de filtrage par chauffeur.
+ * viderMatricule: pour vider le champs de filtrage par matricule.
+ * filtrerMission: pour faire le filtrage des missions.
+ * disableEnableDate: pour activer et desactiver le filtrage par date.
+ * datePrecedente: diminuer la date dans le date picker par un jour.
+ * dateSuivante: augmenter le date dans le date picker par un jour.
+ * detailDialog: ouvrir la boite de dialogue de détail d'une mission.
+ * ouvrirDialogModifierMission: ouvrir la boite de dialogue modifier mission.
+ * annulerMission: ouvrir boite dialogue de confirmation annulation mission.
+ * ouvrirBoiteDialogTrajet: ouvrir boite dialogue qui permet d'afficher le trajet.
+ * ouvrirBoiteDialogCloturerMission: ouvrir boite de dialogue cloturer mission.
+ */
 import { DatePipe } from '@angular/common';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -5,6 +21,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { StompService } from 'src/app/services/stomp.service';
 import {
   CloturerMission,
   ConfirmationAnnulationMission,
@@ -60,6 +77,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
 
   // variable utiliser pour activer et desactiver le bouton stop
   boutonStopEstActive: boolean;
+  chargementEnCours = true;
 
   nom: any;
   acces: any;
@@ -67,7 +85,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
   constructor(
     public serviceMission: MissionsService,
     public datepipe: DatePipe,
-    private dialog: MatDialog
+    private dialog: MatDialog, 
+    private stompService: StompService
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
@@ -76,6 +95,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     const arrayOfDigits = Array.from(String(numToSeparate), Number);
 
     this.tms = Number(arrayOfDigits[3]);
+
+    this.filtrerMission();
   }
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -86,10 +107,19 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  async ngOnInit() {
-    await this.filtrerMission();
+  ngOnInit() {
+    this.stompService.subscribe('/topic/mission', (): void => {
+      this.filtrerMission();
+
+    });
   }
 
+  ngOnDestroy(): void {
+    // unsubscribe du service stomp
+    this.stompService.unsubscribe();
+  }
+
+  // tester si toute les commandes sont livrées
   testerEtatCommandes(commandes: any) {
     let toutesCommandesLivrees = true;
     commandes.forEach((commande: any) => {
@@ -98,21 +128,22 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     return toutesCommandesLivrees;
   }
 
+  //pour vider le champs de filtrage par chauffeur
   viderNom() {
-    //pour vider le champs de filtrage par chauffeur
     this.nomFiltre = false;
     this.form.controls['nom'].setValue('');
     this.filtrerMission();
   }
+  //pour vider le champs de filtrage par matricule
   viderMatricule() {
-    //pour vider le champs de filtrage par matricule
     this.matriculeFiltre = false;
     this.form.controls['matricule'].setValue('');
     this.filtrerMission();
   }
+  //pour faire le filtrage des missions
   async filtrerMission() {
-    //pour faire le filtrage des missions
     if (this.filtreEtatMission === undefined) this.filtreEtatMission = '';
+    this.chargementEnCours = true;
     this.dataSource.data = await this.serviceMission
       .filtrerMissions(
         this.form.get('nom').value,
@@ -138,9 +169,10 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
           mission.boutonStop = this.testerEtatCommandes(commandes);
         });
     });
+    this.chargementEnCours = false;
   }
+  //pour activer et desactiver le filtrage par date
   disableEnableDate() {
-    //pour activer et desactiver le filtrage par date
     if (this.check) {
       this.form.controls['dateL'].enable();
     } else {
@@ -164,8 +196,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     this.filtrerMission();
   }
 
+  // ouvrir la boite de dialogue de détail d'une mission
   detailDialog(mission: any): void {
-    // ouvrir la boite de dialogue de détail d'une mission
     const dialogRef = this.dialog.open(DetailComponent, {
       width: '1200px',
       maxWidth: '95vw',
@@ -176,8 +208,8 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ouvrir la boite de dialogue modifier mission
   ouvrirDialogModifierMission(mission: any) {
-    // ouvrir la boite de dialogue modifier mission
     const dialogRef = this.dialog.open(ModifierMission, {
       width: '500px',
       maxWidth: '95vw',
@@ -188,6 +220,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ouvrir boite dialogue de confirmation annulation mission
   annulerMission(mission: any) {
     let missionsPasAnnule: any = [];
     let missions = this.dataSource.data.filter(
@@ -211,6 +244,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ouvrir boite dialogue qui permet d'afficher le trajet
   ouvrirBoiteDialogTrajet(mission: any) {
     const dialogRef = this.dialog.open(Trajet, {
       width: '1000px',
@@ -222,6 +256,7 @@ export class ListerMissionsComponent implements OnInit, AfterViewInit {
     });
   }
 
+  // ouvrir boite de dialogue cloturer mission
   ouvrirBoiteDialogCloturerMission(mission: any) {
     const dialogRef = this.dialog.open(CloturerMission, {
       width: '1000px',

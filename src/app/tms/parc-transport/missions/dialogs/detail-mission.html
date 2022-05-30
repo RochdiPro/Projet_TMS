@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Informations du mission</h1>
 <!-- Info Chauffeur -->
 <h2>Informations du chauffeur</h2>
-<div class="container-info-chauffeur">
+<div class="container-info-chauffeur" *ngIf="chauffeur">
     <div class="card info-chauffeur" style="height: 100%;">
         <div class="row">
             <div class="col-4 image" style="padding: 0" *ngIf="!chauffeur.image">
@@ -44,9 +44,9 @@
         <p>Volume: </p>
         <p style="font-weight: bold;"> {{volumeMission}}m³ </p>
         <p>Date de debut: </p>
-        <p style="font-weight: bold;"> {{date_creation | date:"dd-MM-yyyy"}} </p>
+        <p style="font-weight: bold;"> {{dateLancement}} </p>
         <p>Date de cloture: </p>
-        <p style="font-weight: bold;"></p>
+        <p style="font-weight: bold;">{{dateCloture}}</p>
     </div>
 </div>
 

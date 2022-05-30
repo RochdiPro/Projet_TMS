@@ -1,32 +1,35 @@
-<mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-    <!-- id Column -->
-    <ng-container matColumnDef="id">
-        <mat-header-cell *matHeaderCellDef> id </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
-    </ng-container>
-
-    <!-- nom Column -->
-    <ng-container matColumnDef="nom">
-        <mat-header-cell *matHeaderCellDef> Nom </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.nom}} </mat-cell>
-    </ng-container>
-
-    <!-- prix Column -->
-    <ng-container matColumnDef="prix">
-        <mat-header-cell *matHeaderCellDef> Prix </mat-header-cell>
-        <mat-cell *matCellDef="let element"> {{element.prixCarburant}} </mat-cell>
-    </ng-container>
-
-    <!-- modifier Column -->
-    <ng-container matColumnDef="modifier">
-        <mat-header-cell *matHeaderCellDef> Modifier </mat-header-cell>
-        <mat-cell *matCellDef="let element">
-            <button mat-icon-button (click)="ouvrirModifierCarburant(element)">
-                <mat-icon>edit</mat-icon>
-            </button>
-        </mat-cell>
-    </ng-container>
-
-    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-</mat-table>
+<div *ngIf="tms >= 1">
+    <mat-progress-bar mode="indeterminate" *ngIf="chargementEnCours"></mat-progress-bar>
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+        <!-- id Column -->
+        <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef> id </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.id}} </mat-cell>
+        </ng-container>
+    
+        <!-- nom Column -->
+        <ng-container matColumnDef="nom">
+            <mat-header-cell *matHeaderCellDef> Nom </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.nom}} </mat-cell>
+        </ng-container>
+    
+        <!-- prix Column -->
+        <ng-container matColumnDef="prix">
+            <mat-header-cell *matHeaderCellDef> Prix </mat-header-cell>
+            <mat-cell *matCellDef="let element"> {{element.prixCarburant}} </mat-cell>
+        </ng-container>
+    
+        <!-- modifier Column -->
+        <ng-container matColumnDef="modifier">
+            <mat-header-cell *matHeaderCellDef> Modifier </mat-header-cell>
+            <mat-cell *matCellDef="let element">
+                <button mat-icon-button (click)="ouvrirModifierCarburant(element)" [disabled]="tms < 3">
+                    <mat-icon>edit</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+    
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+</div>

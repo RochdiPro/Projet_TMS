@@ -41,6 +41,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpClient } from '@angular/common/http';
 import { AppInitService } from './services/app-init.service';
 import {MatSliderModule} from '@angular/material/slider';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -84,7 +85,8 @@ import {MatSliderModule} from '@angular/material/slider';
     MatNativeDateModule,
     DragDropModule,
     MatProgressSpinnerModule,
-    MatSliderModule
+    MatSliderModule,
+    MatProgressBarModule
   ],
   providers: [
     MatDatepickerModule,

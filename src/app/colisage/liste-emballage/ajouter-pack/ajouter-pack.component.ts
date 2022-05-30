@@ -1,3 +1,38 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * creerFormGroups: creation des formGroups.
+ * chargerListeEmballage: charger la liste de colisage.
+ * getListeSupportParType: charger la liste des supports filtrée par son type.
+ * scannerCodeBarreSupport: fonction qui permet de scanner le code a barre avec le scanner.
+ * gestionCodeBarreSupport: fonction qui permet de réaliser les fonctionnalitées necessaires aprés la saisie du code à barre.
+ * selectionnerSupport: selectionner support manuellement.
+ * verifierValiditeSupport: fonction qui permet de tester la validité du support lors de l'appuie sur le bouton suivant.
+ * appliquerFiltre: filtrer par nom Emballage.
+ * getIdProduit: fonction qui permet d'avoir les identifiants des produits dans un pack.
+ * getQuantiteProduit: pour avoir les quantitées de chaque produit dans la liste de colisage.
+ * getNomProduit: pour avoir le nom de chaque produit dans la liste colisage.
+ * scannerCodeBarrePack: fonction pour scanner le code a barre avec le scanner.
+ * gestionCodeBarrePack: fonction pour la gestion du code a barre scanné.
+ * choisirPackScanne: fonction pour selectionner le pack qu'on a scanné son code a barre.
+ * choisirPack: fonction pour la selection du pack manuellement.
+ * pack: get le FormArray 'pack' pour ajouter a lui les formControls d'une facon dynamique.
+ * nouveauPack: creation des formControls qte et unite pour chaque pack selectionné.
+ * ajouterPack: lors de l'ajout du pack on ajoute les formControls crées a FormArray.
+ * supprimerPack: vider le formArray.
+ * deuxiemeSuivant: si l'utilisateur n'a pas choisi un pack on affiche une alerte
+   on teste si l'utilisateur a choisi un pack a l'aide du formControl 'validateur'.
+ * deuxiemePrecedent: supprimer le pack si on clique sur precedent pour eviter les problemes.
+ * calculerPoidsTotalNet: calculer le poids total net.
+ * calculerPoidsTotalBrut: calculer le poids des produits avec leur emballages mais sans le poids du support global.
+ * calculerPoidsPackNet: poids total net de chaque pack selectionné.
+ * calculerPoidsPackBrut: poids total brut de chaque pack selectionné.
+ * reinitialiserStepper: reinitialiser le stepper.
+ * testTypeSelection: fonction qui permet de choisir entre deux mode de selection du support (manuel ou avec scanner).
+ * genererCodeBarre: fonction pour generer le code pour le code a barre.
+ * valider: cette fonction permet l'enregistrement des données.
+ * onResize: lors du changement de l'ecran on modifie le breakpoint du mat-grid pour avoir un nouveau layout.
+ */
 import {
   AfterViewInit,
   Component,
@@ -251,14 +286,14 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     return ids;
   }
 
+  //pour avoir les quantitées de chaque produit dans la liste de colisage
   getQuantiteProduit(produits: any) {
-    //pour avoir les quantitées de chaque produit dans la liste de colisage
     let qte = produits.qte.split('/');
     return qte;
   }
 
+  //pour avoir le nom de chaque produit dans la liste colisage
   getNomProduit(produits: any) {
-    //pour avoir le nom de chaque produit dans la liste colisage
     let nomProduit = produits.nomProduit.split('/');
 
     return nomProduit;
@@ -323,8 +358,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     }
   }
 
+  //get le FormArray 'pack' pour ajouter a lui les formControls d'une facon dynamique
   pack(): FormArray {
-    //get le FormArray 'pack' pour ajouter a lui les formControls d'une facon dynamique
     return this.troisiemeFormGroup.get('pack') as FormArray;
   }
 
@@ -332,27 +367,27 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     return this.troisiemeFormGroup.get('pack') as FormArray;
   }
 
+  //creation des formControls qte et unite pour chaque pack selectionné
   nouveauPack(unite: any): FormGroup {
-    //creation des formControls qte et unite pour chaque pack selectionné
     return this.formBuilder.group({
       qte: ['', Validators.required],
       unite: [unite, Validators.required],
     });
   }
 
+  //lors de l'ajout du pack on ajoute les formControls crées a FormArray
   ajouterPack(unite: any) {
-    //lors de l'ajout du pack on ajoute les formControls crées a FormArray
     this.pack().push(this.nouveauPack(unite));
   }
 
+  //vider le formArray
   supprimerPack() {
-    //vider le formArray
     this.pack().clear();
   }
 
+  // si l'utilisateur n'a pas choisi un pack on affiche une alerte
+  // on teste si l'utilisateur a choisi un pack a l'aide du formControl 'validateur'
   deuxiemeSuivant() {
-    // si l'utilisateur n'a pas choisi un pack on affiche une alerte
-    // on teste si l'utilisateur a choisi un pack a l'aide du formControl 'validateur'
     let packEstChoisi =
       this.deuxiemeFormGroup.get('validateur').value === 'valide';
     if (!packEstChoisi) {
@@ -374,6 +409,7 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     this.supprimerPack();
   }
 
+  // calculer le poids total net
   calculerPoidsTotalNet() {
     this.poidsToltalNet = 0;
     this.qte = '';
@@ -393,8 +429,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     return this.poidsToltalNet;
   }
 
+  //calculer le poids des produits avec leur emballages mais sans le poids du support global
   calculerPoidsTotalBrut() {
-    //calculer le poids des produits avec leur emballages mais sans le poids du support global
     this.poidsToltalBrut = 0;
     for (let i = 0; i < this.packSelectionne.length; i++) {
       this.poidsToltalBrut +=
@@ -405,19 +441,20 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
     return this.poidsToltalBrut;
   }
 
+  //poids total net de chaque pack selectionné
   calculerPoidsPackNet(poids: any, qte: any) {
-    //poids total net de chaque pack selectionné
     this.poidsTotNetProduit = Number(poids) * Number(qte);
     return this.poidsTotNetProduit;
   }
+
+  //poids total brut de chaque pack selectionné
   calculerPoidsPackBrut(poids: any, qte: any) {
-    //poids total brut de chaque pack selectionné
     this.poidsTotUnProduit = Number(poids) * Number(qte);
     return this.poidsTotUnProduit;
   }
 
+  //reinitialiser le stepper
   reinitialiserStepper() {
-    //reinitialiser le stepper
     this.packClique.clear();
     this.support = undefined;
     this.packSelectionne = [];
@@ -541,8 +578,8 @@ export class AjouterPackComponent implements OnInit, AfterViewInit {
       timer: 1500,
     });
   }
+  //lors du changement de l'ecran on modifie le breakpoint du mat-grid pour avoir un nouveau layout
   onResize(event: any) {
-    //lors du changement de l'ecran on modifie le breakpoint du mat-grid pour avoir un nouveau layout
     this.breakpoint = event.target.innerWidth <= 768 ? 2 : 6;
   }
 }

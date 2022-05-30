@@ -16,9 +16,6 @@ export class CommandeComponent implements OnInit {
   wms: any;
 
   constructor(public router: Router) {
-    sessionStorage.setItem('Utilisateur', '' + 'tms2');
-    sessionStorage.setItem('Acces', '1000200');
-
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 

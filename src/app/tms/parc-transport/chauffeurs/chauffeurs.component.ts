@@ -1,3 +1,9 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * filtrer: filtrer les chauffeur par nom ou catégorie.
+ * getUrl: pour avoir la photo du chauffeur.
+ */
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
@@ -31,6 +37,9 @@ export class ChauffeursComponent implements OnInit {
 
   modeDeconnecte: boolean;
 
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   constructor(
@@ -56,14 +65,20 @@ export class ChauffeursComponent implements OnInit {
       if (this.modeDeconnecte) {
         this.service.employesManuel().subscribe((data) => {
           this.employes = data;
-          this.chauffeurs = this.employes.filter((x: any) => x.role == 'Chauffeur');
+          this.chauffeurs = this.employes.filter(
+            (x: any) => x.role == 'Chauffeur'
+          );
           this.dataSource.data = this.chauffeurs as tableChauffeur[];
+          this.chargementEnCours = false;
         });
       } else {
         this.service.employes().subscribe((data) => {
           this.employes = data;
-          this.chauffeurs = this.employes.filter((x: any) => x.role == 'chauffeur');
+          this.chauffeurs = this.employes.filter(
+            (x: any) => x.role == 'chauffeur'
+          );
           this.dataSource.data = this.chauffeurs as tableChauffeur[];
+          this.chargementEnCours = false;
         });
       }
     });
@@ -71,6 +86,7 @@ export class ChauffeursComponent implements OnInit {
 
   //filtrer les chauffeur par nom ou catégorie
   filtrer() {
+    this.chargementEnCours = true;
     if (this.modeDeconnecte) {
       if (
         this.form.get('nom').value === '' &&
@@ -80,9 +96,10 @@ export class ChauffeursComponent implements OnInit {
         this.service.employesManuel().subscribe((data) => {
           this.employes = data;
           this.chauffeurs = this.employes.filter(
-            (x: any) => x.role == 'chauffeur'
+            (x: any) => x.role == 'Chauffeur'
           );
           this.dataSource.data = this.chauffeurs as tableChauffeur[];
+          this.chargementEnCours = false;
         });
       } else if (
         this.form.get('nom').value !== '' &&
@@ -94,11 +111,12 @@ export class ChauffeursComponent implements OnInit {
           .subscribe((res) => {
             this.employes = res;
             this.chauffeurs = this.employes.filter(
-              (x: any) => x.role == 'chauffeur'
+              (x: any) => x.role == 'Chauffeur'
             );
             this.dataSource.data = this.chauffeurs as tableChauffeur[];
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.chargementEnCours = false;
           });
       } else if (
         this.form.get('nom').value === '' &&
@@ -106,15 +124,19 @@ export class ChauffeursComponent implements OnInit {
       ) {
         //si on a filtrage par catégorie de permis
         this.service
-          .filtrerChauffeurManuel('categorie_Permis', this.form.get('categorie').value)
+          .filtrerChauffeurManuel(
+            'categorie_Permis',
+            this.form.get('categorie').value
+          )
           .subscribe((res) => {
             this.employes = res;
             this.chauffeurs = this.employes.filter(
-              (x: any) => x.role == 'chauffeur'
+              (x: any) => x.role == 'Chauffeur'
             );
             this.dataSource.data = this.chauffeurs as tableChauffeur[];
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.chargementEnCours = false;
           });
       } else {
         //si on a filtrage par nom et catégorie de permis
@@ -123,7 +145,7 @@ export class ChauffeursComponent implements OnInit {
           .subscribe((data) => {
             this.employes = data;
             this.chauffeurs = this.employes.filter(
-              (x: any) => x.role == 'chauffeur'
+              (x: any) => x.role == 'Chauffeur'
             );
             this.chauffeurs = this.employes.filter(
               (x: any) => x.categorie_Permis == this.form.get('categorie').value
@@ -131,6 +153,7 @@ export class ChauffeursComponent implements OnInit {
             this.dataSource.data = this.chauffeurs as tableChauffeur[];
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.chargementEnCours = false;
           });
       }
     } else {
@@ -145,6 +168,7 @@ export class ChauffeursComponent implements OnInit {
             (x: any) => x.role == 'chauffeur'
           );
           this.dataSource.data = this.chauffeurs as tableChauffeur[];
+          this.chargementEnCours = false;
         });
       } else if (
         this.form.get('nom').value !== '' &&
@@ -161,6 +185,7 @@ export class ChauffeursComponent implements OnInit {
             this.dataSource.data = this.chauffeurs as tableChauffeur[];
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.chargementEnCours = false;
           });
       } else if (
         this.form.get('nom').value === '' &&
@@ -168,7 +193,10 @@ export class ChauffeursComponent implements OnInit {
       ) {
         //si on a filtrage par catégorie de permis
         this.service
-          .filtrerChauffeur('categorie_Permis', this.form.get('categorie').value)
+          .filtrerChauffeur(
+            'categorie_Permis',
+            this.form.get('categorie').value
+          )
           .subscribe((res) => {
             this.employes = res;
             this.chauffeurs = this.employes.filter(
@@ -177,6 +205,7 @@ export class ChauffeursComponent implements OnInit {
             this.dataSource.data = this.chauffeurs as tableChauffeur[];
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.chargementEnCours = false;
           });
       } else {
         //si on a filtrage par nom et catégorie de permis
@@ -193,13 +222,13 @@ export class ChauffeursComponent implements OnInit {
             this.dataSource.data = this.chauffeurs as tableChauffeur[];
             this.dataSource.sort = this.sort;
             this.dataSource.paginator = this.paginator;
+            this.chargementEnCours = false;
           });
       }
-
     }
   }
+  // pour avoir la photo du chauffeur
   getUrl(url: any) {
-    // pour avoir la photo du chauffeur
     this.url = this.sanitizer.bypassSecurityTrustUrl(
       'data:image/png;base64,' + url
     ); //pour pouvoir afficher la photo sans des problémes de sécurité

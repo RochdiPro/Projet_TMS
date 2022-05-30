@@ -36,18 +36,23 @@ export class ListerSupportsComponent implements OnInit {
     'poidsEmballage',
     'dimensions',
     'volume',
-    'actions'
+    'actions',
   ];
   dataSource: MatTableDataSource<Support>;
   filtres: FormGroup;
 
+  // pour activer et desactiver le progress bar de chargement
+  chargementEnCours = true;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
-  ngAfterViewInit() {
-    
-  }
-  constructor(private serviceSupport: SupportService, public router: Router, private fb: FormBuilder) {
+  ngAfterViewInit() {}
+  constructor(
+    private serviceSupport: SupportService,
+    public router: Router,
+    private fb: FormBuilder
+  ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
 
@@ -62,24 +67,28 @@ export class ListerSupportsComponent implements OnInit {
     this.chargerListeSupports();
   }
 
-    //créer le formGroup des filtres
-    createFiltresFormGroup() {
-      this.filtres = this.fb.group({
-        id: '',
-        nom: '',
-        type: '',
-      });
-    }
+  //créer le formGroup des filtres
+  createFiltresFormGroup() {
+    this.filtres = this.fb.group({
+      id: '',
+      nom: '',
+      type: '',
+    });
+  }
 
   // filtrer la liste des supports
   filtrerCommandes() {
-    this.serviceSupport.filtrerSupportsTroisChamps(
-      this.filtres.get('id').value,
-      this.filtres.get('nom').value,
-      this.filtres.get('type').value,
-    ).subscribe((data) => {
-      this.dataSource.data = data;
-    });
+    this.chargementEnCours = true;
+    this.serviceSupport
+      .filtrerSupportsTroisChamps(
+        this.filtres.get('id').value,
+        this.filtres.get('nom').value,
+        this.filtres.get('type').value
+      )
+      .subscribe((data) => {
+        this.dataSource.data = data;
+        this.chargementEnCours = false;
+      });
   }
 
   //vider le champ de filtre
@@ -90,10 +99,12 @@ export class ListerSupportsComponent implements OnInit {
 
   // get le liste des supports
   async chargerListeSupports() {
+    this.chargementEnCours = true;
     this.listeSupports = await this.serviceSupport.supports().toPromise();
     this.dataSource = new MatTableDataSource<Support>(this.listeSupports);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    this.chargementEnCours = false;
   }
 
   //modifier un support

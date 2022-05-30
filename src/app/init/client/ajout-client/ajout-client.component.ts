@@ -16,7 +16,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 })
 export class AjoutClientComponent implements OnInit {
   //passage d'une étape à une autre uniquement si l'étape est validée
-  passage_etape = false;
+  passage_etape = true;
   pays: string;
   ville: string;
   region: string;
@@ -57,7 +57,7 @@ export class AjoutClientComponent implements OnInit {
         ],
       ],
       Categorie_Client: ['', Validators.required],
-      Categorie_Fiscale: ['Assujetti_tva', Validators.required],
+      Categorie_Fiscale: ['Assujetti tva', Validators.required],
       Identification_Fiscale: [
         '',
         [
@@ -107,8 +107,8 @@ export class AjoutClientComponent implements OnInit {
     // troisième formulaire contenant les contacts du Client avec les contrôles sur les champs
     this.ContactForm = this.fb.group({
       Pays: ['', Validators.required],
-      Region: [''],
-      Ville: [''],
+      Region: ['', Validators.required],
+      Ville: ['', Validators.required],
       Email: ['', [Validators.required, Validators.email]],
       Tel1: [
         '',

@@ -1,4 +1,4 @@
-<div>
+<div *ngIf="tms >= 1">
     <div class="app-page-title">
         <div class="page-title-wrapper">
             <div class="page-title-heading">
@@ -22,7 +22,7 @@
                             </a>
                         </li>
                         <!-- bouton ajouter -->
-                        <li class="nav-item">
+                        <li class="nav-item" *ngIf="tms >= 2">
                             <a role="tab" class="nav-link show" routerLink="/Menu/TMS/Parc/Carburants/ajouter-carburant"
                                 (click)="activerAjouter()" [ngClass]="{'active': ajouterEstActive}">
                                 <span>Ajouter</span>

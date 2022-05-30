@@ -29,6 +29,30 @@ import { ChauffeurService } from '../../chauffeurs/services/chauffeur.service';
 import { MissionsService } from '../services/missions.service';
 
 // ************************************ Boite dialogue affecter Multi chauffeur ********************************
+/**
+ * Boite dialogue permet d'affecter plusieurs chauffeurs au voitures séléctionnés pour effectuer une mission
+ * Liste des fonctions:
+  - getTypeCommande: retourne type de la commande.
+  - toggleListeColis: la fonction qui permet de lancer le changement d'etat.
+  - afficherListeColis: afficher liste colis dans une commande affectée dans un vehicule.
+  - boutonFermerListeColis: fermer liste colis affectées.
+  - getListeChauffeurs: get la liste des chauffeurs.
+  - changerCommandeActive: afficher la commande selectionnée.
+  - changerVehiculeActive: afficher le vehicule selectionné.
+  - chargerCommandes: get liste des colis.
+  - choisirCommande: selectionner une commande.
+  - choisirVehicule: selectionner vehicule.
+  - ajouterCommandeAuVehicule: affecter les colis dans une vehicule.
+  - augmenterQte: augmenter nobrePacks affectées.
+  - diminuerQte: diminuer nombrePacks affectées.
+  - changerQteNonAffectee: changer la quantité des colis ne sont pas encore affactée ( en changeant la quantité en  change aussi le poids et le volume).
+  - verifierCompatibiliteChauffeur: ajoute a chaque vehicule la liste des chauffeurs compatibles.
+  - rafraichirListeChauffeur: si un chauffeur est disponible pour plusieurs vehicules et on selectionne se chauffeur dans un vehicule on l'enleve pour les autres.
+  - selectionnerTouteLaCommande: fonction pour selectionner tous les colis dans une commande.
+  - annulerAffectationColis: annuler affectation colis dans voiture.
+  - annulerAffectationCommande: annuler toute la commande affectée dans une vehicule (si une commande affectée dans plusieurs vehicule elle s'annule que de la vehicule selectionée).
+  - 
+ */
 @Component({
   selector: 'affecter-multi-chauffeur',
   templateUrl: 'affecter-multi-chauffeur.html',
@@ -158,6 +182,7 @@ export class AffecterMultiChauffeur implements OnInit {
     }, 310);
   }
 
+  // get la liste des chauffeurs
   async getListeChauffeurs() {
     if (this.modeDeconnecte) {
       this.chauffeurs = await this.serviceChauffeur
@@ -168,6 +193,7 @@ export class AffecterMultiChauffeur implements OnInit {
     }
   }
 
+  // afficher la commande selectionnée
   changerCommandeActive(i: number) {
     this.commandeActive[i] = true;
     for (let j = 0; j < this.commandeActive.length; j++) {
@@ -175,6 +201,7 @@ export class AffecterMultiChauffeur implements OnInit {
     }
   }
 
+  // afficher le vehicule selectionné
   changerVehiculeActive(i: number) {
     this.vehiculeActive[i] = true;
     for (let j = 0; j < this.vehiculeActive.length; j++) {
@@ -182,6 +209,7 @@ export class AffecterMultiChauffeur implements OnInit {
     }
   }
 
+  // get liste des colis
   async chargerCommandes() {
     let listeColis: any = [];
     for (let i = 0; i < this.data.mission.length; i++) {
@@ -196,6 +224,7 @@ export class AffecterMultiChauffeur implements OnInit {
     this.copieListeColisTot = JSON.parse(JSON.stringify(this.listeColisTot));
   }
 
+  // selectionner une commande
   choisirCommande(commande: any) {
     this.listeColis = this.listeColisTot.filter(
       (colis: any) => Number(colis.idCommande) === commande.id
@@ -216,6 +245,7 @@ export class AffecterMultiChauffeur implements OnInit {
     return index;
   }
 
+  // selectionner vehicule
   choisirVehicule(i: number) {
     this.indexVehiculeSelectionne = i;
     this.vehiculeChauffeurs =
@@ -231,6 +261,7 @@ export class AffecterMultiChauffeur implements OnInit {
   }
 
   //si le volume ou le poids d'une commande va exceder celles du vehicule cette fonction n'aura aucun effet
+  // affecter les colis dans une vehicule
   ajouterCommandeAuVehicule(col: any) {
     let volumeVehicule =
       this.vehiculesTot[this.indexVehiculeSelectionne].longueur *
@@ -758,6 +789,16 @@ export class AffecterMultiChauffeur implements OnInit {
 //--------------------------------------------------------------------------------------------------------------------
 //------------------------------------------Affecter Chauffeur--------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------------
+/**
+ * Boite dialogue permet d'affecter un seul chauffeur a une voiture séléctionné pour effectuer une mission
+ * Liste des fonctions:
+  - getListeChauffeurs: get liste des chauffeurs.
+  - verifierCompatibiliteChauffeur: permet d'avoir les chauffeurs compatibles ave le vehicule.
+  - getListeColis: get la liste des colis.
+  - choisirCommande: selectionner une commande .
+  - changerCommandeActive: permet de changer la commande active lors du selection d'une commande.
+  - valider: retourner un objet qui contient les informations necessaires pour créer une mission.
+ */
 @Component({
   selector: 'affecter-chauffeur',
   templateUrl: 'affecter-chauffeur.html',
@@ -804,6 +845,7 @@ export class AffecterChauffeur implements OnInit {
     this.choisirCommande(this.data.mission[0]);
   }
 
+  // get liste des chauffeurs
   async getListeChauffeurs() {
     if (this.modeDeconnecte) {
       this.chauffeurs = await this.serviceChauffeur
@@ -828,6 +870,7 @@ export class AffecterChauffeur implements OnInit {
     this.chauffeurs = chauffeurs;
   }
 
+  // get la liste des colis
   async getListeColis(idCommande: any) {
     this.listeColis = await this.serviceMission
       .getListeColisParIdCommande(idCommande)
@@ -869,6 +912,7 @@ export class AffecterChauffeur implements OnInit {
     return poidsTotalBrut.toFixed(3);
   }
 
+  // selectionner une commande 
   async choisirCommande(commande: any) {
     this.listeColis = undefined;
     await this.getListeColis(commande.id);
@@ -891,6 +935,7 @@ export class AffecterChauffeur implements OnInit {
     return estValide;
   }
 
+  // retourner un objet qui contient les informations necessaires pour créer une mission
   async valider() {
     let couplesVehiculeChauffeur: any;
     let commandes: any = [];
@@ -919,7 +964,15 @@ export class AffecterChauffeur implements OnInit {
 //--------------------------------------------------------------------------------------------------------------------
 //----------------------------------------Detail Component------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------------
-
+/**
+ * Boite dialogue permet d'afficher les information d'une mission
+ * Liste des fonctions:
+  - refresh: get chauffeur et matricule vehicule
+  - getListeCommandes: get la liste des commandes.
+  - supprimerCommande: supprimer une commande.
+  - ouvrirMap: afficher la position de la commande.
+  - ouvrirDetailCommande: ouvrir la boite dialogue details commande.
+ */
 @Component({
   selector: 'app-detail-mission',
   templateUrl: './detail-mission.html',
@@ -943,6 +996,7 @@ export class DetailComponent implements OnInit {
   ];
   dataSource = new MatTableDataSource();
   date_creation: any;
+  modeNonConnecte = true;
   constructor(
     public serviceMission: MissionsService,
     private serviceChauffeur: ChauffeurService,
@@ -960,18 +1014,25 @@ export class DetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.refresh();
+    // get modeApplication
+    this.serviceChauffeur
+      .configurationApplication()
+      .subscribe((configuration) => {
+        this.modeNonConnecte = configuration.modeManuel;
+        this.refresh();
+      });
   }
 
   // get chauffeur et matricule vehicule
   async refresh() {
     let idChauffeur = this.data.mission.idChauffeur;
     this.matricule = this.data.mission.matricule;
-    if (idChauffeur === 'null') {
-      this.chauffeur = {
-        nom: this.data.mission.nomChauffeur,
-        tel: this.data.mission.telephoneChauffeur,
-      };
+    if (this.modeNonConnecte) {
+      this.serviceChauffeur
+        .employeManuel(Number(idChauffeur))
+        .subscribe((chauffeur) => {
+          this.chauffeur = chauffeur;
+        });
     } else {
       this.serviceChauffeur
         .employe(Number(idChauffeur))
@@ -996,6 +1057,15 @@ export class DetailComponent implements OnInit {
     return this.data.mission.volume;
   }
 
+  get dateLancement() {
+    return this.data.mission.dateLancement
+  }
+
+  get dateCloture() {
+    return this.data.mission.dateCloture
+  }
+
+  // get la liste des commandes
   async getListeCommandes() {
     let idCommandes = this.data.mission.idCommandes.split('/');
     for (let i = 0; i < idCommandes.length; i++) {
@@ -1006,8 +1076,8 @@ export class DetailComponent implements OnInit {
     }
   }
 
+  // supprimer une commande
   supprimerCommande(id: any) {
-    // supprimer une commande
     this.serviceMission.supprimerCommande(id);
     window.setTimeout(() => {
       this.refresh();
@@ -1049,7 +1119,11 @@ export interface tableCommandes {
 }
 
 // **************************************** boite dialog position *********************************************
-
+/**
+ * Boite dialogue permet d'afficher la position d'une commande
+ * Liste des fonctions:
+  - getPosition: get position par id position.
+ */
 @Component({
   selector: 'position',
   templateUrl: './position.html',
@@ -1069,6 +1143,7 @@ export class PositionComponent implements OnInit {
     this.getPosition();
   }
 
+  // get position par id position
   async getPosition() {
     let position = await this.serviceCommande
       .getPositionById(this.data.idPosition)
@@ -1080,6 +1155,11 @@ export class PositionComponent implements OnInit {
 }
 
 // **************************************** dialog detail commande *****************************
+/**
+ * Boite dialogue permet d'afficher les informations d'une commande
+ * Liste des fonctions:
+  - getListeColis: get la liste des colis dans une mission par l'id de la mission.
+ */
 @Component({
   selector: 'app-detail-commande',
   templateUrl: 'detail-commande.html',
@@ -1144,6 +1224,11 @@ export class DetailCommande implements OnInit {
 }
 
 // **************************************** dialog  confirmer livraison *****************************
+/**
+ * Boite dialogue permet de confirmer une livraison
+ * Liste des fonctions:
+  - keyEvent: fonction pour scanner le Qr code de confirmation de livraison avec le scanner
+ */
 @Component({
   selector: 'app-confirmer-livraison',
   templateUrl: 'confirmer-livraison.html',
@@ -1207,6 +1292,16 @@ export class ConfirmerLivraison implements OnInit {
 }
 
 // *********************************************** dialog modifier mission ******************************
+/**
+ * Boite dialogue permet de modifier une mission
+ * Liste des fonctions:
+  - getTypeVehicule: specifier le type du vehicule.
+  - getListeVehicule: permet de charger la liste des vehicules.
+  - getChauffeursCompatibles: permet d'avoir la liste des chauffeurs compatibles avec le vehicule selectionné.
+  - getVehiculeInitiale: permet d'avoir le vehicule qui est deja enregistré avec la mission initialement.
+  - getChauffeurInitial: permet d'avoir le chauffeur qui est deja enregistré avec la mission initialement.
+  - enregistrer: enregistrer les modifications.
+ */
 @Component({
   templateUrl: 'modifier-mission.html',
   styleUrls: ['modifier-mission.scss'],
@@ -1222,7 +1317,8 @@ export class ModifierMission implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<ModifierMission>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private serviceMission: MissionsService
+    private serviceMission: MissionsService,
+    private serviceVehicule: VehiculeService
   ) {}
 
   async ngOnInit() {
@@ -1244,12 +1340,13 @@ export class ModifierMission implements OnInit {
   }
 
   // permet de charger la liste des vehicules
+  // si on veut afficher que les vehicules disponible on change la methode de recuperation des vehicules
   async getListeVehicule() {
     this.listeVehicules = [];
     this.listeChauffeursCompatibles = [];
     this.chauffeurSelectionne = { nom: '', tel: '' };
     if (this.typeEstPrive) {
-      let vehicules: any = await this.serviceMission.vehicules().toPromise();
+      let vehicules: any = await this.serviceVehicule.vehicules().toPromise();
       if (this.modeDeconnecte) {
         this.listeChauffeurs = await this.serviceMission
           .getChauffeursManuel()
@@ -1268,8 +1365,8 @@ export class ModifierMission implements OnInit {
           : '';
       });
     } else {
-      let vehicules: any = await this.serviceMission
-        .filtrerVehiculeLoues('etat_vehicule', 'Disponible')
+      let vehicules: any = await this.serviceVehicule
+        .vehiculesLoues()
         .toPromise();
       vehicules.forEach((vehicule: any) => {
         let volumeUtile =
@@ -1359,7 +1456,11 @@ export class ModifierMission implements OnInit {
 }
 
 // ******************************************* confirmation annulation mission ********************************
-
+/**
+ * Boite dialogue permet d'annuler une mission
+ * Liste des fonctions:
+ - annulerLesMissions: confirmer l'annulation du mission.
+ */
 @Component({
   templateUrl: 'confirmation-annulation-mission.html',
 })
@@ -1384,6 +1485,7 @@ export class ConfirmationAnnulationMission implements OnInit {
       : (this.dataSource.data = this.data.missionsPasAnnule);
   }
 
+  // confirmer l'annulation du mission
   async annulerLesMissions() {
     for (let i = 0; i < this.data.missions.length; i++) {
       const mission = this.data.missions[i];
@@ -1391,10 +1493,8 @@ export class ConfirmationAnnulationMission implements OnInit {
       for (let j = 0; j < idCommandes.length; j++) {
         let formDataCommande: any = new FormData();
         formDataCommande.append('id', Number(idCommandes[j]));
-        formDataCommande.append('etat', 'En cours de traitement');
-        formDataCommande.append('idMission', 0);
         await this.serviceMission
-          .affecterCommande(formDataCommande)
+          .annulerExpedition(formDataCommande)
           .toPromise();
       }
       await this.serviceMission.deleteMission(mission.id).toPromise();
@@ -1410,6 +1510,18 @@ export class ConfirmationAnnulationMission implements OnInit {
 }
 
 // ************************************** Trajet ***********************************
+/**
+ * Boite dialogue permet d'afficher le trajet d'une mission
+ * Liste des fonctions:
+  - getPositionDepart: avoir la position d'origine.
+  - getPosition: retourne la position de destination d'une commande.
+  - getPositionDepartDepuisCommandeLivree: definir position de depart depuis une commande livrée.
+  - definirPositionOrigine: definir la position de depart du trajet a afficher.
+  - createTrajet: créer le meilleur trajet possible.
+  - afficherTrajet: afficher le trajet.
+  - drop: changer l'ordre du trajet lors du drop.
+  - ouvrirMap: ouvrir le trajet dans google maps.
+ */
 @Component({
   templateUrl: 'trajet.html',
   styleUrls: ['trajet.scss'],
@@ -1443,7 +1555,6 @@ export class Trajet implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.afficherTrajet();
     let idCommandes = this.data.mission.idCommandes.split('/');
     for (let i = 0; i < idCommandes.length; i++) {
       const idCommande = Number(idCommandes[i]);
@@ -1451,6 +1562,7 @@ export class Trajet implements OnInit {
         await this.serviceMission.commande(idCommande).toPromise()
       );
     }
+    this.afficherTrajet();
   }
 
   get dragDropeActive() {
@@ -1461,7 +1573,7 @@ export class Trajet implements OnInit {
     return estActive;
   }
 
-  // avoir la position de début depuis le navigateur
+  // avoir la position d'origine
   async getPositionDepart() {
     let infoGenerals = await this.serviceMission.infosGenerals().toPromise();
     this.latDepart = infoGenerals.latitude;
@@ -1476,9 +1588,29 @@ export class Trajet implements OnInit {
     return position;
   }
 
+  // definir position de depart depuis une commande livrée
+  async getPositionDepartDepuisCommandeLivree(id : any) {
+    let position = await this.getPosition(id)
+    this.latDepart = position.latitude;
+    this.longDepart = position.longitude;
+  }
+
+  // definir la position de depart du trajet a afficher
+  async definirPositionOrigine() {
+    let derniereCommandeLivree: any;
+    this.commandes.forEach((commande: any) => {
+      console.log(commande.etat);
+      commande.etat == 'Livrée' ? (derniereCommandeLivree = commande) : '';
+    });
+    console.log(derniereCommandeLivree);
+    (derniereCommandeLivree && this.data.mission.etat == "En cours")
+      ? await this.getPositionDepartDepuisCommandeLivree(derniereCommandeLivree.idPosition)
+      : await this.getPositionDepart();
+  }
+
   // créer le meilleur trajet possible
   async createTrajet() {
-    await this.getPositionDepart();
+    await this.definirPositionOrigine();
     let positions: any = [];
     let idCommandes = this.data.mission.idCommandes.split('/');
     for (let i = 0; i < idCommandes.length; i++) {
@@ -1489,6 +1621,15 @@ export class Trajet implements OnInit {
       commande.etat !== 'Livrée'
         ? positions.push(await this.getPosition(commande.idPosition))
         : '';
+    }
+    if (positions.length == 0) {
+      for (let i = 0; i < idCommandes.length; i++) {
+        const idCommande = Number(idCommandes[i]);
+        const commande = await this.serviceMission
+          .commande(idCommande)
+          .toPromise();
+        positions.push(await this.getPosition(commande.idPosition));
+      }
     }
     var debutChemin = {
       latitude: this.latDepart,
@@ -1557,8 +1698,8 @@ export class Trajet implements OnInit {
     this.afficherTrajet();
   }
 
+  //ouvrir le trajet dans google maps
   ouvrirMap() {
-    //ouvrir le trajet dans google maps
     window.open(
       'https://www.google.com/maps/dir/?api=1&origin=' +
         this.origine +
@@ -1571,8 +1712,20 @@ export class Trajet implements OnInit {
 }
 
 // ------------------------------ boite dialog plan chargement -------------------------------------------
+/**
+ * Boite dialogue permet d'afficher le plan de chargement d'une mission
+ * Liste des fonctions:
+  - getVehicule: get le vehicule.
+  - getCommandes: get les commandes d'une mission.
+  - creerLesCanvas: créer les canvas vides.
+  - charger: charger les canvas enregistrées.
+  - changerLigne: fonction pour afficher la ligne selectionnée.
+  - scroll: fonction pour faire le scroll vers le bas.
+ */
 import { fabric } from 'fabric';
 import { kmactuelValidator } from '../../vehicule/kmactuel.validator';
+import { VehiculeService } from '../../vehicule/services/vehicule.service';
+import { ConfigurationTmsService } from 'src/app/configuration-tms/services/configuration-tms.service';
 
 @Component({
   templateUrl: 'plan-chargement.html',
@@ -1596,6 +1749,7 @@ export class PlanChargement implements OnInit {
     this.getVehicule();
   }
 
+  // get le vehicule
   getVehicule() {
     if (this.data.mission.typeVehicule === 'prive') {
       this.service
@@ -1612,6 +1766,7 @@ export class PlanChargement implements OnInit {
     }
   }
 
+  // get les commandes d'une mission
   getCommandes() {
     let commande: any;
     let idCommandes = this.data.mission.idCommandes;
@@ -1640,6 +1795,7 @@ export class PlanChargement implements OnInit {
       });
   }
 
+  // créer les canvas vides
   creerLesCanvas(vehicule: any) {
     let divTop: any = document.getElementById('vueTop'); //recuperer le div 'vueTop'
     while (divTop.firstChild) {
@@ -1679,6 +1835,7 @@ export class PlanChargement implements OnInit {
     this.getCommandes();
   }
 
+  // charger les canvas enregistrées
   charger(vehicule: any) {
     this.lignes = [];
     this.indexLigne = 0;
@@ -1800,6 +1957,16 @@ export class PlanChargement implements OnInit {
 }
 
 // *********************************************** dialog cloturer mission ******************************
+/**
+ * Boite dialogue permet de cloturer une mission
+ * Liste des fonctions:
+  - formatLabel: ajouter le symbole % au valeur desirée.
+  - changerHistorique: changer l'historique de consommation du vehicule qui appartien au mission.
+  - calculerConsommationActuelle: calculer la consommation actuelle.
+  - calculerConsommation: calculer la consommation moyenne.
+  - calculerDitanceParcourue: calculer la distance parcourie.
+  - enregistrer: enregistrer les données.
+ */
 @Component({
   templateUrl: 'cloturer-mission.html',
   styleUrls: ['cloturer-mission.scss'],
@@ -1815,6 +1982,7 @@ export class CloturerMission implements OnInit {
     private dialogRef: MatDialogRef<CloturerMission>,
     @Inject(MAT_DIALOG_DATA) private data: any,
     private serviceMission: MissionsService,
+    private serviceVehicule: VehiculeService,
     private fb: FormBuilder
   ) {}
 
@@ -1843,10 +2011,12 @@ export class CloturerMission implements OnInit {
     return this.form.get('kmActuel');
   }
 
+  // ajouter le symbole % au valeur desirée
   formatLabel(value: number) {
     return value + '%';
   }
 
+  // changer l'historique de consommation du vehicule qui appartien au mission
   changerHistorique() {
     let historique = this.vehicule.historiqueConsommation;
     this.calculerDitanceParcourue();
@@ -1860,6 +2030,7 @@ export class CloturerMission implements OnInit {
     return historique;
   }
 
+  // calculer la consommation actuelle
   calculerConsommationActuelle() {
     this.calculerDitanceParcourue();
     let carburantConsomme =
@@ -1871,6 +2042,7 @@ export class CloturerMission implements OnInit {
       Math.round((consommation + Number.EPSILON) * 100) / 100;
   }
 
+  // calculer la consommation moyenne
   calculerConsommation() {
     let sommeConsommations = 0;
     let consommation = 0;
@@ -1886,11 +2058,13 @@ export class CloturerMission implements OnInit {
     return consommation;
   }
 
+  // calculer la distance parcourie
   calculerDitanceParcourue() {
     let distanceParcourue = this.kmActuel.value - this.vehicule.kmactuel;
     this.distanceParcourue = distanceParcourue;
   }
 
+  // enregistrer les données
   enregistrer() {
     let consommation = this.calculerConsommation();
     let historique = this.changerHistorique();
@@ -1912,9 +2086,18 @@ export class CloturerMission implements OnInit {
       )
       .subscribe((result) => {
         this.serviceMission
-          .modifierEtatMission(this.mission.id, 'Terminée')
+          .cloturerMission(this.mission.id)
           .subscribe((result) => {
             if (result) {
+              if (result.typeVehicule === 'prive') {
+                this.serviceVehicule
+                  .changerEtatVehicule(result.matricule, 'Disponible')
+                  .subscribe();
+              } else {
+                this.serviceVehicule
+                  .changerEtatVehiculeLoue(result.matricule, 'Disponible')
+                  .subscribe();
+              }
               Swal.fire({
                 icon: 'success',
                 title: 'Commande bien reçue',

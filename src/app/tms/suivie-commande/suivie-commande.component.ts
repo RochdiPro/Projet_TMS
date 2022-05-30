@@ -1,3 +1,17 @@
+/**
+ * Constructeur: get droit d'accées depuis sessionStorage.
+ Liste des méthodes:
+ * clickerChercher: ajouter le tracking number au router pour faire un recherche.
+ * rechercheCommande: rechercher une commande pour consulter son etat.
+ * afficherRecherche: afficher input recherche.
+ * afficherInfoCommande: afficher la section d'info commande.
+ * afficherPasCommande: afficher la section du pas de commande.
+ * refaireRecherche: enlever le tracking number pour refaire un recherche.
+ * get statusRecherche: etat du section qui contient l'input de recherche "show" pour afficher, "hide" pour cacher.
+ * get statusInfoCommande: etat du section qui contient l'info du commande' "show" pour afficher, "hide" pour cacher.
+ * get statusPasCommande: etat du section du non disponibilité de commande "show" pour afficher, "hide" pour cacher.
+ * afficherEtat: afficher l'etat convenable a dessus des icons des etats.
+ */
 import {
   animate,
   state,
@@ -7,6 +21,7 @@ import {
 } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { SuivieCommandeService } from './services/suivie-commande.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-suivie-commande',
@@ -80,17 +95,33 @@ export class SuivieCommandeComponent implements OnInit {
   pasCommandeEstActive = false;
   historique: any = [];
   adresseLivreur: string;
-  constructor(public service: SuivieCommandeService) {}
+  constructor(
+    public service: SuivieCommandeService,
+    private activatedroute: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     // get adresse de la societé
     this.service.infosGenerals().subscribe((result) => {
       this.adresseLivreur = result.ville;
     });
+    this.activatedroute.paramMap.subscribe(params => { 
+      this.trackingNumber = params.get('tn');
+      if (this.trackingNumber) {
+        this.rechercheCommande();
+      } 
+  });
+  }
+
+  // ajouter le tracking number au router pour faire un recherche
+  clickerChercher() {
+    this.router.navigateByUrl("/Menu/TMS/suivie-commande/"+this.trackingNumber)
   }
 
   //rechercher une commande pour consulter son etat
   rechercheCommande() {
+    if (!this.trackingNumber) return;
     this.dispo = false;
     this.nouveauRecherche = false;
     this.historique = [];
@@ -182,14 +213,9 @@ export class SuivieCommandeComponent implements OnInit {
     }, 500);
   }
 
+  // enlever le tracking number pour refaire un recherche
   refaireRecherche() {
-    this.pasCommandeEstAffiche = false;
-    this.infoCommandeEstAffiche = false;
-    setTimeout(() => {
-      this.pasCommandeEstActive = false;
-      this.infoCommandeEstActive = false;
-      this.afficherRecherche();
-    }, 500);
+    this.router.navigateByUrl("/Menu/TMS/suivie-commande")
   }
 
   // etat du section qui contient l'input de recherche "show" pour afficher, "hide" pour cacher

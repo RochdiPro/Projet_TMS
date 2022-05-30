@@ -160,6 +160,24 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
+  // lancer mission
+  public lancerMission(id: number) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    return this.httpClient
+      .put(erp + 'lancer-mission', formData)
+      .pipe(catchError(this.handleError));
+  }
+
+  // cloturer mission
+  public cloturerMission(id: number) {
+    let formData: any = new FormData();
+    formData.append('id', id);
+    return this.httpClient
+      .put(erp + 'cloturer-mission', formData)
+      .pipe(catchError(this.handleError));
+  }
+
   // livrer commande
   public livrerCommande(qrCode: string, idMaission: any, idCommandes: any) {
     let formData = new FormData();
@@ -175,6 +193,13 @@ export class MissionsService {
   public affecterCommande(formData: any) {
     return this.httpClient
       .put(erp + 'affecter-commande', formData)
+      .pipe(catchError(this.handleError));
+  }
+
+  // annuler l'expedition du commande
+  public annulerExpedition(formData: any) {
+    return this.httpClient
+      .put(erp + 'annuler-expidition', formData)
       .pipe(catchError(this.handleError));
   }
 
@@ -201,6 +226,16 @@ export class MissionsService {
         observe: 'body',
       })
       .pipe(catchError(this.handleError));
+  }
+
+  // filtrer vehicule loue par etat
+  public filtrerVehiculeLoueParEtat(etat: string) {
+    return this.httpClient.get(erp + 'vehicule-loue-etat', {
+      params: {
+        etat: etat,
+      },
+      observe: 'body',
+    });
   }
 
   //get liste des chauffeurs
@@ -322,10 +357,38 @@ export class MissionsService {
       .pipe(catchError(this.handleError));
   }
 
-    //get configuration application
-    public configurationApplication() {
-      return this.httpClient
-        .get(erp + 'configuration-application')
-        .pipe(catchError(this.handleError));
-    }
+  //get configuration application
+  public configurationApplication() {
+    return this.httpClient
+      .get(erp + 'configuration-application')
+      .pipe(catchError(this.handleError));
+  }
+
+  // ajouter fil d'attente
+  public ajouterFileAttente(file: any) {
+    return this.httpClient.post(erp + 'file-attente', file);
+  }
+
+  // get files d'attentes
+  public getFilesAttente() {
+    return this.httpClient.get(erp + 'files-attente');
+  }
+
+  // modifier file attente
+  public updateFileAttente(file: any) {
+    return this.httpClient.put(erp + 'file-attente', file);
+  }
+
+  // delete file d'attente
+  public deleteFileAttente(id: any) {
+    return this.httpClient.delete(erp + 'file-attente', {
+      params: { id: id },
+      observe: 'body',
+    });
+  }
+
+  // delete all file d'attente
+  public deleteAllFileAttente() {
+    return this.httpClient.delete(erp + 'files-attente');
+  }
 }

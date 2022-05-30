@@ -22,6 +22,7 @@
     </div>
     <!-- Table liste produits -->
     <div class="mat-elevation-z8">
+        <mat-progress-bar mode="indeterminate" *ngIf="chargementEnCours"></mat-progress-bar>
         <mat-table [dataSource]="dataSource" matSort>
 
             <!-- Colonne id -->

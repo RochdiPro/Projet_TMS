@@ -32,6 +32,7 @@
                     </div>
                     <div class="mat-elevation-z8">
                         <!-- Tableau des chauffeurs -->
+                        <mat-progress-bar mode="indeterminate" *ngIf="chargementEnCours"></mat-progress-bar>
                         <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
     
                             <!-- Colonne d'ID -->

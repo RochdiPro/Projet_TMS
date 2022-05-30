@@ -9,7 +9,20 @@ import { Router } from '@angular/router';
 export class CarburantComponent implements OnInit {
   listerEstActive = false;
   ajouterEstActive = false;
-  constructor(public router: Router) {}
+
+   // variables de droits d'accés
+   nom: any;
+   acces: any;
+   tms: any;
+  constructor(public router: Router) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+  }
 
   ngOnInit(): void {
     if (this.router.url === '/Menu/TMS/Parc/Carburants/lister-carburants')

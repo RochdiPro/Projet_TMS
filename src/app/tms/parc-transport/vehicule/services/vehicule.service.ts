@@ -98,14 +98,6 @@ export class VehiculeService {
       .pipe(catchError(this.handleError));
   }
 
-  //mettre à jour l'etat de vehicule
-  public majEtatVehicule(formData: any) {
-    this.httpClient.put(erp + 'mise-a-jour-etat-vehicule', formData).subscribe(
-      (response) => console.log(response),
-      (error) => console.log(error)
-    );
-  }
-
   //creer nouveau entretien
   public creerEntretien(formData: any) {
     return this.httpClient
@@ -312,4 +304,21 @@ export class VehiculeService {
   public getMatriculesVehiculesLoues() {
     return this.httpClient.get(erp + "matricules-vehicules-loues")
   }
+
+  // changer etat vehicule
+  public changerEtatVehicule(matricule: string, etat: string) {
+    let formData = new FormData();
+    formData.append('matricule', matricule);
+    formData.append('etat', etat);
+    return this.httpClient.put(erp + "changer-etat-vehicule",formData);
+  }
+
+  // changer etat vehicule loué
+  public changerEtatVehiculeLoue(matricule: string, etat: string) {
+    let formData = new FormData();
+    formData.append('matricule', matricule);
+    formData.append('etat', etat);
+    return this.httpClient.put(erp + "changer-etat-vehicule-loue",formData);
+  }
+
 }

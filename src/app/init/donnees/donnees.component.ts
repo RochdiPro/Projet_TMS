@@ -29,8 +29,20 @@ export class DonneesComponent implements OnInit {
   nom_categorie_choisie2: any;
   modificationAction: boolean = false;
   objetModifier: any;
-
+  nom: any;
+  acces: any;
+  tms: any;
+  wms: any;
   constructor(public donneesService: EditService, private fb: FormBuilder) {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+    this.wms = Number(arrayOfDigits[4]);
+
     //recupérer la liste des categories des données
     this.donneesService
       .obtenirListeCategorie()

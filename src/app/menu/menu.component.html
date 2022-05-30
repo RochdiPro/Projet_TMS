@@ -55,13 +55,13 @@
                               <h6 tabindex="-1" class="dropdown-header">Projet</h6>
                               <button type="button" tabindex="0" class="dropdown-item">Taches</button>
                               <div tabindex="-1" class="dropdown-divider"></div>
-                              <button type="button" tabindex="0" class="dropdown-item"> Déconnecter</button>
+                              <button type="button" tabindex="0" class="dropdown-item" (click)="deconnecter()"> Déconnecter</button>
                            </div>
                         </div>
                      </div>
                      <div class="widget-content-left  ml-3 header-user-info">
                         <div class="widget-heading">
-                           user
+                           {{nom}}
                         </div>
                         <div class="widget-subheading">
                         </div>
@@ -275,7 +275,7 @@
                      </a>
                   </li>
                   <!-- Partie menu RH -->
-                  <li>
+                  <li *ngIf="tms >= 4">
                      <a routerLink="/Menu/Menu-RH">
                         <i class="metismenu-icon pe-7s-diamond"></i>
                         RH
@@ -292,7 +292,7 @@
                   </li>
                   <!-- Fin partie menu RH -->
                   <!-- Partie client -->
-                  <li>
+                  <li *ngIf="tms >= 4 || wms >= 4">
                      <a href="#">
                         <i class="metismenu-icon pe-7s-diamond"></i>
                         Données

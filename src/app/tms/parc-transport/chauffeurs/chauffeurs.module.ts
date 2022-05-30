@@ -16,6 +16,7 @@ import { registerLocaleData } from '@angular/common';
 import { ChauffeursComponent } from './chauffeurs.component';
 
 import { ChauffeursRoutingModule } from './chauffeurs-routing.module';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 registerLocaleData(localeFr, 'fr');
 
 
@@ -34,7 +35,8 @@ registerLocaleData(localeFr, 'fr');
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatProgressBarModule
   ],
   providers: [ DatePipe, { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }],
 })
