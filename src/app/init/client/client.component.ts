@@ -6,8 +6,20 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./client.component.scss']
 })
 export class ClientComponent implements OnInit {
+  nom: any;
+  acces: any;
+  tms: any;
+  wms: any;
+  constructor() {
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
 
-  constructor() { }
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+    this.wms = Number(arrayOfDigits[4]);
+   }
   option1:any=false;
   option2:any=false;
   ngOnInit(): void {

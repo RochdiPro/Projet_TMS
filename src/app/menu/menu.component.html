@@ -275,7 +275,7 @@
                      </a>
                   </li>
                   <!-- Partie menu RH -->
-                  <li>
+                  <li *ngIf="tms >= 4">
                      <a routerLink="/Menu/Menu-RH">
                         <i class="metismenu-icon pe-7s-diamond"></i>
                         RH
@@ -292,7 +292,7 @@
                   </li>
                   <!-- Fin partie menu RH -->
                   <!-- Partie client -->
-                  <li>
+                  <li *ngIf="tms >= 4 || wms >= 4">
                      <a href="#">
                         <i class="metismenu-icon pe-7s-diamond"></i>
                         Données
