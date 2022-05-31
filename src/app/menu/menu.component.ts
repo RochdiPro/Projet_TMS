@@ -10,6 +10,7 @@ import { AuthenticationService } from '../authentication/services/authentication
 export class MenuComponent implements OnInit {
   nom: any;
   acces: any;
+  role: any;
   tms: any;
   wms: any;
   constructor(
@@ -18,6 +19,7 @@ export class MenuComponent implements OnInit {
   ) {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
+    this.role = sessionStorage.getItem('Role');
 
     const numToSeparate = this.acces;
     const arrayOfDigits = Array.from(String(numToSeparate), Number);

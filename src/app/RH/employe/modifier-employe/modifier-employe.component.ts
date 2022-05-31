@@ -157,8 +157,8 @@ export class ModifierEmployeComponent implements OnInit {
       this.Informations_Banques_Form.get('Categorie_permis').setValue(this.Data.categorie_Permis)
       
 
-      this.Acces.get('login').setValue(this.Data.id)
-      this.Acces.get('pwd').setValue(this.Data.pwd)
+      this.Acces.get('login').setValue(this.Data.login)
+      this.Acces.get('pwd').setValue(this.Data.password)
     });
 
     this.Image_Client(this.id_emp);
@@ -403,8 +403,8 @@ export class ModifierEmployeComponent implements OnInit {
       'Categorie_Permis',
       this.Informations_Banques_Form.get('Categorie_permis').value
     );
-    formData.append('Login', this.Acces.get('login').value);
-    formData.append('Pwd', this.Acces.get('pwd').value);
+    formData.append('login', this.Acces.get('login').value);
+    formData.append('password', this.Acces.get('pwd').value);
     //demande de confirmation de la modification
     Swal.fire({
       title: 'Êtes-vous sûr?',
@@ -418,7 +418,7 @@ export class ModifierEmployeComponent implements OnInit {
           (data) => {
             //lorsque la modification est realisé, redirection à la page lister-Client
 
-            this.router.navigate(['/Menu/Menu-employe/Lister-employe']);
+            this.router.navigate(['Menu/Menu-RH/Menu-employee/Lister-employee']);
             Swal.fire('Employé modifié avec succès!', '', 'success');
             return data;
           },
@@ -434,7 +434,7 @@ export class ModifierEmployeComponent implements OnInit {
         );
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Annulé', '', 'error');
-        this.router.navigate(['Menu/Menu-employe/Lister-employe']);
+        this.router.navigate(['Menu/Menu-RH/Menu-employee/Lister-employee']);
       }
     });
   }

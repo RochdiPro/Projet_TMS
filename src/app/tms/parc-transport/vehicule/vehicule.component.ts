@@ -13,7 +13,22 @@ export class VehiculeComponent implements OnInit {
   mesVehicules = false; //pour l'activation du tab mes vehicules
   vehiculesLoues = false; //pour l'activation du tab vehicules loues
 
-  constructor(public router: Router) { }
+   // variables de droits d'accés
+   nom: any;
+   acces: any;
+   tms: any;
+   role: any;
+
+  constructor(public router: Router) { 
+    this.nom = sessionStorage.getItem('Utilisateur');
+    this.acces = sessionStorage.getItem('Acces');
+    this.role = sessionStorage.getItem('Role');
+
+    const numToSeparate = this.acces;
+    const arrayOfDigits = Array.from(String(numToSeparate), Number);
+
+    this.tms = Number(arrayOfDigits[3]);
+  }
   ngOnInit(): void {
     let routerSplit = this.router.url.split('/')
     if (routerSplit[5] === 'Mes-Vehicules') this.activerMesVehicules();

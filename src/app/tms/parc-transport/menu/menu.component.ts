@@ -10,9 +10,11 @@ export class MenuComponent implements OnInit {
   nom: any;
   acces: any;
   tms: any;
+  role: any;
   constructor() {
     this.nom = sessionStorage.getItem('Utilisateur');
     this.acces = sessionStorage.getItem('Acces');
+    this.role = sessionStorage.getItem('Role');
 
     const numToSeparate = this.acces;
     const arrayOfDigits = Array.from(String(numToSeparate), Number);

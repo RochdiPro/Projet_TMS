@@ -220,13 +220,13 @@
                               <i class="metismenu-state-icon pe-7s-angle-down caret-left"></i>
                            </a>
                            <ul>
-                              <li>
+                              <li *ngIf="role != 'Chauffeur'">
                                  <a routerLink="/Menu/TMS/Parc/Carburants/lister-carburants">
                                     <i class="metismenu-icon"></i>
                                     Carburants
                                  </a>
                               </li>
-                              <li>
+                              <li *ngIf="role != 'Chauffeur'">
                                  <a routerLink="/Menu/TMS/Parc/Vehicules">
                                     <i class="metismenu-icon"></i>
                                     Vehicules
