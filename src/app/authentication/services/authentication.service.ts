@@ -14,6 +14,7 @@ export class AuthenticationService {
       sessionStorage.setItem('username', username);
       sessionStorage.setItem('Utilisateur', '' + username);
       sessionStorage.setItem('Acces', employe.acces);
+      sessionStorage.setItem('Role', employe.role);
       return true;
     } else if (username == "infonet" && password == "infonet") {
       sessionStorage.setItem('username', username);
@@ -34,6 +35,7 @@ export class AuthenticationService {
     sessionStorage.removeItem('username');
     sessionStorage.removeItem('Utilisateur');
     sessionStorage.removeItem('Acces');
+    sessionStorage.removeItem('Role');
   }
 
   login(username: string, password: string) {
